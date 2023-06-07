@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+  ~
+  ~ WSO2 LLC. licenses this file to you under the Apache License,
+  ~ Version 2.0 (the "License"); you may not use this file except
+  ~ in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implihe
+  ~ specific language governing permissions and limitationsed.  See the License for t
+  ~ under the License.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>io.ballerina</groupId>
+    <artifactId>health-tools</artifactId>
+    <version>0.1.0</version>
+
+    <packaging>pom</packaging>
+    <modules>
+        <module>native/health-cli</module>
+        <module>native/fhir-to-bal-lib</module>
+        <module>native/fhir-to-bal-template</module>
+        <module>ballerina</module>
+    </modules>
+
+    <properties>
+        <hapi.version>4.2.0</hapi.version>
+        <velocity.version>1.6</velocity.version>
+        <picocli.version>4.0.1</picocli.version>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <version.healthcare.tool.framework>3.1.0-SNAPSHOT</version.healthcare.tool.framework>
+        <version.ballerina.cli>2201.6.0</version.ballerina.cli>
+        <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
+        <maven-jar-plugin.version>3.1.2</maven-jar-plugin.version>
+        <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
+        <maven-exec-plugin.version>1.6.0</maven-exec-plugin.version>
+    </properties>
+
+    <dependencies>
+        <!-- https://mvnrepository.com/artifact/info.picocli/picocli -->
+        <dependency>
+            <groupId>info.picocli</groupId>
+            <artifactId>picocli</artifactId>
+            <version>${picocli.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.ballerinalang/ballerina-cli -->
+        <dependency>
+            <groupId>org.ballerinalang</groupId>
+            <artifactId>ballerina-cli</artifactId>
+            <version>${version.ballerina.cli}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.esb.connector</groupId>
+            <artifactId>healthcare-codegen-tool-common</artifactId>
+            <version>${version.healthcare.tool.framework}</version>
+        </dependency>
+        <!-- HAPI lib dependencies -->
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-base</artifactId>
+            <version>${hapi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-structures-dstu2</artifactId>
+            <version>${hapi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-structures-r4</artifactId>
+            <version>${hapi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
+            <version>${velocity.version}</version>
+        </dependency>
+    </dependencies>
+
+</project>

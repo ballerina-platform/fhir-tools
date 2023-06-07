@@ -1,0 +1,17 @@
+[package]
+org = "wso2healthcare"
+name = "healthcare.fhir.r4"
+version = "0.1.15"
+distribution = "2201.3.1"
+authors = ["WSO2 Healthcare"]
+keywords = ["Healthcare", "FHIR", "R4"]
+export = [
+    "healthcare.fhir.r4",
+    "healthcare.fhir.r4.parser",
+    "healthcare.fhir.r4.terminology"
+]
+
+[[dependency]]
+org = "wso2healthcare"
+name = "healthcare.base"
+version = "0.1.3"

@@ -1,0 +1,390 @@
+{
+  "fhir": {
+    "tools": [
+      {
+        "name": "BallerinaProjectGenerationTool",
+        "id": "fhir-ballerina-template-gen-tool",
+        "toolClass": "org.wso2.healthcare.fhir.codegen.ballerina.project.tool.BallerinaProjectTool",
+        "configClass": "org.wso2.healthcare.fhir.codegen.ballerina.project.tool.config.BallerinaProjectToolConfig",
+        "command": "template",
+        "config": {
+          "name": "BallerinaProjectGenerationTool",
+          "enable": true,
+          "project": {
+            "package": {
+              "org": "wso2healthcare",
+              "namePrefix": "healthcare.fhir.r4.api.",
+              "version": "0.2.2-snapshot",
+              "distribution": "2201.3.1",
+              "authors": [
+                "WSO2 Healthcare"
+              ],
+              "keywords": [
+                "Healthcare",
+                "FHIR"
+              ]
+            },
+            "fhir": {
+              "version": "r4"
+            },
+            "dependencies": [
+              {
+                "org": "wso2healthcare",
+                "name": "healthcare.fhir.r4",
+                "version": "0.1.13",
+                "importStatement": "wso2healthcare/healthcare.fhir.r4"
+              },
+              {
+                "org": "wso2healthcare",
+                "name": "healthcare.base",
+                "version": "0.1.3",
+                "importStatement": "wso2healthcare/healthcare.base"
+              }
+            ],
+            "includedIGs": [
+              {
+                "implementationGuide": "USCore",
+                "importStatement": "wso2healthcare/healthcare.fhir.r4.uscore501",
+                "enable": true,
+                "includedProfiles": [
+                ],
+                "excludedProfiles": [
+                ]
+              },
+              {
+                "implementationGuide": "CarinBB",
+                "importStatement": "wso2healthcare/healthcare.fhir.r4.carinbb",
+                "enable": true,
+                "includedProfiles": [
+                ],
+                "excludedProfiles": [
+                ]
+              },
+              {
+                "implementationGuide": "DavinciPDEX",
+                "importStatement": "wso2healthcare/healthcare.fhir.r4.davincipdex",
+                "enable": true,
+                "includedProfiles": [
+                ],
+                "excludedProfiles": [
+                ]
+              },
+              {
+                "implementationGuide": "DavinciPDEX-Plannet",
+                "importStatement": "wso2healthcare/healthcare.fhir.r4.davincipdexplannet",
+                "enable": true,
+                "includedProfiles": [
+                ],
+                "excludedProfiles": [
+                ]
+              },
+              {
+                "implementationGuide": "DavinciPDex-USDF",
+                "importStatement": "wso2healthcare/healthcare.fhir.r4.davincipdexusdf",
+                "enable": true,
+                "includedProfiles": [
+                ],
+                "excludedProfiles": [
+                ]
+              },
+              {
+                "implementationGuide": "DavinciPDEX-PayerDataEX",
+                "importStatement": "wso2healthcare/healthcare.fhir.r4.davincipdexpayerdataex",
+                "enable": true,
+                "includedProfiles": [
+                ],
+                "excludedProfiles": [
+                ]
+              },
+              {
+                "implementationGuide": "international",
+                "importStatement": "wso2healthcare/healthcare.fhir.r4",
+                "enable": true,
+                "includedProfiles": [
+                ],
+                "excludedProfiles": [
+                ]
+              },
+              {
+                "implementationGuide": "AUBase",
+                "importStatement": "wso2healthcare/healthcare.fhir.r4.aubase",
+                "enable": true,
+                "includedProfiles": [],
+                "excludedProfiles": []
+              }
+            ],
+            "builtIn": {
+              "operations": [
+              ],
+              "searchParams": [
+              ],
+              "interactions": [
+                {
+                  "name": "read",
+                  "enable": true
+                },
+                {
+                  "name": "search",
+                  "enable": true
+                },
+                {
+                  "name": "create",
+                  "enable": true
+                },
+                {
+                  "name": "update",
+                  "enable": false
+                },
+                {
+                  "name": "delete",
+                  "enable": false
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "name": "BallerinaFHIRPackageGenerationTool",
+        "configClass": "org.wso2.healthcare.fhir.ballerina.packagegen.tool.config.BallerinaPackageGenToolConfig",
+        "toolClass": "org.wso2.healthcare.fhir.ballerina.packagegen.tool.BallerinaPackageGenTool",
+        "command": "package",
+        "config": {
+          "name": "BallerinaFHIRPackageGenerationTool",
+          "enable": true,
+          "packageConfigs": {
+            "org": "wso2healthcare",
+            "name": "healthcare.fhir.r4.aubase410",
+            "version": "0.1.16-snapshot",
+            "ballerinaDistribution": "2201.3.1",
+            "basePackage": "wso2healthcare/healthcare.fhir.r4",
+            "dependencies": []
+          },
+          "includedIGs": [
+            {
+              "implementationGuide": "international",
+              "enable": true,
+              "includedProfiles": [],
+              "excludedProfiles": []
+            },
+            {
+              "implementationGuide": "USCore",
+              "enable": true,
+              "includedProfiles": [],
+              "excludedProfiles": []
+            },
+            {
+              "implementationGuide": "CarinBB",
+              "enable": true,
+              "includedProfiles": [],
+              "excludedProfiles": []
+            },
+            {
+              "implementationGuide": "DavinciPDEX",
+              "enable": true,
+              "includedProfiles": [],
+              "excludedProfiles": []
+            },
+            {
+              "implementationGuide": "AUBase",
+              "enable": true,
+              "includedProfiles": [],
+              "excludedProfiles": []
+            }
+          ],
+          "dataTypeMappings": [
+            {
+              "fhirType": "http://hl7.org/fhirpath/System.String",
+              "ballerinaType": "string"
+            },
+            {
+              "fhirType": "url",
+              "ballerinaType": "urlType"
+            }
+          ],
+          "ballerinaKeywords": [
+            {
+              "keyword": "type",
+              "replace": "'type"
+            },
+            {
+              "keyword": "source",
+              "replace": "'source"
+            },
+            {
+              "keyword": "client",
+              "replace": "'client"
+            },
+            {
+              "keyword": "resource",
+              "replace": "'resource"
+            },
+            {
+              "keyword": "order",
+              "replace": "'order"
+            },
+            {
+              "keyword": "class",
+              "replace": "'class"
+            },
+            {
+              "keyword": "version",
+              "replace": "'version"
+            },
+            {
+              "keyword": "final",
+              "replace": "'final"
+            },
+            {
+              "keyword": "error",
+              "replace": "'error"
+            },
+            {
+              "keyword": "parameter",
+              "replace": "'parameter"
+            },
+            {
+              "keyword": "start",
+              "replace": "'start"
+            },
+            {
+              "keyword": "transaction",
+              "replace": "'transaction"
+            },
+            {
+              "keyword": "json",
+              "replace": "_json"
+            },
+            {
+              "keyword": "service",
+              "replace": "'service"
+            },
+            {
+              "keyword": "function",
+              "replace": "'function"
+            },
+            {
+              "keyword": "error",
+              "replace": "_error"
+            },
+            {
+              "keyword": "fail",
+              "replace": "'fail"
+            },
+            {
+              "keyword": "in",
+              "replace": "'in"
+            },
+            {
+              "keyword": "abstract",
+              "replace": "'abstract"
+            },
+            {
+              "keyword": "import",
+              "replace": "'import"
+            },
+            {
+              "keyword": "string",
+              "replace": "_string"
+            },
+            {
+              "keyword": "from",
+              "replace": "'from"
+            },
+            {
+              "keyword": "boolean",
+              "replace": "'boolean"
+            },
+            {
+              "keyword": "outer",
+              "replace": "'outer"
+            },
+            {
+              "keyword": "never",
+              "replace": "'never"
+            },
+            {
+              "keyword": "on",
+              "replace": "'on"
+            },
+            {
+              "keyword": "decimal",
+              "replace": "'decimal"
+            },
+            {
+              "keyword": "limit",
+              "replace": "'limit"
+            },
+            {
+              "keyword": "check",
+              "replace": "'check"
+            },
+            {
+              "keyword": "field",
+              "replace": "'field"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "terminologies": [
+    {
+      "dirPath": "/terminology"
+    }
+  ],
+  "dataTypeProfiles": [
+    {
+      "dirPath": "/profiles/datatypes"
+    }
+  ],
+  "FHIRImplementationGuides": [
+    {
+      "name": "international",
+      "code": "Base",
+      "dirPath": "/profiles/resources/",
+      "enable": true
+    },
+    {
+      "name": "USCore",
+      "code": "USCore",
+      "dirPath": "/profiles/resources/USCore/",
+      "enable": true
+    },
+    {
+      "name": "DavinciPDEX",
+      "code": "DavinciPDEX",
+      "dirPath": "/profiles/resources/DavinciPDEX/",
+      "enable": true
+    },
+    {
+      "name": "CarinBB",
+      "code": "CarinBB",
+      "dirPath": "/profiles/resources/Carin-BB/",
+      "enable": true
+    },
+    {
+      "name": "AUBase",
+      "code": "AUBase",
+      "dirPath": "/profiles/resources/AU-Base/",
+      "enable": true
+    }
+  ],
+  "metadata": {
+    "dataTypeStructures": [
+      {
+        "name": "Meta",
+        "childProperties": [
+          {
+            "name": "lastUpdated",
+            "addToMappingSheet": true
+          },
+          {
+            "name": "profile",
+            "addToMappingSheet": true
+          }
+        ]
+      }
+    ]
+  }
+}

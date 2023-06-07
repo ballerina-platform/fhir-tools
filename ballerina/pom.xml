@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.ballerina</groupId>
+        <artifactId>health-tools</artifactId>
+        <version>0.1.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <artifactId>health-tool-ballerina</artifactId>
+    <version>0.1.0</version>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>${maven-resources-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>copy-bal-project</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>${maven-antrun-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>collect-tool-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <property name="repo_root" value="../"/>
+
+                                <!--Copy collected dependencies-->
+                                <copy todir="${project.build.directory}/health-tool-ballerina/resources">
+                                    <!--Copy tool lib-->
+                                    <fileset dir="${repo_root}/native/health-cli/target/tool-lib/"/>
+
+                                    <!--Copy health tool CLI jar-->
+                                    <fileset dir="${repo_root}/native/health-cli/target">
+                                        <include name="health-cli-${project.version}.jar"/>
+                                    </fileset>
+                                </copy>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>${maven-exec-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>bal-run</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>bal</executable>
+                            <arguments>
+                                <argument>pack</argument>
+                                <argument>${project.build.directory}/health-tool-ballerina</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
