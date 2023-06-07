@@ -1,19 +1,17 @@
 [package]
-org = "ballerinax"
-name = "health.fhir.r4"
-version = "0.0.1"
-distribution = "2201.6.0"
-authors = ["Ballerina"]
-keywords = ["Healthcare", "FHIR", "R4", "international"]
-repository = "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4"
+org = "wso2healthcare"
+name = "healthcare.fhir.r4"
+version = "0.1.15"
+distribution = "2201.3.1"
+authors = ["WSO2 Healthcare"]
+keywords = ["Healthcare", "FHIR", "R4"]
 export = [
-    "health.fhir.r4",
-    "health.fhir.r4.parser",
-    "health.fhir.r4.terminology",
-    "health.fhir.r4.validator"
+    "healthcare.fhir.r4",
+    "healthcare.fhir.r4.parser",
+    "healthcare.fhir.r4.terminology"
 ]
 
 [[dependency]]
-org = "ballerinax"
-name = "health.base"
-version = "1.0.3"
+org = "wso2healthcare"
+name = "healthcare.base"
+version = "0.1.3"

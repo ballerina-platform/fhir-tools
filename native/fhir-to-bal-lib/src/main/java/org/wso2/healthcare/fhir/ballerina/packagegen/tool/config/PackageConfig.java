@@ -1,20 +1,13 @@
-/*
- * Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
- *
- * WSO2 LLC. licenses this file to you under the Apache License,
- * Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+// Copyright (c) 2022, WSO2 LLC. (http://www.wso2.com). All Rights Reserved.
+
+// This software is the property of WSO2 LLC. and its suppliers, if any.
+// Dissemination of any information or reproduction of any material contained
+// herein is strictly forbidden, unless permitted by WSO2 in accordance with
+// the WSO2 Software License available at: https://wso2.com/licenses/eula/3.2
+// For specific language governing the permissions and limitations under
+// this license, please see the license as well as any agreement you’ve
+// entered into with WSO2 governing the purchase of this software and any
+// associated services.
 
 package org.wso2.healthcare.fhir.ballerina.packagegen.tool.config;
 
@@ -31,11 +24,11 @@ import java.util.List;
  * Ballerina package level config.
  */
 public class PackageConfig {
-    private  String org;
-    private  String name;
-    private  String version;
-    private  String ballerinaDistribution;
-    private  String basePackage;
+    private final String org;
+    private final String name;
+    private final String version;
+    private final String ballerinaDistribution;
+    private final String basePackage;
     private List<DependencyConfig> dependencyConfigList;
 
     public PackageConfig(JsonObject packageConfigJson) {
@@ -95,25 +88,5 @@ public class PackageConfig {
 
     public List<DependencyConfig> getDependencyConfigList() {
         return dependencyConfigList;
-    }
-
-    public void setOrg(String org) {
-        this.org = org;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    public void setBallerinaDistribution(String ballerinaDistribution) {
-        this.ballerinaDistribution = ballerinaDistribution;
-    }
-
-    public void setBasePackage(String basePackage) {
-        this.basePackage = basePackage;
     }
 }

@@ -19,16 +19,11 @@
 package io.ballerina.health.cmd;
 
 import io.ballerina.cli.BLauncherCmd;
-import io.ballerina.health.cmd.core.utils.HealthCmdConstants;
 import io.ballerina.health.cmd.fhir.FhirSubCmd;
 import io.ballerina.health.cmd.hl7.Hl7SubCmd;
 import picocli.CommandLine;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -64,17 +59,39 @@ public class HealthCmd implements BLauncherCmd {
     @Override
     public void execute() {
         if (helpFlag) {
-            printHelpTextAsStream();
+            InputStream inputStream = ClassLoader.getSystemResourceAsStream("ballerina-health.help");
+            if (inputStream != null) {
+                try (InputStreamReader inputStreamREader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+                     BufferedReader br = new BufferedReader(inputStreamREader)) {
+                    String content = br.readLine();
+                    printStream.append(content);
+                    while ((content = br.readLine()) != null) {
+                        printStream.append('\n').append(content);
+                    }
+                } catch (IOException e) {
+                    printStream.println("Helper text is not available.");
+                }
+            }
             return;
         }
 
-        printStream.println("Please use sub command to generate artifacts." +
-                "$ bal health <protocol: fhir> [OPTIONS]");
+        //spec path is the last argument todo: remove this
+        specPath = argList.get(argList.size()-1);
+        subCommand = argList.get(0);
+
+        printStream.println("Hello " + argList.get(0) + "! \n Please use sub command to generate artifacts." +
+                "$ bal health <protocol: fhir|hl7> [OPTIONS]");
 
     }
 
-    private void printHelpTextAsStream() {
-        InputStream inputStream = ClassLoader.getSystemResourceAsStream(HealthCmdConstants.CMD_HELPTEXT_FILENAME);
+    @Override
+    public String getName() {
+        return toolName;
+    }
+
+    @Override
+    public void printLongDesc(StringBuilder stringBuilder) {
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream("ballerina-health.help");
         if (inputStream != null) {
             try (InputStreamReader inputStreamREader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
                  BufferedReader br = new BufferedReader(inputStreamREader)) {
@@ -87,16 +104,6 @@ public class HealthCmd implements BLauncherCmd {
                 printStream.println("Helper text is not available.");
             }
         }
-    }
-
-    @Override
-    public String getName() {
-        return toolName;
-    }
-
-    @Override
-    public void printLongDesc(StringBuilder stringBuilder) {
-        printHelpTextAsStream();
 
     }
 

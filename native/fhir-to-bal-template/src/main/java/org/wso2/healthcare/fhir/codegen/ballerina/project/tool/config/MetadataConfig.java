@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+ * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.com).
  *
- * WSO2 LLC. licenses this file to you under the Apache License,
+ * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,10 +26,10 @@ import java.util.List;
 
 public class MetadataConfig {
 
-    private String org;
-    private String namePrefix;
-    private String version;
-    private String distribution;
+    private final String org;
+    private final String namePrefix;
+    private final String version;
+    private final String distribution;
     private final List<String> authors = new ArrayList<>();
     private final List<String> keywords = new ArrayList<>();
 
@@ -39,10 +39,10 @@ public class MetadataConfig {
         this.namePrefix = packageConfig.getAsJsonPrimitive("namePrefix").getAsString();
         this.version = packageConfig.getAsJsonPrimitive("version").getAsString();
         this.distribution = packageConfig.getAsJsonPrimitive("distribution").getAsString();
-        for (JsonElement authorElem : packageConfig.getAsJsonArray("authors").getAsJsonArray()) {
+        for (JsonElement authorElem:packageConfig.getAsJsonArray("authors").getAsJsonArray()) {
             authors.add(authorElem.getAsString());
         }
-        for (JsonElement authorElem : packageConfig.getAsJsonArray("keywords").getAsJsonArray()) {
+        for (JsonElement authorElem:packageConfig.getAsJsonArray("keywords").getAsJsonArray()) {
             authors.add(authorElem.getAsString());
         }
     }
@@ -69,21 +69,5 @@ public class MetadataConfig {
 
     public List<String> getKeywords() {
         return keywords;
-    }
-
-    public void setOrg(String org) {
-        this.org = org;
-    }
-
-    public void setNamePrefix(String namePrefix) {
-        this.namePrefix = namePrefix;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    public void setDistribution(String distribution) {
-        this.distribution = distribution;
     }
 }

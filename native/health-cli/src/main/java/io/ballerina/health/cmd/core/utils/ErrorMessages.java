@@ -25,17 +25,12 @@ public class ErrorMessages {
 
     public static final String CONFIG_INITIALIZING_FAILED = "Error while initializing tool config. Please check the " +
             "config file and try again";
-    public static final String CONFIG_ACCESS_FAILED = "Error while accessing tool config.";
     public static final String TOOL_EXECUTION_FAILED = "Error while executing tool.";
-    public static final String CONFIG_PARSE_ERROR = "Error while parsing the config.";
     public static final String LIB_INITIALIZING_FAILED = "Error while initializing protocol lib configs. Please check the " +
             "config file and try again";
 
-    public static final String UNKNOWN_ERROR = "Unknown error occurred. Please contact tool developers for more " +
-            "information";
-
-    public static final String TOOL_IMPL_NOT_FOUND = "Tool implementation not found for the given tool. Please check " +
-            "the distribution libs and try again";
+    public static final String MISSING_CONTRACT_PATH = "An OpenAPI definition path is required to generate the " +
+            "service. \ne.g: bal openapi --input <OpenAPIContract> or <Ballerina file>";
 
     private ErrorMessages() {
         throw new AssertionError();
