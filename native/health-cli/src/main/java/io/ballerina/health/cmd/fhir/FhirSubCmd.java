@@ -18,9 +18,7 @@
 
 package io.ballerina.health.cmd.fhir;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import io.ballerina.cli.BLauncherCmd;
 import io.ballerina.cli.launcher.BLauncherException;
 import io.ballerina.health.cmd.core.config.HealthCmdConfig;
@@ -47,7 +45,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-@CommandLine.Command(name = "fhir", description = "Generates Ballerina service/client for FHIR contract for Ballerina service.")
+@CommandLine.Command(name = "fhir", description = "Generates Ballerina service/client for FHIR contract " +
+        "for Ballerina service.")
 public class FhirSubCmd implements BLauncherCmd {
     private final PrintStream printStream;
     private final boolean exitWhenFinish;
@@ -61,7 +60,7 @@ public class FhirSubCmd implements BLauncherCmd {
     //input parameter for specification path
     private String specPathParam;
 
-    private String resourceHome;
+    private final String resourceHome;
     private JsonObject configJson = null;
     private JsonObject defaultConfigJson = null;
     @CommandLine.Option(names = {"--help", "-h", "?"}, usageHelp = true, hidden = true)
@@ -78,7 +77,13 @@ public class FhirSubCmd implements BLauncherCmd {
     @CommandLine.Option(names = {"-c", "--config"}, description = "Path to the tool configuration file.")
     private String configPath;
 
-    @CommandLine.Parameters(description = "User name")
+    @CommandLine.Option(names = {"--package-name"}, description = "Name of the Ballerina package")
+    private String packageName;
+
+    @CommandLine.Option(names = {"--org-name"}, description = "Organization name of the Ballerina package")
+    private String orgName;
+
+    @CommandLine.Parameters(description = "Custom arguments")
     private List<String> argList;
 
     public FhirSubCmd(PrintStream printStream, boolean exitWhenFinish) {
@@ -99,7 +104,7 @@ public class FhirSubCmd implements BLauncherCmd {
     public void execute() {
 
         if (helpFlag) {
-            InputStream inputStream = ClassLoader.getSystemResourceAsStream("ballerina-health.help");
+            InputStream inputStream = ClassLoader.getSystemResourceAsStream(HealthCmdConstants.CMD_HELPTEXT_FILENAME);
             if (inputStream != null) {
                 try (InputStreamReader inputStreamREader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
                      BufferedReader br = new BufferedReader(inputStreamREader)) {
@@ -110,7 +115,7 @@ public class FhirSubCmd implements BLauncherCmd {
                     }
                 } catch (IOException e) {
                     printStream.println("Helper text is not available.");
-                    HealthCmdUtils.exitError(exitWhenFinish);;
+                    HealthCmdUtils.exitError(exitWhenFinish);
                 }
                 return;
             }
@@ -118,12 +123,12 @@ public class FhirSubCmd implements BLauncherCmd {
 
         if (argList.isEmpty()) {
             //at minimum arg count is 1 (spec path)
-            printStream.println("Invalid number of arguments received for FHIR !\n try bal health --help for more information.");
+            printStream.println("Invalid number of arguments received for FHIR !" +
+                    "\n try bal health --help for more information.");
             return;
         }
         this.engageSubCommand(argList);
         HealthCmdUtils.exitError(exitWhenFinish);
-
     }
 
     @Override
@@ -159,15 +164,14 @@ public class FhirSubCmd implements BLauncherCmd {
         //spec path is the last argument
         specPathParam = argList.get(argList.size() - 1);
         getTargetOutputPath();
-        getSpecificationPath();
+        setSpecificationPath();
 
         if (!StringUtils.isEmpty(configPath)) {
             //override default configs with user provided configs
             try {
                 configJson = HealthCmdConfig.getParsedConfigFromPath(Paths.get(configPath));
             } catch (BallerinaHealthException e) {
-                //todo: handle properly. use Bal Utils
-                throw new BLauncherException();
+                printStream.println(ErrorMessages.CONFIG_ACCESS_FAILED + e.getMessage());
             }
         } else {
             configJson = defaultConfigJson;
@@ -181,7 +185,7 @@ public class FhirSubCmd implements BLauncherCmd {
                 toolExecConfigArr = toolExecConfigs.getAsJsonArray();
             }
         } else {
-            printStream.println(ErrorMessages.CONFIG_INITIALIZING_FAILED);
+            printStream.println(ErrorMessages.CONFIG_PARSE_ERROR);
             HealthCmdUtils.exitError(this.exitWhenFinish);
         }
 
@@ -198,9 +202,8 @@ public class FhirSubCmd implements BLauncherCmd {
                 fhirToolConfig.setSpecBasePath(specificationPath.toString());
                 fhirToolLib.initialize(fhirToolConfig);
             } catch (CodeGenException e) {
-                //todo: verify if internal logging is needed
-//                LOG.error("Error while initializing tool lib configs.", e);
-                printStream.println(ErrorMessages.LIB_INITIALIZING_FAILED + Arrays.toString(e.getStackTrace()) + e.getMessage());
+                printStream.println(ErrorMessages.LIB_INITIALIZING_FAILED + Arrays.toString(e.getStackTrace())
+                        + e.getMessage());
                 HealthCmdUtils.exitError(this.exitWhenFinish);
             }
 
@@ -221,11 +224,25 @@ public class FhirSubCmd implements BLauncherCmd {
                     ToolConfig toolConfigInstance = (ToolConfig) configClazz.newInstance();
                     toolConfigInstance.setTargetDir(targetOutputPath.toString());
                     toolConfigInstance.setToolName(name);
-                    JsonArray tools = toolConfig.getConfigObj().getAsJsonObject("fhir").get("tools").getAsJsonArray();
+                    JsonArray tools = toolConfig.getConfigObj().getAsJsonObject("fhir").
+                            get("tools").getAsJsonArray();
                     for (JsonElement element : tools) {
                         JsonElement toolName = element.getAsJsonObject().get("name");
                         if (toolName.getAsString().equals(name)) {
-                            toolConfigInstance.configure(new JsonConfigType(element.getAsJsonObject().getAsJsonObject("config")));
+                            toolConfigInstance.configure(new JsonConfigType(element.getAsJsonObject().
+                                    getAsJsonObject("config")));
+                        }
+                    }
+
+                    //override default configs for package-gen mode with user provided configs
+                    if (command.equals("package")) {
+                        if (packageName != null && !packageName.isEmpty()) {
+                            JsonElement overrideConfig = new Gson().toJsonTree(packageName);
+                            toolConfigInstance.overrideConfig("packageConfig.name", overrideConfig);
+                        }
+                        if (orgName != null && !orgName.isEmpty()) {
+                            JsonElement overrideConfig = new Gson().toJsonTree(orgName);
+                            toolConfigInstance.overrideConfig("packageConfig.org", overrideConfig);
                         }
                     }
 
@@ -234,13 +251,13 @@ public class FhirSubCmd implements BLauncherCmd {
                     fhirToolLib.getToolImplementations().putIfAbsent(name, tool);
                     mainTemplateGenerator = tool.execute(fhirToolLib.getToolContext());
                 } catch (ClassNotFoundException e) {
-                    printStream.println(ErrorMessages.CONFIG_INITIALIZING_FAILED);
+                    printStream.println(ErrorMessages.TOOL_IMPL_NOT_FOUND + e.getMessage());
                     HealthCmdUtils.exitError(this.exitWhenFinish);
                 } catch (InstantiationException | IllegalAccessException e) {
                     printStream.println(ErrorMessages.CONFIG_INITIALIZING_FAILED);
                     HealthCmdUtils.exitError(this.exitWhenFinish);
                 } catch (CodeGenException e) {
-                    printStream.println(ErrorMessages.CONFIG_INITIALIZING_FAILED);
+                    printStream.println(ErrorMessages.UNKNOWN_ERROR);
                     HealthCmdUtils.exitError(this.exitWhenFinish);
                 }
                 if (mainTemplateGenerator != null) {
@@ -251,7 +268,7 @@ public class FhirSubCmd implements BLauncherCmd {
                         engageChildTemplateGenerators(childTemplateGenerator, fhirToolLib.getToolContext(),
                                 mainTemplateGenerator.getGeneratorProperties());
                     } catch (CodeGenException e) {
-                        printStream.println(ErrorMessages.TOOL_EXECUTION_FAILED);
+                        printStream.println(ErrorMessages.UNKNOWN_ERROR + e.getMessage());
                         HealthCmdUtils.exitError(this.exitWhenFinish);
                     }
                 } else {
@@ -282,7 +299,7 @@ public class FhirSubCmd implements BLauncherCmd {
     /**
      * This util is to get the output Path.
      */
-    private void getSpecificationPath() {
+    private void setSpecificationPath() {
         specificationPath = executionPath;
         if (this.specPathParam != null) {
             if (Paths.get(specPathParam).isAbsolute()) {
@@ -298,7 +315,7 @@ public class FhirSubCmd implements BLauncherCmd {
         InputStream ioStream = classLoader.getResourceAsStream(fileName);
 
         if (ioStream == null) {
-            throw new IllegalArgumentException("tool-config.json" + " is not found");
+            throw new IllegalArgumentException(HealthCmdConstants.CMD_CONFIG_FILEPATH + " is not found");
         }
         return ioStream;
     }
@@ -306,9 +323,11 @@ public class FhirSubCmd implements BLauncherCmd {
     private void buildConfig(PrintStream printStream) {
         //using default config file
         try {
-            defaultConfigJson = HealthCmdConfig.getParsedConfigFromStream(getResourceFile(HealthCmdConstants.CMD_CONFIG_FILENAME));
+            defaultConfigJson = HealthCmdConfig.getParsedConfigFromStream(getResourceFile(
+                    HealthCmdConstants.CMD_CONFIG_FILENAME));
         } catch (BallerinaHealthException e) {
-            printStream.println(ErrorMessages.LIB_INITIALIZING_FAILED + Arrays.toString(e.getStackTrace()) + e.getMessage());
+            printStream.println(ErrorMessages.LIB_INITIALIZING_FAILED + Arrays.toString(e.getStackTrace()) +
+                    e.getMessage());
         }
 
     }
