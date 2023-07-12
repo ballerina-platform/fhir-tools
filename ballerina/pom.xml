@@ -31,6 +31,10 @@
     <artifactId>health-tool-ballerina</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <properties>
+        <version.health.cli>${project.version}</version.health.cli>
+    </properties>
+
     <build>
         <plugins>
             <plugin>

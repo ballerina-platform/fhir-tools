@@ -18,11 +18,11 @@
 
 package org.wso2.healthcare.fhir.codegen.ballerina.project.tool.generator;
 
-import org.wso2.healthcare.codegen.tooling.common.core.TemplateContext;
-import org.wso2.healthcare.codegen.tooling.common.core.ToolContext;
-import org.wso2.healthcare.codegen.tooling.common.exception.CodeGenException;
+import org.wso2.healthcare.codegen.tool.framework.commons.core.TemplateContext;
+import org.wso2.healthcare.codegen.tool.framework.commons.core.ToolContext;
+import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenException;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.config.BallerinaProjectToolConfig;
-import org.wso2.healthcare.fhir.codegen.tool.lib.AbstractFHIRTemplateGenerator;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.AbstractFHIRTemplateGenerator;
 
 import java.io.File;
 import java.util.Map;

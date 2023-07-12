@@ -34,13 +34,13 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.wso2.carbon.esb.connector</groupId>
-            <artifactId>healthcare-codegen-tool-common</artifactId>
+            <groupId>org.wso2.healthcare.codegen.tool.framework</groupId>
+            <artifactId>commons</artifactId>
             <version>${version.healthcare.tool.framework}</version>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.esb.connector</groupId>
-            <artifactId>open-healthcare-fhir-tool-lib</artifactId>
+            <groupId>org.wso2.healthcare.codegen.tool.framework</groupId>
+            <artifactId>fhir-core</artifactId>
             <version>${version.healthcare.tool.framework}</version>
         </dependency>
     </dependencies>

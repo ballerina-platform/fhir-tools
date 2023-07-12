@@ -3,10 +3,7 @@ NAME
 
 SYNOPSIS
     bal health fhir	[-m | --mode] <template|package> [-o | --output] <output-location> <FHIR-specification-directory-path>
-                    [-m | --mode] <template|package> [-p | --profile] <qualified-FHIR-profile-URL> <FHIR-specification-directory-path>
                     [-m | --mode] <template|package> [-c | --config] <advanced-configuration-file-path> <FHIR-specification-directory-path>
-    bal health hl7	<HL7-specification-directory-path>
-                    [-c | --config] <advanced-configuration-file-path> <HL7-specification-directory-path>
 
 DESCRIPTION
        Generate a Ballerina project template from the given FHIR definition files or
@@ -20,8 +17,6 @@ COMMANDS
 
     fhir
         Refer to the FHIR specification when generating the Ballerina artifacts.
-    hl7
-        Refer to the HL7 specification when generating the Ballerina artifacts.
 
 
 OPTIONS
@@ -33,10 +28,6 @@ OPTIONS
         Location of the generated Ballerina artifacts. If this path is not
         specified, the output will be written to the same directory from
         which the command is run.
-    -p, --profile <qualified-FHIR-profile-URL>
-        Generates Ballerina template projects only for specified profile URLs. This input is considered only for template mode in the FHIR subtool.
-        Multiple profile URLs can be input.
-        If the profile is not specified, Ballerina project templates will be generated for all the profiles in the given specification.
     -c, --config <advanced-configuration-file-path>
         This input can be used to override the default configurations. The file should be a JSON file having a structure similar to '<BalTool_HOME>/health/config/config.json'.
         All configuration available in the default configuration file will be overridden as specified in the external configuration file.
@@ -51,19 +42,5 @@ EXAMPLES
     Generate Ballerina packages and project templates for the FHIR artifacts of CarinBB implementation guide and write the output to the given directory.
         $ bal health fhir -o ./output_path ./path_to_carin_bb_definitions
 
-    Generate a Ballerina project templates for Patient FHIR profile of CarinBB implementation guide
-        $ bal health fhir -m template -p http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BBpatient ./path_to_carin_bb_definitions
-
-    Generate Ballerina project templates for Patient and Claim FHIR profiles of CarinBB implementation guide
-        $ bal health fhir -m template -p http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BBpatient -p http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BBClaim ./path_to_carin_bb_definitions
-
     Generate Ballerina project templates for FHIR profiles of CarinBB implementation guide with custom set of configurations.
         $ bal health fhir -m template -c ./path_to_advanced_config_file ./path_to_carin_bb_definitions
-
-    Generate Ballerina package for a given version HL7 specification.
-        $ bal health hl7 ./path_to_hl7_definition_files
-
-    Generate Ballerina package for HL7 specification with custom set of configurations.
-        $ bal health hl7 -c ./path_to_advanced_config_file ./path_to_hl7_definitions
-
-

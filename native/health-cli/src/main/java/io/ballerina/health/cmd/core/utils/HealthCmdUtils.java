@@ -1,5 +1,12 @@
 package io.ballerina.health.cmd.core.utils;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import io.ballerina.health.cmd.core.exception.BallerinaHealthException;
+
+import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 
@@ -18,9 +25,8 @@ public class HealthCmdUtils {
         }
     }
 
-/**
+    /**
      * Get classpath in the runtime
-     *
      */
     public static String getClassPath() {
         RuntimeMXBean bean = ManagementFactory.getRuntimeMXBean();
@@ -36,7 +42,6 @@ public class HealthCmdUtils {
 
     /**
      * Get resource path in runtime.
-     *
      */
     public static String getRuntimeResourcePath() {
         String classPath = getClassPath();
@@ -45,5 +50,27 @@ public class HealthCmdUtils {
             toolHome = classPath.substring(0, classPath.lastIndexOf("/tool/"));
         }
         return toolHome + HealthCmdConstants.CMD_RESOURCE_PATH_SUFFIX;
+    }
+
+    public static String generateCustomIGPath(String igName) throws BallerinaHealthException {
+        if (igName.isEmpty() || igName.contains(" ")) {
+            throw new BallerinaHealthException("Invalid IG name: " + igName + ". IG name cannot be empty or contain " +
+                    "spaces.");
+        }
+        return File.separator + "profiles" + File.separator + igName + File.separator;
+    }
+
+    public static JsonElement getIGConfigElement(String igName, String igCode) throws BallerinaHealthException {
+
+        JsonObject igConfig = new JsonObject();
+        igConfig.add("name", new Gson().toJsonTree(igName));
+
+        if (igCode != null && igCode.isEmpty()) {
+            igConfig.add("code", new Gson().toJsonTree(igCode));
+        } else {
+            igConfig.add("code", new Gson().toJsonTree(igName));
+        }
+        igConfig.add("dirPath", new Gson().toJsonTree(generateCustomIGPath(igName)));
+        return igConfig;
     }
 }

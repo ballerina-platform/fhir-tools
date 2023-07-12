@@ -23,11 +23,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.healthcare.codegen.tooling.common.Constants;
-import org.wso2.healthcare.codegen.tooling.common.config.AbstractToolConfig;
-import org.wso2.healthcare.codegen.tooling.common.exception.CodeGenException;
-import org.wso2.healthcare.codegen.tooling.common.model.ConfigType;
-import org.wso2.healthcare.codegen.tooling.common.model.JsonConfigType;
+import org.wso2.healthcare.codegen.tool.framework.commons.Constants;
+import org.wso2.healthcare.codegen.tool.framework.commons.config.AbstractToolConfig;
+import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenException;
+import org.wso2.healthcare.codegen.tool.framework.commons.model.ConfigType;
+import org.wso2.healthcare.codegen.tool.framework.commons.model.JsonConfigType;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.BallerinaProjectConstants;
 
 import java.util.*;

@@ -25,10 +25,10 @@ import org.wso2.healthcare.fhir.ballerina.packagegen.tool.config.DependencyConfi
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.IGTemplateContext;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.PackageTemplateContext;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.SearchParameter;
-import org.wso2.healthcare.fhir.codegen.tool.lib.config.IGConfig;
-import org.wso2.healthcare.fhir.codegen.tool.lib.core.FHIRToolContext;
-import org.wso2.healthcare.fhir.codegen.tool.lib.model.FHIRImplementationGuide;
-import org.wso2.healthcare.fhir.codegen.tool.lib.model.FHIRSearchParamDef;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.config.IGConfig;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.FHIRToolContext;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRImplementationGuide;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRSearchParamDef;
 
 import java.util.*;
 
