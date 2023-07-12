@@ -24,12 +24,12 @@
     <parent>
         <groupId>io.ballerina</groupId>
         <artifactId>health-tools</artifactId>
-        <version>0.1.0</version>
+        <version>1.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>fhir-to-bal-template</artifactId>
-    <version>0.1.0</version>
+    <version>1.0-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
