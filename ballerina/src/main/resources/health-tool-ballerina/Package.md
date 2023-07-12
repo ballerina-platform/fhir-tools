@@ -1,5 +1,3 @@
-Prints "Hello, World!" with a hello function.
-[//]: # (above is the package summary)
-
-# Package Overview
-Prints "Hello, World!" as the output to the command line using a hello function.
+# Ballerina CLI Extension for Health Artifact Generation
+This project contains an extension implementation for Ballerina CLI that generates
+Health artifacts from standard specification files.

@@ -1,10 +1,10 @@
-# Returns the string `Hello` with the input string name.
+# This implementation will not be used in general scenarios.
 #
-# + name - name as a string
+# + param - param as a string
 # + return - "Hello, " with the input string name
-public function hello(string name) returns string {
-    if !(name is "") {
-        return "Hello, " + name;
+public function healthcheck(string param) returns string {
+    if !(param is "") {
+        return "Input is, " + param;
     }
-    return "Hello, World!";
+    return "Healthcheck is OK";
 }

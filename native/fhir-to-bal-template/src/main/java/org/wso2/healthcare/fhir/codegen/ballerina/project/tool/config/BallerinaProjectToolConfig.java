@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.com).
+ * Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
  *
- * WSO2 Inc. licenses this file to you under the Apache License,
+ * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,7 +19,10 @@
 package org.wso2.healthcare.fhir.codegen.ballerina.project.tool.config;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.healthcare.codegen.tooling.common.Constants;
 import org.wso2.healthcare.codegen.tooling.common.config.AbstractToolConfig;
 import org.wso2.healthcare.codegen.tooling.common.exception.CodeGenException;
@@ -34,6 +37,7 @@ import java.util.*;
  */
 public class BallerinaProjectToolConfig extends AbstractToolConfig {
 
+    private static final Log LOG = LogFactory.getLog(BallerinaProjectToolConfig.class);
     private boolean isEnabled;
     private MetadataConfig metadataConfig;
     private String fhirVersion;
@@ -65,6 +69,27 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
                     getAsJsonObject("builtIn").getAsJsonArray("interactions"));
         }
         //todo: add toml type config handling
+    }
+
+    @Override
+    public void overrideConfig(String jsonPath, JsonElement value) {
+
+        switch (jsonPath) {
+            case "project.package.org":
+                this.metadataConfig.setOrg(value.getAsString());
+                break;
+            case "project.package.version":
+                this.metadataConfig.setVersion(value.getAsString());
+                break;
+            case "project.package.distribution":
+                this.metadataConfig.setDistribution(value.getAsString());
+                break;
+            case "project.package.namePrefix":
+                this.metadataConfig.setNamePrefix(value.getAsString());
+                break;
+            default:
+                LOG.warn("Invalid config path: " + jsonPath);
+        }
     }
 
     private void populateIgConfigs(JsonArray igArray) {
