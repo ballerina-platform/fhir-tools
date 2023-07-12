@@ -1,0 +1,80 @@
+
+#set ( $single_hash = '#' )
+#set ( $double_hash = '##' )
+#set ( $triple_hash = '###' )
+#set ( $underscore = '_' )
+
+${single_hash} $service.getName() Template
+
+${double_hash} Template Overview
+
+This template provides a boilerplate code for rapid implementation of FHIR APIs and creating, accessing and manipulating FHIR resources.
+
+
+| Module/Element       | Version |
+|---| --- |
+| FHIR version         | $service.getFhirVersion() |
+| Implementation Guide | #**##foreach($ig in $igURLs)[$ig]($ig)#if($foreach.hasNext), #end#end |
+| Profile URL          |#**##foreach($profile in $profileURLs)[$profile]($profile)#if($foreach.hasNext), #end#end|
+
+${double_hash}# Dependency List
+
+| Module | Version |
+| --- | --- |
+#**##foreach($config in $config.getDependencyConfig())| $config.getImportStatement() | $config.getVersion() |
+#**##end
+|
+
+This template includes,
+
+- Ballerina service for 'FHIR Resource Name' FHIR resource with following FHIR interactions.
+#**##foreach($config in $config.getInteractionConfigs())#if($config.isEnabled())
+- $config.getNameUppercase()
+#**##end
+#**##end
+- Generated Utility functions to handle context data
+- Pre-engaged FHIR pre-processors and post-processors for built-in FHIR Server capabilities
+
+
+${double_hash} Prerequisites
+
+Pull the template from central
+
+    ` bal new -t wso2healthcare/$templateName $apiName `
+
+${double_hash} Implementing Source System Connections
+
+- Implement each FHIR interaction in `<resource name>_connect.bal` file which included in the project.
+- You can use relevant client connector, object to initialize the connection to fetch/push data from/to the source system.
+- Method signatures should not be modified and request information will be populated in the `fhirContext` for ease of access.
+
+${double_hash} Run the template
+- Run the Ballerina project created by the service template by executing bal run from the root.
+- Once successfully executed, Listener will be started at port 9090. Then you need to invoke the service using the following curl command
+    ` $ curl http://localhost:9090/fhir/r4/$service.getName() `
+- Now service will be invoked and returns the message as FHIR bundle
+
+    ```
+    {
+
+        "resourceType":"Bundle",
+
+        "entry":[{},{}]
+
+    }
+    ```
+${double_hash} Adding a Custom Profile/Combination of Profiles
+
+- Introduce a new file containing a class which implements functions for FHIR interactions.
+- This class need to implement `$service.getName()SourceConnect` object type
+- It needs to have the same structure as the ` $sampleIGLowerCase$underscore$service.getNameLowerCase()_connect.bal ` file.
+- Register the new class in the `service.bal` file.
+- Add and entry to `profileImpl` map as `profileURL:instantiated source connect class`. Eg: `"$profileURLs.get(0)": new $sampleIGCamelCase$service.getName()SourceConnect()`
+- Add profile type to the aggregated resource type. Eg: `public type $service.getName() $service.getFhirVersion():$service.getName()|<Other_$service.getName()_Profile>;`.
+    - Add the new profile URL in `api_config.bal` file.
+    - Add as a string inside the `profiles` array.
+    - Eg: `profiles: ["$profileURLs.get(0)", "new_profile_url"]`
+
+${double_hash} Onboard as a Choreo project
+This project can be onboarded directly to Choreo via Github.
+For more info, Refer: https://wso2.com/choreo/docs/tutorials/connect-your-existing-ballerina-project-to-choreo/#connect-your-existing-ballerina-project-to-choreo

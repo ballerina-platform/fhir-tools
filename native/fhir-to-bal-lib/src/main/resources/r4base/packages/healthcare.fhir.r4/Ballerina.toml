@@ -1,0 +1,19 @@
+[package]
+org = "ballerinax"
+name = "health.fhir.r4"
+version = "0.0.1"
+distribution = "2201.6.0"
+authors = ["Ballerina"]
+keywords = ["Healthcare", "FHIR", "R4", "international"]
+repository = "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4"
+export = [
+    "health.fhir.r4",
+    "health.fhir.r4.parser",
+    "health.fhir.r4.terminology",
+    "health.fhir.r4.validator"
+]
+
+[[dependency]]
+org = "ballerinax"
+name = "health.base"
+version = "1.0.3"

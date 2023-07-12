@@ -1,0 +1,136 @@
+#if($isBasePackage)
+# FHIR R4 Base package
+#else
+# FHIR R4 ${igName} package
+#end
+
+#[[##]]# Package Overview
+
+|                      |                      |
+|----------------------|----------------------|
+| FHIR version         | R4                   |
+| Implementation Guide | $igUrl               |
+
+#if($isBasePackage)
+This package includes,
+
+1. FHIR R4 Data types
+2. FHIR Base Resource types
+3. FHIR resources parsers and serializers
+4. Miscellaneous utilities required to create, access elements, manipulate FHIR resources
+5. FHIR API request processors and Ballerina interceptors to implement FHIR APIs
+6. Defined FHIR error types and utilities for FHIR error handling
+#else
+This package includes, FHIR ${igName} Resource types.
+#end
+
+**Note:**
+**This package only supports FHIR JSON payload format only. FHIR XML payload support will be added soon.**
+
+#[[##]]# Capabilities and features
+
+#[[###]]# Supported FHIR resource types
+
+|                  |                                             |
+|------------------|---------------------------------------------|
+#foreach($profile in $profiles)
+| $profile.getResourceName() | [[Definition]][s$foreach.count] [[Ballerina Record]][m$foreach.count] |
+#end
+
+#[[##]]# Sample Usage
+
+This section focuses on samples depicting how to use this package to implement FHIR related integrations
+
+#[[###]]# Prerequisites
+
+1. Install Ballerina 2201.1.2 (Swan Lake Update 1) or later
+
+#[[###]]# 1. Parse JSON FHIR resource to FHIR resource model
+Sample below is using the Patient resource in `healthcare.fhir.r4` package.
+
+```ballerina
+import wso2healthcare/healthcare.fhir.r4;
+
+function parseSamplePatient() returns r4:Patient {
+    json patientPayload = {
+        "resourceType": "Patient",
+        "id": "1",
+        "meta": {
+            "profile": [
+                "http://hl7.org/fhir/StructureDefinition/Patient"
+            ]
+        },
+        "active":true,
+        "name":[
+            {
+                "use":"official",
+                "family":"Chalmers",
+                "given":[
+                    "Peter",
+                    "James"
+                ]
+            }
+        ],
+        "gender":"male",
+        "birthDate":"1974-12-25",
+        "managingOrganization":{
+            "reference":"Organization/1"
+        }
+    };
+
+    do {
+        anydata parsedResult = check r4:parse(patientPayload, r4:Patient);
+        r4:Patient patientModel = check parsedResult.ensureType();
+        log:printInfo("string `Patient name : ${patientModel.name.toString()}`);
+        return patientModel;
+    } on fail error parseError {
+    	log:printError(string `Error occurred while parsing : ${parseError.message()}`, parseError);
+    }
+}
+```
+
+#[[###]]# 2. Creating FHIR Resource models and serializing to JSON wire formats
+
+```ballerina
+import wso2healthcare/healthcare.fhir.r4;
+
+function createSamplePatient() returns json {
+    r4:Patient patient = {
+        meta: {
+            lastUpdated: time:utcToString(time:utcNow()),
+            profile: [r4:PROFILE_BASE_PATIENT]
+        },
+        active: true,
+        name: [{
+            family: "Doe",
+            given: ["Jhon"],
+            use: r4:official,
+            prefix: ["Mr"]
+        }],
+        address: [{
+            line: ["652 S. Lantern Dr."],
+            city: "New York",
+            country: "United States",
+            postalCode: "10022",
+            'type: r4:physical,
+            use: r4:home
+        }]
+    };
+    r4:FHIRResourceEntity fhirEntity = new(patient);
+    // Serialize FHIR resource record to Json payload
+    json|r4:FHIRSerializerError jsonResult = fhirEntity.toJson();
+    if jsonResult is json {
+        log:printInfo(string `Patient resource JSON payload : ${jsonResult.toString()}`);
+        return jsonResult;
+    } else {
+        log:printError(string `Error occurred while serializing to JSON payload : ${jsonResult.message()}`, jsonResult);
+    }
+}
+```
+#foreach($profile in $profiles)
+[m${foreach.count}]: https://lib.ballerina.io/$org/$packageName/$packageVersion/#$profile.getResourceType()
+#end
+
+#foreach($profile in $profiles)
+[s$foreach.count]: $profile.getProfile()
+#end

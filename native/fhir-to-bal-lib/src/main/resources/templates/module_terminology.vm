@@ -1,0 +1,38 @@
+// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com). All Rights Reserved.
+
+// This software is the property of WSO2 LLC. and its suppliers, if any.
+// Dissemination of any information or reproduction of any material contained
+// herein is strictly forbidden, unless permitted by WSO2 in accordance with
+// the WSO2 Software License available at: https://wso2.com/licenses/eula/3.2
+// For specific language governing the permissions and limitations under
+// this license, please see the license as well as any agreement you’ve
+// entered into with WSO2 governing the purchase of this software and any
+// associated services.
+
+import $packageName;
+
+# Function type which will be used to extend and retrieve CodeSystem or ValueSet by external source
+public type TerminologyRetriever isolated function (${packageIdentifier}:uri system, ${packageIdentifier}:code code)
+                                                        returns ${packageIdentifier}:CodeSystem|${packageIdentifier}:ValueSet|${packageIdentifier}:FHIRError;
+
+# Function to create CodeableConcept record from given system and code
+#
+# + system - CodeSystem or ValueSet system uri
+# + code - Selected code from the system
+# + terminologyRetriever - Terminology retriever function to reteieve CodeSystem or ValueSet from external source
+# + return - Created CodeableConcept or error if not found
+public function createCodeableConcept(${packageIdentifier}:uri system, ${packageIdentifier}:code code,
+                            TerminologyRetriever? terminologyRetriever = ()) returns ${packageIdentifier}:CodeableConcept|${packageIdentifier}:FHIRError {
+    return ${packageIdentifier}:terminologyProcessor.createCodeableConcept(system, code, terminologyRetriever);
+}
+
+# Function to create Coding record from given system and code
+#
+# + system - CodeSystem or ValueSet system uri
+# + code - Selected code from the system
+# + terminologyRetriever - Terminology retriever function to reteieve CodeSystem or ValueSet from external source
+# + return - Created Coding or error if not found
+public function createCoding(${packageIdentifier}:uri system, ${packageIdentifier}:code code,
+                                    TerminologyRetriever? terminologyRetriever = ()) returns ${packageIdentifier}:Coding|${packageIdentifier}:FHIRError {
+    return ${packageIdentifier}:terminologyProcessor.createCoding(system, code, terminologyRetriever);
+}

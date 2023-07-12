@@ -1,0 +1,19 @@
+[package]
+org = "$metaConfig.getOrg()"
+name = "$templateName"
+version = "$metaConfig.getVersion()"
+distribution = "$metaConfig.getDistribution()"
+authors = [#foreach($author in $metaConfig.getAuthors())"$author"#if($foreach.hasNext), #end#end]
+keywords = [#foreach($keyword in $keywords)"$keyword"#if($foreach.hasNext), #end#end]#**#
+template = true
+
+[build-options]
+observabilityIncluded = true
+
+#foreach($dependencyConfig in $dependencyList)
+[[dependency]]
+org = "$dependencyConfig.getOrg()"
+name = "$dependencyConfig.getName()"
+version = "$dependencyConfig.getVersion()"
+
+#end
