@@ -19,7 +19,7 @@
 package org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils;
 
 import org.apache.commons.io.FileUtils;
-import org.wso2.healthcare.codegen.tooling.common.exception.CodeGenException;
+import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenException;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.ToolConstants;
 
 import java.io.File;

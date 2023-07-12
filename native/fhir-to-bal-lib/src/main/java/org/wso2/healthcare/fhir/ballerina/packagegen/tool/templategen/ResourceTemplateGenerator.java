@@ -20,16 +20,16 @@ package org.wso2.healthcare.fhir.ballerina.packagegen.tool.templategen;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.healthcare.codegen.tooling.common.core.TemplateContext;
-import org.wso2.healthcare.codegen.tooling.common.core.ToolContext;
-import org.wso2.healthcare.codegen.tooling.common.exception.CodeGenException;
+import org.wso2.healthcare.codegen.tool.framework.commons.core.TemplateContext;
+import org.wso2.healthcare.codegen.tool.framework.commons.core.ToolContext;
+import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenException;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.ToolConstants;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.config.BallerinaPackageGenToolConfig;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.PackageTemplateContext;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.ResourceTemplateContext;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.CommonUtil;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.VelocityUtil;
-import org.wso2.healthcare.fhir.codegen.tool.lib.AbstractFHIRTemplateGenerator;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.AbstractFHIRTemplateGenerator;
 
 import java.io.File;
 import java.util.ArrayList;

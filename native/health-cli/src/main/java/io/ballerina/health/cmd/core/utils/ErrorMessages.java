@@ -37,6 +37,9 @@ public class ErrorMessages {
     public static final String TOOL_IMPL_NOT_FOUND = "Tool implementation not found for the given tool. Please check " +
             "the distribution libs and try again";
 
+    public static final String ARG_VALIDATION_FAILED = "Argument validation failed. Please check the arguments and " +
+            "try again";
+
     private ErrorMessages() {
         throw new AssertionError();
     }

@@ -18,16 +18,16 @@
 
 package org.wso2.healthcare.fhir.codegen.ballerina.project.tool.generator;
 
-import org.wso2.healthcare.codegen.tooling.common.core.TemplateContext;
-import org.wso2.healthcare.codegen.tooling.common.core.ToolContext;
-import org.wso2.healthcare.codegen.tooling.common.exception.CodeGenException;
+import org.wso2.healthcare.codegen.tool.framework.commons.core.TemplateContext;
+import org.wso2.healthcare.codegen.tool.framework.commons.core.ToolContext;
+import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenException;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.BallerinaProjectConstants;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.config.BallerinaProjectToolConfig;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.BallerinaService;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.GeneratedUtil;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.ImplFunction;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.Parameter;
-import org.wso2.healthcare.fhir.codegen.tool.lib.AbstractFHIRTemplateGenerator;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.AbstractFHIRTemplateGenerator;
 
 import java.io.File;
 import java.util.Arrays;
@@ -52,7 +52,7 @@ public class UtilGenerator extends AbstractFHIRTemplateGenerator {
 
     private TemplateContext createTemplateContextForBalUtil(Map<String, Object> generatorProperties) {
 
-        org.wso2.healthcare.codegen.tooling.common.core.TemplateContext templateContext = this.getNewTemplateContext();
+        org.wso2.healthcare.codegen.tool.framework.commons.core.TemplateContext templateContext = this.getNewTemplateContext();
         GeneratedUtil generatedUtil = initializeUtilWithDefaults(generatorProperties);
         templateContext.setProperty("utilImpl", generatedUtil);
         return templateContext;

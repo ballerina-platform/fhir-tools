@@ -27,17 +27,21 @@ import io.ballerina.health.cmd.core.utils.ErrorMessages;
 import io.ballerina.health.cmd.core.utils.HealthCmdConstants;
 import io.ballerina.health.cmd.core.utils.HealthCmdUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.wso2.healthcare.codegen.tooling.common.config.ToolConfig;
-import org.wso2.healthcare.codegen.tooling.common.core.TemplateGenerator;
-import org.wso2.healthcare.codegen.tooling.common.core.Tool;
-import org.wso2.healthcare.codegen.tooling.common.core.ToolContext;
-import org.wso2.healthcare.codegen.tooling.common.exception.CodeGenException;
-import org.wso2.healthcare.codegen.tooling.common.model.JsonConfigType;
-import org.wso2.healthcare.fhir.codegen.tool.lib.config.FHIRToolConfig;
-import org.wso2.healthcare.fhir.codegen.tool.lib.core.FHIRTool;
+import org.wso2.healthcare.codegen.tool.framework.commons.config.ToolConfig;
+import org.wso2.healthcare.codegen.tool.framework.commons.core.TemplateGenerator;
+import org.wso2.healthcare.codegen.tool.framework.commons.core.Tool;
+import org.wso2.healthcare.codegen.tool.framework.commons.core.ToolContext;
+import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenException;
+import org.wso2.healthcare.codegen.tool.framework.commons.model.JsonConfigType;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.config.FHIRToolConfig;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.FHIRTool;
 import picocli.CommandLine;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -82,6 +86,12 @@ public class FhirSubCmd implements BLauncherCmd {
 
     @CommandLine.Option(names = {"--org-name"}, description = "Organization name of the Ballerina package")
     private String orgName;
+
+    @CommandLine.Option(names = {"--ig-name"}, description = "Implementation guide name")
+    private String igName;
+
+    @CommandLine.Option(names = {"--ig-code"}, description = "Implementation guide code")
+    private String igCode;
 
     @CommandLine.Parameters(description = "Custom arguments")
     private List<String> argList;
@@ -199,12 +209,20 @@ public class FhirSubCmd implements BLauncherCmd {
                 toolConfig = new JsonConfigType(configJson);
                 fhirToolLib = new FHIRTool();
                 fhirToolConfig.configure(toolConfig);
+
+                //override default configs for package-gen mode with user provided configs
+                if (igName != null && !igName.isEmpty()) {
+                    fhirToolConfig.overrideConfig("FHIRImplementationGuides", HealthCmdUtils.getIGConfigElement(igName,igCode));
+                }
+
                 fhirToolConfig.setSpecBasePath(specificationPath.toString());
                 fhirToolLib.initialize(fhirToolConfig);
             } catch (CodeGenException e) {
                 printStream.println(ErrorMessages.LIB_INITIALIZING_FAILED + Arrays.toString(e.getStackTrace())
                         + e.getMessage());
                 HealthCmdUtils.exitError(this.exitWhenFinish);
+            } catch (BallerinaHealthException e) {
+                printStream.println(ErrorMessages.ARG_VALIDATION_FAILED + e.getMessage());
             }
 
             for (JsonElement jsonElement : toolExecConfigArr) {

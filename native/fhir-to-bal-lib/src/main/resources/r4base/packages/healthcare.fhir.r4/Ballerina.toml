@@ -13,7 +13,6 @@ export = [
     "health.fhir.r4.validator"
 ]
 
-[[dependency]]
 org = "ballerinax"
 name = "health.base"
 version = "1.0.3"

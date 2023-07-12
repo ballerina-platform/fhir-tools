@@ -1,6 +1,20 @@
 [tool]
 id = "health"
 
+[[dependency]]
+path = "resources/health-cli-${version.health.cli}.jar"
+
+[[dependency]]
+path = "resources/fhir-core-${version.healthcare.tool.framework}.jar"
+
+[[dependency]]
+path = "resources/commons-${version.healthcare.tool.framework}.jar"
+
+[[dependency]]
+path = "resources/fhir-to-bal-template-${version.health.cli}.jar"
+
+[[dependency]]
+path = "resources/fhir-to-bal-lib-${version.health.cli}.jar"
 
 [[dependency]]
 path = "resources/org.hl7.fhir.r4-4.2.0.jar"
@@ -15,13 +29,7 @@ path = "resources/ballerina-tools-api-2201.6.0.jar"
 path = "resources/javax.annotation-api-1.3.2.jar"
 
 [[dependency]]
-path = "resources/snakeyaml-1.26.jar"
-
-[[dependency]]
 path = "resources/commons-logging-1.2.jar"
-
-[[dependency]]
-path = "resources/health-cli-0.1.0.jar"
 
 [[dependency]]
 path = "resources/toml4j-0.7.2.jar"
@@ -264,9 +272,6 @@ path = "resources/stax2-api-4.2.1.jar"
 path = "resources/commons-lang-2.4.jar"
 
 [[dependency]]
-path = "resources/open-healthcare-fhir-tool-lib-3.1.0-SNAPSHOT.jar"
-
-[[dependency]]
 path = "resources/commons-text-1.7.jar"
 
 [[dependency]]
@@ -301,9 +306,6 @@ path = "resources/annotations-13.0.jar"
 
 [[dependency]]
 path = "resources/testerina-compiler-plugin-2201.6.0.jar"
-
-[[dependency]]
-path = "resources/healthcare-codegen-tool-common-3.1.0-SNAPSHOT.jar"
 
 [[dependency]]
 path = "resources/maven-resolver-transport-http-1.7.0.jar"

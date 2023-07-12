@@ -33,8 +33,8 @@ import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.ResourceDefiniti
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.ResourceTemplateContext;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.CommonUtil;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.GeneratorUtils;
-import org.wso2.healthcare.fhir.codegen.tool.lib.model.FHIRImplementationGuide;
-import org.wso2.healthcare.fhir.codegen.tool.lib.model.FHIRResourceDef;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRImplementationGuide;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRResourceDef;
 
 import java.io.File;
 import java.util.Comparator;

@@ -18,20 +18,20 @@
 
 package org.wso2.healthcare.fhir.ballerina.packagegen.tool;
 
-import org.wso2.healthcare.codegen.tooling.common.config.ToolConfig;
-import org.wso2.healthcare.codegen.tooling.common.core.TemplateGenerator;
-import org.wso2.healthcare.codegen.tooling.common.core.ToolContext;
-import org.wso2.healthcare.codegen.tooling.common.exception.CodeGenException;
+import org.wso2.healthcare.codegen.tool.framework.commons.config.ToolConfig;
+import org.wso2.healthcare.codegen.tool.framework.commons.core.TemplateGenerator;
+import org.wso2.healthcare.codegen.tool.framework.commons.core.ToolContext;
+import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenException;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.config.BallerinaPackageGenToolConfig;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.config.IncludedIGConfig;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.modelgen.PackageContextGenerator;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.templategen.PackageTemplateGenerator;
-import org.wso2.healthcare.fhir.codegen.tool.lib.common.FHIRSpecificationData;
-import org.wso2.healthcare.fhir.codegen.tool.lib.config.FHIRToolConfig;
-import org.wso2.healthcare.fhir.codegen.tool.lib.config.IGConfig;
-import org.wso2.healthcare.fhir.codegen.tool.lib.core.AbstractFHIRTool;
-import org.wso2.healthcare.fhir.codegen.tool.lib.core.FHIRToolContext;
-import org.wso2.healthcare.fhir.codegen.tool.lib.model.FHIRImplementationGuide;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.common.FHIRSpecificationData;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.config.FHIRToolConfig;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.config.IGConfig;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.AbstractFHIRTool;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.FHIRToolContext;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRImplementationGuide;
 
 import java.io.File;
 import java.util.HashMap;
