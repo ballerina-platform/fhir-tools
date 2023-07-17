@@ -31,11 +31,13 @@ import java.util.List;
  * Ballerina package level config.
  */
 public class PackageConfig {
-    private  String org;
-    private  String name;
-    private  String version;
-    private  String ballerinaDistribution;
-    private  String basePackage;
+    private String org;
+    private String name;
+    private String version;
+    private String ballerinaDistribution;
+    private String authors;
+    private String repository;
+    private String basePackage;
     private List<DependencyConfig> dependencyConfigList;
 
     public PackageConfig(JsonObject packageConfigJson) {
@@ -43,6 +45,8 @@ public class PackageConfig {
         this.name = packageConfigJson.getAsJsonPrimitive(ToolConstants.CONFIG_PACKAGE_NAME).getAsString();
         this.version = packageConfigJson.getAsJsonPrimitive(ToolConstants.CONFIG_PACKAGE_VERSION).getAsString();
         this.ballerinaDistribution = packageConfigJson.getAsJsonPrimitive(ToolConstants.CONFIG_PACKAGE_DISTRIBUTION).getAsString();
+        this.authors = packageConfigJson.getAsJsonArray(ToolConstants.CONFIG_PACKAGE_AUTHORS).getAsString();
+        this.repository = packageConfigJson.getAsJsonPrimitive(ToolConstants.CONFIG_PACKAGE_REPOSITORY).getAsString();
         this.basePackage = packageConfigJson.getAsJsonPrimitive(ToolConstants.CONFIG_BASE_PACKAGE).getAsString();
         populateDependencies(packageConfigJson.getAsJsonArray(ToolConstants.CONFIG_PACKAGE_DEPENDENCY).getAsJsonArray());
     }
@@ -52,6 +56,8 @@ public class PackageConfig {
         this.name = packageConfigToml.getString(ToolConstants.CONFIG_PACKAGE_NAME_TOML);
         this.version = packageConfigToml.getString(ToolConstants.CONFIG_PACKAGE_VERSION_TOML);
         this.ballerinaDistribution = packageConfigToml.getString(ToolConstants.CONFIG_PACKAGE_DISTRIBUTION_TOML);
+        this.authors = packageConfigToml.getString(ToolConstants.CONFIG_PACKAGE_AUTHORS_TOML);
+        this.repository = packageConfigToml.getString(ToolConstants.CONFIG_PACKAGE_REPOSITORY_TOML);
         this.basePackage = packageConfigToml.getString(ToolConstants.CONFIG_BASE_PACKAGE_TOML);
         populateDependencies(packageConfigToml.getArrayOrEmpty(ToolConstants.CONFIG_PACKAGE_DEPENDENCY_TOML));
     }
@@ -89,6 +95,14 @@ public class PackageConfig {
         return ballerinaDistribution;
     }
 
+    public String getAuthors() {
+        return authors;
+    }
+
+    public String getRepository() {
+        return repository;
+    }
+
     public String getBasePackage() {
         return basePackage;
     }
@@ -115,5 +129,17 @@ public class PackageConfig {
 
     public void setBasePackage(String basePackage) {
         this.basePackage = basePackage;
+    }
+
+    public void setAuthors(String authors) {
+        this.authors = authors;
+    }
+
+    public void setRepository(String repository) {
+        this.repository = repository;
+    }
+
+    public void setDependencyConfigList(List<DependencyConfig> dependencyConfigList) {
+        this.dependencyConfigList = dependencyConfigList;
     }
 }

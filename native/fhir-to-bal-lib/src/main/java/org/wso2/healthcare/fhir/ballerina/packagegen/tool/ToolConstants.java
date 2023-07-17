@@ -34,6 +34,10 @@ public class ToolConstants {
     public static final String CONFIG_PACKAGE_VERSION_TOML = "tools.config.package.version";
     public static final String CONFIG_PACKAGE_DISTRIBUTION = "ballerinaDistribution";
     public static final String CONFIG_PACKAGE_DISTRIBUTION_TOML = "tools.config.package.ballerina_distribution";
+    public static final String CONFIG_PACKAGE_AUTHORS = "authors";
+    public static final String CONFIG_PACKAGE_AUTHORS_TOML = "tools.config.package.authors";
+    public static final String CONFIG_PACKAGE_REPOSITORY = "repository";
+    public static final String CONFIG_PACKAGE_REPOSITORY_TOML = "tools.config.package.repository";
     public static final String CONFIG_BASE_PACKAGE = "basePackage";
     public static final String CONFIG_BASE_PACKAGE_TOML = "tools.config.package.utils_package";
     public static final String CONFIG_PACKAGE_DEPENDENCY = "dependencies";

@@ -63,8 +63,7 @@ public class BallerinaPackageGenTool extends AbstractFHIRTool {
                     packageGenToolConfig,
                     getEnabledIgs());
 
-            PackageTemplateGenerator packageTemplateGenerator = new PackageTemplateGenerator(
-                    targetDirectory);
+            PackageTemplateGenerator packageTemplateGenerator = new PackageTemplateGenerator(targetDirectory);
 
             Map<String, Object> properties = new HashMap<>();
             properties.put("toolConfig", packageGenToolConfig);
@@ -89,7 +88,8 @@ public class BallerinaPackageGenTool extends AbstractFHIRTool {
                 FHIRImplementationGuide ig = ((FHIRSpecificationData) toolContext.getSpecificationData()).
                         getFhirImplementationGuides().get(igName);
                 if (ig == null) {
-                    //if IG is enabled in the tool config but specification files are not available in the resources.
+                    //if IG is enabled in the tool config but specification files are not available in the resources,
+                    // skip adding it and continue
                     continue;
                 }
                 enabledIgs.put(igName, allIgs.get(igName));

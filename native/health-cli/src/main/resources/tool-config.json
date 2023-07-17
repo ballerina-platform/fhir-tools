@@ -157,7 +157,9 @@
             "name": "healthcare.fhir.r4.package",
             "version": "0.0.1",
             "ballerinaDistribution": "2201.6.0",
-            "basePackage": "ballerinax/health.fhir.r4",
+            "authors": ["Ballerina"],
+            "repository": "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4",
+            "basePackage": "health.fhir.r4",
             "dependencies": []
           },
           "includedIGs": [

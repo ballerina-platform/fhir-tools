@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.TemplateContext;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.ToolContext;
 import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenException;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.AbstractFHIRTemplateGenerator;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.ToolConstants;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.config.BallerinaPackageGenToolConfig;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.config.DependencyConfig;
@@ -30,11 +31,8 @@ import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.PackageTemplateC
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.ResourceTemplateContext;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.CommonUtil;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.VelocityUtil;
-import org.wso2.healthcare.codegen.tool.framework.fhir.core.AbstractFHIRTemplateGenerator;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -83,7 +81,7 @@ public class PackageTemplateGenerator extends AbstractFHIRTemplateGenerator {
             this.packageProperties.put("importIdentifier", "");
             bootstrapFromR4Base(toolConfig);
             generateModulesStructure();
-            generatePackageModules();
+            generatePackageModules(toolConfig);
         } else {
             this.packageProperties.put("isBasePackage", false);
             if (this.packageTemplateContext.getBasePackageName() != null) {
@@ -97,7 +95,7 @@ public class PackageTemplateGenerator extends AbstractFHIRTemplateGenerator {
                 this.packageProperties.put("importIdentifier", "");
                 bootstrapFromR4Base(toolConfig);
                 generateModulesStructure();
-                generatePackageModules();
+                generatePackageModules(toolConfig);
             }
         }
         generatePackageEssentials(toolConfig);
@@ -135,18 +133,20 @@ public class PackageTemplateGenerator extends AbstractFHIRTemplateGenerator {
         String packageModulesPath = packagePath + File.separator + "modules";
         String packageModulesParserPath = packagePath + File.separator + "modules" + File.separator + "parser";
         String packageModulesParserTestsPath = packageModulesParserPath + File.separator + "tests";
-        String packageModulesTerminologyPath = packagePath + File.separator +
-                "modules" + File.separator + "terminology";
+        String packageModulesTerminologyPath = packagePath + File.separator + "modules" + File.separator + "terminology";
+        String packageModulesValidatorPath = packagePath + File.separator + "modules" + File.separator + "validator";
 
         CommonUtil.createNestedDirectory(packageModulesPath);
         CommonUtil.createNestedDirectory(packageModulesParserPath);
         CommonUtil.createNestedDirectory(packageModulesParserTestsPath);
         CommonUtil.createNestedDirectory(packageModulesTerminologyPath);
+        CommonUtil.createNestedDirectory(packageModulesValidatorPath);
 
         this.packageProperties.put("packageModulesPath", packageModulesPath);
         this.packageProperties.put("packageModulesParserPath", packageModulesParserPath);
         this.packageProperties.put("packageModulesParserTestsPath", packageModulesParserTestsPath);
         this.packageProperties.put("packageModulesTerminologyPath", packageModulesTerminologyPath);
+        this.packageProperties.put("packageModulesValidatorPath", packageModulesValidatorPath);
         LOG.debug("Ended: Modules Generation");
     }
 
@@ -155,31 +155,37 @@ public class PackageTemplateGenerator extends AbstractFHIRTemplateGenerator {
      *
      * @throws CodeGenException codegenException
      */
-    private void generatePackageModules() throws CodeGenException {
+    private void generatePackageModules(BallerinaPackageGenToolConfig toolConfig) throws CodeGenException {
         LOG.debug("Started: Package Modules Generation");
         TemplateContext moduleContext = this.getNewTemplateContext();
         moduleContext.setProperty("packageName", this.packageProperties.get("packageName"));
         moduleContext.setProperty("packageIdentifier", this.packageProperties.get("packageIdentifier"));
+        moduleContext.setProperty("org", toolConfig.getPackageConfig().getOrg());
 
-        String filePath = CommonUtil.generateFilePath((String) this.packageProperties.get(
-                "packageModulesParserPath"), "gen_parser" + ToolConstants.BAL_EXTENSION, "");
-        this.getTemplateEngine().generateOutputAsFile(ToolConstants.TEMPLATE_PATH + File.separator +
-                        "module_parser.vm", moduleContext, "", filePath);
+        String filePath = CommonUtil.generateFilePath((String) this.packageProperties.get("packageModulesParserPath"), "gen_parser"
+                + ToolConstants.BAL_EXTENSION, "");
+        this.getTemplateEngine().generateOutputAsFile("module_parser.vm", moduleContext,"",
+                filePath);
 
-        filePath = CommonUtil.generateFilePath((String) this.packageProperties.get("packageModulesParserTestsPath"),
-                "gen_tests_parser" + ToolConstants.BAL_EXTENSION, "");
-        this.getTemplateEngine().generateOutputAsFile(ToolConstants.TEMPLATE_PATH + File.separator +
-                        "module_parser_test_testsparser.vm", moduleContext, "", filePath);
+        filePath = CommonUtil.generateFilePath((String) this.packageProperties.get("packageModulesParserPath"), "Module"
+                + ToolConstants.MD_EXTENSION, "");
+        this.getTemplateEngine().generateOutputAsFile("module_parser_module.vm", moduleContext, "",
+                filePath);
 
-        filePath = CommonUtil.generateFilePath((String) this.packageProperties.get("packageModulesParserTestsPath"),
-                "gen_sample_resouce_models" + ToolConstants.BAL_EXTENSION, "");
-        this.getTemplateEngine().generateOutputAsFile(ToolConstants.TEMPLATE_PATH + File.separator +
-                        "module_parser_test_sampleresoucemodels.vm", moduleContext, "", filePath);
+        filePath = CommonUtil.generateFilePath((String) this.packageProperties.get("packageModulesTerminologyPath"), "gen_terminology"
+                + ToolConstants.BAL_EXTENSION, "");
+        this.getTemplateEngine().generateOutputAsFile("module_terminology.vm", moduleContext, "",
+                filePath);
 
-        filePath = CommonUtil.generateFilePath((String) this.packageProperties.get("packageModulesTerminologyPath"),
-                "gen_terminology" + ToolConstants.BAL_EXTENSION, "");
-        this.getTemplateEngine().generateOutputAsFile(ToolConstants.TEMPLATE_PATH + File.separator +
-                        "module_terminology.vm", moduleContext, "", filePath);
+        filePath = CommonUtil.generateFilePath((String) this.packageProperties.get("packageModulesValidatorPath"), "gen_validator"
+                + ToolConstants.BAL_EXTENSION, "");
+        this.getTemplateEngine().generateOutputAsFile("module_validator.vm", moduleContext, "",
+                filePath);
+
+        filePath = CommonUtil.generateFilePath((String) this.packageProperties.get("packageModulesValidatorPath"), "Module"
+                + ToolConstants.MD_EXTENSION, "");
+        this.getTemplateEngine().generateOutputAsFile("module_validator_module.vm", moduleContext, "",
+                filePath);
         LOG.debug("Ended: Package Modules Generation");
     }
 
@@ -202,7 +208,7 @@ public class PackageTemplateGenerator extends AbstractFHIRTemplateGenerator {
             filePath = CommonUtil.generateFilePath(packagePath, "Module"
                     + ToolConstants.MD_EXTENSION, "");
             this.getTemplateEngine().generateOutputAsFile(ToolConstants.TEMPLATE_PATH + File.separator + "module.vm",
-                    this.createTemplateContextForModuleMD(), "", filePath);
+                    this.createTemplateContextForModuleMD(toolConfig), "", filePath);
 
             filePath = CommonUtil.generateFilePath(packagePath, "Package"
                     + ToolConstants.MD_EXTENSION, "");
@@ -230,29 +236,11 @@ public class PackageTemplateGenerator extends AbstractFHIRTemplateGenerator {
      * @param toolConfig BallerinaPackageGenToolConfig
      */
     private void bootstrapFromR4Base(BallerinaPackageGenToolConfig toolConfig) throws CodeGenException {
+
         LOG.debug("Started: R4 Base Package bootstrapping");
         String packagePath = (String) this.packageProperties.get("packagePath");
-        try {
-            // temporary fix to check if running from jar or IDE
-            String className = this.getClass().getName().replace('.', '/');
-            String classJar =
-                    this.getClass().getResource("/" + className + ".class").toString();
-            if (classJar.startsWith("jar:")) {
-                // running from jar
-                LOG.error("running from jar");
-                String path = PackageTemplateGenerator.class.getProtectionDomain().getCodeSource().
-                        getLocation().toURI().getPath();
-                CommonUtil.copyContentFormJar(path, packagePath);
-            } else {
-                // running from IDE
-                LOG.error("running from IDE");
-                String r4BasePath = toolConfig.getResourceHomeDir() + File.separator + ToolConstants.R4_BASE_PATH;
-                CommonUtil.copyContentsToDir(r4BasePath, packagePath);
-            }
-
-        } catch (URISyntaxException | IOException e) {
-            throw new CodeGenException("Error occurred while copying R4 base package contents ", e);
-        }
+        String r4BasePath = toolConfig.getResourceHomeDir() + File.separator + ToolConstants.R4_BASE_PATH;
+        CommonUtil.copyContentsToDir(r4BasePath, packagePath);
         LOG.debug("Ended: R4 Base Package bootstrapping");
     }
 
@@ -265,10 +253,13 @@ public class PackageTemplateGenerator extends AbstractFHIRTemplateGenerator {
     private TemplateContext createTemplateContextForBallerinaToml(BallerinaPackageGenToolConfig toolConfig) {
         LOG.debug("Started: Ballerina.toml generation");
         TemplateContext templateContext = this.getNewTemplateContext();
+        templateContext.setProperty("isBasePackage", this.packageProperties.get("isBasePackage"));
         templateContext.setProperty("org", toolConfig.getPackageConfig().getOrg());
         templateContext.setProperty("packageName", this.packageProperties.get("packageName"));
         templateContext.setProperty("version", toolConfig.getPackageConfig().getVersion());
         templateContext.setProperty("distribution", toolConfig.getPackageConfig().getBallerinaDistribution());
+        templateContext.setProperty("authors", toolConfig.getPackageConfig().getAuthors());
+        templateContext.setProperty("repository", toolConfig.getPackageConfig().getRepository());
         templateContext.setProperty("igName", this.packageTemplateContext.getIgTemplateContext().getIgName());
 
         List<DependencyConfig> dependencies = new ArrayList<>(toolConfig.getPackageConfig().getDependencyConfigList());
@@ -282,10 +273,14 @@ public class PackageTemplateGenerator extends AbstractFHIRTemplateGenerator {
      *
      * @return velocity template context
      */
-    private TemplateContext createTemplateContextForModuleMD() {
+    private TemplateContext createTemplateContextForModuleMD(BallerinaPackageGenToolConfig toolConfig) {
         LOG.debug("Started: Module.md generation");
         TemplateContext templateContext = this.getNewTemplateContext();
+        templateContext.setProperty("distribution", toolConfig.getPackageConfig().getBallerinaDistribution());
         templateContext.setProperty("igName", this.packageTemplateContext.getIgTemplateContext().getIgName());
+        templateContext.setProperty("packageName", this.packageProperties.get("packageName"));
+        templateContext.setProperty("packageIdentifier", this.packageProperties.get("packageIdentifier"));
+        templateContext.setProperty("org", toolConfig.getPackageConfig().getOrg());
         LOG.debug("Ended: Module.md generation");
         return templateContext;
     }
@@ -301,6 +296,7 @@ public class PackageTemplateGenerator extends AbstractFHIRTemplateGenerator {
         templateContext.setProperty("newline", this.velocityUtil.getNewLine());
         templateContext.setProperty("packageName", this.packageProperties.get("packageName"));
         templateContext.setProperty("isBasePackage", this.packageProperties.get("isBasePackage"));
+        templateContext.setProperty("packageIdentifier", this.packageProperties.get("packageIdentifier"));
         templateContext.setProperty("org", toolConfig.getPackageConfig().getOrg());
         templateContext.setProperty("igName", this.packageTemplateContext.getIgTemplateContext().getIgName());
         templateContext.setProperty("packageVersion", toolConfig.getPackageConfig().getVersion());

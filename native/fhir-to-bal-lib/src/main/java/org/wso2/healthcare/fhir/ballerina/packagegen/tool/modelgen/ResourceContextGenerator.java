@@ -201,7 +201,7 @@ public class ResourceContextGenerator {
                             }
                         }
                         elementPath = elementPath.substring(rootElementName.length() + 1);
-                        if (elementMap.get(rootElementName).isHasChildElements())
+                        if (elementMap.containsKey(rootElementName) && elementMap.get(rootElementName).isHasChildElements())
                             elementMap = elementMap.get(rootElementName).getChildElements();
                     }
                 } else {
@@ -212,7 +212,7 @@ public class ResourceContextGenerator {
                             elementPath = tempElement + CommonUtil.toCamelCase(type.getCode());
                         if (!elementDefinition.getId().equals(elementDefinition.getPath())) {
                             if(elementDefinition.getSliceName() != null)
-                                elementPath = elementDefinition.getSliceName();
+                                continue;
                         }
                         Element element = populateElement(resourceName, elementPath, type.getCode(), elementDefinition);
                         resourceElementMap.put(elementPath, element);
@@ -318,7 +318,7 @@ public class ResourceContextGenerator {
         if (extendedElement != null) {
             boolean isAlreadyExists = false;
             for (Map.Entry<String, ExtendedElement> elementEntry : extendedElementMap.entrySet()) {
-                isAlreadyExists = elementEntry.getValue().equals(extendedElement);
+                isAlreadyExists = elementEntry.getKey().equals(extendedElement.getTypeName());
                 if (isAlreadyExists) {
                     element.setDataType(elementEntry.getValue().getTypeName());
                     break;
