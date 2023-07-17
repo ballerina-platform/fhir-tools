@@ -74,7 +74,9 @@ public class HealthCmd implements BLauncherCmd {
     }
 
     private void printHelpTextAsStream() {
-        InputStream inputStream = ClassLoader.getSystemResourceAsStream(HealthCmdConstants.CMD_HELPTEXT_FILENAME);
+        Class<?> clazz = FhirSubCmd.class;
+        ClassLoader classLoader = clazz.getClassLoader();
+        InputStream inputStream = classLoader.getResourceAsStream(HealthCmdConstants.CMD_HELPTEXT_FILENAME);
         if (inputStream != null) {
             try (InputStreamReader inputStreamREader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
                  BufferedReader br = new BufferedReader(inputStreamREader)) {
@@ -87,6 +89,7 @@ public class HealthCmd implements BLauncherCmd {
                 printStream.println("Helper text is not available.");
             }
         }
+        printStream.println("An Error occurred internally while fetching the Help text.");
     }
 
     @Override

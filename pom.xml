@@ -97,4 +97,18 @@
         </dependency>
     </dependencies>
 
+    <repositories>
+        <repository>
+            <id>ballerina-language-repo</id>
+            <url>https://maven.pkg.github.com/ballerina-platform/ballerina-lang</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>central</id>
+            <url>https://repo1.maven.org/maven2</url>
+        </repository>
+    </repositories>
+
 </project>
