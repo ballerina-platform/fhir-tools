@@ -337,38 +337,38 @@
   ],
   "dataTypeProfiles": [
     {
-      "dirPath": "/profiles/datatypes"
+      "dirPath": "/datatypes"
     }
   ],
   "FHIRImplementationGuides": [
     {
       "name": "international",
       "code": "Base",
-      "dirPath": "/profiles/international/",
+      "dirPath": "/international/",
       "enable": true
     },
     {
       "name": "USCore",
       "code": "USCore",
-      "dirPath": "/profiles/USCore/",
+      "dirPath": "/USCore/",
       "enable": true
     },
     {
       "name": "DavinciPDEX",
       "code": "DavinciPDEX",
-      "dirPath": "/profiles/DavinciPDEX/",
+      "dirPath": "/DavinciPDEX/",
       "enable": true
     },
     {
       "name": "CarinBB",
       "code": "CarinBB",
-      "dirPath": "/profiles/Carin-BB/",
+      "dirPath": "/Carin-BB/",
       "enable": true
     },
     {
       "name": "AUBase",
       "code": "AUBase",
-      "dirPath": "/profiles/AU-Base/",
+      "dirPath": "/AU-Base/",
       "enable": true
     }
   ]
