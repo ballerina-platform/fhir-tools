@@ -14,14 +14,13 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import $packageName;
+import $org/$packageName;
 
-# Function to parse FHIR Payload into FHIR Resource model
+# Function to validate FHIR Payload
 #
 # + payload - FHIR resource payload
-# + targetFHIRModelType - (Optional) target model type to parse. Derived from payload if not given
-# + return - returns FHIR model (Need to cast to relevant type by the caller). FHIRParseError if error ocurred
-public isolated function parse(json|xml payload, typedesc<anydata>? targetFHIRModelType = ())
-                                                                                    returns anydata|${packageIdentifier}:FHIRParseError {
-    return ${packageIdentifier}:parse(payload, targetFHIRModelType);
+# + targetFHIRModelType - (Optional) target model type to validate. Derived from payload if not given
+# + return - returns FHIRValidationError if error occurred
+public isolated function validate(json|anydata payload, typedesc<anydata>? targetFHIRModelType = ()) returns ${packageIdentifier}:FHIRValidationError? {
+    return check ${packageIdentifier}:validate(payload, targetFHIRModelType);
 }

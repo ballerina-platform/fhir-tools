@@ -60,9 +60,21 @@ public class HealthCmdUtils {
         return File.separator + "profiles" + File.separator + igName + File.separator;
     }
 
-    public static JsonElement getIGConfigElement(String igName, String igCode) throws BallerinaHealthException {
+    public static String generateIgNameFromPath(String specPath) throws BallerinaHealthException {
+        if (specPath.contains(File.separator)) {
+            //nested path given as input, last element is the IG name
+            return specPath.substring(specPath.lastIndexOf(File.separator) + 1).replaceAll(
+                    " ","-").replaceAll("\\$","-");
+        }
+        return specPath.replaceAll(" ","-").replaceAll("\\$","-");
+    }
+
+    public static JsonElement getIGConfigElement(String igName, String igCode, String specPath) throws BallerinaHealthException {
 
         JsonObject igConfig = new JsonObject();
+        if (igName == null || igName.isEmpty()) {
+            igName = generateIgNameFromPath(specPath);
+        }
         igConfig.add("name", new Gson().toJsonTree(igName));
 
         if (igCode != null && igCode.isEmpty()) {
@@ -70,7 +82,7 @@ public class HealthCmdUtils {
         } else {
             igConfig.add("code", new Gson().toJsonTree(igName));
         }
-        igConfig.add("dirPath", new Gson().toJsonTree(generateCustomIGPath(igName)));
+        igConfig.add("dirPath", new Gson().toJsonTree(specPath));
         return igConfig;
     }
 }

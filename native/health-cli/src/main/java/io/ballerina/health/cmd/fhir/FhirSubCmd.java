@@ -215,7 +215,8 @@ public class FhirSubCmd implements BLauncherCmd {
 
                 //override default configs for package-gen mode with user provided configs
                 if (igName != null && !igName.isEmpty()) {
-                    fhirToolConfig.overrideConfig("FHIRImplementationGuides", HealthCmdUtils.getIGConfigElement(igName,igCode));
+                    fhirToolConfig.overrideConfig("FHIRImplementationGuides", HealthCmdUtils.getIGConfigElement(
+                            igName, igCode, specPathParam));
                 }
 
                 fhirToolConfig.setSpecBasePath(specificationPath.toString());
