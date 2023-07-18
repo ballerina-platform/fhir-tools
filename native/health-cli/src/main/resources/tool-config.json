@@ -157,7 +157,9 @@
             "name": "healthcare.fhir.r4.package",
             "version": "0.0.1",
             "ballerinaDistribution": "2201.6.0",
-            "basePackage": "ballerinax/health.fhir.r4",
+            "authors": ["Ballerina"],
+            "repository": "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4",
+            "basePackage": "health.fhir.r4",
             "dependencies": []
           },
           "includedIGs": [
@@ -335,38 +337,38 @@
   ],
   "dataTypeProfiles": [
     {
-      "dirPath": "/profiles/datatypes"
+      "dirPath": "/datatypes"
     }
   ],
   "FHIRImplementationGuides": [
     {
       "name": "international",
       "code": "Base",
-      "dirPath": "/profiles/international/",
+      "dirPath": "/international/",
       "enable": true
     },
     {
       "name": "USCore",
       "code": "USCore",
-      "dirPath": "/profiles/USCore/",
+      "dirPath": "/USCore/",
       "enable": true
     },
     {
       "name": "DavinciPDEX",
       "code": "DavinciPDEX",
-      "dirPath": "/profiles/DavinciPDEX/",
+      "dirPath": "/DavinciPDEX/",
       "enable": true
     },
     {
       "name": "CarinBB",
       "code": "CarinBB",
-      "dirPath": "/profiles/Carin-BB/",
+      "dirPath": "/Carin-BB/",
       "enable": true
     },
     {
       "name": "AUBase",
       "code": "AUBase",
-      "dirPath": "/profiles/AU-Base/",
+      "dirPath": "/AU-Base/",
       "enable": true
     }
   ]

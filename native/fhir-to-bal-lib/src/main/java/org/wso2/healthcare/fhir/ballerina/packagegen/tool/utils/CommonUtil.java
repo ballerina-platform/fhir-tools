@@ -132,7 +132,8 @@ public class CommonUtil {
      */
     public static String validateCode(String code) {
         String newCode = code.trim().split(Pattern.quote(" "))[0];
-        return newCode.replaceAll(" *\\(.+?\\)", "").replace("+", "");
+        return newCode.replaceAll(" *\\(.+?\\)", "")
+                .replace("+", "");
     }
 
     /**
@@ -150,52 +151,6 @@ public class CommonUtil {
             throw new CodeGenException(
                     "Error occurred while copying contents from " + sourcePath + " to " + destinationPath, e);
         }
-    }
-
-    /**
-     * Copy contents of JAR's resources path to another directory.
-     * @param sourceJarPath
-     * @param destinationPath
-     * @throws IOException
-     */
-    public static void copyContentFormJar(String sourceJarPath, String destinationPath) throws IOException {
-        File destinationFolder = new File(destinationPath);
-        destinationFolder.mkdirs(); // Create the directory if it doesn't exist
-
-        JarFile jarFile = new JarFile(sourceJarPath);
-
-        Enumeration<JarEntry> entries = jarFile.entries();
-        while (entries.hasMoreElements()) {
-            JarEntry entry = entries.nextElement();
-
-            // Get the name of the entry (relative path within the JAR file)
-            String entryName = entry.getName();
-
-            // Create a file for the corresponding entry in the destination folder
-            File destFile = new File(destinationFolder, entryName);
-
-            if (entry.isDirectory()) {
-                // Create the directory in the destination folder
-                destFile.mkdirs();
-            } else {
-                // Create the file in the destination folder and copy the contents
-                InputStream inputStream = jarFile.getInputStream(entry);
-                OutputStream outputStream = Files.newOutputStream(destFile.toPath());
-
-                // Copy the contents from the JAR entry to the destination file
-                byte[] buffer = new byte[4096];
-                int bytesRead;
-                while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, bytesRead);
-                }
-
-                // Close the streams
-                outputStream.close();
-                inputStream.close();
-            }
-        }
-        // Close the JAR file
-        jarFile.close();
     }
 
     /**

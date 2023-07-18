@@ -34,12 +34,12 @@ import org.wso2.healthcare.codegen.tool.framework.fhir.core.AbstractFHIRTemplate
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 
 import static org.wso2.healthcare.fhir.ballerina.packagegen.tool.ToolConstants.CONSTRAINTS_LIB_IMPORT;
 
@@ -145,8 +145,9 @@ public class ResourceTemplateGenerator extends AbstractFHIRTemplateGenerator {
         templateContext.setProperty("basePackageIdentifier", this.resourceProperties.get("basePackageIdentifier"));
         templateContext.setProperty("importIdentifier", this.resourceProperties.get("importIdentifier"));
 
-        Set<String> resourceDependencies = new HashSet<>();
-        resourceDependencies.add((String) this.resourceProperties.get("basePackage"));
+        Set<String> resourceDependencies = new TreeSet<>();
+        if (!(boolean)this.resourceProperties.get("isBasePackage"))
+            resourceDependencies.add((String) this.resourceProperties.get("basePackage"));
 
         Optional<String> dependency = resourceTemplateContext.getResourceDependencies()
                 .stream()
