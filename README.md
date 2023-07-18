@@ -21,3 +21,28 @@
 ```
 
 ## Supported Commands
+```shell
+bal health fhir spec-path
+bal health fhir -o output-dir spec-path
+bal health fhir -m package -o output-dir spec-path
+bal health fhir -m package --package-name my.package.name -o output-dir spec-path
+bal health fhir -m template -o output-dir spec-path
+```
+### Note
+- `spec-path` is the path to the FHIR specifications. (i.e. In the specified path, there should be folder/s for each 
+Implementation Guide containing the FHIR specification files.)
+
+Directory structure of the `spec-path` should be as follows.
+```shell
+└── spec-path
+    ├── AU-Base
+    │   ├── CodeSystem-au-body-site.json
+    │   ├── CodeSystem-au-location-physical-type.json
+    │   ├── StructureDefinition-ahpraprofession-details.json
+    │   ├── StructureDefinition-ahpraregistration-details.json
+    │   ├── ValueSet-contact-purpose.json
+    │   └── ValueSet-contact-Relationship-Type.json
+    ├── CarinBB
+    ├── international
+    └── USCore
+```
