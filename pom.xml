@@ -36,7 +36,7 @@
 
     <properties>
         <hapi.version>4.2.0</hapi.version>
-        <velocity.version>1.6</velocity.version>
+        <velocity.version>1.7</velocity.version>
         <picocli.version>4.0.1</picocli.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>

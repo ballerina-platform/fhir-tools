@@ -52,14 +52,6 @@ public class HealthCmdUtils {
         return toolHome + HealthCmdConstants.CMD_RESOURCE_PATH_SUFFIX;
     }
 
-    public static String generateCustomIGPath(String igName) throws BallerinaHealthException {
-        if (igName.isEmpty() || igName.contains(" ")) {
-            throw new BallerinaHealthException("Invalid IG name: " + igName + ". IG name cannot be empty or contain " +
-                    "spaces.");
-        }
-        return File.separator + "profiles" + File.separator + igName + File.separator;
-    }
-
     public static String generateIgNameFromPath(String specPath) throws BallerinaHealthException {
         if (specPath.contains(File.separator)) {
             //nested path given as input, last element is the IG name

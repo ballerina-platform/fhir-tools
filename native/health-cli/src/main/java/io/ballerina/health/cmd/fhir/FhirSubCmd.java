@@ -127,18 +127,20 @@ public class FhirSubCmd implements BLauncherCmd {
                     }
                 } catch (IOException e) {
                     printStream.println("Helper text is not available.");
-                    HealthCmdUtils.exitError(exitWhenFinish);
+                    BLauncherException launcherException = new BLauncherException();
+                    launcherException.initCause(e);
+                    throw launcherException;
                 }
             }
             printStream.println("An Error occurred internally while fetching the Help text.");
-            return;
+            HealthCmdUtils.exitError(exitWhenFinish);
         }
 
         if (argList.isEmpty()) {
             //at minimum arg count is 1 (spec path)
             printStream.println("Invalid number of arguments received for FHIR !" +
                     "\n try bal health --help for more information.");
-            return;
+            HealthCmdUtils.exitError(exitWhenFinish);
         }
         this.engageSubCommand(argList);
         HealthCmdUtils.exitError(exitWhenFinish);
@@ -224,9 +226,14 @@ public class FhirSubCmd implements BLauncherCmd {
             } catch (CodeGenException e) {
                 printStream.println(ErrorMessages.LIB_INITIALIZING_FAILED + Arrays.toString(e.getStackTrace())
                         + e.getMessage());
-                HealthCmdUtils.exitError(this.exitWhenFinish);
+                BLauncherException launcherException = new BLauncherException();
+                launcherException.initCause(e);
+                throw launcherException;
             } catch (BallerinaHealthException e) {
                 printStream.println(ErrorMessages.ARG_VALIDATION_FAILED + e.getMessage());
+                BLauncherException launcherException = new BLauncherException();
+                launcherException.initCause(e);
+                throw launcherException;
             }
 
             for (JsonElement jsonElement : toolExecConfigArr) {
@@ -274,13 +281,19 @@ public class FhirSubCmd implements BLauncherCmd {
                     mainTemplateGenerator = tool.execute(fhirToolLib.getToolContext());
                 } catch (ClassNotFoundException e) {
                     printStream.println(ErrorMessages.TOOL_IMPL_NOT_FOUND + e.getMessage());
-                    HealthCmdUtils.exitError(this.exitWhenFinish);
+                    BLauncherException launcherException = new BLauncherException();
+                    launcherException.initCause(e);
+                    throw launcherException;
                 } catch (InstantiationException | IllegalAccessException e) {
                     printStream.println(ErrorMessages.CONFIG_INITIALIZING_FAILED);
-                    HealthCmdUtils.exitError(this.exitWhenFinish);
+                    BLauncherException launcherException = new BLauncherException();
+                    launcherException.initCause(e);
+                    throw launcherException;
                 } catch (CodeGenException e) {
                     printStream.println(ErrorMessages.UNKNOWN_ERROR);
-                    HealthCmdUtils.exitError(this.exitWhenFinish);
+                    BLauncherException launcherException = new BLauncherException();
+                    launcherException.initCause(e);
+                    throw launcherException;
                 }
                 if (mainTemplateGenerator != null) {
                     try {
@@ -291,7 +304,9 @@ public class FhirSubCmd implements BLauncherCmd {
                                 mainTemplateGenerator.getGeneratorProperties());
                     } catch (CodeGenException e) {
                         printStream.println(ErrorMessages.UNKNOWN_ERROR + e.getMessage());
-                        HealthCmdUtils.exitError(this.exitWhenFinish);
+                        BLauncherException launcherException = new BLauncherException();
+                        launcherException.initCause(e);
+                        throw launcherException;
                     }
                 } else {
                     printStream.println("Template generator is not registered for the tool: " + name);
