@@ -17,7 +17,7 @@ path = "resources/fhir-to-bal-template-${version.health.cli}.jar"
 path = "resources/fhir-to-bal-lib-${version.health.cli}.jar"
 
 [[dependency]]
-path = "resources/org.hl7.fhir.r4-4.2.0.jar"
+path = "resources/org.hl7.fhir.r4-${hapi.version}.jar"
 
 [[dependency]]
 path = "resources/ballerina-parser-${version.ballerina.cli}.jar"
@@ -86,7 +86,7 @@ path = "resources/junit-4.12.jar"
 path = "resources/okio-2.2.2.jar"
 
 [[dependency]]
-path = "resources/org.hl7.fhir.utilities-4.2.0.jar"
+path = "resources/org.hl7.fhir.utilities-${hapi.version}.jar"
 
 [[dependency]]
 path = "resources/asm-7.2.jar"

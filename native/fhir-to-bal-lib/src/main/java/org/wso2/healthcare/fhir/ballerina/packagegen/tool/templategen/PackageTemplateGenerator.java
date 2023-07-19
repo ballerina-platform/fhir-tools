@@ -323,6 +323,7 @@ public class PackageTemplateGenerator extends AbstractFHIRTemplateGenerator {
         templateContext.setProperty("igName", this.packageTemplateContext.getIgTemplateContext().getIgName());
         templateContext.setProperty("igCode", this.packageTemplateContext.getIgTemplateContext().getIgCode());
         templateContext.setProperty("profiles", this.packageTemplateContext.getResourceTemplateContextMap());
+        templateContext.setProperty("licenseYear", ToolConstants.LICENSE_YEAR);
 
         double numberOfSearchParameterMaps = this.packageTemplateContext.getIgTemplateContext().getSearchParameters().size() / 100d;
         templateContext.setProperty("searchParameterMaps", Math.floor(numberOfSearchParameterMaps));
@@ -347,6 +348,7 @@ public class PackageTemplateGenerator extends AbstractFHIRTemplateGenerator {
         templateContext.setProperty("newline", this.velocityUtil.getNewLine());
         templateContext.setProperty("igCode", this.packageTemplateContext.getIgTemplateContext().getIgCode().toUpperCase());
         templateContext.setProperty("isBasePackage", this.packageProperties.get("isBasePackage"));
+        templateContext.setProperty("licenseYear", ToolConstants.LICENSE_YEAR);
 
         double numberOfSearchParameterMaps = this.packageTemplateContext.getIgTemplateContext().getSearchParameters().size() / 100d;
         templateContext.setProperty("searchParameterMaps", Math.floor(numberOfSearchParameterMaps));
