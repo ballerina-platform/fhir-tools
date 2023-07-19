@@ -154,12 +154,12 @@
           "enable": true,
           "packageConfigs": {
             "org": "ballerinax",
-            "name": "healthcare.fhir.r4.package",
+            "name": "healthcare.fhir.r4.international401",
             "version": "0.0.1",
             "ballerinaDistribution": "2201.6.0",
             "authors": ["Ballerina"],
             "repository": "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4",
-            "basePackage": "health.fhir.r4",
+            "basePackage": "ballerinax/health.fhir.r4",
             "dependencies": []
           },
           "includedIGs": [
@@ -194,138 +194,8 @@
               "excludedProfiles": []
             }
           ],
-          "dataTypeMappings": [
-            {
-              "fhirType": "http://hl7.org/fhirpath/System.String",
-              "ballerinaType": "string"
-            },
-            {
-              "fhirType": "url",
-              "ballerinaType": "urlType"
-            }
-          ],
-          "ballerinaKeywords": [
-            {
-              "keyword": "type",
-              "replace": "'type"
-            },
-            {
-              "keyword": "source",
-              "replace": "'source"
-            },
-            {
-              "keyword": "client",
-              "replace": "'client"
-            },
-            {
-              "keyword": "resource",
-              "replace": "'resource"
-            },
-            {
-              "keyword": "order",
-              "replace": "'order"
-            },
-            {
-              "keyword": "class",
-              "replace": "'class"
-            },
-            {
-              "keyword": "version",
-              "replace": "'version"
-            },
-            {
-              "keyword": "final",
-              "replace": "'final"
-            },
-            {
-              "keyword": "error",
-              "replace": "'error"
-            },
-            {
-              "keyword": "parameter",
-              "replace": "'parameter"
-            },
-            {
-              "keyword": "start",
-              "replace": "'start"
-            },
-            {
-              "keyword": "transaction",
-              "replace": "'transaction"
-            },
-            {
-              "keyword": "json",
-              "replace": "_json"
-            },
-            {
-              "keyword": "service",
-              "replace": "'service"
-            },
-            {
-              "keyword": "function",
-              "replace": "'function"
-            },
-            {
-              "keyword": "error",
-              "replace": "_error"
-            },
-            {
-              "keyword": "fail",
-              "replace": "'fail"
-            },
-            {
-              "keyword": "in",
-              "replace": "'in"
-            },
-            {
-              "keyword": "abstract",
-              "replace": "'abstract"
-            },
-            {
-              "keyword": "import",
-              "replace": "'import"
-            },
-            {
-              "keyword": "string",
-              "replace": "_string"
-            },
-            {
-              "keyword": "from",
-              "replace": "'from"
-            },
-            {
-              "keyword": "boolean",
-              "replace": "'boolean"
-            },
-            {
-              "keyword": "outer",
-              "replace": "'outer"
-            },
-            {
-              "keyword": "never",
-              "replace": "'never"
-            },
-            {
-              "keyword": "on",
-              "replace": "'on"
-            },
-            {
-              "keyword": "decimal",
-              "replace": "'decimal"
-            },
-            {
-              "keyword": "limit",
-              "replace": "'limit"
-            },
-            {
-              "keyword": "check",
-              "replace": "'check"
-            },
-            {
-              "keyword": "field",
-              "replace": "'field"
-            }
-          ]
+          "dataTypeMappings": [],
+          "ballerinaKeywords": []
         }
       }
     ]

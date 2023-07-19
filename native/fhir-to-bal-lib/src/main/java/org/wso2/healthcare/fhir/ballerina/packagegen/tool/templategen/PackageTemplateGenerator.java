@@ -64,8 +64,7 @@ public class PackageTemplateGenerator extends AbstractFHIRTemplateGenerator {
     public void generate(ToolContext toolContext, Map<String, Object> generatorProperties) throws CodeGenException {
         LOG.debug("Started: Package Template Generation");
         this.packageTemplateContext = (PackageTemplateContext) generatorProperties.get("packageContext");
-        BallerinaPackageGenToolConfig toolConfig = (BallerinaPackageGenToolConfig) generatorProperties.get(
-                "toolConfig");
+        BallerinaPackageGenToolConfig toolConfig = (BallerinaPackageGenToolConfig) generatorProperties.get("toolConfig");
         this.velocityUtil = new VelocityUtil(toolConfig);
 
         String packagePath = this.getTargetDir() + File.separator + toolConfig.getPackageConfig().getName();
@@ -75,28 +74,13 @@ public class PackageTemplateGenerator extends AbstractFHIRTemplateGenerator {
         this.packageProperties.put("packageIdentifier", packageName.substring(packageName.lastIndexOf(".") + 1));
 
         generateDefaultPackageStructure();
-
-        if (Objects.equals(this.packageTemplateContext.getIgTemplateContext().getIgName(), ToolConstants.BASE_IG)) {
-            this.packageProperties.put("isBasePackage", true);
-            this.packageProperties.put("importIdentifier", "");
-            bootstrapFromR4Base(toolConfig);
-            generateModulesStructure();
-            generatePackageModules(toolConfig);
-        } else {
+        if (this.packageTemplateContext.getBasePackageName() != null) {
             this.packageProperties.put("isBasePackage", false);
-            if (this.packageTemplateContext.getBasePackageName() != null) {
-                String basePackage = this.packageTemplateContext.getBasePackageName();
-                String basePackageIdentifier = basePackage.substring(basePackage.lastIndexOf(".") + 1);
-                this.packageProperties.put("basePackage", basePackage);
-                this.packageProperties.put("basePackageIdentifier", basePackageIdentifier);
-                this.packageProperties.put("importIdentifier", basePackageIdentifier + ":");
-            } else {
-                this.packageProperties.put("isBasePackage", true);
-                this.packageProperties.put("importIdentifier", "");
-                bootstrapFromR4Base(toolConfig);
-                generateModulesStructure();
-                generatePackageModules(toolConfig);
-            }
+            String basePackage = this.packageTemplateContext.getBasePackageName();
+            this.packageProperties.put("basePackage", basePackage);
+            String basePackageIdentifier = basePackage.substring(basePackage.lastIndexOf(".") + 1);
+            this.packageProperties.put("basePackageIdentifier", basePackageIdentifier);
+            this.packageProperties.put("importIdentifier", basePackageIdentifier + ":");
         }
         generatePackageEssentials(toolConfig);
         LOG.debug("Ended: Package Template Generation");
@@ -123,73 +107,6 @@ public class PackageTemplateGenerator extends AbstractFHIRTemplateGenerator {
     }
 
     /**
-     * Generates modules structure.
-     *
-     * @throws CodeGenException codegen exception
-     */
-    private void generateModulesStructure() throws CodeGenException {
-        LOG.debug("Started: Modules Generation");
-        String packagePath = (String) this.packageProperties.get("packagePath");
-        String packageModulesPath = packagePath + File.separator + "modules";
-        String packageModulesParserPath = packagePath + File.separator + "modules" + File.separator + "parser";
-        String packageModulesParserTestsPath = packageModulesParserPath + File.separator + "tests";
-        String packageModulesTerminologyPath = packagePath + File.separator + "modules" + File.separator + "terminology";
-        String packageModulesValidatorPath = packagePath + File.separator + "modules" + File.separator + "validator";
-
-        CommonUtil.createNestedDirectory(packageModulesPath);
-        CommonUtil.createNestedDirectory(packageModulesParserPath);
-        CommonUtil.createNestedDirectory(packageModulesParserTestsPath);
-        CommonUtil.createNestedDirectory(packageModulesTerminologyPath);
-        CommonUtil.createNestedDirectory(packageModulesValidatorPath);
-
-        this.packageProperties.put("packageModulesPath", packageModulesPath);
-        this.packageProperties.put("packageModulesParserPath", packageModulesParserPath);
-        this.packageProperties.put("packageModulesParserTestsPath", packageModulesParserTestsPath);
-        this.packageProperties.put("packageModulesTerminologyPath", packageModulesTerminologyPath);
-        this.packageProperties.put("packageModulesValidatorPath", packageModulesValidatorPath);
-        LOG.debug("Ended: Modules Generation");
-    }
-
-    /**
-     * Generate package modules.
-     *
-     * @throws CodeGenException codegenException
-     */
-    private void generatePackageModules(BallerinaPackageGenToolConfig toolConfig) throws CodeGenException {
-        LOG.debug("Started: Package Modules Generation");
-        TemplateContext moduleContext = this.getNewTemplateContext();
-        moduleContext.setProperty("packageName", this.packageProperties.get("packageName"));
-        moduleContext.setProperty("packageIdentifier", this.packageProperties.get("packageIdentifier"));
-        moduleContext.setProperty("org", toolConfig.getPackageConfig().getOrg());
-
-        String filePath = CommonUtil.generateFilePath((String) this.packageProperties.get("packageModulesParserPath"), "gen_parser"
-                + ToolConstants.BAL_EXTENSION, "");
-        this.getTemplateEngine().generateOutputAsFile("module_parser.vm", moduleContext,"",
-                filePath);
-
-        filePath = CommonUtil.generateFilePath((String) this.packageProperties.get("packageModulesParserPath"), "Module"
-                + ToolConstants.MD_EXTENSION, "");
-        this.getTemplateEngine().generateOutputAsFile("module_parser_module.vm", moduleContext, "",
-                filePath);
-
-        filePath = CommonUtil.generateFilePath((String) this.packageProperties.get("packageModulesTerminologyPath"), "gen_terminology"
-                + ToolConstants.BAL_EXTENSION, "");
-        this.getTemplateEngine().generateOutputAsFile("module_terminology.vm", moduleContext, "",
-                filePath);
-
-        filePath = CommonUtil.generateFilePath((String) this.packageProperties.get("packageModulesValidatorPath"), "gen_validator"
-                + ToolConstants.BAL_EXTENSION, "");
-        this.getTemplateEngine().generateOutputAsFile("module_validator.vm", moduleContext, "",
-                filePath);
-
-        filePath = CommonUtil.generateFilePath((String) this.packageProperties.get("packageModulesValidatorPath"), "Module"
-                + ToolConstants.MD_EXTENSION, "");
-        this.getTemplateEngine().generateOutputAsFile("module_validator_module.vm", moduleContext, "",
-                filePath);
-        LOG.debug("Ended: Package Modules Generation");
-    }
-
-    /**
      * Generates package essential Ballerina files.
      *
      * @param toolConfig BallerinaPackageGenToolConfig
@@ -205,22 +122,17 @@ public class PackageTemplateGenerator extends AbstractFHIRTemplateGenerator {
             this.getTemplateEngine().generateOutputAsFile(ToolConstants.TEMPLATE_PATH + File.separator + "ballerina_toml.vm",
                     this.createTemplateContextForBallerinaToml(toolConfig), "", filePath);
 
-            filePath = CommonUtil.generateFilePath(packagePath, "Module"
-                    + ToolConstants.MD_EXTENSION, "");
-            this.getTemplateEngine().generateOutputAsFile(ToolConstants.TEMPLATE_PATH + File.separator + "module.vm",
-                    this.createTemplateContextForModuleMD(toolConfig), "", filePath);
-
             filePath = CommonUtil.generateFilePath(packagePath, "Package"
                     + ToolConstants.MD_EXTENSION, "");
             this.getTemplateEngine().generateOutputAsFile(ToolConstants.TEMPLATE_PATH + File.separator + "package.vm",
                     this.createTemplateContextForPackageMD(toolConfig), "", filePath);
 
-            filePath = CommonUtil.generateFilePath(packagePath, "gen_initializer"
+            filePath = CommonUtil.generateFilePath(packagePath, "initializer"
                     + ToolConstants.BAL_EXTENSION, "");
             this.getTemplateEngine().generateOutputAsFile(ToolConstants.TEMPLATE_PATH + File.separator + "initializer.vm",
                     this.createTemplateContextForInitializer(), "", filePath);
 
-            filePath = CommonUtil.generateFilePath(packagePath, "gen_variables"
+            filePath = CommonUtil.generateFilePath(packagePath, "variables"
                     + ToolConstants.BAL_EXTENSION, "");
             this.getTemplateEngine().generateOutputAsFile(ToolConstants.TEMPLATE_PATH + File.separator + "variables.vm",
                     this.createTemplateContextForVariables(), "", filePath);
@@ -228,20 +140,6 @@ public class PackageTemplateGenerator extends AbstractFHIRTemplateGenerator {
             throw new CodeGenException("Error occurred while generating template artifacts for ballerina package ", e);
         }
         LOG.debug("Ended: Package Essentials Generation");
-    }
-
-    /**
-     * Copies boostrap package contents from R4 base
-     *
-     * @param toolConfig BallerinaPackageGenToolConfig
-     */
-    private void bootstrapFromR4Base(BallerinaPackageGenToolConfig toolConfig) throws CodeGenException {
-
-        LOG.debug("Started: R4 Base Package bootstrapping");
-        String packagePath = (String) this.packageProperties.get("packagePath");
-        String r4BasePath = toolConfig.getResourceHomeDir() + File.separator + ToolConstants.R4_BASE_PATH;
-        CommonUtil.copyContentsToDir(r4BasePath, packagePath);
-        LOG.debug("Ended: R4 Base Package bootstrapping");
     }
 
     /**

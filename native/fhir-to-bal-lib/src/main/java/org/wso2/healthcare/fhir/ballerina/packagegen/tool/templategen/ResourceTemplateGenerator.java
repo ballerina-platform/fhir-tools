@@ -69,18 +69,13 @@ public class ResourceTemplateGenerator extends AbstractFHIRTemplateGenerator {
         String packagePath = this.getTargetDir() + File.separator + toolConfig.getPackageConfig().getName();
         this.resourceProperties.put("packagePath", packagePath);
 
-        if (Objects.equals(this.packageTemplateContext.getIgTemplateContext().getIgName(), ToolConstants.BASE_IG)) {
-            this.resourceProperties.put("isBasePackage", true);
-            this.resourceProperties.put("importIdentifier", "");
-        } else {
+        if (this.packageTemplateContext.getBasePackageName() != null) {
             this.resourceProperties.put("isBasePackage", false);
-            if (this.packageTemplateContext.getBasePackageName() != null) {
-                String basePackage = this.packageTemplateContext.getBasePackageName();
-                String basePackageIdentifier = basePackage.substring(basePackage.lastIndexOf(".") + 1);
-                this.resourceProperties.put("basePackage", basePackage);
-                this.resourceProperties.put("basePackageIdentifier", basePackageIdentifier);
-                this.resourceProperties.put("importIdentifier", basePackageIdentifier + ":");
-            }
+            String basePackage = this.packageTemplateContext.getBasePackageName();
+            String basePackageIdentifier = basePackage.substring(basePackage.lastIndexOf(".") + 1);
+            this.resourceProperties.put("basePackage", basePackage);
+            this.resourceProperties.put("basePackageIdentifier", basePackageIdentifier);
+            this.resourceProperties.put("importIdentifier", basePackageIdentifier + ":");
         }
 
         this.resourceTemplateContexts = new ArrayList<>(this.packageTemplateContext.getResourceTemplateContextMap().values());
@@ -102,7 +97,7 @@ public class ResourceTemplateGenerator extends AbstractFHIRTemplateGenerator {
                 if (resourceTemplateContext.getResourceType().equals("Bundle"))
                     continue;
 
-                String filePath = CommonUtil.generateFilePath(packagePath, "gen_resource_"
+                String filePath = CommonUtil.generateFilePath(packagePath, "resource_"
                         + CommonUtil.camelToSnake(resourceTemplateContext.getResourceDefinitionAnnotation().getName())
                         + ToolConstants.BAL_EXTENSION, "");
 
@@ -157,7 +152,6 @@ public class ResourceTemplateGenerator extends AbstractFHIRTemplateGenerator {
         if (dependency.isPresent()) {
             resourceDependencies.add(dependency.get());
         }
-
         templateContext.setProperty("imports", resourceDependencies);
 
         return templateContext;
