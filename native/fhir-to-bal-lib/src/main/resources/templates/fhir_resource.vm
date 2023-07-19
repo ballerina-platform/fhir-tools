@@ -24,11 +24,7 @@ import $import.toString();
 #end
 
 public const string PROFILE_BASE_${util.resolveSpecialCharacters($resourceName.toUpperCase())} = "${profile}";
-#if(!$isBasePackage)
-public const RESOURCE_NAME_${util.resolveSpecialCharacters($resourceName.toUpperCase())} = "${baseType}";
-#else
 public const RESOURCE_NAME_${util.resolveSpecialCharacters($resourceName.toUpperCase())} = "${resourceType}";
-#end
 
 # FHIR $resourceName resource record.
 #

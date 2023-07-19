@@ -43,11 +43,11 @@ function init() returns ${importIdentifier}FHIRError? {
         profiles: {
 #foreach($profile in $profiles)
 #if(!$profile.getResourceType().equals("Bundle"))
-        "$profile.getProfile().trim()": {
-            url: "$profile.getProfile()",
-            resourceType: "$profile.getResourceType()",
-            modelType: $util.resolveSpecialCharacters($profile.getResourceName())
-        }#if($foreach.count!=$profiles.size()),$newline#end
+            "$profile.getProfile().trim()": {
+                url: "$profile.getProfile()",
+                resourceType: "$profile.getResourceType()",
+                modelType: $util.resolveSpecialCharacters($profile.getResourceName())
+            }#if($foreach.count!=$profiles.size()),$newline#end
 #end
 #end
 
@@ -61,3 +61,6 @@ searchParameters: [#foreach($iteration in $range)#set($map_index = $iteration+1)
 
     log:printDebug("FHIR R4 ${igCode} Module initialized.");
 }
+
+# This empty function is used to initialize the module by other modules/packages.
+public isolated function initialize() {};

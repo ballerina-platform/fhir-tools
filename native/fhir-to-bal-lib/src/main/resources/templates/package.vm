@@ -1,9 +1,6 @@
 #set( $H = '#' )
-Package containing the FHIR R4 resources types
 
-#if($isBasePackage)
-$H FHIR R4 Base package
-#else
+#if(!$isBasePackage)
 $H FHIR R4 ${igName} package
 #end
 
@@ -15,15 +12,6 @@ $H$H Package Overview
 | Implementation Guide | $igUrl               |
 
 #if($isBasePackage)
-This package includes,
-
-1. FHIR R4 Data types
-2. FHIR Base Resource types
-3. FHIR resources parsers and serializers
-4. Miscellaneous utilities required to create, access elements, manipulate FHIR resources
-5. FHIR API request processors and Ballerina interceptors to implement FHIR APIs
-6. Defined FHIR error types and utilities for FHIR error handling
-#else
 This package includes, FHIR ${igName} Resource types.
 #end
 
@@ -37,25 +25,11 @@ $H$H$H Supported FHIR resource types
 |                  |                                             |
 |------------------|---------------------------------------------|
 #foreach($profile in $profiles)
-| $profile.getResourceName() | [[Definition]][s$foreach.count] [[Ballerina Record]][m$foreach.count] |
-#end
-
-#if($isBasePackage)
-$H$H$H Submodules
-
-| Module              |                                                                      |
-|---------------------|----------------------------------------------------------------------|
-| [Parser][mod1]      | Sub module containing utilities required to parse and related needs. |
-| [Terminology][mod2] | Sub module related to Terminology requirements                       |
-| [Validator][mod3]   | Sub module related to FHIR Validation                                |
-
-[mod1]: https://lib.ballerina.io/$org/${packageName}.parser/$packageVersion
-[mod2]: https://lib.ballerina.io/$org/${packageName}.terminology/$packageVersion
-[mod3]: https://lib.ballerina.io/$org/${packageName}.validator/$packageVersion
+| ${foreach.count}). $profile.getResourceName() | [[Definition]][s$foreach.count] [[Ballerina Record]][m$foreach.count] |
 #end
 
 #foreach($profile in $profiles)
-[m${foreach.count}]: https://lib.ballerina.io/$org/$packageName/$packageVersion#$profile.getResourceType()
+[m${foreach.count}]: https://lib.ballerina.io/$org/$packageName/$packageVersion#$profile.getResourceName()
 #end
 
 #foreach($profile in $profiles)
