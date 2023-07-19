@@ -3,9 +3,19 @@ org = "${org}"
 name = "${packageName}"
 version = "${version}"
 distribution = "${distribution}"
-authors = ["WSO2 Healthcare"]
+authors = ["${authors}"]
 keywords = ["Healthcare", "FHIR", "R4", "${igName}"]
+repository = "${repository}"
+#if($isBasePackage)
+export = [
+    "${packageName}",
+    "${packageName}.parser",
+    "${packageName}.terminology",
+    "${packageName}.validator"
+]
+#else
 export = ["${packageName}"]
+#end
 
 #foreach($dependency in $dependencies)
 [[dependency]]
@@ -14,8 +24,6 @@ name = "$dependency.getName()"
 version = "$dependency.getVersion()"
 #if($dependency.getRepository())
 repository = "$dependency.getRepository()"
-
 #else
-
 #end
 #end

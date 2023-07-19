@@ -20,6 +20,7 @@ package io.ballerina.health.cmd;
 
 import io.ballerina.cli.BLauncherCmd;
 import io.ballerina.health.cmd.core.utils.HealthCmdConstants;
+import io.ballerina.health.cmd.core.utils.HealthCmdUtils;
 import io.ballerina.health.cmd.fhir.FhirSubCmd;
 import io.ballerina.health.cmd.hl7.Hl7SubCmd;
 import picocli.CommandLine;
@@ -87,9 +88,11 @@ public class HealthCmd implements BLauncherCmd {
                 }
             } catch (IOException e) {
                 printStream.println("Helper text is not available.");
+                HealthCmdUtils.throwLauncherException(e);
             }
         }
         printStream.println("An Error occurred internally while fetching the Help text.");
+        HealthCmdUtils.exitError(true);
     }
 
     @Override

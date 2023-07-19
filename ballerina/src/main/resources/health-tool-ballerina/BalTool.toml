@@ -17,13 +17,13 @@ path = "resources/fhir-to-bal-template-${version.health.cli}.jar"
 path = "resources/fhir-to-bal-lib-${version.health.cli}.jar"
 
 [[dependency]]
-path = "resources/org.hl7.fhir.r4-4.2.0.jar"
+path = "resources/org.hl7.fhir.r4-${hapi.version}.jar"
 
 [[dependency]]
-path = "resources/ballerina-parser-2201.6.0.jar"
+path = "resources/ballerina-parser-${version.ballerina.cli}.jar"
 
 [[dependency]]
-path = "resources/ballerina-tools-api-2201.6.0.jar"
+path = "resources/ballerina-tools-api-${version.ballerina.cli}.jar"
 
 [[dependency]]
 path = "resources/javax.annotation-api-1.3.2.jar"
@@ -35,19 +35,19 @@ path = "resources/commons-logging-1.2.jar"
 path = "resources/toml4j-0.7.2.jar"
 
 [[dependency]]
-path = "resources/hapi-fhir-structures-r4-4.2.0.jar"
+path = "resources/hapi-fhir-structures-r4-${hapi.version}.jar"
 
 [[dependency]]
 path = "resources/maven-builder-support-3.6.3.jar"
 
 [[dependency]]
-path = "resources/shell-rt-2201.6.0.jar"
+path = "resources/shell-rt-${version.ballerina.cli}.jar"
 
 [[dependency]]
-path = "resources/central-client-2201.6.0.jar"
+path = "resources/central-client-${version.ballerina.cli}.jar"
 
 [[dependency]]
-path = "resources/annotations-2201.6.0.jar"
+path = "resources/annotations-${version.ballerina.cli}.jar"
 
 [[dependency]]
 path = "resources/javax.inject-1.jar"
@@ -68,7 +68,7 @@ path = "resources/jsr305-3.0.2.jar"
 path = "resources/opentelemetry-api-1.0.0.jar"
 
 [[dependency]]
-path = "resources/maven-resolver-2201.6.0.jar"
+path = "resources/maven-resolver-${version.ballerina.cli}.jar"
 
 [[dependency]]
 path = "resources/plexus-utils-3.2.1.jar"
@@ -86,7 +86,7 @@ path = "resources/junit-4.12.jar"
 path = "resources/okio-2.2.2.jar"
 
 [[dependency]]
-path = "resources/org.hl7.fhir.utilities-4.2.0.jar"
+path = "resources/org.hl7.fhir.utilities-${hapi.version}.jar"
 
 [[dependency]]
 path = "resources/asm-7.2.jar"
@@ -113,19 +113,19 @@ path = "resources/commons-codec-1.12.jar"
 path = "resources/checker-qual-2.8.1.jar"
 
 [[dependency]]
-path = "resources/hapi-fhir-structures-dstu2-4.2.0.jar"
+path = "resources/hapi-fhir-structures-dstu2-${hapi.version}.jar"
 
 [[dependency]]
 path = "resources/maven-repository-metadata-3.6.3.jar"
 
 [[dependency]]
-path = "resources/picocli-4.0.1.jar"
+path = "resources/picocli-${picocli.version}.jar"
 
 [[dependency]]
 path = "resources/plexus-interpolation-1.25.jar"
 
 [[dependency]]
-path = "resources/testerina-core-2201.6.0.jar"
+path = "resources/testerina-core-${version.ballerina.cli}.jar"
 
 [[dependency]]
 path = "resources/httpclient-4.5.13.jar"
@@ -140,13 +140,13 @@ path = "resources/jcommander-1.72.jar"
 path = "resources/slf4j-api-1.7.26.jar"
 
 [[dependency]]
-path = "resources/testerina-runtime-2201.6.0.jar"
+path = "resources/testerina-runtime-${version.ballerina.cli}.jar"
 
 [[dependency]]
 path = "resources/guava-28.0-jre.jar"
 
 [[dependency]]
-path = "resources/jballerina.java-2201.6.0.jar"
+path = "resources/jballerina.java-${version.ballerina.cli}.jar"
 
 [[dependency]]
 path = "resources/java-semver-0.9.0.jar"
@@ -161,10 +161,10 @@ path = "resources/jcl-over-slf4j-1.7.28.jar"
 path = "resources/netty-buffer-4.1.77.Final.jar"
 
 [[dependency]]
-path = "resources/ballerina-runtime-2201.6.0.jar"
+path = "resources/ballerina-runtime-${version.ballerina.cli}.jar"
 
 [[dependency]]
-path = "resources/docerina-2201.6.0.jar"
+path = "resources/docerina-${version.ballerina.cli}.jar"
 
 [[dependency]]
 path = "resources/atomikos-util-5.0.8.jar"
@@ -185,10 +185,10 @@ path = "resources/antlr4-runtime-4.7.1.jar"
 path = "resources/commons-compress-1.21.jar"
 
 [[dependency]]
-path = "resources/identifier-util-2201.6.0.jar"
+path = "resources/identifier-util-${version.ballerina.cli}.jar"
 
 [[dependency]]
-path = "resources/hapi-fhir-base-4.2.0.jar"
+path = "resources/hapi-fhir-base-${hapi.version}.jar"
 
 [[dependency]]
 path = "resources/transactions-api-5.0.8.jar"
@@ -197,16 +197,16 @@ path = "resources/transactions-api-5.0.8.jar"
 path = "resources/maven-resolver-transport-file-1.7.0.jar"
 
 [[dependency]]
-path = "resources/shell-cli-2201.6.0.jar"
+path = "resources/shell-cli-${version.ballerina.cli}.jar"
 
 [[dependency]]
-path = "resources/toml-parser-2201.6.0.jar"
+path = "resources/toml-parser-${version.ballerina.cli}.jar"
 
 [[dependency]]
 path = "resources/commons-collections-3.2.1.jar"
 
 [[dependency]]
-path = "resources/shell-core-2201.6.0.jar"
+path = "resources/shell-core-${version.ballerina.cli}.jar"
 
 [[dependency]]
 path = "resources/maven-artifact-3.6.3.jar"
@@ -260,7 +260,7 @@ path = "resources/maven-resolver-util-1.7.0.jar"
 path = "resources/maven-resolver-impl-1.7.0.jar"
 
 [[dependency]]
-path = "resources/velocity-1.6.jar"
+path = "resources/velocity-${velocity.version}.jar"
 
 [[dependency]]
 path = "resources/maven-model-3.6.3.jar"
@@ -278,7 +278,7 @@ path = "resources/commons-text-1.7.jar"
 path = "resources/org.eclipse.sisu.inject-0.3.4.jar"
 
 [[dependency]]
-path = "resources/ballerina-lang-2201.6.0.jar"
+path = "resources/ballerina-lang-${version.ballerina.cli}.jar"
 
 [[dependency]]
 path = "resources/oro-2.0.8.jar"
@@ -305,7 +305,7 @@ path = "resources/gson-2.8.9.jar"
 path = "resources/annotations-13.0.jar"
 
 [[dependency]]
-path = "resources/testerina-compiler-plugin-2201.6.0.jar"
+path = "resources/testerina-compiler-plugin-${version.ballerina.cli}.jar"
 
 [[dependency]]
 path = "resources/maven-resolver-transport-http-1.7.0.jar"
@@ -329,7 +329,7 @@ path = "resources/org.jacoco.core-0.8.5.jar"
 path = "resources/apache-mime4j-core-0.8.6.jar"
 
 [[dependency]]
-path = "resources/ballerina-cli-2201.6.0.jar"
+path = "resources/ballerina-cli-${version.ballerina.cli}.jar"
 
 [[dependency]]
 path = "resources/org.jacoco.report-0.8.5.jar"
