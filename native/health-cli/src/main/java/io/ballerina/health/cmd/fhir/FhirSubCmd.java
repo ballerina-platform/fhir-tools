@@ -47,6 +47,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.LogManager;
 
 @CommandLine.Command(name = "fhir", description = "Generates Ballerina service/client for FHIR contract " +
         "for Ballerina service.")
@@ -100,6 +101,7 @@ public class FhirSubCmd implements BLauncherCmd {
         this.exitWhenFinish = exitWhenFinish;
         buildConfig(printStream);
         this.resourceHome = HealthCmdUtils.getRuntimeResourcePath();
+        LogManager.getLogManager().reset();
     }
 
     public FhirSubCmd() {
@@ -107,11 +109,11 @@ public class FhirSubCmd implements BLauncherCmd {
         this.exitWhenFinish = true;
         buildConfig(printStream);
         this.resourceHome = HealthCmdUtils.getRuntimeResourcePath();
+        LogManager.getLogManager().reset();
     }
 
     @Override
     public void execute() {
-
         if (helpFlag) {
             Class<?> clazz = FhirSubCmd.class;
             ClassLoader classLoader = clazz.getClassLoader();
