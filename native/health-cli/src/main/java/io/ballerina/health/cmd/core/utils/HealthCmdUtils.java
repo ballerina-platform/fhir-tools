@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.ballerina.cli.launcher.BLauncherException;
 import io.ballerina.health.cmd.core.exception.BallerinaHealthException;
 
 import java.io.File;
@@ -76,5 +77,11 @@ public class HealthCmdUtils {
         }
         igConfig.add("dirPath", new Gson().toJsonTree(specPath));
         return igConfig;
+    }
+
+    public static void throwLauncherException(Throwable error) throws BLauncherException{
+        BLauncherException launcherException = new BLauncherException();
+        launcherException.initCause(error);
+        throw launcherException;
     }
 }

@@ -20,7 +20,6 @@ package io.ballerina.health.cmd.fhir;
 
 import com.google.gson.*;
 import io.ballerina.cli.BLauncherCmd;
-import io.ballerina.cli.launcher.BLauncherException;
 import io.ballerina.health.cmd.core.config.HealthCmdConfig;
 import io.ballerina.health.cmd.core.exception.BallerinaHealthException;
 import io.ballerina.health.cmd.core.utils.ErrorMessages;
@@ -127,9 +126,7 @@ public class FhirSubCmd implements BLauncherCmd {
                     }
                 } catch (IOException e) {
                     printStream.println("Helper text is not available.");
-                    BLauncherException launcherException = new BLauncherException();
-                    launcherException.initCause(e);
-                    throw launcherException;
+                    HealthCmdUtils.throwLauncherException(e);
                 }
             }
             printStream.println("An Error occurred internally while fetching the Help text.");
@@ -226,14 +223,10 @@ public class FhirSubCmd implements BLauncherCmd {
             } catch (CodeGenException e) {
                 printStream.println(ErrorMessages.LIB_INITIALIZING_FAILED + Arrays.toString(e.getStackTrace())
                         + e.getMessage());
-                BLauncherException launcherException = new BLauncherException();
-                launcherException.initCause(e);
-                throw launcherException;
+                HealthCmdUtils.throwLauncherException(e);
             } catch (BallerinaHealthException e) {
                 printStream.println(ErrorMessages.ARG_VALIDATION_FAILED + e.getMessage());
-                BLauncherException launcherException = new BLauncherException();
-                launcherException.initCause(e);
-                throw launcherException;
+                HealthCmdUtils.throwLauncherException(e);
             }
 
             for (JsonElement jsonElement : toolExecConfigArr) {
@@ -281,19 +274,13 @@ public class FhirSubCmd implements BLauncherCmd {
                     mainTemplateGenerator = tool.execute(fhirToolLib.getToolContext());
                 } catch (ClassNotFoundException e) {
                     printStream.println(ErrorMessages.TOOL_IMPL_NOT_FOUND + e.getMessage());
-                    BLauncherException launcherException = new BLauncherException();
-                    launcherException.initCause(e);
-                    throw launcherException;
+                    HealthCmdUtils.throwLauncherException(e);
                 } catch (InstantiationException | IllegalAccessException e) {
                     printStream.println(ErrorMessages.CONFIG_INITIALIZING_FAILED);
-                    BLauncherException launcherException = new BLauncherException();
-                    launcherException.initCause(e);
-                    throw launcherException;
+                    HealthCmdUtils.throwLauncherException(e);
                 } catch (CodeGenException e) {
                     printStream.println(ErrorMessages.UNKNOWN_ERROR);
-                    BLauncherException launcherException = new BLauncherException();
-                    launcherException.initCause(e);
-                    throw launcherException;
+                    HealthCmdUtils.throwLauncherException(e);
                 }
                 if (mainTemplateGenerator != null) {
                     try {
@@ -304,9 +291,7 @@ public class FhirSubCmd implements BLauncherCmd {
                                 mainTemplateGenerator.getGeneratorProperties());
                     } catch (CodeGenException e) {
                         printStream.println(ErrorMessages.UNKNOWN_ERROR + e.getMessage());
-                        BLauncherException launcherException = new BLauncherException();
-                        launcherException.initCause(e);
-                        throw launcherException;
+                        HealthCmdUtils.throwLauncherException(e);
                     }
                 } else {
                     printStream.println("Template generator is not registered for the tool: " + name);
