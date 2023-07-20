@@ -42,6 +42,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -69,7 +70,6 @@ public class FhirSubCmd implements BLauncherCmd {
     private JsonObject defaultConfigJson = null;
     @CommandLine.Option(names = {"--help", "-h", "?"}, usageHelp = true, hidden = true)
     private boolean helpFlag;
-
 
     @CommandLine.Option(names = {"-m", "--mode"}, description = "Execution mode. Only \"template\" and " +
             "\"package\" options are supported.")
@@ -135,13 +135,15 @@ public class FhirSubCmd implements BLauncherCmd {
             HealthCmdUtils.exitError(exitWhenFinish);
         }
 
-        if (argList.isEmpty()) {
+        if (argList == null || argList.isEmpty()) {
             //at minimum arg count is 1 (spec path)
-            printStream.println("Invalid number of arguments received for FHIR !" +
-                    "\n try bal health --help for more information.");
+            printStream.println("Invalid number of arguments received for FHIR tool command.");
+            printStream.println("Try bal health --help for more information.");
             HealthCmdUtils.exitError(exitWhenFinish);
         }
         this.engageSubCommand(argList);
+        printStream.println("Ballerina FHIR package generation completed successfully. Generated packages can be found "
+                + "at " + targetOutputPath);
         HealthCmdUtils.exitError(exitWhenFinish);
     }
 
@@ -175,10 +177,9 @@ public class FhirSubCmd implements BLauncherCmd {
 
     public void engageSubCommand(List<String> argList) {
 
-        //spec path is the last argument
-        specPathParam = argList.get(argList.size() - 1);
         getTargetOutputPath();
-        setSpecificationPath();
+        //spec path is the last argument
+        validateAndSetSpecificationPath(argList.get(argList.size() - 1));
 
         if (!StringUtils.isEmpty(configPath)) {
             //override default configs with user provided configs
@@ -323,13 +324,18 @@ public class FhirSubCmd implements BLauncherCmd {
     /**
      * This util is to get the output Path.
      */
-    private void setSpecificationPath() {
-        specificationPath = executionPath;
-        if (this.specPathParam != null) {
-            if (Paths.get(specPathParam).isAbsolute()) {
-                specificationPath = Paths.get(specPathParam);
+    private void validateAndSetSpecificationPath(String specPathParam) {
+        if (specPathParam != null) {
+            Path path = Paths.get(specPathParam);
+            if (path.isAbsolute()) {
+                specificationPath = path;
             } else {
-                specificationPath = Paths.get(specificationPath.toString(), specPathParam);
+                specificationPath = Paths.get(executionPath.toString(), specPathParam);
+            }
+            if (!Files.isDirectory(specificationPath)) {
+                printStream.println("Cannot find valid spec path pointed. Please check the path "
+                        + specPathParam + " is valid.");
+                HealthCmdUtils.exitError(exitWhenFinish);
             }
         }
     }
