@@ -261,6 +261,12 @@ public class FhirSubCmd implements BLauncherCmd {
                         if (packageName != null && !packageName.isEmpty()) {
                             JsonElement overrideConfig = new Gson().toJsonTree(packageName);
                             toolConfigInstance.overrideConfig("packageConfig.name", overrideConfig);
+                        } else if (igName != null && !igName.isEmpty()) {
+                            JsonElement overrideConfig = new Gson().toJsonTree(igName);
+                            toolConfigInstance.overrideConfig("packageConfig.name.append", overrideConfig);
+                        } else {
+                            JsonElement overrideConfig = new Gson().toJsonTree(HealthCmdUtils.getDirectories(specificationPath).get(0));
+                            toolConfigInstance.overrideConfig("packageConfig.name.append", overrideConfig);
                         }
                         if (orgName != null && !orgName.isEmpty()) {
                             JsonElement overrideConfig = new Gson().toJsonTree(orgName);
