@@ -67,6 +67,9 @@ public class BallerinaPackageGenTool extends AbstractFHIRTool {
 
             Map<String, Object> properties = new HashMap<>();
             properties.put("toolConfig", packageGenToolConfig);
+            if (packageContextGenerator.getPackageContext() == null) {
+                throw new CodeGenException("Package context is not available.");
+            }
             properties.put("packageContext", packageContextGenerator.getPackageContext());
             packageTemplateGenerator.setGeneratorProperties(properties);
             return packageTemplateGenerator;
