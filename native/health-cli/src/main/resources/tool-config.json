@@ -154,7 +154,7 @@
           "enable": true,
           "packageConfigs": {
             "org": "ballerinax",
-            "name": "healthcare.fhir.r4.international401",
+            "name": "healthcare.fhir",
             "version": "0.0.1",
             "ballerinaDistribution": "2201.6.0",
             "authors": ["Ballerina"],
@@ -171,6 +171,7 @@
             },
             {
               "implementationGuide": "USCore",
+
               "enable": true,
               "includedProfiles": [],
               "excludedProfiles": []

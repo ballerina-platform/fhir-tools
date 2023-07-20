@@ -216,10 +216,7 @@ public class FhirSubCmd implements BLauncherCmd {
                 fhirToolConfig.configure(toolConfig);
 
                 //override default configs for package-gen mode with user provided configs
-                if (igName != null && !igName.isEmpty()) {
-                    fhirToolConfig.overrideConfig("FHIRImplementationGuides", HealthCmdUtils.getIGConfigElement(
-                            igName, igCode, ""));
-                }
+                handleSpecificationPathAndOverride(fhirToolConfig, specificationPath);
 
                 fhirToolConfig.setSpecBasePath(specificationPath.toString());
                 fhirToolLib.initialize(fhirToolConfig);
@@ -358,6 +355,48 @@ public class FhirSubCmd implements BLauncherCmd {
         } catch (BallerinaHealthException e) {
             printStream.println(ErrorMessages.LIB_INITIALIZING_FAILED + Arrays.toString(e.getStackTrace()) +
                     e.getMessage());
+        }
+    }
+
+    private void handleSpecificationPathAndOverride(FHIRToolConfig fhirToolConfig, Path specificationPath)
+            throws BallerinaHealthException {
+
+        if (igName != null && !igName.isEmpty()) {
+            //check if a directory exists; if so, process spec files in that directory.
+            // Multiple directories are not supported.
+            if (HealthCmdUtils.getDirectories(specificationPath).size() > 1) {
+                //not supported. Maybe we can let if IG name is exist in default config.
+                HealthCmdUtils.exitError(this.exitWhenFinish);
+            } else if (HealthCmdUtils.getDirectories(specificationPath).size() == 1) {
+                //valid directory, look for spec files
+                String igDirPath = HealthCmdUtils.getDirectories(specificationPath).get(0);
+                fhirToolConfig.overrideConfig("FHIRImplementationGuides", HealthCmdUtils.getIGConfigElement(
+                        igName, igCode, HealthCmdUtils.generateIgDirectoryPath(specificationPath.toString(), igDirPath)));
+            } else {
+                //check for spec files
+                if (Files.exists(specificationPath)) {
+                    fhirToolConfig.overrideConfig("FHIRImplementationGuides", HealthCmdUtils.getIGConfigElement(
+                            igName, igCode));
+                } else {
+                    printStream.println("No spec files found in the given path.");
+                    HealthCmdUtils.exitError(this.exitWhenFinish);
+                }
+            }
+        } else {
+            //take directory name as igName and proceed. Multiple directories are not supported.
+            if (HealthCmdUtils.getDirectories(specificationPath).size() > 1) {
+                //not supported. Maybe we can let standard IG names to be executed.
+                HealthCmdUtils.exitError(this.exitWhenFinish);
+            } else if (HealthCmdUtils.getDirectories(specificationPath).size() == 1) {
+                //valid directory, look for spec files
+                String igDirPath = HealthCmdUtils.getDirectories(specificationPath).get(0);
+                fhirToolConfig.overrideConfig("FHIRImplementationGuides", HealthCmdUtils.getIGConfigElement(
+                        igDirPath, igDirPath, HealthCmdUtils.generateIgDirectoryPath(specificationPath.toString(), igDirPath)));
+            } else {
+                //no ig name provided, no directories found. Can't proceed.
+                printStream.println("Can't proceed with the given path.");
+                HealthCmdUtils.exitError(this.exitWhenFinish);
+            }
         }
 
     }
