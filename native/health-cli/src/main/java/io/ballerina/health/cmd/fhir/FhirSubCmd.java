@@ -371,7 +371,7 @@ public class FhirSubCmd implements BLauncherCmd {
         if (igName != null && !igName.isEmpty()) {
             //check if a directory exists; if so, process spec files in that directory.
             // Multiple directories are not supported.
-            if (isOverrideBlocked(subDirCount, fhirToolConfig, igName, igCode)) {
+            if (canOverrideConfig(subDirCount, fhirToolConfig, igName, igCode)) {
                 //check for spec files
                 if (Files.exists(specificationPath)) {
                     fhirToolConfig.overrideConfig("FHIRImplementationGuides", HealthCmdUtils.getIGConfigElement(
@@ -383,7 +383,7 @@ public class FhirSubCmd implements BLauncherCmd {
             }
         } else {
             //take directory name as igName and proceed. Multiple directories are not supported.
-            if (isOverrideBlocked(subDirCount, fhirToolConfig, "", "")) {
+            if (canOverrideConfig(subDirCount, fhirToolConfig, "", "")) {
                 //no ig name provided, no directories found. Can't proceed.
                 printStream.println("Can't proceed with the given path.");
                 HealthCmdUtils.exitError(this.exitWhenFinish);
@@ -392,7 +392,7 @@ public class FhirSubCmd implements BLauncherCmd {
 
     }
 
-    private boolean isOverrideBlocked(int subDirCount, FHIRToolConfig fhirToolConfig, String igName, String igCode) {
+    private boolean canOverrideConfig(int subDirCount, FHIRToolConfig fhirToolConfig, String igName, String igCode) {
         if (subDirCount > 1) {
             //not supported. Maybe we can let standard IG names to be executed.
             printStream.println("Generating packages for multiple IGs is not supported.");

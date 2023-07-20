@@ -79,9 +79,8 @@ public class HealthCmdUtils {
     public static String generateIgDirectoryPath(String specPath, String igName) {
         if (specPath.endsWith(File.separator)) {
             return igName + File.separator;
-        } else {
-            return File.separator + igName + File.separator;
         }
+        return File.separator + igName + File.separator;
     }
 
     public static JsonElement getIGConfigElement(String igName, String igCode) {
