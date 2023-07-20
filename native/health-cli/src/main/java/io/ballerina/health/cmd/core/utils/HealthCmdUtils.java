@@ -84,7 +84,7 @@ public class HealthCmdUtils {
         }
     }
 
-    public static JsonElement getIGConfigElement(String igName, String igCode) throws BallerinaHealthException {
+    public static JsonElement getIGConfigElement(String igName, String igCode) {
 
         if (igCode != null && igCode.isEmpty()) {
             return getIGConfigElement(igName, igCode, "");
