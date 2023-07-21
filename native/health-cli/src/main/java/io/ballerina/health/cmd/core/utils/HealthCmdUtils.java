@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.ballerina.cli.launcher.BLauncherException;
-import io.ballerina.health.cmd.core.exception.BallerinaHealthException;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;

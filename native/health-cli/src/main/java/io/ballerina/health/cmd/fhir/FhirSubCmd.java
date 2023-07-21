@@ -370,7 +370,7 @@ public class FhirSubCmd implements BLauncherCmd {
         int subDirCount = HealthCmdUtils.getDirectories(specificationPath).size();
         if (igName != null && !igName.isEmpty()) {
             //check if a directory exists; if so, process spec files in that directory.
-            // Multiple directories are not supported.
+            // Multiple directories will be skipped.
             if (canOverrideConfig(subDirCount, fhirToolConfig, igName, igCode)) {
                 //check for spec files
                 if (Files.exists(specificationPath)) {
@@ -393,10 +393,14 @@ public class FhirSubCmd implements BLauncherCmd {
     }
 
     private boolean canOverrideConfig(int subDirCount, FHIRToolConfig fhirToolConfig, String igName, String igCode) {
+        //Logic inverted for convenience.
         if (subDirCount > 1) {
-            //not supported. Maybe we can let standard IG names to be executed.
-            printStream.println("Generating packages for multiple IGs is not supported.");
-            HealthCmdUtils.exitError(this.exitWhenFinish);
+            if (igName.isEmpty()) {
+                printStream.println("Multiple directories found. Please provide an IG name.");
+                HealthCmdUtils.exitError(this.exitWhenFinish);
+            }
+            //given path contains multiple directories, and may contain spec files. can proceed since IG name is given.
+            return true;
         } else if (subDirCount == 1) {
             //valid directory, look for spec files
             String igDirName = HealthCmdUtils.getDirectories(specificationPath).get(0);
