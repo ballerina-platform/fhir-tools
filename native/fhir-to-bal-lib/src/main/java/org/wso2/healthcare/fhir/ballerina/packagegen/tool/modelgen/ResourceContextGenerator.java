@@ -140,7 +140,7 @@ public class ResourceContextGenerator {
                     .filter(d -> d.equals(CONSTRAINTS_LIB_IMPORT))
                     .findAny().isPresent();
 
-            if (!isConstraintsImportExists && isMandatoryRootElement(elementDefinition)) {
+            if (!isConstraintsImportExists && isMandatoryRootElement(elementDefinitions, elementDefinition)) {
                 Set<String> resourceDependencies = resourceTemplateContext.getResourceDependencies();
                 resourceDependencies.add(CONSTRAINTS_LIB_IMPORT);
             }
@@ -419,9 +419,33 @@ public class ResourceContextGenerator {
         return codes.length > 1;
     }
 
-    private boolean isMandatoryRootElement(ElementDefinition elementDefinition) {
-        return elementDefinition.getMin() == 1 && elementDefinition.getMax().equals("*") &&
-                elementDefinition.getPath().codePoints().filter(ch -> ch == '.').count() == 1;
+    /**
+     * Checks whether a given element is a mandatory root level element of FHIR resource.
+     *
+     * @param elementDefinitions List of element definitions of a FHIR resource
+     * @param elementDefinition  Element definition of a given element
+     * @return True if the given element is a mandatory root level element of FHIR resource
+     */
+    private boolean isMandatoryRootElement(List<ElementDefinition> elementDefinitions, ElementDefinition elementDefinition) {
+        boolean isMandatoryCardinality = elementDefinition.getMin() == 1 && elementDefinition.getMax().equals("*");
+        long fhirPathLevel = elementDefinition.getPath().codePoints().filter(ch -> ch == '.').count();
+        if (isMandatoryCardinality && fhirPathLevel == 1) {
+            return true;
+        }
+        //getting the root level parent FHIR path position of a given element.
+        int position = elementDefinition.getPath().indexOf(".", elementDefinition.getPath().indexOf(".") + 1);
+        if (position == -1) {
+            return false;
+        }
+        //getting the root level parent FHIR path of a given element.
+        String parentFhirPath = elementDefinition.getPath().substring(0, position);
+        for (ElementDefinition definition : elementDefinitions) {
+            if (definition.getPath().equals(parentFhirPath) && definition.getType().size() > 0 &&
+                    definition.getType().get(0).getCode().equals("BackboneElement")) {
+                return isMandatoryCardinality;
+            }
+        }
+        return false;
     }
 
     public Map<String, ResourceTemplateContext> getResourceTemplateContextMap() {
