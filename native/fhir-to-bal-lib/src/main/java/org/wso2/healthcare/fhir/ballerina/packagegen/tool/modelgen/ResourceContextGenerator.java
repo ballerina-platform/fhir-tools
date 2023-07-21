@@ -140,7 +140,7 @@ public class ResourceContextGenerator {
                     .filter(d -> d.equals(CONSTRAINTS_LIB_IMPORT))
                     .findAny().isPresent();
 
-            if (!isConstraintsImportExists && elementDefinition.getMin() == 1 && elementDefinition.getMax().equals("*")) {
+            if (!isConstraintsImportExists && isMandatoryRootElement(elementDefinition)) {
                 Set<String> resourceDependencies = resourceTemplateContext.getResourceDependencies();
                 resourceDependencies.add(CONSTRAINTS_LIB_IMPORT);
             }
@@ -417,6 +417,11 @@ public class ResourceContextGenerator {
     private boolean isCodedString(String string) {
         String[] codes = string.split(Pattern.quote("|"));
         return codes.length > 1;
+    }
+
+    private boolean isMandatoryRootElement(ElementDefinition elementDefinition) {
+        return elementDefinition.getMin() == 1 && elementDefinition.getMax().equals("*") &&
+                elementDefinition.getPath().codePoints().filter(ch -> ch == '.').count() == 1;
     }
 
     public Map<String, ResourceTemplateContext> getResourceTemplateContextMap() {
