@@ -1,7 +1,6 @@
 package io.ballerina.health.cmd.core.utils;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.ballerina.cli.launcher.BLauncherException;
@@ -10,6 +9,9 @@ import io.ballerina.health.cmd.core.exception.BallerinaHealthException;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Utility methods for health command.
@@ -53,35 +55,60 @@ public class HealthCmdUtils {
         return toolHome + HealthCmdConstants.CMD_RESOURCE_PATH_SUFFIX;
     }
 
-    public static String generateIgNameFromPath(String specPath) throws BallerinaHealthException {
+    public static String generateIgNameFromPath(String specPath) {
         if (specPath.contains(File.separator)) {
             //nested path given as input, last element is the IG name
             return specPath.substring(specPath.lastIndexOf(File.separator) + 1).replaceAll(
-                    " ","-").replaceAll("\\$","-");
+                    " ", "-").replaceAll("\\$", "-");
         }
-        return specPath.replaceAll(" ","-").replaceAll("\\$","-");
+        return specPath.replaceAll(" ", "-").replaceAll("\\$", "-");
     }
 
-    public static JsonElement getIGConfigElement(String igName, String igCode, String specPath) throws BallerinaHealthException {
+    public static JsonElement getIGConfigElement(String igName, String igCode, String specPath) {
 
         JsonObject igConfig = new JsonObject();
         if (igName == null || igName.isEmpty()) {
             igName = generateIgNameFromPath(specPath);
         }
         igConfig.add("name", new Gson().toJsonTree(igName));
-
-        if (igCode != null && igCode.isEmpty()) {
-            igConfig.add("code", new Gson().toJsonTree(igCode));
-        } else {
-            igConfig.add("code", new Gson().toJsonTree(igName));
-        }
+        igConfig.add("code", new Gson().toJsonTree(igCode));
         igConfig.add("dirPath", new Gson().toJsonTree(specPath));
         return igConfig;
     }
 
-    public static void throwLauncherException(Throwable error) throws BLauncherException{
+    public static String generateIgDirectoryPath(String specPath, String igName) {
+        if (specPath.endsWith(File.separator)) {
+            return igName + File.separator;
+        }
+        return File.separator + igName + File.separator;
+    }
+
+    public static JsonElement getIGConfigElement(String igName, String igCode) {
+
+        if (igCode != null && igCode.isEmpty()) {
+            return getIGConfigElement(igName, igCode, "");
+        } else {
+            return getIGConfigElement(igName, igName, "");
+        }
+    }
+
+    public static void throwLauncherException(Throwable error) throws BLauncherException {
         BLauncherException launcherException = new BLauncherException();
         launcherException.initCause(error);
         throw launcherException;
+    }
+
+    public static List<String> getDirectories(Path specifiedPath) {
+        List<String> subDirectories = new ArrayList<>();
+        File specPath = new File(specifiedPath.toString());
+        File[] files = specPath.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    subDirectories.add(file.getName());
+                }
+            }
+        }
+        return subDirectories;
     }
 }

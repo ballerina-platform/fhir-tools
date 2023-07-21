@@ -216,10 +216,7 @@ public class FhirSubCmd implements BLauncherCmd {
                 fhirToolConfig.configure(toolConfig);
 
                 //override default configs for package-gen mode with user provided configs
-                if (igName != null && !igName.isEmpty()) {
-                    fhirToolConfig.overrideConfig("FHIRImplementationGuides", HealthCmdUtils.getIGConfigElement(
-                            igName, igCode, specPathParam));
-                }
+                handleSpecificationPathAndOverride(fhirToolConfig, specificationPath);
 
                 fhirToolConfig.setSpecBasePath(specificationPath.toString());
                 fhirToolLib.initialize(fhirToolConfig);
@@ -264,6 +261,12 @@ public class FhirSubCmd implements BLauncherCmd {
                         if (packageName != null && !packageName.isEmpty()) {
                             JsonElement overrideConfig = new Gson().toJsonTree(packageName);
                             toolConfigInstance.overrideConfig("packageConfig.name", overrideConfig);
+                        } else if (igName != null && !igName.isEmpty()) {
+                            JsonElement overrideConfig = new Gson().toJsonTree(igName);
+                            toolConfigInstance.overrideConfig("packageConfig.name.append", overrideConfig);
+                        } else {
+                            JsonElement overrideConfig = new Gson().toJsonTree(HealthCmdUtils.getDirectories(specificationPath).get(0));
+                            toolConfigInstance.overrideConfig("packageConfig.name.append", overrideConfig);
                         }
                         if (orgName != null && !orgName.isEmpty()) {
                             JsonElement overrideConfig = new Gson().toJsonTree(orgName);
@@ -359,6 +362,54 @@ public class FhirSubCmd implements BLauncherCmd {
             printStream.println(ErrorMessages.LIB_INITIALIZING_FAILED + Arrays.toString(e.getStackTrace()) +
                     e.getMessage());
         }
+    }
 
+    private void handleSpecificationPathAndOverride(FHIRToolConfig fhirToolConfig, Path specificationPath)
+            throws BallerinaHealthException {
+
+        int subDirCount = HealthCmdUtils.getDirectories(specificationPath).size();
+        if (igName != null && !igName.isEmpty()) {
+            //check if a directory exists; if so, process spec files in that directory.
+            // Multiple directories are not supported.
+            if (canOverrideConfig(subDirCount, fhirToolConfig, igName, igCode)) {
+                //check for spec files
+                if (Files.exists(specificationPath)) {
+                    fhirToolConfig.overrideConfig("FHIRImplementationGuides", HealthCmdUtils.getIGConfigElement(
+                            igName, igCode));
+                } else {
+                    printStream.println("No spec files found in the given path.");
+                    HealthCmdUtils.exitError(this.exitWhenFinish);
+                }
+            }
+        } else {
+            //take directory name as igName and proceed. Multiple directories are not supported.
+            if (canOverrideConfig(subDirCount, fhirToolConfig, "", "")) {
+                //no ig name provided, no directories found. Can't proceed.
+                printStream.println("Can't proceed with the given path.");
+                HealthCmdUtils.exitError(this.exitWhenFinish);
+            }
+        }
+
+    }
+
+    private boolean canOverrideConfig(int subDirCount, FHIRToolConfig fhirToolConfig, String igName, String igCode) {
+        if (subDirCount > 1) {
+            //not supported. Maybe we can let standard IG names to be executed.
+            printStream.println("Generating packages for multiple IGs is not supported.");
+            HealthCmdUtils.exitError(this.exitWhenFinish);
+        } else if (subDirCount == 1) {
+            //valid directory, look for spec files
+            String igDirName = HealthCmdUtils.getDirectories(specificationPath).get(0);
+            if (igName.isEmpty()) {
+                igName = igDirName;
+            }
+            if (igCode.isEmpty()) {
+                igCode = igDirName;
+            }
+            fhirToolConfig.overrideConfig("FHIRImplementationGuides", HealthCmdUtils.getIGConfigElement(
+                    igName, igCode, HealthCmdUtils.generateIgDirectoryPath(specificationPath.toString(), igDirName)));
+            return false;
+        }
+        return true;
     }
 }

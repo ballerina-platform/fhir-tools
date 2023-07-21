@@ -76,8 +76,7 @@ public class ResourceContextGenerator {
         LOG.debug("Started: Resource Template Context population");
         for (Map.Entry<String, FHIRResourceDef> definitionEntry : ig.getResources().entrySet()) {
             StructureDefinition structureDefinition = definitionEntry.getValue().getDefinition();
-            if (definitionEntry.getValue().getDefinition().getKind().name().equalsIgnoreCase("RESOURCE") &&
-                    checkEnabledFHIRResources(structureDefinition, ig.getName())) {
+            if (definitionEntry.getValue().getDefinition().getKind().name().equalsIgnoreCase("RESOURCE")) {
 
                 this.resourceExtendedElementMap = new HashMap<>();
 
@@ -86,7 +85,6 @@ public class ResourceContextGenerator {
                 resourceTemplateContext.setResourceName(structureDefinition.getName());
                 resourceTemplateContext.setProfile(definitionEntry.getValue().getDefinition().getUrl());
                 resourceTemplateContext.setIgName(ig.getName());
-                resourceTemplateContext.setBaseIgName(toolConfig.getIncludedIGConfigs().get(ig.getName()).getBaseIGPackage());
 
                 ResourceDefinitionAnnotation resourceDefinitionAnnotation = new ResourceDefinitionAnnotation();
                 resourceDefinitionAnnotation.setName(structureDefinition.getName());
@@ -398,22 +396,6 @@ public class ResourceContextGenerator {
         this.dataTypesRegistry.add(suggestedIdentifier.toString());
         LOG.debug("Ended: Extended Element Identifier generation");
         return suggestedIdentifier.toString();
-    }
-
-    /**
-     * Check the config and filter profiles before generating
-     *
-     * @param structureDefinition FHIR structure definition
-     * @param igName              IG name
-     */
-    public boolean checkEnabledFHIRResources(StructureDefinition structureDefinition, String igName) {
-        String url = structureDefinition.getUrl();
-
-        if (this.toolConfig.getIncludedIGConfigs().get(igName).getIncludedProfiles().isEmpty()) {
-            return !this.toolConfig.getIncludedIGConfigs().get(igName).getExcludedProfiles().contains(url);
-        } else {
-            return this.toolConfig.getIncludedIGConfigs().get(igName).getIncludedProfiles().contains(url);
-        }
     }
 
     /**
