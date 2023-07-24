@@ -134,10 +134,15 @@ public class FhirSubCmd implements BLauncherCmd {
             printStream.println("An Error occurred internally while fetching the Help text.");
             HealthCmdUtils.exitError(exitWhenFinish);
         }
-
         if (argList == null || argList.isEmpty()) {
             //at minimum arg count is 1 (spec path)
             printStream.println("Invalid number of arguments received for FHIR tool command.");
+            printStream.println("Try bal health --help for more information.");
+            HealthCmdUtils.exitError(exitWhenFinish);
+        }
+        if (mode == null || mode.isEmpty()) {
+            //mode is required param
+            printStream.println("Invalid mode received for FHIR tool command.");
             printStream.println("Try bal health --help for more information.");
             HealthCmdUtils.exitError(exitWhenFinish);
         }
@@ -237,7 +242,7 @@ public class FhirSubCmd implements BLauncherCmd {
                 String command = toolExecConfig.get("command").getAsString();
                 Tool tool;
                 TemplateGenerator mainTemplateGenerator = null;
-                if (mode != null && !mode.equals(command)) {
+                if (!mode.equals(command)) {
                     continue;
                 }
                 try {
