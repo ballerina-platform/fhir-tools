@@ -32,7 +32,10 @@ import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.ResourceTemplate
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.CommonUtil;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.VelocityUtil;
 
+import java.io.Console;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -69,6 +72,19 @@ public class PackageTemplateGenerator extends AbstractFHIRTemplateGenerator {
 
         String packagePath = this.getTargetDir() + File.separator + toolConfig.getPackageConfig().getName();
         String packageName = toolConfig.getPackageConfig().getName();
+        // Provide option to check and overwrite the existing package
+        Console console = System.console();
+        if (console != null && Files.exists(Paths.get(packagePath))) {
+            String input = console.readLine("Generated package already exists. Do you want to overwrite? (y/n): ");
+            if (input.equalsIgnoreCase("n")) {
+                System.exit(0);
+            } else if (input.equalsIgnoreCase("y")) {
+                System.out.println("Overwriting the existing package.");
+            } else {
+                System.out.println("Invalid input. Exiting the tool.");
+                System.exit(0);
+            }
+        }
         this.packageProperties.put("packagePath", packagePath);
         this.packageProperties.put("packageName", packageName);
         this.packageProperties.put("packageIdentifier", packageName.substring(packageName.lastIndexOf(".") + 1));
