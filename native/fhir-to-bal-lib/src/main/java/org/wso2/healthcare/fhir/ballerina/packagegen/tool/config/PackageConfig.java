@@ -116,7 +116,7 @@ public class PackageConfig {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = name.replace("-","");
     }
 
     public void setVersion(String version) {
