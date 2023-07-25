@@ -76,9 +76,9 @@ public class PackageTemplateGenerator extends AbstractFHIRTemplateGenerator {
         Console console = System.console();
         if (console != null && Files.exists(Paths.get(packagePath))) {
             String input = console.readLine("Generated package already exists. Do you want to overwrite? (y/n): ");
-            if (input.equalsIgnoreCase("n")) {
+            if ("n".equalsIgnoreCase(input)) {
                 System.exit(0);
-            } else if (input.equalsIgnoreCase("y")) {
+            } else if ("y".equalsIgnoreCase(input)) {
                 System.out.println("Overwriting the existing package.");
             } else {
                 System.out.println("Invalid input. Exiting the tool.");
