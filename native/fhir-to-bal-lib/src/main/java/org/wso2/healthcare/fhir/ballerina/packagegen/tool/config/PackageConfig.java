@@ -23,6 +23,7 @@ import com.google.gson.JsonObject;
 import net.consensys.cava.toml.TomlArray;
 import net.consensys.cava.toml.TomlTable;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.ToolConstants;
+import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.CommonUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -116,7 +117,7 @@ public class PackageConfig {
     }
 
     public void setName(String name) {
-        this.name = name.replace("-","");
+        this.name = CommonUtil.validateAndRevisePackageName(name);
     }
 
     public void setVersion(String version) {

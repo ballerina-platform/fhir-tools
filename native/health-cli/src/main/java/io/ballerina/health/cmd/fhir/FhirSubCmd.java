@@ -376,7 +376,8 @@ public class FhirSubCmd implements BLauncherCmd {
             throws BallerinaHealthException {
 
         if (igName == null || igName.isEmpty()) {
-            igName = specificationPath.toString().split("/")[specificationPath.toString().length()];
+            String[] path = specificationPath.toString().split("/");
+            igName = path[path.length- 1];
         }
         if (Files.exists(specificationPath)) {
             fhirToolConfig.overrideConfig("FHIRImplementationGuides", HealthCmdUtils.getIGConfigElement(

@@ -24,33 +24,33 @@ COMMANDS
         fhir
             Refer to the FHIR specification when generating the Ballerina artifacts.
 
-        OPTIONS
-                -m, --mode <mode-type>
-                    Mode can be 'package'. If mode is set to 'package',
-                    a Ballerina package will be generated including all
-                    the records and types.
-                    New modes will be added in future releases.
-                -o, --output <output>
-                    Location of the generated Ballerina artifacts. If this path is not
-                    specified, the output will be written to the same directory from
-                    which the command is run.
-                --ig-name <name-of-the-implementation-guide>
-                    Name of the Implementation guide to be loaded to the tool. By default,
-                    name of the directory which contain FHIR specification files will be
-                    taken as the ig-name.
-                --package-name <fully-qualified-name-of-package>
-                    Name of the Ballerina package to be generated.
-                    Refer https://ballerina.io/learn/package-references/#the-name-field
-                --org-name <org-name-of-the-package>
-                    Organization name of the Ballerina package to be generated.
-                    Refer https://ballerina.io/learn/package-references/#the-org-field
+            OPTIONS
+                    -m, --mode <mode-type>
+                        Mode can be 'package'. If mode is set to 'package',
+                        a Ballerina package will be generated including all
+                        the records and types.
+                        New modes will be added in future releases.
+                    -o, --output <output>
+                        Location of the generated Ballerina artifacts. If this path is not
+                        specified, the output will be written to the same directory from
+                        which the command is run.
+                    --ig-name <name-of-the-implementation-guide>
+                        Name of the Implementation guide to be loaded to the tool. By default,
+                        name of the directory which contain FHIR specification files will be
+                        taken as the ig-name.
+                    --package-name <fully-qualified-name-of-package>
+                        Name of the Ballerina package to be generated.
+                        Refer https://ballerina.io/learn/package-references/#the-name-field
+                    --org-name <org-name-of-the-package>
+                        Organization name of the Ballerina package to be generated.
+                        Refer https://ballerina.io/learn/package-references/#the-org-field
 
-        EXAMPLES
-                Generate a Ballerina package for the FHIR artifacts of USCore
-                implementation guide.
-                    $ bal health fhir -m package --ig-name USCore ./path_to_uscore_definitions
+            EXAMPLES
+                    Generate a Ballerina package for the FHIR artifacts of USCore
+                    implementation guide.
+                        $ bal health fhir -m package --ig-name USCore ./path_to_uscore_definitions
 
-                Generate Ballerina package for the FHIR artifacts of
-                USCore implementation guide and write the output
-                to the given directory.
-                        $ bal health fhir -m package --ig-name USCore -o ./output_path ./path_to_uscore_definitions
+                    Generate Ballerina package for the FHIR artifacts of
+                    USCore implementation guide and write the output
+                    to the given directory.
+                            $ bal health fhir -m package --ig-name USCore -o ./output_path ./path_to_uscore_definitions
