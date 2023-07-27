@@ -43,6 +43,11 @@
             <artifactId>fhir-core</artifactId>
             <version>${version.healthcare.tool.framework}</version>
         </dependency>
+        <dependency>
+            <groupId>org.ballerinalang</groupId>
+            <artifactId>ballerina-lang</artifactId>
+            <version>${version.ballerina.cli}</version>
+        </dependency>
     </dependencies>
 
     <build>

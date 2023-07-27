@@ -149,9 +149,14 @@ public class FhirSubCmd implements BLauncherCmd {
             printStream.println("Try bal health --help for more information.");
             HealthCmdUtils.exitError(exitWhenFinish);
         }
-        this.engageSubCommand(argList);
-        printStream.println("Ballerina FHIR package generation completed successfully. Generated packages can be found "
-                + "at " + targetOutputPath);
+        if (this.engageSubCommand(argList)) {
+            printStream.println("Ballerina FHIR package generation completed successfully. Generated packages can be found "
+                    + "at " + targetOutputPath);
+        } else {
+            printStream.println("Invalid mode received for FHIR tool command.");
+            printStream.println("Try bal health --help for more information.");
+        }
+
         HealthCmdUtils.exitError(exitWhenFinish);
     }
 
@@ -183,7 +188,7 @@ public class FhirSubCmd implements BLauncherCmd {
         }
     }
 
-    public void engageSubCommand(List<String> argList) {
+    public boolean engageSubCommand(List<String> argList) {
 
         getTargetOutputPath();
         //spec path is the last argument
@@ -238,6 +243,7 @@ public class FhirSubCmd implements BLauncherCmd {
             }
 
             for (JsonElement jsonElement : toolExecConfigArr) {
+                //todo: since the CLI supports only one mode at a time, this for loop can be removed.
                 JsonObject toolExecConfig = jsonElement.getAsJsonObject();
                 String configClassName = toolExecConfig.get("configClass").getAsString();
                 String toolClassName = toolExecConfig.get("toolClass").getAsString();
@@ -307,6 +313,7 @@ public class FhirSubCmd implements BLauncherCmd {
                         printStream.println(ErrorMessages.UNKNOWN_ERROR + e.getMessage());
                         HealthCmdUtils.throwLauncherException(e);
                     }
+                    return true;
                 } else {
                     printStream.println("Template generator is not registered for the tool: " + name);
                     printStream.println(ErrorMessages.CONFIG_INITIALIZING_FAILED);
@@ -314,6 +321,7 @@ public class FhirSubCmd implements BLauncherCmd {
                 }
             }
         }
+        return false;
     }
 
     /**
@@ -377,7 +385,7 @@ public class FhirSubCmd implements BLauncherCmd {
 
         if (igName == null || igName.isEmpty()) {
             String[] path = specificationPath.toString().split("/");
-            igName = path[path.length- 1];
+            igName = path[path.length - 1];
         }
         if (Files.exists(specificationPath)) {
             fhirToolConfig.overrideConfig("FHIRImplementationGuides", HealthCmdUtils.getIGConfigElement(

@@ -26,18 +26,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * Common utility functions of Package Gen Tool.
  */
 public class CommonUtil {
-
-    private static final Pattern separatedIdentifierPattern = Pattern.compile("^[a-zA-Z0-9_.]*$");
-    private static final Pattern onlyDotsPattern = Pattern.compile("^[.]+$");
-    private static final Pattern onlyNonAlphanumericPattern = Pattern.compile("^[^a-zA-Z0-9]+$");
-
 
     /**
      * Concat path segments with separator.
@@ -196,108 +190,5 @@ public class CommonUtil {
         String replacement = "$1_$2";
         str = str.replaceAll(regex, replacement).toLowerCase();
         return str;
-    }
-
-    /**
-     * Guess package name with valid pattern.
-     * Reference: <a href="https://github.com/ballerina-platform/ballerina-lang/blob/master/compiler/ballerina-lang/src/main/java/io/ballerina/projects/util/ProjectUtils.java">...</a>
-     *
-     * @param packageName package name
-     * @return package name
-     */
-    public static String validateAndRevisePackageName(String packageName) {
-        if (!validateOnlyNonAlphanumeric(packageName)) {
-            packageName = "fhir_package";
-        }
-
-        if (!validatePackageName(packageName)) {
-            packageName = packageName.replaceAll("[^a-zA-Z0-9_.]", "_");
-        }
-
-        // if package name is starting with numeric character, prepend `pkg`
-        if (packageName.matches("[0-9].*")) {
-            packageName = "pkg" + packageName;
-        }
-
-        // if package name is starting with underscore remove it
-        if (packageName.startsWith("_")) {
-            packageName = removeFirstChar(packageName);
-        }
-
-        // if package name has consecutive underscores, replace them with a single underscore
-        if (packageName.contains("__")) {
-            packageName = packageName.replaceAll("__", "_");
-        }
-
-        // if package name has trailing underscore remove it
-        if (packageName.endsWith("_")) {
-            packageName = removeLastChar(packageName);
-        }
-        return packageName;
-    }
-
-    private static boolean validateOnlyNonAlphanumeric(String identifiers) {
-        Matcher m = onlyNonAlphanumericPattern.matcher(identifiers);
-
-        return !m.matches();
-    }
-
-    /**
-     * Validates the package name.
-     *
-     * @param packageName The package name.
-     * @return True if valid package name, else false.
-     */
-    public static boolean validatePackageName(String packageName) {
-        return validateDotSeparatedIdentifiers(packageName)
-                && validateUnderscoresOfName(packageName)
-                && validateInitialNumericsOfName(packageName);
-    }
-
-    private static boolean validateDotSeparatedIdentifiers(String identifiers) {
-        Matcher m = separatedIdentifierPattern.matcher(identifiers);
-        Matcher mm = onlyDotsPattern.matcher(identifiers);
-
-        return m.matches() && !mm.matches();
-    }
-
-    /**
-     * Checks the organization, package or module name has initial, trailing or consecutive underscores.
-     *
-     * @param name name.
-     * @return true if name does not have initial, trailing or consecutive underscores, else false.
-     */
-    public static boolean validateUnderscoresOfName(String name) {
-        return !(name.startsWith("_") || name.endsWith("_") || name.contains("__"));
-    }
-
-    /**
-     * Checks the organization, package or module name has initial numeric characters.
-     *
-     * @param name name.
-     * @return true if name does not have initial numeric characters, else false.
-     */
-    public static boolean validateInitialNumericsOfName(String name) {
-        return !name.matches("[0-9].*");
-    }
-
-    /**
-     * Remove first character of the given string.
-     *
-     * @param aString given string
-     * @return string removed last character
-     */
-    public static String removeFirstChar(String aString) {
-        return aString.substring(1);
-    }
-
-    /**
-     * Remove last character of the given string.
-     *
-     * @param aString given string
-     * @return string removed last character
-     */
-    public static String removeLastChar(String aString) {
-        return aString.substring(0, aString.length() - 1);
     }
 }
