@@ -48,6 +48,9 @@ public class HealthCmd implements BLauncherCmd {
     @CommandLine.Option(names = {"--help", "-h", "?"}, usageHelp = true)
     private boolean helpFlag;
 
+    @CommandLine.Option(names = {"--version", "-v"})
+    private boolean toolVersion;
+
     @CommandLine.Parameters(description = "Options for the sub commands")
     private List<String> argList;
 
@@ -66,6 +69,13 @@ public class HealthCmd implements BLauncherCmd {
     public void execute() {
         if (helpFlag) {
             printHelpTextAsStream();
+            return;
+        }
+
+        if (toolVersion){
+            Package packageVersion = this.getClass().getPackage();
+            String version = packageVersion.getImplementationVersion();
+            printStream.println(version);
             return;
         }
 

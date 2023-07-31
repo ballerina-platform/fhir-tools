@@ -14,22 +14,23 @@ DESCRIPTION
         Make sure to add the directory path which contains FHIR specification
         as the last argument. It can contain either a directory which named
         after the implementation guide or a set of FHIR specification files.
-        (If specification-path is not contain a directory, --ig-name is a mandatory input)
+        (If specification-path does not contain a directory, --ig-name should be a mandatory input)
 
         You can download FHIR specification files from the respective
         Implementation Guide official website. (Eg; USCore IG specification
         can be downloaded from http://hl7.org/fhir/us/core/package.tgz)
 
+        The ballerina-health tool is compatible with Ballerina version 2201.7.0 (Swan Lake Update 7) onwards.
+
 COMMANDS
         fhir
             Refer to the FHIR specification when generating the Ballerina artifacts.
 
+            Mode parameter [-m | --mode] is mandatory to execute the tool.
+            Currently only 'package' mode is supported. There will be more modes
+            in the future releases.
+
             OPTIONS
-                    -m, --mode <mode-type>
-                        Mode can be 'package'. If mode is set to 'package',
-                        a Ballerina package will be generated including all
-                        the records and types.
-                        New modes will be added in future releases.
                     -o, --output <output>
                         Location of the generated Ballerina artifacts. If this path is not
                         specified, the output will be written to the same directory from

@@ -150,8 +150,10 @@ public class FhirSubCmd implements BLauncherCmd {
             HealthCmdUtils.exitError(exitWhenFinish);
         }
         if (this.engageSubCommand(argList)) {
-            printStream.println("Ballerina FHIR package generation completed successfully. Generated packages can be found "
-                    + "at " + targetOutputPath);
+            printStream.println("Ballerina FHIR package generation completed successfully. Generated " +
+                    "packages can be found at " + targetOutputPath);
+            printStream.println("Package meta information can be found at" + targetOutputPath +
+                    "/generated-package/<package_name>/Ballerina.toml");
         } else {
             printStream.println("Invalid mode received for FHIR tool command.");
             printStream.println("Try bal health --help for more information.");
