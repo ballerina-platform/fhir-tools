@@ -20,6 +20,7 @@ package org.wso2.healthcare.fhir.ballerina.packagegen.tool.config;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import io.ballerina.projects.util.ProjectUtils;
 import net.consensys.cava.toml.TomlArray;
 import net.consensys.cava.toml.TomlTable;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.ToolConstants;
@@ -116,7 +117,9 @@ public class PackageConfig {
     }
 
     public void setName(String name) {
-        this.name = name;
+        //reusing the Util from Ballerina-lang to validate the package name.
+        //second argument is not valid for health packages.
+        this.name = ProjectUtils.guessPkgName(name,"package");
     }
 
     public void setVersion(String version) {

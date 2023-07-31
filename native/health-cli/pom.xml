@@ -94,6 +94,7 @@
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>tool-lib/</classpathPrefix>
                             <mainClass>HealthCmd</mainClass>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                     </archive>
                 </configuration>

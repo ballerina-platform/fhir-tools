@@ -21,9 +21,7 @@
 ```
 
 ## Supported Commands
-```shell
-bal health fhir spec-path
-bal health fhir -o output-dir spec-path
+```shell\
 bal health fhir -m package -o output-dir spec-path
 bal health fhir -m package --package-name my.package.name -o output-dir spec-path
 bal health fhir -m template -o output-dir spec-path
