@@ -26,11 +26,12 @@ COMMANDS
         fhir
             Refer to the FHIR specification when generating the Ballerina artifacts.
 
-            Mode parameter [-m | --mode] is mandatory to execute the tool.
-            Currently only 'package' mode is supported. There will be more modes
-            in the future releases.
-
             OPTIONS
+                    -m, --mode <mode-type>
+                        Mode can be 'package'. If mode is set to 'package', a Ballerina
+                        package will be generated including all the records and types.
+                        This is a MANDATORY input for fhir command.
+                        New modes will be added in future releases.
                     -o, --output <output>
                         Location of the generated Ballerina artifacts. If this path is not
                         specified, the output will be written to the same directory from
