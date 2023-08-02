@@ -22,6 +22,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hl7.fhir.r4.model.ElementDefinition;
 import org.hl7.fhir.r4.model.StructureDefinition;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRImplementationGuide;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRResourceDef;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.ToolConstants;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.config.BallerinaPackageGenToolConfig;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.AnnotationElement;
@@ -33,15 +35,15 @@ import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.ResourceDefiniti
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.ResourceTemplateContext;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.CommonUtil;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.GeneratorUtils;
-import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRImplementationGuide;
-import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRResourceDef;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.HashSet;
 import java.util.regex.Pattern;
 
 import static org.wso2.healthcare.fhir.ballerina.packagegen.tool.ToolConstants.CONSTRAINTS_LIB_IMPORT;
@@ -51,6 +53,7 @@ import static org.wso2.healthcare.fhir.ballerina.packagegen.tool.ToolConstants.C
  */
 public class ResourceContextGenerator {
     private static final Log LOG = LogFactory.getLog(ResourceContextGenerator.class);
+    public final Set<String> baseResources = new HashSet<>(Arrays.asList("Bundle", "OperationOutcome", "CodeSystem", "ValueSet"));
     private final BallerinaPackageGenToolConfig toolConfig;
     private final Map<String, ResourceTemplateContext> resourceTemplateContextMap;
     private final Map<String, String> resourceNameTypeMap;
@@ -76,8 +79,8 @@ public class ResourceContextGenerator {
         LOG.debug("Started: Resource Template Context population");
         for (Map.Entry<String, FHIRResourceDef> definitionEntry : ig.getResources().entrySet()) {
             StructureDefinition structureDefinition = definitionEntry.getValue().getDefinition();
-            if (definitionEntry.getValue().getDefinition().getKind().name().equalsIgnoreCase("RESOURCE")) {
-
+            if (definitionEntry.getValue().getDefinition().getKind().name().equalsIgnoreCase("RESOURCE")
+                    && !baseResources.contains(structureDefinition.getType())) {
                 this.resourceExtendedElementMap = new HashMap<>();
 
                 ResourceTemplateContext resourceTemplateContext = new ResourceTemplateContext();
@@ -209,7 +212,7 @@ public class ResourceContextGenerator {
                         if (types.size() > 1)
                             elementPath = tempElement + CommonUtil.toCamelCase(type.getCode());
                         if (!elementDefinition.getId().equals(elementDefinition.getPath())) {
-                            if(elementDefinition.getSliceName() != null)
+                            if (elementDefinition.getSliceName() != null)
                                 continue;
                         }
                         Element element = populateElement(resourceName, elementPath, type.getCode(), elementDefinition);
