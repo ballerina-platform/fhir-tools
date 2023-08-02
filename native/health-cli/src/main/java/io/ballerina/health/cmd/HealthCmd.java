@@ -96,6 +96,7 @@ public class HealthCmd implements BLauncherCmd {
                 while ((content = br.readLine()) != null) {
                     printStream.append('\n').append(content);
                 }
+                return;
             } catch (IOException e) {
                 printStream.println("Helper text is not available.");
                 HealthCmdUtils.throwLauncherException(e);
