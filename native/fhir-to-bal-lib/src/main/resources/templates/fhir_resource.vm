@@ -76,7 +76,7 @@ public type $util.resolveSpecialCharacters($resourceName) record {|
        minLength: 1
     }
 #end
-    #if(!$dataTypes.contains($element.getDataType()))${importIdentifier}#end${element.getDataType()}#if($element.isArray())[]#end $util.resolveSpecialCharacters($util.resolveKeywordConflict($element.getName()))#if(!$element.isRequired())?#end;
+    #if(!$dataTypes.contains($element.getDataType()))${importIdentifier}#end${element.getDataType()}#if($element.isArray())[]#end $util.resolveKeywordConflict($util.resolveSpecialCharacters($element.getName()))#if(!$element.isRequired())?#end;
 #end
 #end
     never...;
