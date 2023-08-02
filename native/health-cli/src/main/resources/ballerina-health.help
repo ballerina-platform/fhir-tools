@@ -42,6 +42,8 @@ COMMANDS
                         taken as the ig-name.
                     --package-name <fully-qualified-name-of-package>
                         Name of the Ballerina package to be generated.
+                        Package name can be explicitly set using this argument. Unless specified,
+                        the --ig-name will be taken as the name of the package
                         Refer https://ballerina.io/learn/package-references/#the-name-field
                     --org-name <org-name-of-the-package>
                         Organization name of the Ballerina package to be generated.
