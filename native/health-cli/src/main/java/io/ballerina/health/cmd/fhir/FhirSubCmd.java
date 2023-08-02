@@ -40,6 +40,7 @@ import org.wso2.healthcare.codegen.tool.framework.fhir.core.FHIRTool;
 import picocli.CommandLine;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -151,7 +152,7 @@ public class FhirSubCmd implements BLauncherCmd {
         }
         if (this.engageSubCommand(argList)) {
             printStream.println("Ballerina FHIR package generation completed successfully. Generated " +
-                    "packages can be found at " + targetOutputPath);
+                    "packages can be found at " + targetOutputPath + File.separator + "generated-package");
         } else {
             printStream.println("Invalid mode received for FHIR tool command.");
             printStream.println("Try bal health --help for more information.");
