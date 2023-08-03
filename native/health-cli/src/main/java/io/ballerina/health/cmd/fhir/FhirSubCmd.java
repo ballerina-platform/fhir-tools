@@ -271,7 +271,7 @@ public class FhirSubCmd implements BLauncherCmd {
                     //override default configs for package-gen mode with user provided configs
                     if (command.equals("package")) {
                         if (packageName != null && !packageName.isEmpty()) {
-                            JsonElement overrideConfig = new Gson().toJsonTree(packageName);
+                            JsonElement overrideConfig = new Gson().toJsonTree(packageName.toLowerCase());
                             toolConfigInstance.overrideConfig("packageConfig.name", overrideConfig);
                         } else {
                             String igName = "";
@@ -279,13 +279,13 @@ public class FhirSubCmd implements BLauncherCmd {
                             for (Map.Entry<String, FHIRImplementationGuide> entry :
                                     ((FHIRSpecificationData) fhirToolLib.getToolContext().getSpecificationData()).
                                             getFhirImplementationGuides().entrySet()) {
-                                igName = key.getValue().getName();
+                                igName = entry.getValue().getName();
                             }
-                            JsonElement overrideConfig = new Gson().toJsonTree(igName);
+                            JsonElement overrideConfig = new Gson().toJsonTree(igName.toLowerCase());
                             toolConfigInstance.overrideConfig("packageConfig.name.append", overrideConfig);
                         }
                         if (orgName != null && !orgName.isEmpty()) {
-                            JsonElement overrideConfig = new Gson().toJsonTree(orgName);
+                            JsonElement overrideConfig = new Gson().toJsonTree(orgName.toLowerCase());
                             toolConfigInstance.overrideConfig("packageConfig.org", overrideConfig);
                         }
                     }
