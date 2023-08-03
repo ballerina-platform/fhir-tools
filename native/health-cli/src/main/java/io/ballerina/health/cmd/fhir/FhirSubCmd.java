@@ -35,8 +35,10 @@ import org.wso2.healthcare.codegen.tool.framework.commons.core.Tool;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.ToolContext;
 import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenException;
 import org.wso2.healthcare.codegen.tool.framework.commons.model.JsonConfigType;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.common.FHIRSpecificationData;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.config.FHIRToolConfig;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.FHIRTool;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRImplementationGuide;
 import picocli.CommandLine;
 
 import java.io.BufferedReader;
@@ -90,12 +92,6 @@ public class FhirSubCmd implements BLauncherCmd {
 
     @CommandLine.Option(names = {"--org-name"}, description = "Organization name of the Ballerina package")
     private String orgName;
-
-    @CommandLine.Option(names = {"--ig-name"}, description = "Implementation guide name")
-    private String igName;
-
-    @CommandLine.Option(names = {"--ig-code"}, description = "Implementation guide code")
-    private String igCode;
 
     @CommandLine.Parameters(description = "Custom arguments")
     private List<String> argList;
@@ -153,7 +149,7 @@ public class FhirSubCmd implements BLauncherCmd {
         }
         if (this.engageSubCommand(argList)) {
             printStream.println("Ballerina FHIR package generation completed successfully. Generated " +
-                    "packages can be found at " + targetOutputPath + File.separator + "generated-package");
+                    "packages can be found at " + targetOutputPath);
         } else {
             printStream.println("Invalid mode received for FHIR tool command.");
             printStream.println("Try bal health --help for more information.");
@@ -275,17 +271,21 @@ public class FhirSubCmd implements BLauncherCmd {
                     //override default configs for package-gen mode with user provided configs
                     if (command.equals("package")) {
                         if (packageName != null && !packageName.isEmpty()) {
-                            JsonElement overrideConfig = new Gson().toJsonTree(packageName);
+                            JsonElement overrideConfig = new Gson().toJsonTree(packageName.toLowerCase());
                             toolConfigInstance.overrideConfig("packageConfig.name", overrideConfig);
-                        } else if (igName != null && !igName.isEmpty()) {
-                            JsonElement overrideConfig = new Gson().toJsonTree(igName);
-                            toolConfigInstance.overrideConfig("packageConfig.name.append", overrideConfig);
                         } else {
-                            JsonElement overrideConfig = new Gson().toJsonTree(HealthCmdUtils.getDirectories(specificationPath).get(0));
+                            String igName = "";
+                            //todo: For loop can be removed here hence tool optimized for single IG use case.
+                            for (Map.Entry<String, FHIRImplementationGuide> entry :
+                                    ((FHIRSpecificationData) fhirToolLib.getToolContext().getSpecificationData()).
+                                            getFhirImplementationGuides().entrySet()) {
+                                igName = entry.getValue().getName();
+                            }
+                            JsonElement overrideConfig = new Gson().toJsonTree(igName.toLowerCase());
                             toolConfigInstance.overrideConfig("packageConfig.name.append", overrideConfig);
                         }
                         if (orgName != null && !orgName.isEmpty()) {
-                            JsonElement overrideConfig = new Gson().toJsonTree(orgName);
+                            JsonElement overrideConfig = new Gson().toJsonTree(orgName.toLowerCase());
                             toolConfigInstance.overrideConfig("packageConfig.org", overrideConfig);
                         }
                     }
@@ -338,7 +338,7 @@ public class FhirSubCmd implements BLauncherCmd {
                 targetOutputPath = Paths.get(targetOutputPath.toString(), outputPath);
             }
         } else {
-            targetOutputPath = Paths.get(targetOutputPath.toString());
+            targetOutputPath = Paths.get(targetOutputPath + File.separator + "generated-package");
         }
     }
 
@@ -385,13 +385,9 @@ public class FhirSubCmd implements BLauncherCmd {
     private void handleSpecificationPathAndOverride(FHIRToolConfig fhirToolConfig, Path specificationPath)
             throws BallerinaHealthException {
 
-        if (igName == null || igName.isEmpty()) {
-            String[] path = specificationPath.toString().split("/");
-            igName = path[path.length - 1];
-        }
         if (Files.exists(specificationPath)) {
             fhirToolConfig.overrideConfig("FHIRImplementationGuides", HealthCmdUtils.getIGConfigElement(
-                    igName, igCode));
+                    HealthCmdConstants.CMD_DEFAULT_IG_NAME, HealthCmdConstants.CMD_DEFAULT_IG_NAME));
         } else {
             printStream.println("No spec files found in the given path.");
             HealthCmdUtils.exitError(this.exitWhenFinish);

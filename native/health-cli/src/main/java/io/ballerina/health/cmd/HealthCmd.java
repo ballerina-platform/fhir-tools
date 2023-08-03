@@ -72,10 +72,10 @@ public class HealthCmd implements BLauncherCmd {
             return;
         }
 
-        if (toolVersion){
+        if (toolVersion) {
             Package packageVersion = this.getClass().getPackage();
             String version = packageVersion.getImplementationVersion();
-            printStream.println(version);
+            printStream.println("Ballerina Health Tool " + version);
             return;
         }
 
