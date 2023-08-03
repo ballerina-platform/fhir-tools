@@ -276,7 +276,7 @@ public class FhirSubCmd implements BLauncherCmd {
                         } else {
                             String igName = "";
                             //todo: For loop can be removed here hence tool optimized for single IG use case.
-                            for (Map.Entry<String, FHIRImplementationGuide> key :
+                            for (Map.Entry<String, FHIRImplementationGuide> entry :
                                     ((FHIRSpecificationData) fhirToolLib.getToolContext().getSpecificationData()).
                                             getFhirImplementationGuides().entrySet()) {
                                 igName = key.getValue().getName();
