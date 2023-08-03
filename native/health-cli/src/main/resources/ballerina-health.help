@@ -45,7 +45,7 @@ COMMANDS
                     --package-name <fully-qualified-name-of-package>
                         Name of the Ballerina package to be generated.
                         Package name can be explicitly set using this argument. Unless specified,
-                        default name of the implementation guide will be taken as the
+                        default name of the implementation guide will be taken to construct the
                         name of the package.
                         Refer https://ballerina.io/learn/package-references/#the-name-field
                     --org-name <org-name-of-the-package>
