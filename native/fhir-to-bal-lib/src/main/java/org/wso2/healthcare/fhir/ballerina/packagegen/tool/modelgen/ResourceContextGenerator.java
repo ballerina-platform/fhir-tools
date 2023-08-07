@@ -188,10 +188,6 @@ public class ResourceContextGenerator {
                                     if (rootElement.getChildElements() != null) {
                                         if (!rootElement.getChildElements().containsKey(elementName)) {
                                             rootElement.getChildElements().put(elementName, childElement);
-                                        } else {
-                                            HashMap<String, Element> newChildElements = new HashMap<>();
-                                            newChildElements.put(elementName, childElement);
-                                            rootElement.setChildElements(newChildElements);
                                         }
                                     } else {
                                         HashMap<String, Element> newChildElements = new HashMap<>();
