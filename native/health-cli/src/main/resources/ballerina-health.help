@@ -1,9 +1,10 @@
 NAME
-        ballerina-health - Generate a Ballerina package for a given health specification(eg.:FHIR implementation guides) files.
+        ballerina-health - Generate a Ballerina package for a given health
+        specification(eg.:FHIR implementation guides) files.
 
 SYNOPSIS
         bal health fhir [-m | --mode] <package> [-o | --output] <output-location> <FHIR-specification-directory-path>
-                        [-m | --mode] <package> [-c | --config] <advanced-configuration-file-path> <FHIR-specification-directory-path>
+                        [-m | --mode] <package> [-c | --config] <advanced-configuration\-file-path> <FHIR-specification-directory-path>
 
 DESCRIPTION
         Generate a Ballerina package with relevant records and types
@@ -19,7 +20,8 @@ DESCRIPTION
         Implementation Guide official website. (Eg; USCore IG specification
         can be downloaded from http://hl7.org/fhir/us/core/package.tgz)
 
-        The ballerina-health tool is compatible with Ballerina version 2201.7.0 (Swan Lake Update 7) onwards.
+        The ballerina-health tool is compatible with Ballerina \
+        version 2201.7.0 (Swan Lake Update 7) onwards.
 
 OPTIONS
        -v, --version
@@ -44,9 +46,9 @@ COMMANDS
                         which the command is run.
                     --package-name <fully-qualified-name-of-package>
                         Name of the Ballerina package to be generated.
-                        Package name can be explicitly set using this argument. Unless specified,
-                        default name of the implementation guide will be taken to construct the
-                        name of the package.
+                        Package name can be explicitly set using this argument. Unless
+                        specified,default name of the implementation guide will be
+                        taken to construct the name of the package.
                         Refer https://ballerina.io/learn/package-references/#the-name-field
                     --org-name <org-name-of-the-package>
                         Organization name of the Ballerina package to be generated.
@@ -60,4 +62,5 @@ COMMANDS
                     Generate Ballerina package for the FHIR artifacts of
                     USCore implementation guide and write the output
                     to the given directory.
-                            $ bal health fhir -m package --package-name uscore401 -o ./output_path ./path_to_uscore_definitions
+                        $ bal health fhir -m package --package-name uscore401 -o ./output_path ./path_to_uscore_definitions
+
