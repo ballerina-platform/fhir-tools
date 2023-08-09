@@ -1,246 +1,100 @@
 {
   "fhir": {
-    "tools": [
-      {
-        "name": "BallerinaProjectGenerationTool",
-        "id": "fhir-ballerina-template-gen-tool",
-        "toolClass": "org.wso2.healthcare.fhir.codegen.ballerina.project.tool.BallerinaProjectTool",
-        "configClass": "org.wso2.healthcare.fhir.codegen.ballerina.project.tool.config.BallerinaProjectToolConfig",
-        "command": "template",
-        "config": {
-          "name": "BallerinaProjectGenerationTool",
-          "enable": true,
-          "project": {
-            "package": {
-              "org": "ballerinax",
-              "namePrefix": "health.fhir.templates.r4.",
-              "version": "0.0.1",
-              "distribution": "2201.6.0",
-              "authors": [
-                "WSO2 Healthcare"
-              ],
-              "keywords": [
-                "Healthcare",
-                "FHIR"
-              ]
-            },
-            "fhir": {
-              "version": "r4"
-            },
-            "dependencies": [
-              {
-                "org": "ballerinax",
-                "name": "health.fhir.r4",
-                "version": "1.0.3",
-                "importStatement": "ballerinax/health.fhir.r4"
-              },
-              {
-                "org": "ballerinax",
-                "name": "health.base",
-                "version": "1.0.2",
-                "importStatement": "ballerinax/health.base"
-              }
-            ],
-            "includedIGs": [
-              {
-                "implementationGuide": "USCore",
-                "importStatement": "ballerinax/health.fhir.r4.uscore501",
-                "enable": true,
-                "includedProfiles": [
-                ],
-                "excludedProfiles": [
-                ]
-              },
-              {
-                "implementationGuide": "CarinBB",
-                "importStatement": "ballerinax/health.fhir.r4.carinbb",
-                "enable": true,
-                "includedProfiles": [
-                ],
-                "excludedProfiles": [
-                ]
-              },
-              {
-                "implementationGuide": "DavinciPDEX",
-                "importStatement": "ballerinax/health.fhir.r4.davincipdex",
-                "enable": true,
-                "includedProfiles": [
-                ],
-                "excludedProfiles": [
-                ]
-              },
-              {
-                "implementationGuide": "DavinciPDEX-Plannet",
-                "importStatement": "ballerinax/health.fhir.r4.davincipdexplannet",
-                "enable": true,
-                "includedProfiles": [
-                ],
-                "excludedProfiles": [
-                ]
-              },
-              {
-                "implementationGuide": "DavinciPDex-USDF",
-                "importStatement": "ballerinax/health.fhir.r4.davincipdexusdf",
-                "enable": true,
-                "includedProfiles": [
-                ],
-                "excludedProfiles": [
-                ]
-              },
-              {
-                "implementationGuide": "DavinciPDEX-PayerDataEX",
-                "importStatement": "ballerinax/health.fhir.r4.davincipdexpayerdataex",
-                "enable": true,
-                "includedProfiles": [
-                ],
-                "excludedProfiles": [
-                ]
-              },
-              {
-                "implementationGuide": "international",
-                "importStatement": "ballerinax/health.fhir.r4",
-                "enable": true,
-                "includedProfiles": [
-                ],
-                "excludedProfiles": [
-                ]
-              },
-              {
-                "implementationGuide": "AUBase",
-                "importStatement": "ballerinax/health.fhir.r4.aubase",
-                "enable": true,
-                "includedProfiles": [],
-                "excludedProfiles": []
-              }
-            ],
-            "builtIn": {
-              "operations": [
-              ],
-              "searchParams": [
-              ],
-              "interactions": [
-                {
-                  "name": "read",
-                  "enable": true
-                },
-                {
-                  "name": "search",
-                  "enable": true
-                },
-                {
-                  "name": "create",
-                  "enable": true
-                },
-                {
-                  "name": "update",
-                  "enable": false
-                },
-                {
-                  "name": "delete",
-                  "enable": false
-                }
-              ]
-            }
-          }
-        }
-      },
-      {
-        "name": "BallerinaFHIRPackageGenerationTool",
-        "configClass": "org.wso2.healthcare.fhir.ballerina.packagegen.tool.config.BallerinaPackageGenToolConfig",
-        "toolClass": "org.wso2.healthcare.fhir.ballerina.packagegen.tool.BallerinaPackageGenTool",
-        "command": "package",
+    "tools": {
+      "package": {
         "config": {
           "name": "BallerinaFHIRPackageGenerationTool",
           "enable": true,
           "packageConfigs": {
-            "org": "ballerinax",
+            "org": "healthcare",
             "name": "healthcare.fhir",
-            "version": "0.0.1",
+            "version": "1.0.0",
             "ballerinaDistribution": "2201.6.0",
-            "authors": ["Ballerina"],
+            "authors": [
+              "Ballerina"
+            ],
             "repository": "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4",
             "basePackage": "ballerinax/health.fhir.r4",
             "dependencies": []
           },
-          "includedIGs": [
-            {
-              "implementationGuide": "international",
-              "enable": true,
-              "includedProfiles": [],
-              "excludedProfiles": []
-            },
-            {
-              "implementationGuide": "USCore",
-
-              "enable": true,
-              "includedProfiles": [],
-              "excludedProfiles": []
-            },
-            {
-              "implementationGuide": "CarinBB",
-              "enable": true,
-              "includedProfiles": [],
-              "excludedProfiles": []
-            },
-            {
-              "implementationGuide": "DavinciPDEX",
-              "enable": true,
-              "includedProfiles": [],
-              "excludedProfiles": []
-            },
-            {
-              "implementationGuide": "AUBase",
-              "enable": true,
-              "includedProfiles": [],
-              "excludedProfiles": []
-            }
-          ],
           "dataTypeMappings": [],
           "ballerinaKeywords": []
         }
+      },
+      "template": {
+        "config": {
+          "name": "BallerinaProjectGenerationTool",
+          "enable": true,
+          "package": {
+            "org": "healthcare",
+            "namePrefix": "health.fhir.templates",
+            "version": "0.0.1",
+            "distribution": "2201.6.0",
+            "authors": [
+              "Ballerina"
+            ],
+            "keywords": [
+              "Healthcare",
+              "FHIR"
+            ]
+          },
+          "fhir": {
+            "version": "r4"
+          },
+          "dependencies": [
+            {
+              "org": "ballerinax",
+              "name": "health.fhir.r4",
+              "version": "1.0.3",
+              "importStatement": "ballerinax/health.fhir.r4"
+            },
+            {
+              "org": "ballerinax",
+              "name": "health.base",
+              "version": "1.0.2",
+              "importStatement": "ballerinax/health.base"
+            }
+          ],
+          "builtIn": {
+            "operations": [
+            ],
+            "searchParams": [
+            ],
+            "interactions": [
+              {
+                "name": "read",
+                "enable": true
+              },
+              {
+                "name": "search",
+                "enable": true
+              },
+              {
+                "name": "create",
+                "enable": true
+              },
+              {
+                "name": "update",
+                "enable": false
+              },
+              {
+                "name": "delete",
+                "enable": false
+              }
+            ]
+          }
+        }
+      }
+    },
+    "terminologies": [
+      {
+        "dirPath": "/terminology"
+      }
+    ],
+    "dataTypeProfiles": [
+      {
+        "dirPath": "/datatypes"
       }
     ]
-  },
-  "terminologies": [
-    {
-      "dirPath": "/terminology"
-    }
-  ],
-  "dataTypeProfiles": [
-    {
-      "dirPath": "/datatypes"
-    }
-  ],
-  "FHIRImplementationGuides": [
-    {
-      "name": "international",
-      "code": "Base",
-      "dirPath": "/international/",
-      "enable": true
-    },
-    {
-      "name": "USCore",
-      "code": "USCore",
-      "dirPath": "/USCore/",
-      "enable": true
-    },
-    {
-      "name": "DavinciPDEX",
-      "code": "DavinciPDEX",
-      "dirPath": "/DavinciPDEX/",
-      "enable": true
-    },
-    {
-      "name": "CarinBB",
-      "code": "CarinBB",
-      "dirPath": "/Carin-BB/",
-      "enable": true
-    },
-    {
-      "name": "AUBase",
-      "code": "AUBase",
-      "dirPath": "/AU-Base/",
-      "enable": true
-    }
-  ]
+  }
 }

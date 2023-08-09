@@ -127,22 +127,28 @@ public class BallerinaPackageGenToolConfig extends AbstractToolConfig {
 
     private void populateIgConfigs(JsonArray igArray) {
         LOG.debug("Started: IG config population");
-        for (int i = 0; i < igArray.size(); i++) {
-            includedIGConfigs.put(
-                    igArray.get(i).getAsJsonObject().getAsJsonPrimitive(ToolConstants.CONFIG_PROFILE_IG).getAsString(),
-                    new IncludedIGConfig(igArray.get(i).getAsJsonObject()));
+        if (igArray != null) {
+            for (int i = 0; i < igArray.size(); i++) {
+                System.out.println(igArray.get(i).getAsJsonObject().getAsJsonPrimitive(ToolConstants.CONFIG_PROFILE_IG)
+                        .getAsString());
+                includedIGConfigs.put(
+                        igArray.get(i).getAsJsonObject().getAsJsonPrimitive(ToolConstants.CONFIG_PROFILE_IG).getAsString(),
+                        new IncludedIGConfig(igArray.get(i).getAsJsonObject()));
+            }
         }
         LOG.debug("Ended: IG config population");
     }
 
     private void populateIgConfigs(TomlArray igArray) {
         LOG.debug("Started: IG config population");
-        List<Object> tomlList = igArray.toList();
-        for (Object toolsProjectIncludedIG : tomlList) {
-            if (toolsProjectIncludedIG instanceof TomlTable) {
-                includedIGConfigs.put(((TomlTable) toolsProjectIncludedIG).getString(
-                        ToolConstants.CONFIG_PROFILE_IG_TOML), new IncludedIGConfig(
-                        (TomlTable) toolsProjectIncludedIG));
+        if (igArray != null) {
+            List<Object> tomlList = igArray.toList();
+            for (Object toolsProjectIncludedIG : tomlList) {
+                if (toolsProjectIncludedIG instanceof TomlTable) {
+                    includedIGConfigs.put(((TomlTable) toolsProjectIncludedIG).getString(
+                            ToolConstants.CONFIG_PROFILE_IG_TOML), new IncludedIGConfig(
+                            (TomlTable) toolsProjectIncludedIG));
+                }
             }
         }
         LOG.debug("Ended: IG config population");
@@ -150,22 +156,26 @@ public class BallerinaPackageGenToolConfig extends AbstractToolConfig {
 
     private void populateDataTypeConfigs(JsonArray jsonArray) {
         LOG.debug("Started: data type config population");
-        for (int i = 0; i < jsonArray.size(); i++) {
-            dataTypeMappingConfigs.put(
-                    jsonArray.get(i).getAsJsonObject().getAsJsonPrimitive(ToolConstants.CONFIG_DATA_TYPE_FHIR).getAsString(),
-                    new DataTypeMappingConfig(jsonArray.get(i).getAsJsonObject()));
+        if (jsonArray != null) {
+            for (int i = 0; i < jsonArray.size(); i++) {
+                dataTypeMappingConfigs.put(
+                        jsonArray.get(i).getAsJsonObject().getAsJsonPrimitive(ToolConstants.CONFIG_DATA_TYPE_FHIR).getAsString(),
+                        new DataTypeMappingConfig(jsonArray.get(i).getAsJsonObject()));
+            }
         }
         LOG.debug("Ended: data type config population");
     }
 
     private void populateDataTypeConfigs(TomlArray tomlArray) {
         LOG.debug("Started: data type config population");
-        List<Object> tomlList = tomlArray.toList();
-        for (Object dataTypesMap : tomlList) {
-            if (dataTypesMap instanceof TomlTable) {
-                includedIGConfigs.put(((TomlTable) dataTypesMap).getString(
-                                ToolConstants.CONFIG_DATA_TYPE_FHIR_TOML),
-                        new IncludedIGConfig((TomlTable) dataTypesMap));
+        if (tomlArray != null) {
+            List<Object> tomlList = tomlArray.toList();
+            for (Object dataTypesMap : tomlList) {
+                if (dataTypesMap instanceof TomlTable) {
+                    includedIGConfigs.put(((TomlTable) dataTypesMap).getString(
+                                    ToolConstants.CONFIG_DATA_TYPE_FHIR_TOML),
+                            new IncludedIGConfig((TomlTable) dataTypesMap));
+                }
             }
         }
         LOG.debug("Ended: data type config population");
@@ -173,22 +183,26 @@ public class BallerinaPackageGenToolConfig extends AbstractToolConfig {
 
     private void populateBallerinaKeywordConfigs(JsonArray jsonArray) {
         LOG.debug("Started: Ballerina keywords config population");
-        for (int i = 0; i < jsonArray.size(); i++) {
-            ballerinaKeywordConfig.put(jsonArray.get(i).getAsJsonObject()
-                    .getAsJsonPrimitive(ToolConstants.CONFIG_BALLERINA_KEYWORD_KEYWORD)
-                    .getAsString(), new BallerinaKeywordConfig(jsonArray.get(i).getAsJsonObject()));
+        if (jsonArray != null) {
+            for (int i = 0; i < jsonArray.size(); i++) {
+                ballerinaKeywordConfig.put(jsonArray.get(i).getAsJsonObject()
+                        .getAsJsonPrimitive(ToolConstants.CONFIG_BALLERINA_KEYWORD_KEYWORD)
+                        .getAsString(), new BallerinaKeywordConfig(jsonArray.get(i).getAsJsonObject()));
+            }
         }
         LOG.debug("Ended: Ballerina keywords config population");
     }
 
     private void populateBallerinaKeywordConfigs(TomlArray tomlArray) {
         LOG.debug("Started: Ballerina keywords config population");
-        List<Object> tomlList = tomlArray.toList();
-        for (Object keywordMap : tomlList) {
-            if (keywordMap instanceof TomlTable) {
-                ballerinaKeywordConfig.put(((TomlTable) keywordMap)
-                                .getString(ToolConstants.CONFIG_BALLERINA_KEYWORD_KEYWORD_TOML),
-                        new BallerinaKeywordConfig((TomlTable) keywordMap));
+        if (tomlArray != null) {
+            List<Object> tomlList = tomlArray.toList();
+            for (Object keywordMap : tomlList) {
+                if (keywordMap instanceof TomlTable) {
+                    ballerinaKeywordConfig.put(((TomlTable) keywordMap)
+                                    .getString(ToolConstants.CONFIG_BALLERINA_KEYWORD_KEYWORD_TOML),
+                            new BallerinaKeywordConfig((TomlTable) keywordMap));
+                }
             }
         }
         LOG.debug("Ended: Ballerina keywords config population");

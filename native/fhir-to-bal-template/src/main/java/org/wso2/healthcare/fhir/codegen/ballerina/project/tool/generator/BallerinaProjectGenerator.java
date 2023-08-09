@@ -23,9 +23,11 @@ import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenExcep
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.AbstractFHIRTemplateGenerator;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.BallerinaProjectConstants;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.config.BallerinaProjectToolConfig;
-import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.config.IncludedIGConfig;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.BallerinaService;
 
+import java.io.Console;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,6 +47,21 @@ public class BallerinaProjectGenerator extends AbstractFHIRTemplateGenerator {
         Map<String, BallerinaService> serviceMap = (Map<String, BallerinaService>) generatorProperties.get("serviceMap");
         Map<String, String> dependenciesMap = (Map<String, String>) generatorProperties.get("dependenciesMap");
         //evaluate usage of ? typed map as generator properties.
+
+        String packagePath = this.getTargetDir();
+        // Provide option to check and overwrite the existing package
+        Console console = System.console();
+        if (console != null && Files.exists(Paths.get(packagePath))) {
+            String input = console.readLine("Generated package already exists. Do you want to overwrite? (y/n): ");
+            if ("n".equalsIgnoreCase(input)) {
+                System.exit(0);
+            } else if ("y".equalsIgnoreCase(input)) {
+                System.out.println("Overwriting the existing package.");
+            } else {
+                System.out.println("Invalid input. Exiting the tool.");
+                System.exit(0);
+            }
+        }
 
         for (Map.Entry<String, BallerinaService> entry : serviceMap.entrySet()) {
             Map<String, Object> projectProperties = new HashMap<>();

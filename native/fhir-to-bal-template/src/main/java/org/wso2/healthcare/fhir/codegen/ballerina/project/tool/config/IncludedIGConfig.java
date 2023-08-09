@@ -29,7 +29,7 @@ import java.util.List;
 
 public class IncludedIGConfig {
     private final String name;
-    private final String importStatement;
+    private String importStatement;
     private final boolean isEnable;
     private final List<String> includedProfiles = new ArrayList<>();
     private final List<String> excludedProfiles = new ArrayList<>();
@@ -111,6 +111,10 @@ public class IncludedIGConfig {
 
     public String getImportStatement() {
         return importStatement;
+    }
+
+    public void setImportStatement(String importStatement) {
+        this.importStatement = importStatement;
     }
 
 }

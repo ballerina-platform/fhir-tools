@@ -25,8 +25,6 @@ import org.wso2.healthcare.fhir.ballerina.packagegen.tool.config.DependencyConfi
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.IGTemplateContext;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.PackageTemplateContext;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.SearchParameter;
-import org.wso2.healthcare.codegen.tool.framework.fhir.core.config.IGConfig;
-import org.wso2.healthcare.codegen.tool.framework.fhir.core.FHIRToolContext;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRImplementationGuide;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRSearchParamDef;
 
@@ -42,25 +40,23 @@ public class PackageContextGenerator {
     private final Set<String> dataTypesRegistry;
     private PackageTemplateContext packageContext;
 
-    public PackageContextGenerator(FHIRToolContext toolContext, BallerinaPackageGenToolConfig config,
-                                   Map<String, IGConfig> igEntries) {
+    public PackageContextGenerator(BallerinaPackageGenToolConfig config,
+                                   Map<String, FHIRImplementationGuide> igEntries) {
         LOG.debug("Package Context Generator Initiated");
         this.toolConfig = config;
         this.dataTypesRegistry = new HashSet<>();
-        populatePackageContext(toolContext, igEntries);
+        populatePackageContext(igEntries);
     }
 
     /**
      * Populate package context
      *
-     * @param toolContext FHIR Tool Context DTO
      * @param igEntries   available IGs map
      */
-    private void populatePackageContext(FHIRToolContext toolContext, Map<String, IGConfig> igEntries) {
+    private void populatePackageContext(Map<String, FHIRImplementationGuide> igEntries) {
         LOG.debug("Started: Package Context population");
-        for (Map.Entry<String, IGConfig> entry : igEntries.entrySet()) {
+        for (Map.Entry<String, FHIRImplementationGuide> entry : igEntries.entrySet()) {
             this.packageContext = new PackageTemplateContext();
-            String igName = entry.getValue().getName();
 
             if (toolConfig.getPackageConfig().getBasePackage() != null) {
                 this.packageContext.setBasePackageName(toolConfig.getPackageConfig().getBasePackage());
@@ -72,11 +68,10 @@ public class PackageContextGenerator {
             }
             this.packageContext.setDependenciesMap(dependencyMap);
 
-            FHIRImplementationGuide implementationGuide = toolContext.getSpecificationData()
-                    .getFhirImplementationGuides().get(igName);
+            FHIRImplementationGuide implementationGuide = entry.getValue();
 
             populateResourceTemplateContext(implementationGuide);
-            populateIGTemplateContexts(entry.getValue().getCode(), implementationGuide);
+            populateIGTemplateContexts(entry.getValue().getName(), implementationGuide);
         }
         LOG.debug("Ended: Package Context population");
     }

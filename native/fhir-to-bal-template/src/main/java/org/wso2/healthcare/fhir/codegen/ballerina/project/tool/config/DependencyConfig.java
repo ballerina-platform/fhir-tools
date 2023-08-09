@@ -32,6 +32,13 @@ public class DependencyConfig {
         this.importStatement = packageConfig.getAsJsonPrimitive("importStatement").getAsString();
     }
 
+    public DependencyConfig(String org, String name, String version, String importStatement) {
+        this.org = org;
+        this.name = name;
+        this.version = version;
+        this.importStatement = importStatement;
+    }
+
     public String getOrg() {
         return org;
     }

@@ -1,16 +1,21 @@
 package io.ballerina.health.cmd.core.utils;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import io.ballerina.cli.launcher.BLauncherException;
+import io.ballerina.health.cmd.core.exception.BallerinaHealthException;
+import org.wso2.healthcare.codegen.tool.framework.commons.core.TemplateGenerator;
+import org.wso2.healthcare.codegen.tool.framework.commons.core.ToolContext;
+import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenException;
 
 import java.io.File;
+import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Utility methods for health command.
@@ -54,52 +59,15 @@ public class HealthCmdUtils {
         return toolHome + HealthCmdConstants.CMD_RESOURCE_PATH_SUFFIX;
     }
 
-    public static String generateIgNameFromPath(String specPath) {
-        if (specPath.contains(File.separator)) {
-            //nested path given as input, last element is the IG name
-            return specPath.substring(specPath.lastIndexOf(File.separator) + 1).replaceAll(
-                    " ", "-").replaceAll("\\$", "-");
-        }
-        return specPath.replaceAll(" ", "-").replaceAll("\\$", "-");
-    }
-
-    public static JsonElement getIGConfigElement(String igName, String igCode, String specPath) {
-
-        JsonObject igConfig = new JsonObject();
-        if (igName == null || igName.isEmpty()) {
-            igName = generateIgNameFromPath(specPath);
-        }
-        igConfig.add("name", new Gson().toJsonTree(igName));
-        igConfig.add("code", new Gson().toJsonTree(igCode));
-        igConfig.add("dirPath", new Gson().toJsonTree(specPath));
-        return igConfig;
-    }
-
-    public static String generateIgDirectoryPath(String specPath, String igName) {
-        if (specPath.endsWith(File.separator)) {
-            return igName + File.separator;
-        }
-        return File.separator + igName + File.separator;
-    }
-
-    public static JsonElement getIGConfigElement(String igName, String igCode) {
-
-        if (igCode != null && igCode.isEmpty()) {
-            return getIGConfigElement(igName, igCode, "");
-        } else {
-            return getIGConfigElement(igName, igName, "");
-        }
-    }
-
     public static void throwLauncherException(Throwable error) throws BLauncherException {
         BLauncherException launcherException = new BLauncherException();
         launcherException.initCause(error);
         throw launcherException;
     }
 
-    public static List<String> getDirectories(Path specifiedPath) {
+    public static List<String> getDirectories(String specifiedPath) {
         List<String> subDirectories = new ArrayList<>();
-        File specPath = new File(specifiedPath.toString());
+        File specPath = new File(specifiedPath);
         File[] files = specPath.listFiles();
         if (files != null) {
             for (File file : files) {
@@ -109,5 +77,41 @@ public class HealthCmdUtils {
             }
         }
         return subDirectories;
+    }
+
+    public static Path validateAndSetSpecificationPath(String specPathParam,String executionPath) throws BallerinaHealthException {
+
+        Path specificationPath = null;
+        if (specPathParam != null) {
+            Path path = Paths.get(specPathParam);
+            if (path.isAbsolute()) {
+                specificationPath =  path;
+            } else {
+                specificationPath = Paths.get(executionPath, specPathParam);
+            }
+            if (!Files.isDirectory(specificationPath)) {
+                throw new BallerinaHealthException("Cannot find valid spec path pointed. Please check the path "
+                        + specPathParam + " is valid.");
+            }
+        }
+        return specificationPath;
+    }
+
+    public static void engageChildTemplateGenerators(TemplateGenerator templateGenerator, ToolContext context,
+                                               Map<String, Object> properties) throws CodeGenException {
+        if (templateGenerator != null) {
+            templateGenerator.generate(context, properties);
+            engageChildTemplateGenerators(templateGenerator.getChildTemplateGenerator(), context, properties);
+        }
+    }
+
+    public static InputStream getResourceFile(Class<?> handlerClass, String fileName) throws BallerinaHealthException {
+        ClassLoader classLoader = handlerClass.getClassLoader();
+        InputStream ioStream = classLoader.getResourceAsStream(fileName);
+
+        if (ioStream == null) {
+            throw new BallerinaHealthException(HealthCmdConstants.CMD_CONFIG_FILENAME + " is not found");
+        }
+        return ioStream;
     }
 }

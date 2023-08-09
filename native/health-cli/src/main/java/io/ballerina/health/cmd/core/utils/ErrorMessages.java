@@ -34,6 +34,8 @@ public class ErrorMessages {
     public static final String UNKNOWN_ERROR = "Unknown error occurred. Please contact tool developers for more " +
             "information";
 
+    public static final String INVALID_MODE = "Invalid mode, Please check the mode and retry";
+
     public static final String TOOL_IMPL_NOT_FOUND = "Tool implementation not found for the given tool. Please check " +
             "the distribution libs and try again";
 

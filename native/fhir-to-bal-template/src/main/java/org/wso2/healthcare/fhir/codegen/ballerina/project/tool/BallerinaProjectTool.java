@@ -45,7 +45,7 @@ import java.util.Map;
  * Main class for Ballerina Project Generator tool.
  */
 public class BallerinaProjectTool extends AbstractFHIRTool {
-    private final Map<String, FHIRImplementationGuide> igConfigMap = new HashMap<>();
+    private final Map<String, FHIRImplementationGuide> igMap = new HashMap<>();
     private final Map<String, BallerinaService> serviceMap = new HashMap<>();
     private final Map<String, String> dependenciesMap = new HashMap<>();
     private BallerinaProjectToolConfig ballerinaProjectToolConfig;
@@ -63,7 +63,7 @@ public class BallerinaProjectTool extends AbstractFHIRTool {
             populateBalService();
 
             String targetRoot = ballerinaProjectToolConfig.getTargetDir();
-            String targetDirectory = targetRoot + File.separator + BallerinaProjectConstants.GENERATION_DIR + File.separator;
+            String targetDirectory = targetRoot + File.separator;
             BallerinaProjectGenerator balProjectGenerator = new BallerinaProjectGenerator(targetDirectory);
             Map<String, Object> generatorProperties = new HashMap<>();
             generatorProperties.put("config", ballerinaProjectToolConfig);
@@ -78,7 +78,7 @@ public class BallerinaProjectTool extends AbstractFHIRTool {
     /**
      * Extract full IG based on the config.
      *
-     * @param toolContext
+     * @param toolContext Tool context
      */
     private void populateIGs(ToolContext toolContext) {
 
@@ -87,8 +87,21 @@ public class BallerinaProjectTool extends AbstractFHIRTool {
             FHIRImplementationGuide ig = ((FHIRSpecificationData) toolContext.getSpecificationData()).
                     getFhirImplementationGuides().get(igName);
             if (entry.getValue().isEnable() && ig != null) {
-                igConfigMap.put(igName, ig);
-                dependenciesMap.put("igPackage", entry.getValue().getImportStatement());
+                String igPackage = entry.getValue().getImportStatement();
+                igMap.put(ig.getName(), ig);
+
+                if (!igName.equals(ig.getName())) {
+                    //Update key in the ig config global map
+                    ballerinaProjectToolConfig.getIncludedIGConfigs().remove(igName);
+                    IncludedIGConfig updatedIGConfig = entry.getValue();
+                    igPackage = ballerinaProjectToolConfig.getMetadataConfig().getOrg() + "/" + ig.getName();
+                    updatedIGConfig.setImportStatement(igPackage);
+                    ballerinaProjectToolConfig.getIncludedIGConfigs().put(ig.getName(), updatedIGConfig);
+
+                    ((FHIRSpecificationData) toolContext.getSpecificationData()).getFhirImplementationGuides().remove(igName);
+                    ((FHIRSpecificationData) toolContext.getSpecificationData()).getFhirImplementationGuides().put(ig.getName(), ig);
+                }
+                dependenciesMap.put("igPackage", igPackage);
             }
         }
     }
@@ -98,7 +111,7 @@ public class BallerinaProjectTool extends AbstractFHIRTool {
      */
     private void populateBalService() {
 
-        for (Map.Entry<String, FHIRImplementationGuide> entry : igConfigMap.entrySet()) {
+        for (Map.Entry<String, FHIRImplementationGuide> entry : igMap.entrySet()) {
             String igName = entry.getValue().getName();
             for (Map.Entry<String, FHIRResourceDef> definitionEntry : entry.getValue().getResources().entrySet()) {
                 if (definitionEntry.getValue().getDefinition().getKind().toCode().equalsIgnoreCase("RESOURCE")) {
@@ -113,26 +126,31 @@ public class BallerinaProjectTool extends AbstractFHIRTool {
                     if (!serviceMap.containsKey(apiName)) {
                         continue;
                     }
-                    SearchParam param = new SearchParam(parameter.getValue().getSearchParameter().getName(),
-                            parameter.getValue().getSearchParameter().getCode());
-                    param.setSearchParamDef(parameter.getValue().getSearchParameter());
-                    param.setDescription(parameter.getValue().getSearchParameter().getDescription());
-                    param.setDocumentation(parameter.getValue().getSearchParameter().getUrl());
-                    param.setTargetResource(apiName);
-                    if (ballerinaProjectToolConfig.getSearchParamConfigs().contains(param.getSearchParamDef().getCode())) {
-                        param.setBuiltIn(true);
-                    }
+                    SearchParam param = getSearchParam(parameter, apiName);
                     serviceMap.get(apiName).addSearchParam(param);
                 }
             }
         }
     }
 
+    private SearchParam getSearchParam(Map.Entry<String, FHIRSearchParamDef> parameter, String apiName) {
+        SearchParam param = new SearchParam(parameter.getValue().getSearchParameter().getName(),
+                parameter.getValue().getSearchParameter().getCode());
+        param.setSearchParamDef(parameter.getValue().getSearchParameter());
+        param.setDescription(parameter.getValue().getSearchParameter().getDescription());
+        param.setDocumentation(parameter.getValue().getSearchParameter().getUrl());
+        param.setTargetResource(apiName);
+        if (ballerinaProjectToolConfig.getSearchParamConfigs().contains(param.getSearchParamDef().getCode())) {
+            param.setBuiltIn(true);
+        }
+        return param;
+    }
+
     /**
      * Validate Ballerina service based on include-exclude configs.
      *
-     * @param structureDefinition
-     * @param igName
+     * @param structureDefinition FHIR StructureDefinition
+     * @param igName             IG name
      */
     public void validateAndAddFHIRResource(StructureDefinition structureDefinition, String igName) {
 
@@ -156,10 +174,10 @@ public class BallerinaProjectTool extends AbstractFHIRTool {
     /**
      * Adding Ballerina service model to a common map.
      *
-     * @param structureDefinition
-     * @param resourceType
-     * @param profile
-     * @param url
+     * @param structureDefinition FHIR StructureDefinition
+     * @param resourceType       FHIR resource type
+     * @param profile           FHIR profile
+     * @param url               FHIR profile url
      */
     private void addResourceProfile(StructureDefinition structureDefinition, String resourceType, String profile,
                                     String url, String igName) {
@@ -169,6 +187,7 @@ public class BallerinaProjectTool extends AbstractFHIRTool {
                 //profiled resource added before
                 FHIRProfile fhirProfile = new FHIRProfile(structureDefinition, url, igName, resourceType);
                 fhirProfile.setFhirVersion(ballerinaProjectToolConfig.getFhirVersion());
+                fhirProfile.setPackagePrefix(ballerinaProjectToolConfig);
                 fhirProfile.setAbstract();
                 fhirProfile.addImport(ballerinaProjectToolConfig.getIncludedIGConfigs().get(igName).getImportStatement());
                 serviceMap.get(resourceType).addFhirProfile(fhirProfile);
@@ -179,6 +198,7 @@ public class BallerinaProjectTool extends AbstractFHIRTool {
                     FHIRProfile fhirProfile = new FHIRProfile(structureDefinition, url, igName, resourceType);
                     fhirProfile.addImport(ballerinaProjectToolConfig.getIncludedIGConfigs().get(igName).getImportStatement());
                     fhirProfile.setFhirVersion(ballerinaProjectToolConfig.getFhirVersion());
+                    fhirProfile.setPackagePrefix(ballerinaProjectToolConfig);
                     serviceMap.get(resourceType).addFhirProfile(fhirProfile);
                     serviceMap.get(resourceType).addProfile(url);
                 }
