@@ -5,9 +5,7 @@ NAME
 SYNOPSIS
         bal health fhir [-m | --mode] <package> [-o | --output] <output-location> \
                         <FHIR-specification-directory-path>
-                        [-m | --mode] <package> [-c | --config] \
-                        <advanced-configuration-file-path> \
-                        <FHIR-specification-directory-path>
+                        [-m | --mode] <package> <FHIR-specification-directory-path>
 
 DESCRIPTION
         Generate a Ballerina package with relevant records and types
