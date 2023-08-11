@@ -18,7 +18,10 @@
 
 package io.ballerina.health.cmd.fhir;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import io.ballerina.cli.BLauncherCmd;
 import io.ballerina.health.cmd.core.config.HealthCmdConfig;
 import io.ballerina.health.cmd.core.exception.BallerinaHealthException;
@@ -32,11 +35,14 @@ import org.wso2.healthcare.codegen.tool.framework.commons.core.Tool;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.ToolContext;
 import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenException;
 import org.wso2.healthcare.codegen.tool.framework.commons.model.JsonConfigType;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.common.FHIRSpecificationData;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.config.FHIRToolConfig;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.FHIRTool;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRImplementationGuide;
 import picocli.CommandLine;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -87,12 +93,6 @@ public class FhirSubCmd implements BLauncherCmd {
     @CommandLine.Option(names = {"--org-name"}, description = "Organization name of the Ballerina package")
     private String orgName;
 
-    @CommandLine.Option(names = {"--ig-name"}, description = "Implementation guide name")
-    private String igName;
-
-    @CommandLine.Option(names = {"--ig-code"}, description = "Implementation guide code")
-    private String igCode;
-
     @CommandLine.Parameters(description = "Custom arguments")
     private List<String> argList;
 
@@ -126,6 +126,7 @@ public class FhirSubCmd implements BLauncherCmd {
                     while ((content = br.readLine()) != null) {
                         printStream.append('\n').append(content);
                     }
+                    return;
                 } catch (IOException e) {
                     printStream.println("Helper text is not available.");
                     HealthCmdUtils.throwLauncherException(e);
@@ -146,9 +147,14 @@ public class FhirSubCmd implements BLauncherCmd {
             printStream.println("Try bal health --help for more information.");
             HealthCmdUtils.exitError(exitWhenFinish);
         }
-        this.engageSubCommand(argList);
-        printStream.println("Ballerina FHIR package generation completed successfully. Generated packages can be found "
-                + "at " + targetOutputPath);
+        if (this.engageSubCommand(argList)) {
+            printStream.println("Ballerina FHIR package generation completed successfully. Generated " +
+                    "packages can be found at " + targetOutputPath);
+        } else {
+            printStream.println("Invalid mode received for FHIR tool command.");
+            printStream.println("Try bal health --help for more information.");
+        }
+
         HealthCmdUtils.exitError(exitWhenFinish);
     }
 
@@ -180,7 +186,7 @@ public class FhirSubCmd implements BLauncherCmd {
         }
     }
 
-    public void engageSubCommand(List<String> argList) {
+    public boolean engageSubCommand(List<String> argList) {
 
         getTargetOutputPath();
         //spec path is the last argument
@@ -235,6 +241,7 @@ public class FhirSubCmd implements BLauncherCmd {
             }
 
             for (JsonElement jsonElement : toolExecConfigArr) {
+                //todo: since the CLI supports only one mode at a time, this for loop can be removed.
                 JsonObject toolExecConfig = jsonElement.getAsJsonObject();
                 String configClassName = toolExecConfig.get("configClass").getAsString();
                 String toolClassName = toolExecConfig.get("toolClass").getAsString();
@@ -264,17 +271,21 @@ public class FhirSubCmd implements BLauncherCmd {
                     //override default configs for package-gen mode with user provided configs
                     if (command.equals("package")) {
                         if (packageName != null && !packageName.isEmpty()) {
-                            JsonElement overrideConfig = new Gson().toJsonTree(packageName);
+                            JsonElement overrideConfig = new Gson().toJsonTree(packageName.toLowerCase());
                             toolConfigInstance.overrideConfig("packageConfig.name", overrideConfig);
-                        } else if (igName != null && !igName.isEmpty()) {
-                            JsonElement overrideConfig = new Gson().toJsonTree(igName);
-                            toolConfigInstance.overrideConfig("packageConfig.name.append", overrideConfig);
                         } else {
-                            JsonElement overrideConfig = new Gson().toJsonTree(HealthCmdUtils.getDirectories(specificationPath).get(0));
+                            String igName = "";
+                            //todo: For loop can be removed here hence tool optimized for single IG use case.
+                            for (Map.Entry<String, FHIRImplementationGuide> entry :
+                                    ((FHIRSpecificationData) fhirToolLib.getToolContext().getSpecificationData()).
+                                            getFhirImplementationGuides().entrySet()) {
+                                igName = entry.getValue().getName();
+                            }
+                            JsonElement overrideConfig = new Gson().toJsonTree(igName.toLowerCase());
                             toolConfigInstance.overrideConfig("packageConfig.name.append", overrideConfig);
                         }
                         if (orgName != null && !orgName.isEmpty()) {
-                            JsonElement overrideConfig = new Gson().toJsonTree(orgName);
+                            JsonElement overrideConfig = new Gson().toJsonTree(orgName.toLowerCase());
                             toolConfigInstance.overrideConfig("packageConfig.org", overrideConfig);
                         }
                     }
@@ -304,6 +315,7 @@ public class FhirSubCmd implements BLauncherCmd {
                         printStream.println(ErrorMessages.UNKNOWN_ERROR + e.getMessage());
                         HealthCmdUtils.throwLauncherException(e);
                     }
+                    return true;
                 } else {
                     printStream.println("Template generator is not registered for the tool: " + name);
                     printStream.println(ErrorMessages.CONFIG_INITIALIZING_FAILED);
@@ -311,6 +323,7 @@ public class FhirSubCmd implements BLauncherCmd {
                 }
             }
         }
+        return false;
     }
 
     /**
@@ -325,7 +338,7 @@ public class FhirSubCmd implements BLauncherCmd {
                 targetOutputPath = Paths.get(targetOutputPath.toString(), outputPath);
             }
         } else {
-            targetOutputPath = Paths.get(targetOutputPath.toString(), "/gen");
+            targetOutputPath = Paths.get(targetOutputPath + File.separator + "generated-package");
         }
     }
 
@@ -372,53 +385,13 @@ public class FhirSubCmd implements BLauncherCmd {
     private void handleSpecificationPathAndOverride(FHIRToolConfig fhirToolConfig, Path specificationPath)
             throws BallerinaHealthException {
 
-        int subDirCount = HealthCmdUtils.getDirectories(specificationPath).size();
-        if (igName != null && !igName.isEmpty()) {
-            //check if a directory exists; if so, process spec files in that directory.
-            // Multiple directories will be skipped.
-            if (canOverrideConfig(subDirCount, fhirToolConfig, igName, igCode)) {
-                //check for spec files
-                if (Files.exists(specificationPath)) {
-                    fhirToolConfig.overrideConfig("FHIRImplementationGuides", HealthCmdUtils.getIGConfigElement(
-                            igName, igCode));
-                } else {
-                    printStream.println("No spec files found in the given path.");
-                    HealthCmdUtils.exitError(this.exitWhenFinish);
-                }
-            }
-        } else {
-            //take directory name as igName and proceed. Multiple directories are not supported.
-            if (canOverrideConfig(subDirCount, fhirToolConfig, "", "")) {
-                //no ig name provided, no directories found. Can't proceed.
-                printStream.println("Can't proceed with the given path.");
-                HealthCmdUtils.exitError(this.exitWhenFinish);
-            }
-        }
-
-    }
-
-    private boolean canOverrideConfig(int subDirCount, FHIRToolConfig fhirToolConfig, String igName, String igCode) {
-        //Logic inverted for convenience.
-        if (subDirCount > 1) {
-            if (igName.isEmpty()) {
-                printStream.println("Multiple directories found. Please provide an IG name.");
-                HealthCmdUtils.exitError(this.exitWhenFinish);
-            }
-            //given path contains multiple directories, and may contain spec files. can proceed since IG name is given.
-            return true;
-        } else if (subDirCount == 1) {
-            //valid directory, look for spec files
-            String igDirName = HealthCmdUtils.getDirectories(specificationPath).get(0);
-            if (igName.isEmpty()) {
-                igName = igDirName;
-            }
-            if (igCode.isEmpty()) {
-                igCode = igDirName;
-            }
+        if (Files.exists(specificationPath)) {
             fhirToolConfig.overrideConfig("FHIRImplementationGuides", HealthCmdUtils.getIGConfigElement(
-                    igName, igCode, HealthCmdUtils.generateIgDirectoryPath(specificationPath.toString(), igDirName)));
-            return false;
+                    HealthCmdConstants.CMD_DEFAULT_IG_NAME, HealthCmdConstants.CMD_DEFAULT_IG_NAME));
+        } else {
+            printStream.println("No spec files found in the given path.");
+            HealthCmdUtils.exitError(this.exitWhenFinish);
         }
-        return true;
+
     }
 }

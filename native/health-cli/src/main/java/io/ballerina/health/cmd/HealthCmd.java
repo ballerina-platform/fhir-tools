@@ -48,6 +48,9 @@ public class HealthCmd implements BLauncherCmd {
     @CommandLine.Option(names = {"--help", "-h", "?"}, usageHelp = true)
     private boolean helpFlag;
 
+    @CommandLine.Option(names = {"--version", "-v"})
+    private boolean toolVersion;
+
     @CommandLine.Parameters(description = "Options for the sub commands")
     private List<String> argList;
 
@@ -69,6 +72,13 @@ public class HealthCmd implements BLauncherCmd {
             return;
         }
 
+        if (toolVersion) {
+            Package packageVersion = this.getClass().getPackage();
+            String version = packageVersion.getImplementationVersion();
+            printStream.println("Ballerina Health Tool " + version);
+            return;
+        }
+
         printStream.println("Please use sub command to generate artifacts." +
                 "$ bal health <protocol: fhir> [OPTIONS]");
 
@@ -86,6 +96,7 @@ public class HealthCmd implements BLauncherCmd {
                 while ((content = br.readLine()) != null) {
                     printStream.append('\n').append(content);
                 }
+                return;
             } catch (IOException e) {
                 printStream.println("Helper text is not available.");
                 HealthCmdUtils.throwLauncherException(e);

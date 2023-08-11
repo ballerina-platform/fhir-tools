@@ -56,14 +56,13 @@ public class BallerinaPackageGenTool extends AbstractFHIRTool {
 
         if (packageGenToolConfig.isEnabled()) {
             String targetRoot = packageGenToolConfig.getTargetDir();
-            String targetDirectory = targetRoot + File.separator + ToolConstants.GENERATION_DIR;
 
             PackageContextGenerator packageContextGenerator = new PackageContextGenerator(
                     (FHIRToolContext) toolContext,
                     packageGenToolConfig,
                     getEnabledIgs());
 
-            PackageTemplateGenerator packageTemplateGenerator = new PackageTemplateGenerator(targetDirectory);
+            PackageTemplateGenerator packageTemplateGenerator = new PackageTemplateGenerator(targetRoot);
 
             Map<String, Object> properties = new HashMap<>();
             properties.put("toolConfig", packageGenToolConfig);

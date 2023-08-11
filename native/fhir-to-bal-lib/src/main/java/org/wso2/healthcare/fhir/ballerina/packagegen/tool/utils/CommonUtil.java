@@ -18,27 +18,20 @@
 
 package org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils;
 
-import org.apache.commons.io.FileUtils;
 import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenException;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.ToolConstants;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Enumeration;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 import java.util.regex.Pattern;
 
 /**
  * Common utility functions of Package Gen Tool.
  */
 public class CommonUtil {
-
 
     /**
      * Concat path segments with separator.
@@ -134,23 +127,6 @@ public class CommonUtil {
         String newCode = code.trim().split(Pattern.quote(" "))[0];
         return newCode.replaceAll(" *\\(.+?\\)", "")
                 .replace("+", "");
-    }
-
-    /**
-     * Copy contents in a directory to another.
-     *
-     * @param sourcePath      source directory
-     * @param destinationPath destination directory
-     */
-    public static void copyContentsToDir(String sourcePath, String destinationPath) throws CodeGenException {
-        try {
-            File source = new File(sourcePath);
-            File dest = new File(destinationPath);
-            FileUtils.copyDirectory(source, dest);
-        } catch (IOException e) {
-            throw new CodeGenException(
-                    "Error occurred while copying contents from " + sourcePath + " to " + destinationPath, e);
-        }
     }
 
     /**

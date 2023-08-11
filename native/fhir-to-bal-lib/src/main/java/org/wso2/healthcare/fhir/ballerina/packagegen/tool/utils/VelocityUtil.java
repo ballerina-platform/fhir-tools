@@ -37,6 +37,8 @@ public class VelocityUtil {
         put("<=", "less_than_or_equal");
     }};
 
+    // Ballerina Keywords
+    // https://github.com/ballerina-platform/ballerina-lang/blob/v2201.7.0/compiler/ballerina-parser/src/main/java/io/ballerina/compiler/internal/parser/LexerTerminals.java
     private final HashMap<String, String> KEYWORD_CONFLICTS_MAP = new HashMap<String, String>() {{
         put("type", "'type");
         put("source", "'source");
