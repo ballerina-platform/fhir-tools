@@ -119,7 +119,7 @@ public class PackageConfig {
     public void setName(String name) {
         //reusing the Util from Ballerina-lang to validate the package name.
         //second argument is not valid for health packages.
-        this.name = ProjectUtils.guessPkgName(name,"package");
+        this.name = ProjectUtils.guessPkgName(name, "package");
     }
 
     public void setVersion(String version) {
