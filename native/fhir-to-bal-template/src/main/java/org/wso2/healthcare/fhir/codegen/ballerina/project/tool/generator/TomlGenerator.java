@@ -21,10 +21,10 @@ package org.wso2.healthcare.fhir.codegen.ballerina.project.tool.generator;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.TemplateContext;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.ToolContext;
 import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenException;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.AbstractFHIRTemplateGenerator;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.BallerinaProjectConstants;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.config.BallerinaProjectToolConfig;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.BallerinaService;
-import org.wso2.healthcare.codegen.tool.framework.fhir.core.AbstractFHIRTemplateGenerator;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Generator for Ballerina.Toml file.
+ * Generator for Ballerina.Toml file
  */
 public class TomlGenerator extends AbstractFHIRTemplateGenerator {
 
@@ -42,16 +42,13 @@ public class TomlGenerator extends AbstractFHIRTemplateGenerator {
 
     @Override
     public void generate(ToolContext toolContext, Map<String, Object> generatorProperties) throws CodeGenException {
-
-        String ballerinaAPI = generatorProperties.get("resourceType") + "API";
-        String directoryPath = this.getTargetDir() + ballerinaAPI + File.separator;
-        this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
-                        File.separator + "ballerinaToml.vm", createTemplateContextForToml(generatorProperties),
-                directoryPath, "Ballerina.toml");
+        String directoryPath = generatorProperties.get("projectAPIPath") + File.separator;
+        this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES
+                        + File.separator + "ballerinaToml.vm",
+                createTemplateContextForToml(generatorProperties), directoryPath, "Ballerina.toml");
     }
 
     private TemplateContext createTemplateContextForToml(Map<String, Object> generatorProperties) {
-
         TemplateContext templateContext = this.getNewTemplateContext();
         BallerinaProjectToolConfig config = (BallerinaProjectToolConfig) generatorProperties.get("config");
         templateContext.setProperty("metaConfig", config.getMetadataConfig());
@@ -61,10 +58,12 @@ public class TomlGenerator extends AbstractFHIRTemplateGenerator {
                 generatorProperties.get("resourceType").toString().toLowerCase());
         templateContext.setProperty("keywords", this.generateKeywords(config,
                 (BallerinaService) generatorProperties.get("service")));
+        templateContext.setProperty("basePackageImportIdentifier", generatorProperties.get("basePackageImportIdentifier"));
+        templateContext.setProperty("servicePackageImportIdentifier", generatorProperties.get("servicePackageImportIdentifier"));
         return templateContext;
     }
 
-    private List<String> generateKeywords(BallerinaProjectToolConfig config, BallerinaService service) {
+    private List<String> generateKeywords(BallerinaProjectToolConfig config, BallerinaService service){
         List<String> keywords = new ArrayList<>(config.getMetadataConfig().getKeywords());
         keywords.add(service.getName());
         keywords.add(config.getFhirVersion());

@@ -60,7 +60,8 @@ public class BallerinaService {
     }
 
     public void addImport(String importPackage) {
-        importsList.add(importPackage);
+        if(!importsList.contains(importPackage))
+            importsList.add(importPackage);
     }
 
     public void addInterceptor(String interceptor) {

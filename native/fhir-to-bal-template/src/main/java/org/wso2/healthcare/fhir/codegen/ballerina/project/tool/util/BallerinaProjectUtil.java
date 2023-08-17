@@ -21,6 +21,7 @@ package org.wso2.healthcare.fhir.codegen.ballerina.project.tool.util;
 import org.apache.commons.text.CaseUtils;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Utility class for Ballerina project generator.
@@ -36,7 +37,7 @@ public class BallerinaProjectUtil {
 
         for (int i = 1; i < substrings.size(); i++) {
             String substring = substrings.get(i);
-            aggregatedName = aggregatedName + CaseUtils.toCamelCase(substring, true, '_');
+            aggregatedName = String.format("%s%s", aggregatedName, CaseUtils.toCamelCase(substring, true, '_'));
         }
         return aggregatedName;
     }

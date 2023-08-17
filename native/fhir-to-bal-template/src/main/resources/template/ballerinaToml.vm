@@ -7,9 +7,6 @@ authors = [#foreach($author in $metaConfig.getAuthors())"$author"#if($foreach.ha
 keywords = [#foreach($keyword in $keywords)"$keyword"#if($foreach.hasNext), #end#end]#**#
 template = true
 
-[build-options]
-observabilityIncluded = true
-
 #foreach($dependencyConfig in $dependencyList)
 [[dependency]]
 org = "$dependencyConfig.getOrg()"
