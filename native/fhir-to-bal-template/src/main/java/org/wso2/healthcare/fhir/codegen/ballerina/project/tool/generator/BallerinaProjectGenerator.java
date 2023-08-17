@@ -20,9 +20,11 @@ package org.wso2.healthcare.fhir.codegen.ballerina.project.tool.generator;
 
 import org.wso2.healthcare.codegen.tool.framework.commons.core.ToolContext;
 import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenException;
-import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.config.BallerinaProjectToolConfig;
-import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.BallerinaService;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.AbstractFHIRTemplateGenerator;
+import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.BallerinaProjectConstants;
+import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.config.BallerinaProjectToolConfig;
+import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.config.IncludedIGConfig;
+import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.BallerinaService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,10 +41,9 @@ public class BallerinaProjectGenerator extends AbstractFHIRTemplateGenerator {
     @Override
     public void generate(ToolContext toolContext, Map<String, Object> generatorProperties) throws CodeGenException {
 
-        BallerinaProjectToolConfig ballerinaProjectToolConfig = (BallerinaProjectToolConfig) generatorProperties.get(
-                "config");
-        Map<String, BallerinaService> serviceMap = (Map<String, BallerinaService>) generatorProperties.get(
-                "serviceMap");
+        BallerinaProjectToolConfig ballerinaProjectToolConfig = (BallerinaProjectToolConfig) generatorProperties.get("config");
+        Map<String, BallerinaService> serviceMap = (Map<String, BallerinaService>) generatorProperties.get("serviceMap");
+        Map<String, String> dependenciesMap = (Map<String, String>) generatorProperties.get("dependenciesMap");
         //evaluate usage of ? typed map as generator properties.
 
         for (Map.Entry<String, BallerinaService> entry : serviceMap.entrySet()) {
@@ -50,19 +51,27 @@ public class BallerinaProjectGenerator extends AbstractFHIRTemplateGenerator {
             projectProperties.put("service", entry.getValue());
             projectProperties.put("resourceType", entry.getKey());
             projectProperties.put("config", ballerinaProjectToolConfig);
+            projectProperties.put("dependencies", dependenciesMap);
+
+            String basePackage = dependenciesMap.get("basePackage");
+            String servicePackage = dependenciesMap.get("servicePackage");
+            String igPackage = dependenciesMap.get("igPackage");
+            projectProperties.put("basePackageImportIdentifier", basePackage.substring(basePackage.lastIndexOf(".") + 1));
+            projectProperties.put("servicePackageImportIdentifier", servicePackage.substring(servicePackage.lastIndexOf(".") + 1));
+            projectProperties.put("igPackageImportIdentifier", igPackage.substring(igPackage.lastIndexOf(".") + 1));
+            projectProperties.put("projectAPIPath", this.getTargetDir() + entry.getKey().toLowerCase() + BallerinaProjectConstants.PROJECT_API_SUFFIX);
+
             ServiceGenerator balServiceGenerator = new ServiceGenerator(this.getTargetDir());
             balServiceGenerator.generate(toolContext, projectProperties);
-            ProfileGenerator profileGenerator = new ProfileGenerator(this.getTargetDir());
-            profileGenerator.generate(toolContext, projectProperties);
+
             TomlGenerator tomlGenerator = new TomlGenerator(this.getTargetDir());
             tomlGenerator.generate(toolContext, projectProperties);
-            UtilGenerator utilGenerator = new UtilGenerator(this.getTargetDir());
-            utilGenerator.generate(toolContext, projectProperties);
+
             MetaGenerator metaGenerator = new MetaGenerator(this.getTargetDir());
             metaGenerator.generate(toolContext, projectProperties);
+
             TestGenerator testGenerator = new TestGenerator(this.getTargetDir());
             testGenerator.generate(toolContext, projectProperties);
         }
-
     }
 }

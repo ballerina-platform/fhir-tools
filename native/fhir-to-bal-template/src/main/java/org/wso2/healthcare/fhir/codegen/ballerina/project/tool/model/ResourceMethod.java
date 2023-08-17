@@ -18,18 +18,30 @@
 
 package org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model;
 
+import java.util.ArrayList;
+
 public class ResourceMethod extends Function {
     private final String type;
+    private final String resourceName;
     private String contextInformation;
-    private String resourceContext;
-    private String httpMethod;
+    private final String resourceContext;
+    private final String httpMethod;
+    private ArrayList<String> methodParams;
+    private String returnType;
     private String descriptionComment;
 
-    public ResourceMethod(String type, String context, String httpMethod) {
+    public ResourceMethod(String type, String resourceName, ArrayList<String> methodParams, String httpMethod, String returnType, String descriptionComment) {
         this.type = type;
-        this.resourceContext = context;
+        this.resourceName = resourceName;
+        this.methodParams = methodParams;
+        this.resourceContext = resolveContext();
         this.httpMethod = httpMethod;
-        this.descriptionComment = "";
+        this.returnType = returnType;
+        this.descriptionComment = descriptionComment;
+    }
+
+    public String getResourceName() {
+        return resourceName;
     }
 
     public String getContextInformation() {
@@ -56,7 +68,61 @@ public class ResourceMethod extends Function {
         return resourceContext;
     }
 
+    public String setResourceContext(String resourceContext) {
+        return this.resourceContext;
+    }
+
     public String getHttpMethod() {
         return httpMethod;
+    }
+
+    public ArrayList<String> getMethodParams() {
+        return methodParams;
+    }
+
+    public void setMethodParams(ArrayList<String> methodParams) {
+        this.methodParams = methodParams;
+    }
+
+    public String getReturnType() {
+        return returnType;
+    }
+
+    public void setReturnType(String returnType) {
+        this.returnType = returnType;
+    }
+
+    private String resolveContext() {
+        String context = this.resourceName;
+        switch (this.type) {
+            case "search":
+            case "create": {
+                break;
+            }
+            case "read":
+            case "update":
+            case "patch":
+            case "delete": {
+                context = context + "/[string id]";
+                break;
+            }
+            case "history": {
+                context = context + "/[string id]/_history";
+                break;
+            }
+            case "history-instance": {
+                context = context + "/[string id]/_history/[string vid]";
+                break;
+            }
+            case "history-type": {
+                context = context + "/_history";
+                break;
+            }
+            case "history-system": {
+                context = "/_history";
+                break;
+            }
+        }
+        return context;
     }
 }

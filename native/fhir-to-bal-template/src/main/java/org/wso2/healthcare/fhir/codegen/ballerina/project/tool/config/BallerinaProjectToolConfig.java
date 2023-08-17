@@ -45,8 +45,9 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
     private final List<OperationConfig> operationConfig = new ArrayList<>();
     private final List<DependencyConfig> dependencyConfigs = new ArrayList<>();
     private final List<String> searchParamConfigs = new ArrayList<>();
-
     private final List<InteractionConfig> interactionConfigs = new ArrayList<>();
+    private String basePackage;
+    private String servicePackage;
 
     @Override
     public void configure(ConfigType<?> configObj) throws CodeGenException {
@@ -67,6 +68,14 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
                     getAsJsonArray("dependencies"));
             populateInteractionConfigs(jsonConfigObj.getAsJsonObject(BallerinaProjectConstants.CONFIG_TOOL_PROJECT).
                     getAsJsonObject("builtIn").getAsJsonArray("interactions"));
+            if (jsonConfigObj.getAsJsonObject(BallerinaProjectConstants.CONFIG_TOOL_PROJECT).getAsJsonPrimitive("basePackage") != null) {
+                this.basePackage = jsonConfigObj.getAsJsonObject(BallerinaProjectConstants.CONFIG_TOOL_PROJECT)
+                        .getAsJsonPrimitive("basePackage").getAsString();
+            };
+            if (jsonConfigObj.getAsJsonObject(BallerinaProjectConstants.CONFIG_TOOL_PROJECT).getAsJsonPrimitive("servicePackage") != null) {
+                this.servicePackage = jsonConfigObj.getAsJsonObject(BallerinaProjectConstants.CONFIG_TOOL_PROJECT)
+                        .getAsJsonPrimitive("servicePackage").getAsString();
+            };
         }
         //todo: add toml type config handling
     }
@@ -162,5 +171,13 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
 
     public boolean isEnabled() {
         return isEnabled;
+    }
+
+    public String getBasePackage() {
+        return basePackage;
+    }
+
+    public String getServicePackage() {
+        return servicePackage;
     }
 }

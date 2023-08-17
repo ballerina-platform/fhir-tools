@@ -24,17 +24,17 @@ import org.wso2.healthcare.codegen.tool.framework.commons.config.ToolConfig;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.TemplateGenerator;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.ToolContext;
 import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenException;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.AbstractFHIRTool;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.common.FHIRSpecificationData;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRImplementationGuide;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRResourceDef;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRSearchParamDef;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.config.BallerinaProjectToolConfig;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.config.IncludedIGConfig;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.generator.BallerinaProjectGenerator;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.BallerinaService;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.FHIRProfile;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.SearchParam;
-import org.wso2.healthcare.codegen.tool.framework.fhir.core.common.FHIRSpecificationData;
-import org.wso2.healthcare.codegen.tool.framework.fhir.core.AbstractFHIRTool;
-import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRImplementationGuide;
-import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRResourceDef;
-import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRSearchParamDef;
 
 import java.io.File;
 import java.util.HashMap;
@@ -45,10 +45,10 @@ import java.util.Map;
  * Main class for Ballerina Project Generator tool.
  */
 public class BallerinaProjectTool extends AbstractFHIRTool {
-    private BallerinaProjectToolConfig ballerinaProjectToolConfig;
     private final Map<String, FHIRImplementationGuide> igConfigMap = new HashMap<>();
     private final Map<String, BallerinaService> serviceMap = new HashMap<>();
-    private String resourcePath;
+    private final Map<String, String> dependenciesMap = new HashMap<>();
+    private BallerinaProjectToolConfig ballerinaProjectToolConfig;
 
     @Override
     public void initialize(ToolConfig toolConfig) {
@@ -59,16 +59,16 @@ public class BallerinaProjectTool extends AbstractFHIRTool {
     public TemplateGenerator execute(ToolContext toolContext) throws CodeGenException {
         if (ballerinaProjectToolConfig.isEnabled()) {
             populateIGs(toolContext);
+            populateDependenciesMap();
             populateBalService();
 
             String targetRoot = ballerinaProjectToolConfig.getTargetDir();
-            String targetDirectory =
-                    targetRoot + File.separator + BallerinaProjectConstants.GENERATION_DIR + File.separator;
-            BallerinaProjectGenerator balProjectGenerator = new BallerinaProjectGenerator(
-                    targetDirectory);
+            String targetDirectory = targetRoot + File.separator + BallerinaProjectConstants.GENERATION_DIR + File.separator;
+            BallerinaProjectGenerator balProjectGenerator = new BallerinaProjectGenerator(targetDirectory);
             Map<String, Object> generatorProperties = new HashMap<>();
             generatorProperties.put("config", ballerinaProjectToolConfig);
             generatorProperties.put("serviceMap", serviceMap);
+            generatorProperties.put("dependenciesMap", dependenciesMap);
             balProjectGenerator.setGeneratorProperties(generatorProperties);
             return balProjectGenerator;
         }
@@ -77,6 +77,7 @@ public class BallerinaProjectTool extends AbstractFHIRTool {
 
     /**
      * Extract full IG based on the config.
+     *
      * @param toolContext
      */
     private void populateIGs(ToolContext toolContext) {
@@ -87,6 +88,7 @@ public class BallerinaProjectTool extends AbstractFHIRTool {
                     getFhirImplementationGuides().get(igName);
             if (entry.getValue().isEnable() && ig != null) {
                 igConfigMap.put(igName, ig);
+                dependenciesMap.put("igPackage", entry.getValue().getImportStatement());
             }
         }
     }
@@ -128,6 +130,7 @@ public class BallerinaProjectTool extends AbstractFHIRTool {
 
     /**
      * Validate Ballerina service based on include-exclude configs.
+     *
      * @param structureDefinition
      * @param igName
      */
@@ -151,7 +154,8 @@ public class BallerinaProjectTool extends AbstractFHIRTool {
     }
 
     /**
-     *  Adding Ballerina service model to a common map.
+     * Adding Ballerina service model to a common map.
+     *
      * @param structureDefinition
      * @param resourceType
      * @param profile
@@ -192,4 +196,20 @@ public class BallerinaProjectTool extends AbstractFHIRTool {
         }
     }
 
+    private void populateDependenciesMap() {
+        String fhirVersion = ballerinaProjectToolConfig.getFhirVersion();
+
+        String fhirBaseImportStatement = BallerinaProjectConstants.BASE_PACKAGE_IMPORT_SUFFIX + fhirVersion;
+        String fhirServiceImportStatement = BallerinaProjectConstants.SERVICE_PACKAGE_IMPORT_SUFFIX + fhirVersion;
+
+        if (ballerinaProjectToolConfig.getBasePackage() != null && !ballerinaProjectToolConfig.getBasePackage().isEmpty()) {
+            fhirBaseImportStatement = ballerinaProjectToolConfig.getBasePackage();
+        }
+
+        if (ballerinaProjectToolConfig.getServicePackage() != null && !ballerinaProjectToolConfig.getServicePackage().isEmpty()) {
+            fhirServiceImportStatement = ballerinaProjectToolConfig.getServicePackage();
+        }
+        dependenciesMap.put("basePackage", fhirBaseImportStatement);
+        dependenciesMap.put("servicePackage", fhirServiceImportStatement);
+    }
 }

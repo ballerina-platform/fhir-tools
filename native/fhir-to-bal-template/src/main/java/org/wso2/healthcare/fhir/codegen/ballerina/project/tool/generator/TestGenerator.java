@@ -21,15 +21,13 @@ package org.wso2.healthcare.fhir.codegen.ballerina.project.tool.generator;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.TemplateContext;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.ToolContext;
 import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenException;
-import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.config.BallerinaProjectToolConfig;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.AbstractFHIRTemplateGenerator;
+import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.BallerinaProjectConstants;
+import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.config.BallerinaProjectToolConfig;
 
 import java.io.File;
 import java.util.Map;
 
-/**
- * Generator for Ballerina service test files.
- */
 public class TestGenerator extends AbstractFHIRTemplateGenerator {
 
     public TestGenerator(String targetDir) throws CodeGenException {
@@ -38,19 +36,19 @@ public class TestGenerator extends AbstractFHIRTemplateGenerator {
 
     @Override
     public void generate(ToolContext toolContext, Map<String, Object> generatorProperties) throws CodeGenException {
-
-        String ballerinaAPI = generatorProperties.get("resourceType") + "API";
-        String directoryPath = this.getTargetDir() + ballerinaAPI + File.separator + "tests" + File.separator;
-        this.getTemplateEngine().generateOutputAsFile("template/balServiceTest.vm",
+        String directoryPath = generatorProperties.get("projectAPIPath") + File.separator;
+        this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES
+                        + File.separator + "balServiceTest.vm",
                 createTemplateContextForTest(generatorProperties), directoryPath, "service_test.bal");
     }
 
     private TemplateContext createTemplateContextForTest(Map<String, Object> generatorProperties) {
-
         TemplateContext templateContext = this.getNewTemplateContext();
         BallerinaProjectToolConfig config = (BallerinaProjectToolConfig) generatorProperties.get("config");
         templateContext.setProperty("metaConfig", config.getMetadataConfig());
         templateContext.setProperty("resourceType", generatorProperties.get("resourceType") + "API");
+        templateContext.setProperty("basePackageImportIdentifier", generatorProperties.get("basePackageImportIdentifier"));
+        templateContext.setProperty("servicePackageImportIdentifier", generatorProperties.get("servicePackageImportIdentifier"));
         return templateContext;
     }
 }

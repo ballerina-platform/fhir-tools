@@ -22,22 +22,15 @@ import org.apache.commons.text.CaseUtils;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.TemplateContext;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.ToolContext;
 import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenException;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.AbstractFHIRTemplateGenerator;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.BallerinaProjectConstants;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.config.BallerinaProjectToolConfig;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.BallerinaService;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.FHIRProfile;
-import org.wso2.healthcare.codegen.tool.framework.fhir.core.AbstractFHIRTemplateGenerator;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-/**
- * This class generates the meta files of given FHIR Ballerina project.
- */
 public class MetaGenerator extends AbstractFHIRTemplateGenerator {
 
     public MetaGenerator(String targetDir) throws CodeGenException {
@@ -46,21 +39,15 @@ public class MetaGenerator extends AbstractFHIRTemplateGenerator {
 
     @Override
     public void generate(ToolContext toolContext, Map<String, Object> generatorProperties) throws CodeGenException {
-
-        String ballerinaAPI = generatorProperties.get("resourceType") + "API";
-        String directoryPath = this.getTargetDir() + ballerinaAPI + File.separator;
+        String directoryPath = generatorProperties.get("projectAPIPath") + File.separator;
         this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
-                        File.separator + "configToml.vm", createTemplateContextForMeta(generatorProperties),
-                directoryPath, "Config.toml");
+                File.separator + "configToml.vm", createTemplateContextForMeta(generatorProperties), directoryPath, "Config.toml");
         this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
-                        File.separator + "packageMd.vm", createTemplateContextForMeta(generatorProperties),
-                directoryPath, "Package.md");
+                File.separator + "packageMd.vm", createTemplateContextForMeta(generatorProperties), directoryPath, "Package.md");
         this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
-                        File.separator + "gitignore.vm", createTemplateContextForMeta(generatorProperties),
-                directoryPath, ".gitignore");
+                File.separator + "gitignore.vm", createTemplateContextForMeta(generatorProperties), directoryPath, ".gitignore");
         this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
-                        File.separator + "apiConfig.vm", createTemplateContextForMeta(generatorProperties),
-                directoryPath, "api_config.bal");
+                File.separator + "apiConfig.vm", createTemplateContextForMeta(generatorProperties), directoryPath, "api_config.bal");
     }
 
     private TemplateContext createTemplateContextForMeta(Map<String, Object> generatorProperties) {
@@ -78,15 +65,19 @@ public class MetaGenerator extends AbstractFHIRTemplateGenerator {
             sampleIG = profile.getIgName();
         }
         templateContext.setProperty("igURLs", igURLs);
-        templateContext.setProperty("sampleIGCamelCase", CaseUtils.toCamelCase(sampleIG, true, '-'));
+        templateContext.setProperty("sampleIGCamelCase", CaseUtils.toCamelCase(sampleIG, true,'-'));
         templateContext.setProperty("sampleIGLowerCase", sampleIG.toLowerCase());
         templateContext.setProperty("profileURLs", profileURLs);
         templateContext.setProperty("config", config);
         templateContext.setProperty("metaConfig", config.getMetadataConfig());
         templateContext.setProperty("service", service);
         templateContext.setProperty("apiName", generatorProperties.get("resourceType") + "API");
-        templateContext.setProperty("templateName", config.getMetadataConfig().getNamePrefix() +
-                generatorProperties.get("resourceType").toString().toLowerCase());
+        templateContext.setProperty("templateName", config.getMetadataConfig().getNamePrefix() + generatorProperties.get("resourceType").toString().toLowerCase());
+
+        Map<String, String> dependencies = (HashMap<String, String>) generatorProperties.get("dependencies");
+        templateContext.setProperty("basePackage", dependencies.get("basePackage"));
+        templateContext.setProperty("basePackageImportIdentifier", generatorProperties.get("basePackageImportIdentifier"));
+        templateContext.setProperty("servicePackageImportIdentifier", generatorProperties.get("servicePackageImportIdentifier"));
         return templateContext;
     }
 }
