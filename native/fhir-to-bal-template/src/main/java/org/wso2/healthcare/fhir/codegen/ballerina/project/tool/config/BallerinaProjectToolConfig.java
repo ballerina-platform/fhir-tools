@@ -51,6 +51,7 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
     private final List<InteractionConfig> interactionConfigs = new ArrayList<>();
     private String basePackage;
     private String servicePackage;
+    private String internationalResourcePackage;
 
     @Override
     public void configure(ConfigType<?> configObj) throws CodeGenException {
@@ -77,6 +78,10 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
             if (jsonConfigObj.getAsJsonPrimitive("servicePackage") != null) {
                 this.servicePackage = jsonConfigObj
                         .getAsJsonPrimitive("servicePackage").getAsString();
+            }
+            if (jsonConfigObj.getAsJsonPrimitive("resourcePackage") != null) {
+                this.internationalResourcePackage = jsonConfigObj
+                        .getAsJsonPrimitive("resourcePackage").getAsString();
             }
         }
         //todo: add toml type config handling
@@ -153,7 +158,7 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
         String orgName = dependencyObj.getAsJsonPrimitive("org").getAsString();
         String version = dependencyObj.getAsJsonPrimitive("version").getAsString();
         String importStatement = orgName + "/" + name;
-        dependencyConfigs.add(new DependencyConfig(orgName, name, version, importStatement));
+        dependencyConfigs.add(new DependencyConfig(orgName, name, version, importStatement.toLowerCase()));
     }
 
     public MetadataConfig getMetadataConfig() {
@@ -198,5 +203,8 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
 
     public String getServicePackage() {
         return servicePackage;
+    }
+    public String getInternationalResourcePackage() {
+        return internationalResourcePackage;
     }
 }

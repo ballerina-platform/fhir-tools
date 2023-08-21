@@ -36,7 +36,7 @@ public class IncludedIGConfig {
 
     public IncludedIGConfig(JsonObject implementationGuide) {
         this.name = implementationGuide.getAsJsonPrimitive(BallerinaProjectConstants.CONFIG_PROFILE_IG).getAsString();
-        this.importStatement = implementationGuide.getAsJsonPrimitive("importStatement").getAsString();
+        this.importStatement = implementationGuide.getAsJsonPrimitive("importStatement").getAsString().toLowerCase();
         this.isEnable = implementationGuide.getAsJsonPrimitive(BallerinaProjectConstants.CONFIG_ENABLE).getAsBoolean();
         JsonArray includedProfileArray = implementationGuide.getAsJsonArray("includedProfiles");
         JsonArray excludedProfileArray = implementationGuide.getAsJsonArray("excludedProfiles");
@@ -114,7 +114,7 @@ public class IncludedIGConfig {
     }
 
     public void setImportStatement(String importStatement) {
-        this.importStatement = importStatement;
+        this.importStatement = importStatement.toLowerCase();
     }
 
 }

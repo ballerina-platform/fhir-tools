@@ -108,9 +108,6 @@ public class PackageGenHandler implements Handler {
                 if (packageName != null && !packageName.isEmpty()) {
                     JsonElement overrideConfig = new Gson().toJsonTree(packageName.toLowerCase());
                     toolConfigInstance.overrideConfig("packageConfig.name", overrideConfig);
-                } else {
-                    JsonElement overrideConfig = new Gson().toJsonTree(HealthCmdUtils.getDirectories(specificationPath).get(0));
-                    toolConfigInstance.overrideConfig("packageConfig.name.append", overrideConfig);
                 }
                 if (orgName != null && !orgName.isEmpty()) {
                     JsonElement overrideConfig = new Gson().toJsonTree(orgName.toLowerCase());

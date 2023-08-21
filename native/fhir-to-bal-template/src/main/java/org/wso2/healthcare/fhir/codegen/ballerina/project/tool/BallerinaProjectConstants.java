@@ -33,4 +33,5 @@ public class BallerinaProjectConstants {
     public static final String PROJECT_API_SUFFIX = ".api";
     public static final String BASE_PACKAGE_IMPORT_SUFFIX = "ballerinax/health.fhir.";
     public static final String SERVICE_PACKAGE_IMPORT_SUFFIX = "ballerinax/health.fhir";
+    public static final String INTERNATIONAL_PACKAGE_IMPORT_SUFFIX = "ballerinax/health.fhir.r4.international401";
 }

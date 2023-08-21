@@ -65,20 +65,6 @@ public class HealthCmdUtils {
         throw launcherException;
     }
 
-    public static List<String> getDirectories(String specifiedPath) {
-        List<String> subDirectories = new ArrayList<>();
-        File specPath = new File(specifiedPath);
-        File[] files = specPath.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    subDirectories.add(file.getName());
-                }
-            }
-        }
-        return subDirectories;
-    }
-
     public static Path validateAndSetSpecificationPath(String specPathParam,String executionPath) throws BallerinaHealthException {
 
         Path specificationPath = null;

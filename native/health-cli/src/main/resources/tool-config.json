@@ -28,7 +28,7 @@
           "package": {
             "org": "healthcare",
             "namePrefix": "health.fhir.templates",
-            "version": "0.0.1",
+            "version": "1.0.0",
             "distribution": "2201.6.0",
             "authors": [
               "Ballerina"
@@ -45,14 +45,14 @@
             {
               "org": "ballerinax",
               "name": "health.fhir.r4",
-              "version": "1.0.3",
+              "version": "4.1.0",
               "importStatement": "ballerinax/health.fhir.r4"
             },
             {
               "org": "ballerinax",
-              "name": "health.base",
-              "version": "1.0.2",
-              "importStatement": "ballerinax/health.base"
+              "name": "health.fhirr4",
+              "version": "1.0.8",
+              "importStatement": "ballerinax/health.fhirr4"
             }
           ],
           "builtIn": {

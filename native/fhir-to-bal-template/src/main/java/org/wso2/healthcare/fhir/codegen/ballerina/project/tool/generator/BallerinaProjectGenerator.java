@@ -52,11 +52,11 @@ public class BallerinaProjectGenerator extends AbstractFHIRTemplateGenerator {
         // Provide option to check and overwrite the existing package
         Console console = System.console();
         if (console != null && Files.exists(Paths.get(packagePath))) {
-            String input = console.readLine("Generated package already exists. Do you want to overwrite? (y/n): ");
+            String input = console.readLine("Generated templates already exists. Do you want to overwrite? (y/n): ");
             if ("n".equalsIgnoreCase(input)) {
                 System.exit(0);
             } else if ("y".equalsIgnoreCase(input)) {
-                System.out.println("Overwriting the existing package.");
+                System.out.println("Overwriting the existing templates.");
             } else {
                 System.out.println("Invalid input. Exiting the tool.");
                 System.exit(0);
@@ -73,9 +73,11 @@ public class BallerinaProjectGenerator extends AbstractFHIRTemplateGenerator {
             String basePackage = dependenciesMap.get("basePackage");
             String servicePackage = dependenciesMap.get("servicePackage");
             String igPackage = dependenciesMap.get("igPackage");
+            String resourcePackage = dependenciesMap.get("resourcePackage");
             projectProperties.put("basePackageImportIdentifier", basePackage.substring(basePackage.lastIndexOf(".") + 1));
             projectProperties.put("servicePackageImportIdentifier", servicePackage.substring(servicePackage.lastIndexOf(".") + 1));
             projectProperties.put("igPackageImportIdentifier", igPackage.substring(igPackage.lastIndexOf(".") + 1));
+            projectProperties.put("resourcePackageImportIdentifier", resourcePackage.substring(resourcePackage.lastIndexOf(".") + 1));
             projectProperties.put("projectAPIPath", this.getTargetDir() + entry.getKey().toLowerCase() + BallerinaProjectConstants.PROJECT_API_SUFFIX);
 
             ServiceGenerator balServiceGenerator = new ServiceGenerator(this.getTargetDir());

@@ -49,6 +49,14 @@ public class BallerinaPackageGenTool extends AbstractFHIRTool {
     public TemplateGenerator execute(ToolContext toolContext) throws CodeGenException {
 
         enabledIgs.putAll(((FHIRSpecificationData) toolContext.getSpecificationData()).getFhirImplementationGuides());
+        for (String igName : enabledIgs.keySet()) {
+            int resourceCount = ((FHIRSpecificationData) toolContext.getSpecificationData()).
+                    getFhirImplementationGuides().get(igName).getResources().keySet().size();
+            if (resourceCount < 1) {
+                throw new CodeGenException("No resources found in the IG: " + igName);
+            }
+
+        }
 
         if (packageGenToolConfig.isEnabled()) {
             String targetRoot = packageGenToolConfig.getTargetDir();

@@ -78,10 +78,10 @@ public class FhirSubCmd implements BLauncherCmd {
     @CommandLine.Option(names = {"--package-version"}, description = "version of the Ballerina package")
     private String packageVersion;
 
-    @CommandLine.Option(names = "--included_profile", description = "Profiles to be included in the template")
+    @CommandLine.Option(names = "--included-profile", description = "Profiles to be included in the template")
     private String[] includedProfiles;
 
-    @CommandLine.Option(names = "--excluded_profile", description = "Profiles to be excluded in the template")
+    @CommandLine.Option(names = "--excluded-profile", description = "Profiles to be excluded in the template")
     private String[] excludedProfiles;
 
     @CommandLine.Option(names = "--dependency", converter = JsonTypeConverter.class, description = "custom dependency to be added")
@@ -141,7 +141,7 @@ public class FhirSubCmd implements BLauncherCmd {
         }
         if (this.engageSubCommand(argList)) {
             printStream.println("Ballerina FHIR package generation completed successfully. Generated " +
-                    "packages can be found at " + targetOutputPath);
+                    mode + " can be found at " + targetOutputPath);
         } else {
             printStream.println("Invalid mode received for FHIR tool command.");
             printStream.println("Try bal health --help for more information.");
@@ -176,8 +176,8 @@ public class FhirSubCmd implements BLauncherCmd {
         argsMap.put("--package-name", packageName);
         argsMap.put("--org-name", orgName);
         argsMap.put("--package-version", packageVersion);
-        argsMap.put("--included_profile", includedProfiles);
-        argsMap.put("--excluded_profile", excludedProfiles);
+        argsMap.put("--included-profile", includedProfiles);
+        argsMap.put("--excluded-profile", excludedProfiles);
         argsMap.put("--dependency", dependency);
         getTargetOutputPath();
         //spec path is the last argument

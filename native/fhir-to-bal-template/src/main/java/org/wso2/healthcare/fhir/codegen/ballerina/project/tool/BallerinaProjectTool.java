@@ -62,6 +62,10 @@ public class BallerinaProjectTool extends AbstractFHIRTool {
             populateDependenciesMap();
             populateBalService();
 
+            if (serviceMap.isEmpty()){
+                throw new CodeGenException("No services found to generate");
+            }
+
             String targetRoot = ballerinaProjectToolConfig.getTargetDir();
             String targetDirectory = targetRoot + File.separator;
             BallerinaProjectGenerator balProjectGenerator = new BallerinaProjectGenerator(targetDirectory);
@@ -112,7 +116,7 @@ public class BallerinaProjectTool extends AbstractFHIRTool {
     private void populateBalService() {
 
         for (Map.Entry<String, FHIRImplementationGuide> entry : igMap.entrySet()) {
-            String igName = entry.getValue().getName();
+            String igName = entry.getKey();
             for (Map.Entry<String, FHIRResourceDef> definitionEntry : entry.getValue().getResources().entrySet()) {
                 if (definitionEntry.getValue().getDefinition().getKind().toCode().equalsIgnoreCase("RESOURCE")) {
                     validateAndAddFHIRResource(definitionEntry.getValue().getDefinition(), igName);
@@ -221,6 +225,8 @@ public class BallerinaProjectTool extends AbstractFHIRTool {
 
         String fhirBaseImportStatement = BallerinaProjectConstants.BASE_PACKAGE_IMPORT_SUFFIX + fhirVersion;
         String fhirServiceImportStatement = BallerinaProjectConstants.SERVICE_PACKAGE_IMPORT_SUFFIX + fhirVersion;
+        String fhirInternationalImportStatement =
+                BallerinaProjectConstants.INTERNATIONAL_PACKAGE_IMPORT_SUFFIX;
 
         if (ballerinaProjectToolConfig.getBasePackage() != null && !ballerinaProjectToolConfig.getBasePackage().isEmpty()) {
             fhirBaseImportStatement = ballerinaProjectToolConfig.getBasePackage();
@@ -229,7 +235,13 @@ public class BallerinaProjectTool extends AbstractFHIRTool {
         if (ballerinaProjectToolConfig.getServicePackage() != null && !ballerinaProjectToolConfig.getServicePackage().isEmpty()) {
             fhirServiceImportStatement = ballerinaProjectToolConfig.getServicePackage();
         }
-        dependenciesMap.put("basePackage", fhirBaseImportStatement);
-        dependenciesMap.put("servicePackage", fhirServiceImportStatement);
+
+        if (ballerinaProjectToolConfig.getInternationalResourcePackage() != null &&
+                !ballerinaProjectToolConfig.getInternationalResourcePackage().isEmpty()) {
+            fhirInternationalImportStatement = ballerinaProjectToolConfig.getServicePackage();
+        }
+        dependenciesMap.put("basePackage", fhirBaseImportStatement.toLowerCase());
+        dependenciesMap.put("servicePackage", fhirServiceImportStatement.toLowerCase());
+        dependenciesMap.put("resourcePackage", fhirInternationalImportStatement.toLowerCase());
     }
 }

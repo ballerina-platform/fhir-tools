@@ -62,6 +62,17 @@ public class PackageContextGenerator {
                 this.packageContext.setBasePackageName(toolConfig.getPackageConfig().getBasePackage());
             }
 
+            //update package name based on IG name
+            String igKey = entry.getKey();
+            if (!igKey.equals(entry.getValue().getName())){
+                //IG name updated while parsing; update package name
+                if (igKey.equals(toolConfig.getPackageConfig().getName())){
+                    //user haven't overridden the package name
+                    LOG.debug("IG name updated while parsing; update package name");
+                    toolConfig.getPackageConfig().setName(entry.getValue().getName().toLowerCase(Locale.ENGLISH));
+                }
+            }
+
             Map<String, String> dependencyMap = new HashMap<>();
             for (DependencyConfig dependencyConfig : toolConfig.getPackageConfig().getDependencyConfigList()) {
                 dependencyMap.put(dependencyConfig.getName(), dependencyConfig.getOrg() + "/" + dependencyConfig.getName());

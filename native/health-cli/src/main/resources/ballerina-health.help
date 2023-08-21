@@ -18,8 +18,8 @@ DESCRIPTION
         after the implementation guide or a set of FHIR specification files.
 
         You can download FHIR specification files from the respective
-        Implementation Guide official website. (Eg; USCore IG specification
-        can be downloaded from http://hl7.org/fhir/us/core/package.tgz)
+        Implementation Guide official website. (Published list of
+        Implementation Guides can be found in http://fhir.org/guides/registry/)
 
         The ballerina-health tool is compatible with Ballerina
         version 2201.7.0 (Swan Lake Update 7) onwards.
@@ -37,10 +37,10 @@ COMMANDS
 
             OPTIONS
                     -m, --mode <mode-type>
-                        Mode can be 'package' or 'template'. If mode is set to 'package',
+                        Mode can be 'package' or 'template'. If the mode is set to 'package',
                         a Ballerina package will be generated including
                         all the records and types.
-                        If the mode is ‘template’, tool will generate Ballerina templates
+                        If the mode is set to ‘template’, tool will generate Ballerina templates
                         for each FHIR resource definition available in
                         the specified path. This is a MANDATORY input for fhir command.
                     -o, --output <output>
@@ -64,11 +64,11 @@ COMMANDS
                     --dependency <custom-dependencies>
                         Dependency configuration of a custom package that needs to
                         be added to templates. This has to be entered as a JSON string.
-                    --included_profile <profiles-to-included>
+                    --included-profile <profiles-to-included>
                         If only a specific profile/s needs to be generated as templates,
                         specify the profile URL as the value of this parameter.
                         This argument can be used more than once.
-                    --excluded_profile <profiles-to-excluded>
+                    --excluded-profile <profiles-to-excluded>
                         If only a specific profile/s needs to be skipped when
                         generating templates, specify the profile URL
                         as the value of this parameter.
