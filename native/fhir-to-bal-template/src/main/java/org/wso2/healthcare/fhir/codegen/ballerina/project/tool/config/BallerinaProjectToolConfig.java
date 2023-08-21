@@ -74,12 +74,10 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
                 this.basePackage = jsonConfigObj
                         .getAsJsonPrimitive("basePackage").getAsString();
             }
-            ;
             if (jsonConfigObj.getAsJsonPrimitive("servicePackage") != null) {
                 this.servicePackage = jsonConfigObj
                         .getAsJsonPrimitive("servicePackage").getAsString();
             }
-            ;
         }
         //todo: add toml type config handling
     }

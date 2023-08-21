@@ -129,8 +129,6 @@ public class BallerinaPackageGenToolConfig extends AbstractToolConfig {
         LOG.debug("Started: IG config population");
         if (igArray != null) {
             for (int i = 0; i < igArray.size(); i++) {
-                System.out.println(igArray.get(i).getAsJsonObject().getAsJsonPrimitive(ToolConstants.CONFIG_PROFILE_IG)
-                        .getAsString());
                 includedIGConfigs.put(
                         igArray.get(i).getAsJsonObject().getAsJsonPrimitive(ToolConstants.CONFIG_PROFILE_IG).getAsString(),
                         new IncludedIGConfig(igArray.get(i).getAsJsonObject()));

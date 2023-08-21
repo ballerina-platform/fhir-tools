@@ -22,6 +22,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import picocli.CommandLine;
 
+/**
+ * Json type converter to be used in input parameters.
+ */
 public class JsonTypeConverter implements CommandLine.ITypeConverter<JsonElement> {
     @Override
     public JsonElement convert(String s) {
