@@ -27,10 +27,12 @@ public class Element {
     private String dataType;
     private String name;
     private String rootElementName;
+    private String fixedValue;
     private String min;
     private String max;
     private boolean isRequired;
     private boolean isArray;
+    private boolean isSliced;
     private String path;
     private String valueSet;
     private boolean hasChildElements;
@@ -51,6 +53,14 @@ public class Element {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getFixedValue() {
+        return fixedValue;
+    }
+
+    public void setFixedValue(String fixedValue) {
+        this.fixedValue = fixedValue;
     }
 
     public boolean isRequired() {
@@ -83,6 +93,14 @@ public class Element {
 
     public void setHasChildElements(boolean hasChildElements) {
         this.hasChildElements = hasChildElements;
+    }
+
+    public boolean isSliced() {
+        return isSliced;
+    }
+
+    public void setSliced(boolean sliced) {
+        isSliced = sliced;
     }
 
     public HashMap<String, Element> getChildElements() {

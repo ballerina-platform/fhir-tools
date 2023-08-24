@@ -150,7 +150,11 @@ public type $util.resolveSpecialCharacters($extendedElement.getTypeName()) recor
        minLength: 1
     }
 #end
+#if($childElement.getFixedValue())
+    #if(!$dataTypes.contains($childElement.getDataType()))${importIdentifier}#end${childElement.getDataType()}#if($childElement.isArray())[]#end $util.resolveSpecialCharacters($util.resolveKeywordConflict($childElement.getName()))#if(!$childElement.isRequired())?#end = "${childElement.getFixedValue()}";
+#else
     #if(!$dataTypes.contains($childElement.getDataType()))${importIdentifier}#end${childElement.getDataType()}#if($childElement.isArray())[]#end $util.resolveSpecialCharacters($util.resolveKeywordConflict($childElement.getName()))#if(!$childElement.isRequired())?#end;
+#end
 #end
 |};
 #elseif($extendedElement.getBalDataType().getType() == "enum")
