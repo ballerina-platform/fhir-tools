@@ -19,7 +19,7 @@
 import ballerina/http;
 import ballerina/log;
 #foreach($import in $service.getImportsList())
-import $import;
+import $import.toLowerCase();
 #end
 
 # Generic type to wrap all implemented profiles.
@@ -41,7 +41,7 @@ service / on new $servicePackageImportIdentifier:Listener(9090, apiConfig) {
     isolated resource function $resourceMethod.getHttpMethod() fhir/$service.getFhirVersion()/$resourceMethod.getResourceContext() (#foreach($param in $resourceMethod.getMethodParams())$param#if($foreach.count!=$resourceMethod.getMethodParams().size()), #end#end) returns @http:Payload {mediaType: ["application/fhir+json", "application/fhir+xml"]} $basePackageImportIdentifier:$resourceMethod.getReturnType()|$basePackageImportIdentifier:FHIRError {
 #if($resourceMethod.getType()=="search")
         // url encode the search parameters
-        string|$basePackageImportIdentifier:FHIRError encodedParams = $basePackageImportIdentifier:getUrlEncodedSearchParameters(fhirContext.getRequestSearchParameters());
+        string|$basePackageImportIdentifier:FHIRError encodedParams = $basePackageImportIdentifier:urlEncodeFhirSearchParameters(fhirContext.getRequestSearchParameters());
         if encodedParams is $basePackageImportIdentifier:FHIRError {
             return encodedParams;
         }

@@ -1,14 +1,14 @@
 NAME
-        ballerina-health - Generate a Ballerina package for a given health
-        specification(eg.:FHIR implementation guides) files.
+        ballerina-health - Generate a Ballerina package or template for a
+        given health specification(eg.:FHIR implementation guides) files.
 
 SYNOPSIS
-        bal health fhir [-m | --mode] <package> [-o | --output] <output-location> \
+        bal health fhir [-m | --mode] <package|template> [-o | --output] <output-location> \
                         <FHIR-specification-directory-path>
-                        [-m | --mode] <package> <FHIR-specification-directory-path>
+                        [-m | --mode] <package|template> <FHIR-specification-directory-path>
 
 DESCRIPTION
-        Generate a Ballerina package with relevant records and types
+        Generate a Ballerina package or template  with relevant records and types
         from given health specification(eg.:FHIR implementation guides) files.
 
         The generated Ballerina sources will be written into the provided
@@ -18,8 +18,8 @@ DESCRIPTION
         after the implementation guide or a set of FHIR specification files.
 
         You can download FHIR specification files from the respective
-        Implementation Guide official website. (Eg; USCore IG specification
-        can be downloaded from http://hl7.org/fhir/us/core/package.tgz)
+        Implementation Guide official website. (Published list of
+        Implementation Guides can be found in http://fhir.org/guides/registry/)
 
         The ballerina-health tool is compatible with Ballerina
         version 2201.7.0 (Swan Lake Update 7) onwards.
@@ -37,11 +37,12 @@ COMMANDS
 
             OPTIONS
                     -m, --mode <mode-type>
-                        Mode can be 'package'. If mode is set to 'package',
+                        Mode can be 'package' or 'template'. If the mode is set to 'package',
                         a Ballerina package will be generated including
-                        all the records and types. This is a MANDATORY
-                        input for fhir command. New modes will be
-                        added in future releases.
+                        all the records and types.
+                        If the mode is set to ‘template’, tool will generate Ballerina templates
+                        for each FHIR resource definition available in
+                        the specified path. This is a MANDATORY input for fhir command.
                     -o, --output <output>
                         Location of the generated Ballerina artifacts. If this
                         path is not specified, the output will be written to
@@ -51,10 +52,27 @@ COMMANDS
                         Package name can be explicitly set using this argument.
                         Unless specified, default name of the implementation
                         guide will be taken to construct the name of the package.
+                        For the template mode, this value will be added as a prefix
+                        to the template name.
                         Refer https://ballerina.io/learn/package-references/#the-name-field
                     --org-name <org-name-of-the-package>
-                        Organization name of the Ballerina package to be generated.
+                        Organization name of the Ballerina package/template to be generated.
                         Refer https://ballerina.io/learn/package-references/#the-org-field
+                    --package-version <version-of-the-package>
+                        Version of the Ballerina package/template to be generated.
+                        Refer https://semver.org/
+                    --dependency <custom-dependencies>
+                        Dependency configuration of a custom package that needs to
+                        be added to templates. This has to be entered as a JSON string.
+                    --included-profile <profiles-to-included>
+                        If only a specific profile/s needs to be generated as templates,
+                        specify the profile URL as the value of this parameter.
+                        This argument can be used more than once.
+                    --excluded-profile <profiles-to-excluded>
+                        If only a specific profile/s needs to be skipped when
+                        generating templates, specify the profile URL
+                        as the value of this parameter.
+                        This argument can be used more than once.
 
             EXAMPLES
                     Generate a Ballerina package for the FHIR artifacts of USCore
@@ -66,5 +84,17 @@ COMMANDS
                     USCore implementation guide and write the output
                     to the given directory.
                         $ bal health fhir -m package --package-name uscore401 \
+                        -o ./output_path ./path_to_uscore_definitions
+
+                    Generate a Ballerina templates for all the FHIR resource profiles
+                    of USCore implementation guide.
+                        $ bal health fhir -m template --package-name uscore401 \
+                        ./path_to_uscore_definitions
+
+                    Generate a Ballerina templates for all the FHIR resource profiles
+                    of USCore implementation guide with a custom dependency.
+
+                        $ bal health fhir -m package --package-name uscore401 \
+                        --dependency "{"org":"health","name":"fhir.r5","version":"1.0.0"}"
                         -o ./output_path ./path_to_uscore_definitions
 

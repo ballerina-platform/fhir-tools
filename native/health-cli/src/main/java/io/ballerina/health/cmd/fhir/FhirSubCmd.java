@@ -18,27 +18,15 @@
 
 package io.ballerina.health.cmd.fhir;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import io.ballerina.cli.BLauncherCmd;
-import io.ballerina.health.cmd.core.config.HealthCmdConfig;
+import io.ballerina.cli.launcher.BLauncherException;
 import io.ballerina.health.cmd.core.exception.BallerinaHealthException;
-import io.ballerina.health.cmd.core.utils.ErrorMessages;
 import io.ballerina.health.cmd.core.utils.HealthCmdConstants;
 import io.ballerina.health.cmd.core.utils.HealthCmdUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.wso2.healthcare.codegen.tool.framework.commons.config.ToolConfig;
-import org.wso2.healthcare.codegen.tool.framework.commons.core.TemplateGenerator;
-import org.wso2.healthcare.codegen.tool.framework.commons.core.Tool;
-import org.wso2.healthcare.codegen.tool.framework.commons.core.ToolContext;
-import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenException;
-import org.wso2.healthcare.codegen.tool.framework.commons.model.JsonConfigType;
-import org.wso2.healthcare.codegen.tool.framework.fhir.core.common.FHIRSpecificationData;
-import org.wso2.healthcare.codegen.tool.framework.fhir.core.config.FHIRToolConfig;
-import org.wso2.healthcare.codegen.tool.framework.fhir.core.FHIRTool;
-import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRImplementationGuide;
+import io.ballerina.health.cmd.core.utils.JsonTypeConverter;
+import io.ballerina.health.cmd.handler.Handler;
+import io.ballerina.health.cmd.handler.HandlerFactory;
 import picocli.CommandLine;
 
 import java.io.BufferedReader;
@@ -51,7 +39,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.LogManager;
@@ -63,17 +51,11 @@ public class FhirSubCmd implements BLauncherCmd {
     private final boolean exitWhenFinish;
     private final String toolName = "fhir";
     private final Path executionPath = Paths.get(System.getProperty("user.dir"));
+    private final String resourceHome;
     private Path targetOutputPath;
 
     //resolved path from the input parameter
     private Path specificationPath;
-
-    //input parameter for specification path
-    private String specPathParam;
-
-    private final String resourceHome;
-    private JsonObject configJson = null;
-    private JsonObject defaultConfigJson = null;
     @CommandLine.Option(names = {"--help", "-h", "?"}, usageHelp = true, hidden = true)
     private boolean helpFlag;
 
@@ -93,13 +75,24 @@ public class FhirSubCmd implements BLauncherCmd {
     @CommandLine.Option(names = {"--org-name"}, description = "Organization name of the Ballerina package")
     private String orgName;
 
+    @CommandLine.Option(names = {"--package-version"}, description = "version of the Ballerina package")
+    private String packageVersion;
+
+    @CommandLine.Option(names = "--included-profile", description = "Profiles to be included in the template")
+    private String[] includedProfiles;
+
+    @CommandLine.Option(names = "--excluded-profile", description = "Profiles to be excluded in the template")
+    private String[] excludedProfiles;
+
+    @CommandLine.Option(names = "--dependency", converter = JsonTypeConverter.class, description = "custom dependency to be added")
+    private JsonElement dependency;
+
     @CommandLine.Parameters(description = "Custom arguments")
     private List<String> argList;
 
     public FhirSubCmd(PrintStream printStream, boolean exitWhenFinish) {
         this.printStream = printStream;
         this.exitWhenFinish = exitWhenFinish;
-        buildConfig(printStream);
         this.resourceHome = HealthCmdUtils.getRuntimeResourcePath();
         LogManager.getLogManager().reset();
     }
@@ -107,7 +100,6 @@ public class FhirSubCmd implements BLauncherCmd {
     public FhirSubCmd() {
         this.printStream = System.out;
         this.exitWhenFinish = true;
-        buildConfig(printStream);
         this.resourceHome = HealthCmdUtils.getRuntimeResourcePath();
         LogManager.getLogManager().reset();
     }
@@ -149,7 +141,7 @@ public class FhirSubCmd implements BLauncherCmd {
         }
         if (this.engageSubCommand(argList)) {
             printStream.println("Ballerina FHIR package generation completed successfully. Generated " +
-                    "packages can be found at " + targetOutputPath);
+                    mode + " can be found at " + targetOutputPath);
         } else {
             printStream.println("Invalid mode received for FHIR tool command.");
             printStream.println("Try bal health --help for more information.");
@@ -178,152 +170,33 @@ public class FhirSubCmd implements BLauncherCmd {
 
     }
 
-    private void engageChildTemplateGenerators(TemplateGenerator templateGenerator, ToolContext context,
-                                               Map<String, Object> properties) throws CodeGenException {
-        if (templateGenerator != null) {
-            templateGenerator.generate(context, properties);
-            engageChildTemplateGenerators(templateGenerator.getChildTemplateGenerator(), context, properties);
-        }
-    }
-
     public boolean engageSubCommand(List<String> argList) {
 
+        Map<String, Object> argsMap = new HashMap<>();
+        argsMap.put("--package-name", packageName);
+        argsMap.put("--org-name", orgName);
+        argsMap.put("--package-version", packageVersion);
+        argsMap.put("--included-profile", includedProfiles);
+        argsMap.put("--excluded-profile", excludedProfiles);
+        argsMap.put("--dependency", dependency);
         getTargetOutputPath();
         //spec path is the last argument
-        validateAndSetSpecificationPath(argList.get(argList.size() - 1));
-
-        if (!StringUtils.isEmpty(configPath)) {
-            //override default configs with user provided configs
-            try {
-                configJson = HealthCmdConfig.getParsedConfigFromPath(Paths.get(configPath));
-            } catch (BallerinaHealthException e) {
-                printStream.println(ErrorMessages.CONFIG_ACCESS_FAILED + e.getMessage());
-            }
-        } else {
-            configJson = defaultConfigJson;
+        try {
+            specificationPath = HealthCmdUtils.validateAndSetSpecificationPath(argList.get(argList.size() - 1), executionPath.toString());
+        } catch (BallerinaHealthException e) {
+            printStream.println("Invalid specification path received for FHIR tool command.");
+            throw new BLauncherException();
+        }
+        Handler toolHandler = null;
+        try {
+            toolHandler = HandlerFactory.createHandler(mode, printStream, specificationPath.toString());
+        } catch (BallerinaHealthException e) {
+            printStream.println(e);
+            throw new BLauncherException();
         }
 
-        JsonElement toolExecConfigs;
-        JsonArray toolExecConfigArr = null;
-        if (configJson != null) {
-            toolExecConfigs = configJson.getAsJsonObject("fhir").get("tools");
-            if (toolExecConfigs != null) {
-                toolExecConfigArr = toolExecConfigs.getAsJsonArray();
-            }
-        } else {
-            printStream.println(ErrorMessages.CONFIG_PARSE_ERROR);
-            HealthCmdUtils.exitError(this.exitWhenFinish);
-        }
-
-        FHIRToolConfig fhirToolConfig = new FHIRToolConfig();
-
-        if (configJson != null) {
-            //default configs will be used.
-            JsonConfigType toolConfig = null;
-            FHIRTool fhirToolLib = null;
-            try {
-                toolConfig = new JsonConfigType(configJson);
-                fhirToolLib = new FHIRTool();
-                fhirToolConfig.configure(toolConfig);
-
-                //override default configs for package-gen mode with user provided configs
-                handleSpecificationPathAndOverride(fhirToolConfig, specificationPath);
-
-                fhirToolConfig.setSpecBasePath(specificationPath.toString());
-                fhirToolLib.initialize(fhirToolConfig);
-            } catch (CodeGenException e) {
-                printStream.println(ErrorMessages.LIB_INITIALIZING_FAILED + Arrays.toString(e.getStackTrace())
-                        + e.getMessage());
-                HealthCmdUtils.throwLauncherException(e);
-            } catch (BallerinaHealthException e) {
-                printStream.println(ErrorMessages.ARG_VALIDATION_FAILED + e.getMessage());
-                HealthCmdUtils.throwLauncherException(e);
-            }
-
-            for (JsonElement jsonElement : toolExecConfigArr) {
-                //todo: since the CLI supports only one mode at a time, this for loop can be removed.
-                JsonObject toolExecConfig = jsonElement.getAsJsonObject();
-                String configClassName = toolExecConfig.get("configClass").getAsString();
-                String toolClassName = toolExecConfig.get("toolClass").getAsString();
-                String name = toolExecConfig.get("name").getAsString();
-                String command = toolExecConfig.get("command").getAsString();
-                Tool tool;
-                TemplateGenerator mainTemplateGenerator = null;
-                if (!mode.equals(command)) {
-                    continue;
-                }
-                try {
-                    Class<?> configClazz = Class.forName(configClassName);
-                    Class<?> toolClazz = Class.forName(toolClassName);
-                    ToolConfig toolConfigInstance = (ToolConfig) configClazz.newInstance();
-                    toolConfigInstance.setTargetDir(targetOutputPath.toString());
-                    toolConfigInstance.setToolName(name);
-                    JsonArray tools = toolConfig.getConfigObj().getAsJsonObject("fhir").
-                            get("tools").getAsJsonArray();
-                    for (JsonElement element : tools) {
-                        JsonElement toolName = element.getAsJsonObject().get("name");
-                        if (toolName.getAsString().equals(name)) {
-                            toolConfigInstance.configure(new JsonConfigType(element.getAsJsonObject().
-                                    getAsJsonObject("config")));
-                        }
-                    }
-
-                    //override default configs for package-gen mode with user provided configs
-                    if (command.equals("package")) {
-                        if (packageName != null && !packageName.isEmpty()) {
-                            JsonElement overrideConfig = new Gson().toJsonTree(packageName.toLowerCase());
-                            toolConfigInstance.overrideConfig("packageConfig.name", overrideConfig);
-                        } else {
-                            String igName = "";
-                            //todo: For loop can be removed here hence tool optimized for single IG use case.
-                            for (Map.Entry<String, FHIRImplementationGuide> entry :
-                                    ((FHIRSpecificationData) fhirToolLib.getToolContext().getSpecificationData()).
-                                            getFhirImplementationGuides().entrySet()) {
-                                igName = entry.getValue().getName();
-                            }
-                            JsonElement overrideConfig = new Gson().toJsonTree(igName.toLowerCase());
-                            toolConfigInstance.overrideConfig("packageConfig.name.append", overrideConfig);
-                        }
-                        if (orgName != null && !orgName.isEmpty()) {
-                            JsonElement overrideConfig = new Gson().toJsonTree(orgName.toLowerCase());
-                            toolConfigInstance.overrideConfig("packageConfig.org", overrideConfig);
-                        }
-                    }
-
-                    tool = (Tool) toolClazz.newInstance();
-                    tool.initialize(toolConfigInstance);
-                    fhirToolLib.getToolImplementations().putIfAbsent(name, tool);
-                    mainTemplateGenerator = tool.execute(fhirToolLib.getToolContext());
-                } catch (ClassNotFoundException e) {
-                    printStream.println(ErrorMessages.TOOL_IMPL_NOT_FOUND + e.getMessage());
-                    HealthCmdUtils.throwLauncherException(e);
-                } catch (InstantiationException | IllegalAccessException e) {
-                    printStream.println(ErrorMessages.CONFIG_INITIALIZING_FAILED);
-                    HealthCmdUtils.throwLauncherException(e);
-                } catch (CodeGenException e) {
-                    printStream.println(ErrorMessages.UNKNOWN_ERROR);
-                    HealthCmdUtils.throwLauncherException(e);
-                }
-                if (mainTemplateGenerator != null) {
-                    try {
-                        mainTemplateGenerator.generate(fhirToolLib.getToolContext(),
-                                mainTemplateGenerator.getGeneratorProperties());
-                        TemplateGenerator childTemplateGenerator = mainTemplateGenerator.getChildTemplateGenerator();
-                        engageChildTemplateGenerators(childTemplateGenerator, fhirToolLib.getToolContext(),
-                                mainTemplateGenerator.getGeneratorProperties());
-                    } catch (CodeGenException e) {
-                        printStream.println(ErrorMessages.UNKNOWN_ERROR + e.getMessage());
-                        HealthCmdUtils.throwLauncherException(e);
-                    }
-                    return true;
-                } else {
-                    printStream.println("Template generator is not registered for the tool: " + name);
-                    printStream.println(ErrorMessages.CONFIG_INITIALIZING_FAILED);
-                    HealthCmdUtils.exitError(this.exitWhenFinish);
-                }
-            }
-        }
-        return false;
+        toolHandler.setArgs(argsMap);
+        return toolHandler.execute(specificationPath.toString(), targetOutputPath.toString());
     }
 
     /**
@@ -338,60 +211,8 @@ public class FhirSubCmd implements BLauncherCmd {
                 targetOutputPath = Paths.get(targetOutputPath.toString(), outputPath);
             }
         } else {
-            targetOutputPath = Paths.get(targetOutputPath + File.separator + "generated-package");
+            targetOutputPath = Paths.get(targetOutputPath + File.separator + "generated-" + mode);
         }
     }
 
-    /**
-     * This util is to get the output Path.
-     */
-    private void validateAndSetSpecificationPath(String specPathParam) {
-        if (specPathParam != null) {
-            Path path = Paths.get(specPathParam);
-            if (path.isAbsolute()) {
-                specificationPath = path;
-            } else {
-                specificationPath = Paths.get(executionPath.toString(), specPathParam);
-            }
-            if (!Files.isDirectory(specificationPath)) {
-                printStream.println("Cannot find valid spec path pointed. Please check the path "
-                        + specPathParam + " is valid.");
-                HealthCmdUtils.exitError(exitWhenFinish);
-            }
-        }
-    }
-
-    private InputStream getResourceFile(String fileName) {
-        ClassLoader classLoader = this.getClass().getClassLoader();
-        InputStream ioStream = classLoader.getResourceAsStream(fileName);
-
-        if (ioStream == null) {
-            throw new IllegalArgumentException(HealthCmdConstants.CMD_CONFIG_FILEPATH + " is not found");
-        }
-        return ioStream;
-    }
-
-    private void buildConfig(PrintStream printStream) {
-        //using default config file
-        try {
-            defaultConfigJson = HealthCmdConfig.getParsedConfigFromStream(getResourceFile(
-                    HealthCmdConstants.CMD_CONFIG_FILENAME));
-        } catch (BallerinaHealthException e) {
-            printStream.println(ErrorMessages.LIB_INITIALIZING_FAILED + Arrays.toString(e.getStackTrace()) +
-                    e.getMessage());
-        }
-    }
-
-    private void handleSpecificationPathAndOverride(FHIRToolConfig fhirToolConfig, Path specificationPath)
-            throws BallerinaHealthException {
-
-        if (Files.exists(specificationPath)) {
-            fhirToolConfig.overrideConfig("FHIRImplementationGuides", HealthCmdUtils.getIGConfigElement(
-                    HealthCmdConstants.CMD_DEFAULT_IG_NAME, HealthCmdConstants.CMD_DEFAULT_IG_NAME));
-        } else {
-            printStream.println("No spec files found in the given path.");
-            HealthCmdUtils.exitError(this.exitWhenFinish);
-        }
-
-    }
 }

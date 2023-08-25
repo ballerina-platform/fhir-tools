@@ -29,7 +29,14 @@ public class DependencyConfig {
         this.org = packageConfig.getAsJsonPrimitive("org").getAsString();
         this.name = packageConfig.getAsJsonPrimitive("name").getAsString();
         this.version = packageConfig.getAsJsonPrimitive("version").getAsString();
-        this.importStatement = packageConfig.getAsJsonPrimitive("importStatement").getAsString();
+        this.importStatement = packageConfig.getAsJsonPrimitive("importStatement").getAsString().toLowerCase();
+    }
+
+    public DependencyConfig(String org, String name, String version, String importStatement) {
+        this.org = org;
+        this.name = name;
+        this.version = version;
+        this.importStatement = importStatement;
     }
 
     public String getOrg() {

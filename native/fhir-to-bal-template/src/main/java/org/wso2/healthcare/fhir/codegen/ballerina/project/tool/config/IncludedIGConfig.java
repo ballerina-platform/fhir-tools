@@ -29,14 +29,14 @@ import java.util.List;
 
 public class IncludedIGConfig {
     private final String name;
-    private final String importStatement;
+    private String importStatement;
     private final boolean isEnable;
     private final List<String> includedProfiles = new ArrayList<>();
     private final List<String> excludedProfiles = new ArrayList<>();
 
     public IncludedIGConfig(JsonObject implementationGuide) {
         this.name = implementationGuide.getAsJsonPrimitive(BallerinaProjectConstants.CONFIG_PROFILE_IG).getAsString();
-        this.importStatement = implementationGuide.getAsJsonPrimitive("importStatement").getAsString();
+        this.importStatement = implementationGuide.getAsJsonPrimitive("importStatement").getAsString().toLowerCase();
         this.isEnable = implementationGuide.getAsJsonPrimitive(BallerinaProjectConstants.CONFIG_ENABLE).getAsBoolean();
         JsonArray includedProfileArray = implementationGuide.getAsJsonArray("includedProfiles");
         JsonArray excludedProfileArray = implementationGuide.getAsJsonArray("excludedProfiles");
@@ -111,6 +111,10 @@ public class IncludedIGConfig {
 
     public String getImportStatement() {
         return importStatement;
+    }
+
+    public void setImportStatement(String importStatement) {
+        this.importStatement = importStatement.toLowerCase();
     }
 
 }

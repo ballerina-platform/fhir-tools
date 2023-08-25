@@ -31,8 +31,10 @@ public class ErrorMessages {
     public static final String LIB_INITIALIZING_FAILED = "Error while initializing protocol lib configs. Please check the " +
             "config file and try again";
 
-    public static final String UNKNOWN_ERROR = "Unknown error occurred. Please contact tool developers for more " +
-            "information";
+    public static final String UNKNOWN_ERROR = "An error occurred. Please check the arguments and retry. If the " +
+            "issue keep occurring contact tool developers";
+
+    public static final String INVALID_MODE = "Invalid mode, Please check the mode and retry";
 
     public static final String TOOL_IMPL_NOT_FOUND = "Tool implementation not found for the given tool. Please check " +
             "the distribution libs and try again";

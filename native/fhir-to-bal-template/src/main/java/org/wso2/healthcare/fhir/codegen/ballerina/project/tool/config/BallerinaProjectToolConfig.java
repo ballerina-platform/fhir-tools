@@ -30,7 +30,10 @@ import org.wso2.healthcare.codegen.tool.framework.commons.model.ConfigType;
 import org.wso2.healthcare.codegen.tool.framework.commons.model.JsonConfigType;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.BallerinaProjectConstants;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Main config class to hold all the config objects.
@@ -48,34 +51,38 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
     private final List<InteractionConfig> interactionConfigs = new ArrayList<>();
     private String basePackage;
     private String servicePackage;
+    private String internationalResourcePackage;
 
     @Override
     public void configure(ConfigType<?> configObj) throws CodeGenException {
         if (Constants.JSON_CONFIG_TYPE.equals(configObj.getType())) {
             JsonObject jsonConfigObj = ((JsonConfigType) configObj).getConfigObj();
             this.isEnabled = jsonConfigObj.getAsJsonPrimitive(BallerinaProjectConstants.CONFIG_ENABLE).getAsBoolean();
-            this.metadataConfig = new MetadataConfig(jsonConfigObj.getAsJsonObject(
-                    BallerinaProjectConstants.CONFIG_TOOL_PROJECT).getAsJsonObject("package"));
-            this.fhirVersion = jsonConfigObj.getAsJsonObject(BallerinaProjectConstants.CONFIG_TOOL_PROJECT).
+            this.metadataConfig = new MetadataConfig(jsonConfigObj.getAsJsonObject("package"));
+            this.fhirVersion = jsonConfigObj.
                     getAsJsonObject("fhir").getAsJsonPrimitive("version").getAsString();
-            populateIgConfigs(jsonConfigObj.getAsJsonObject(BallerinaProjectConstants.CONFIG_TOOL_PROJECT).
+            populateIgConfigs(jsonConfigObj.
                     getAsJsonArray("includedIGs"));
-            populateOperationConfigs(jsonConfigObj.getAsJsonObject(BallerinaProjectConstants.CONFIG_TOOL_PROJECT).
+            populateOperationConfigs(jsonConfigObj.
                     getAsJsonObject("builtIn").getAsJsonArray("operations"));
-            populateSearchParamConfigs(jsonConfigObj.getAsJsonObject(BallerinaProjectConstants.CONFIG_TOOL_PROJECT).
+            populateSearchParamConfigs(jsonConfigObj.
                     getAsJsonObject("builtIn").getAsJsonArray("searchParams"));
-            populateDependencyConfigs(jsonConfigObj.getAsJsonObject(BallerinaProjectConstants.CONFIG_TOOL_PROJECT).
+            populateDependencyConfigs(jsonConfigObj.
                     getAsJsonArray("dependencies"));
-            populateInteractionConfigs(jsonConfigObj.getAsJsonObject(BallerinaProjectConstants.CONFIG_TOOL_PROJECT).
+            populateInteractionConfigs(jsonConfigObj.
                     getAsJsonObject("builtIn").getAsJsonArray("interactions"));
-            if (jsonConfigObj.getAsJsonObject(BallerinaProjectConstants.CONFIG_TOOL_PROJECT).getAsJsonPrimitive("basePackage") != null) {
-                this.basePackage = jsonConfigObj.getAsJsonObject(BallerinaProjectConstants.CONFIG_TOOL_PROJECT)
+            if (jsonConfigObj.getAsJsonPrimitive("basePackage") != null) {
+                this.basePackage = jsonConfigObj
                         .getAsJsonPrimitive("basePackage").getAsString();
-            };
-            if (jsonConfigObj.getAsJsonObject(BallerinaProjectConstants.CONFIG_TOOL_PROJECT).getAsJsonPrimitive("servicePackage") != null) {
-                this.servicePackage = jsonConfigObj.getAsJsonObject(BallerinaProjectConstants.CONFIG_TOOL_PROJECT)
+            }
+            if (jsonConfigObj.getAsJsonPrimitive("servicePackage") != null) {
+                this.servicePackage = jsonConfigObj
                         .getAsJsonPrimitive("servicePackage").getAsString();
-            };
+            }
+            if (jsonConfigObj.getAsJsonPrimitive("resourcePackage") != null) {
+                this.internationalResourcePackage = jsonConfigObj
+                        .getAsJsonPrimitive("resourcePackage").getAsString();
+            }
         }
         //todo: add toml type config handling
     }
@@ -90,11 +97,16 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
             case "project.package.version":
                 this.metadataConfig.setVersion(value.getAsString());
                 break;
-            case "project.package.distribution":
-                this.metadataConfig.setDistribution(value.getAsString());
-                break;
             case "project.package.namePrefix":
                 this.metadataConfig.setNamePrefix(value.getAsString());
+                break;
+            case "project.package.dependency":
+                addStandaloneDependency(value);
+                break;
+            case "project.package.igConfig":
+                this.includedIGConfigs.put(
+                        value.getAsJsonObject().getAsJsonPrimitive("implementationGuide").getAsString(),
+                        new IncludedIGConfig(value.getAsJsonObject()));
                 break;
             default:
                 LOG.warn("Invalid config path: " + jsonPath);
@@ -102,10 +114,12 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
     }
 
     private void populateIgConfigs(JsonArray igArray) {
-        for (int i = 0; i < igArray.size(); i++) {
-            includedIGConfigs.put(
-                    igArray.get(i).getAsJsonObject().getAsJsonPrimitive("implementationGuide").getAsString(),
-                    new IncludedIGConfig(igArray.get(i).getAsJsonObject()));
+        if (igArray != null) {
+            for (int i = 0; i < igArray.size(); i++) {
+                includedIGConfigs.put(
+                        igArray.get(i).getAsJsonObject().getAsJsonPrimitive("implementationGuide").getAsString(),
+                        new IncludedIGConfig(igArray.get(i).getAsJsonObject()));
+            }
         }
     }
 
@@ -135,6 +149,16 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
                 interactionConfigs.add(new InteractionConfig(igArray.get(i).getAsJsonObject()));
             }
         }
+    }
+
+    public void addStandaloneDependency(JsonElement dependency) {
+
+        JsonObject dependencyObj = dependency.getAsJsonObject();
+        String name = dependencyObj.getAsJsonPrimitive("name").getAsString();
+        String orgName = dependencyObj.getAsJsonPrimitive("org").getAsString();
+        String version = dependencyObj.getAsJsonPrimitive("version").getAsString();
+        String importStatement = orgName + "/" + name;
+        dependencyConfigs.add(new DependencyConfig(orgName, name, version, importStatement.toLowerCase()));
     }
 
     public MetadataConfig getMetadataConfig() {
@@ -179,5 +203,8 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
 
     public String getServicePackage() {
         return servicePackage;
+    }
+    public String getInternationalResourcePackage() {
+        return internationalResourcePackage;
     }
 }

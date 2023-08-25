@@ -59,6 +59,7 @@ public class ServiceGenerator extends AbstractFHIRTemplateGenerator {
         ballerinaService.addImport(dependencies.get("basePackage"));
         ballerinaService.addImport(dependencies.get("servicePackage"));
         ballerinaService.addImport(dependencies.get("igPackage"));
+        ballerinaService.addImport(dependencies.get("resourcePackage"));
 
         for (InteractionConfig interactionConfig : ballerinaProjectToolConfig.getInteractionConfigs()) {
             String httpMethod = "get";
@@ -111,8 +112,8 @@ public class ServiceGenerator extends AbstractFHIRTemplateGenerator {
                 default:
                     break;
             }
-            ResourceMethod resourceMethod = new ResourceMethod(interactionConfig.getName(), resourceName, params, returnType,
-                    httpMethod, methodDescription);
+            ResourceMethod resourceMethod = new ResourceMethod(interactionConfig.getName(), resourceName, params, httpMethod,
+                    returnType, methodDescription);
             ballerinaService.addResourceMethod(resourceMethod);
         }
 

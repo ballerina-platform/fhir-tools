@@ -56,7 +56,7 @@ public class MetadataConfig {
     }
 
     public String getNamePrefix() {
-        return namePrefix;
+        return namePrefix + ".";
     }
 
     public String getVersion() {
