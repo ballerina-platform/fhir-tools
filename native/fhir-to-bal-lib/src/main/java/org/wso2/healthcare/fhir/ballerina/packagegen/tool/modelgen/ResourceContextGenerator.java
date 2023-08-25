@@ -79,8 +79,7 @@ public class ResourceContextGenerator {
         LOG.debug("Started: Resource Template Context population");
         for (Map.Entry<String, FHIRResourceDef> definitionEntry : ig.getResources().entrySet()) {
             StructureDefinition structureDefinition = definitionEntry.getValue().getDefinition();
-            if (definitionEntry.getValue().getDefinition().getKind().name().equalsIgnoreCase("RESOURCE")
-                    && !baseResources.contains(structureDefinition.getType())) {
+            if (!baseResources.contains(structureDefinition.getType())) {
                 this.resourceExtendedElementMap = new HashMap<>();
 
                 ResourceTemplateContext resourceTemplateContext = new ResourceTemplateContext();
@@ -98,11 +97,17 @@ public class ResourceContextGenerator {
                 populateResourceElementMap(structureDefinition.getSnapshot().getElement(), resourceTemplateContext);
 
                 HashMap<String, AnnotationElement> annotationElements = new HashMap<>();
-                for (Element resourceElement : resourceTemplateContext.getElements().values()) {
+
+                HashMap<String, Element> resourceElements = (HashMap<String, Element>) resourceTemplateContext.getElements().clone();
+                for (Element resourceElement : resourceElements.values()) {
                     populateExtendedElementsMap(resourceElement);
-                    AnnotationElement annotationElement = populateAnnotationElement(resourceElement);
-                    annotationElements.put(resourceElement.getName(), annotationElement);
-                    annotationElements.put(annotationElement.getName(), annotationElement);
+                    if (!resourceElement.isSliced()) {
+                        AnnotationElement annotationElement = populateAnnotationElement(resourceElement);
+                        annotationElements.put(resourceElement.getName(), annotationElement);
+                        annotationElements.put(annotationElement.getName(), annotationElement);
+                    } else {
+                        resourceTemplateContext.getElements().remove(resourceElement.getName());
+                    }
                 }
                 resourceTemplateContext.setExtendedElements(this.resourceExtendedElementMap);
                 resourceDefinitionAnnotation.setElements(annotationElements);
@@ -160,6 +165,14 @@ public class ResourceContextGenerator {
                             multiTypeFieldResourcePart.lastIndexOf(".") + 1);
                     elementPath = multiDataTypeParentFHIRPath.concat(multiTypeFieldFHIRPath);
                 }
+            } else if (id.contains(":")) {
+                String multiTypeFieldFHIRPath = id.substring(id.lastIndexOf(":") + 1);
+                String multiTypeFieldResourcePart = id.substring(0, id.lastIndexOf(":"));
+                if (multiTypeFieldFHIRPath.contains(".")) {
+                    String multiDataTypeParentFHIRPath = multiTypeFieldResourcePart.substring(0,
+                            multiTypeFieldResourcePart.lastIndexOf(".") + 1);
+                    elementPath = multiDataTypeParentFHIRPath.concat(multiTypeFieldFHIRPath);
+                }
             }
             elementPathTokens = elementPath.split("\\.");
 
@@ -208,8 +221,12 @@ public class ResourceContextGenerator {
                         if (types.size() > 1)
                             elementPath = tempElement + CommonUtil.toCamelCase(type.getCode());
                         if (!elementDefinition.getId().equals(elementDefinition.getPath())) {
-                            if (elementDefinition.getSliceName() != null)
+                            if (elementDefinition.getSliceName() != null) {
+                                Element element = populateElement(resourceName, elementDefinition.getSliceName(), type.getCode(), elementDefinition);
+                                element.setSliced(true);
+                                resourceElementMap.put(elementDefinition.getSliceName(), element);
                                 continue;
+                            }
                         }
                         Element element = populateElement(resourceName, elementPath, type.getCode(), elementDefinition);
                         resourceElementMap.put(elementPath, element);
@@ -236,6 +253,8 @@ public class ResourceContextGenerator {
         element.setName(name);
         element.setRootElementName(rootName);
         element.setDataType(GeneratorUtils.resolveDataType(toolConfig, type));
+        if (elementDefinition.hasFixed())
+            element.setFixedValue(elementDefinition.getFixed().primitiveValue());
         element.setMin(String.valueOf(elementDefinition.getMin()));
         element.setMax(elementDefinition.getMax());
         element.setArray(isElementArray(elementDefinition));
@@ -298,6 +317,20 @@ public class ResourceContextGenerator {
         if (elementDataType.equals("code") && element.isHasChildElements()) {
             extendedElement = populateExtendedElement(element, BallerinaDataType.Enum);
         } else if (elementDataType.equals("BackboneElement")) {
+            extendedElement = populateExtendedElement(element, BallerinaDataType.Record);
+            extendedElement.setElements(element.getChildElements());
+
+            DataTypeDefinitionAnnotation annotation = new DataTypeDefinitionAnnotation();
+            annotation.setName(extendedElement.getTypeName());
+
+            HashMap<String, AnnotationElement> annotationElementMap = new HashMap<>();
+            for (Element subElement : element.getChildElements().values()) {
+                AnnotationElement annotationElement = populateAnnotationElement(subElement);
+                annotationElementMap.put(annotationElement.getName(), annotationElement);
+            }
+            annotation.setElements(annotationElementMap);
+            extendedElement.setAnnotation(annotation);
+        } else if (element.isSliced()) {
             extendedElement = populateExtendedElement(element, BallerinaDataType.Record);
             extendedElement.setElements(element.getChildElements());
 
@@ -383,14 +416,19 @@ public class ResourceContextGenerator {
             suggestedIdentifier.append(CommonUtil.toCamelCase(token));
         }
 
-        int count = 0;
-        StringBuilder newIdentifier = suggestedIdentifier;
-        while (this.dataTypesRegistry.contains(newIdentifier.toString())) {
-            count++;
-            newIdentifier = new StringBuilder(suggestedIdentifier.toString());
-            newIdentifier.append(CommonUtil.toCamelCase(CommonUtil.toWords(count)));
+
+        if (element.isSliced()) {
+            suggestedIdentifier.append(CommonUtil.toCamelCase(element.getName()));
+        } else {
+            int count = 0;
+            StringBuilder newIdentifier = suggestedIdentifier;
+            while (this.dataTypesRegistry.contains(newIdentifier.toString())) {
+                count++;
+                newIdentifier = new StringBuilder(suggestedIdentifier.toString());
+                newIdentifier.append(CommonUtil.toCamelCase(CommonUtil.toWords(count)));
+            }
+            suggestedIdentifier = newIdentifier;
         }
-        suggestedIdentifier = newIdentifier;
 
         this.dataTypesRegistry.add(suggestedIdentifier.toString());
         LOG.debug("Ended: Extended Element Identifier generation");
