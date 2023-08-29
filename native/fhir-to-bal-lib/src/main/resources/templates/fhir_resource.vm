@@ -69,11 +69,9 @@ public type $util.resolveSpecialCharacters($resourceName) record {|
     };
 #foreach($element in $resourceElements)
 #if($element.getDataType() != "Meta")
-#set($min = "1")
-#set($max = "*")
-#if( ($element.min == $min ) && ($element.max == $max ) )
+#if( ($element.isArray() ) )
     @constraint:Array {
-       minLength: 1
+       minLength: $element.getMinAsInt()
     }
 #end
     #if(!$dataTypes.contains($element.getDataType()))${importIdentifier}#end${element.getDataType()}#if($element.isArray())[]#end $util.resolveKeywordConflict($util.resolveSpecialCharacters($element.getName()))#if(!$element.isRequired())?#end;
@@ -143,9 +141,7 @@ public type Base${util.resolveSpecialCharacters($resourceName)}Meta record {|
 }
 public type $util.resolveSpecialCharacters($extendedElement.getTypeName()) record {|
 #foreach($childElement in $extendedElement.getElements())
-#set($min = "1")
-#set($max = "*")
-#if( ($childElement.min == $min ) && ($childElement.max == $max ) )
+#if( ($childElement.isArray() ) )
     @constraint:Array {
        minLength: 1
     }
