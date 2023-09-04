@@ -124,6 +124,10 @@ public class Element {
         return min;
     }
 
+    public int getMinAsInt() {
+        return Integer.parseInt(min);
+    }
+
     public void setMin(String min) {
         this.min = min;
     }
