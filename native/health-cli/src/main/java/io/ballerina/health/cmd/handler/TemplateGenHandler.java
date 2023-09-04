@@ -120,9 +120,6 @@ public class TemplateGenHandler implements Handler {
                 if (packageName != null && !packageName.isEmpty()) {
                     JsonElement overrideConfig = new Gson().toJsonTree(packageName.toLowerCase());
                     toolConfigInstance.overrideConfig("project.package.namePrefix", overrideConfig);
-                } else {
-                    JsonElement overrideConfig = new Gson().toJsonTree(HealthCmdConstants.CMD_DEFAULT_IG_NAME);
-                    toolConfigInstance.overrideConfig("packageConfig.name.append", overrideConfig);
                 }
                 if (orgName != null && !orgName.isEmpty()) {
                     JsonElement overrideConfig = new Gson().toJsonTree(orgName.toLowerCase());

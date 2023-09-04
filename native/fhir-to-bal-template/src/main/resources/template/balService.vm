@@ -28,8 +28,8 @@ import $import.toLowerCase();
 public type $service.getName()#**##foreach($profile in $service.getProfileList()) $profile.getPackagePrefix():$profile.getName()#if($foreach.hasNext)| #end#end;
 
 # source system endpoint
-configurable string sourceSystem = "http://localhost:9595";
-final http:Client sourceEp = check new (sourceSystem);
+// configurable string sourceSystem = "http://localhost:9090";
+// final http:Client sourceEp = check new (sourceSystem);
 
 # A service representing a network-accessible API
 # bound to port `9090`.
@@ -38,35 +38,22 @@ service / on new $servicePackageImportIdentifier:Listener(9090, apiConfig) {
 #foreach($resourceMethod in $service.getResourceMethods())
 
     // $resourceMethod.getDescriptionComment()
-    isolated resource function $resourceMethod.getHttpMethod() fhir/$service.getFhirVersion()/$resourceMethod.getResourceContext() (#foreach($param in $resourceMethod.getMethodParams())$param#if($foreach.count!=$resourceMethod.getMethodParams().size()), #end#end) returns @http:Payload {mediaType: ["application/fhir+json", "application/fhir+xml"]} $basePackageImportIdentifier:$resourceMethod.getReturnType()|$basePackageImportIdentifier:FHIRError {
+    isolated resource function $resourceMethod.getHttpMethod() fhir/$service.getFhirVersion()/$resourceMethod.getResourceContext() (#foreach($param in $resourceMethod.getMethodParams())$param#if($foreach.count!=$resourceMethod.getMethodParams().size()), #end#end) returns @http:Payload {mediaType: ["application/fhir+json"]} #if($resourceMethod.getType()=="search")$basePackageImportIdentifier:#end$resourceMethod.getReturnType()|$basePackageImportIdentifier:FHIRError {
 #if($resourceMethod.getType()=="search")
-        // url encode the search parameters
-        string|$basePackageImportIdentifier:FHIRError encodedParams = $basePackageImportIdentifier:urlEncodeFhirSearchParameters(fhirContext.getRequestSearchParameters());
-        if encodedParams is $basePackageImportIdentifier:FHIRError {
-            return encodedParams;
-        }
+        // uncomment following to extract url encode the search parameters
+        // string|r4:FHIRError encodedParams = r4:urlEncodeFhirSearchParameters(fhirContext.getRequestSearchParameters());
 
         // call the source system apis
-        $resourceMethod.getResourceName()$sqBrackets|http:ClientError res = sourceEp->/$resourceMethod.getResourceName()(searchParams = encodedParams);
+        // create a FHIR bundle and populate it with the results
+        // return the bundle
 #elseif($resourceMethod.getType()=="read")
-        // fixme: test this;
-        // call the source system apis
-        $resourceMethod.getResourceName()|http:ClientError res = sourceEp->/$resourceMethod.getResourceName()/[id];
+        // Populate FHIR resource here and return
 #elseif($resourceMethod.getType()=="create")
-        // Passing the Interaction processing to the r4 package with current context.
-        $resourceMethod.getResourceName()|http:ClientError res = sourceEp->/${resourceMethod.getResourceName()}.post(payload);
+        // Perform create operation here.
+        // return the created resource. status code has to be 201(@http:Created)
+        // spec: SHALL also return a Location header which contains the new Logical Id and Version Id of the created resource version
 #end
-
-        if (res is http:ClientError) {
-            log:printError("Error occurred while calling the source system apis.", 'error = res);
-            return $basePackageImportIdentifier:clientErrorToFhirError(res);
-        } else {
-#if($resourceMethod.getType()=="search")
-            return $basePackageImportIdentifier:createFhirBundle($basePackageImportIdentifier:BUNDLE_TYPE_SEARCHSET, res);
-#else
-            return res;
-#end
-        }
+        return {};
     }
 #end
 }

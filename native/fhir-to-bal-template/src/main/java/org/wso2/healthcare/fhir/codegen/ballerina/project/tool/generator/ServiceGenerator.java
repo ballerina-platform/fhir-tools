@@ -59,13 +59,13 @@ public class ServiceGenerator extends AbstractFHIRTemplateGenerator {
         ballerinaService.addImport(dependencies.get("basePackage"));
         ballerinaService.addImport(dependencies.get("servicePackage"));
         ballerinaService.addImport(dependencies.get("igPackage"));
-        ballerinaService.addImport(dependencies.get("resourcePackage"));
 
         for (InteractionConfig interactionConfig : ballerinaProjectToolConfig.getInteractionConfigs()) {
             String httpMethod = "get";
             String returnType = resourceName;
             ArrayList<String> params = new ArrayList<>();
-            params.add(String.format("%s:FHIRContext fhirContext", generatorProperties.get("basePackageImportIdentifier")));
+            params.add(String.format("%s:FHIRContext fhirContext", generatorProperties.get(
+                    "basePackageImportIdentifier")));
             String methodDescription = "";
             switch (interactionConfig.getName()) {
                 case "search":
