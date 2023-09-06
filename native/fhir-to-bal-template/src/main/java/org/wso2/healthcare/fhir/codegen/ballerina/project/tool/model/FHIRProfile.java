@@ -133,7 +133,6 @@ public class FHIRProfile {
 
         String importStatementWithoutOrg = config.getIncludedIGConfigs().get(
                 igName).getImportStatement().split("/")[1];
-        System.out.println(importStatementWithoutOrg);
         this.packagePrefix = importStatementWithoutOrg.split(
                 "\\.")[importStatementWithoutOrg.split("\\.").length- 1];
     }

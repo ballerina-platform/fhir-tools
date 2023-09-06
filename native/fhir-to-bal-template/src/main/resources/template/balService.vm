@@ -27,9 +27,7 @@ import $import.toLowerCase();
 # public type $service.getName() $basePackageImportIdentifier:$service.getName()|<other_$service.getName()_Profile>;
 public type $service.getName()#**##foreach($profile in $service.getProfileList()) $profile.getPackagePrefix():$profile.getName()#if($foreach.hasNext)| #end#end;
 
-# source system endpoint
-// configurable string sourceSystem = "http://localhost:9090";
-// final http:Client sourceEp = check new (sourceSystem);
+# initialize source system endpoint here
 
 # A service representing a network-accessible API
 # bound to port `9090`.
