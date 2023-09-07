@@ -111,9 +111,11 @@ public class PackageContextGenerator {
     private void populateIGTemplateContexts(String igCode, FHIRImplementationGuide implementationGuide) {
         LOG.debug("Started: IG Template Context population");
         IGTemplateContext igTemplateContext = new IGTemplateContext();
-        igTemplateContext.setIgName(implementationGuide.getName());
-        igTemplateContext.setTitle(implementationGuide.getName());
-        igTemplateContext.setIgCode(igCode);
+        String igName = toolConfig.getPackageConfig().getName().replaceAll("\\.", "_");
+        //todo: handle the case where IG resource exist in the spec dir
+        igTemplateContext.setIgName(igName);
+        igTemplateContext.setTitle(igName);
+        igTemplateContext.setIgCode(igCode.replaceAll("\\.", "_"));
         this.packageContext.setIgTemplateContext(igTemplateContext);
         populateSearchParameters(implementationGuide);
         LOG.debug("Ended: IG Template Context population");

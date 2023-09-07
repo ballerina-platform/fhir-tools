@@ -131,8 +131,9 @@ public class FHIRProfile {
 
     public void setPackagePrefix(BallerinaProjectToolConfig config) {
 
-        String importStatementWithoutOrg = config.getIncludedIGConfigs().get(igName).getImportStatement().split("/")[1];
-        this.packagePrefix = importStatementWithoutOrg.split("\\.")[
-                config.getIncludedIGConfigs().get(igName).getImportStatement().split("\\.").length- 1];
+        String importStatementWithoutOrg = config.getIncludedIGConfigs().get(
+                igName).getImportStatement().split("/")[1];
+        this.packagePrefix = importStatementWithoutOrg.split(
+                "\\.")[importStatementWithoutOrg.split("\\.").length- 1];
     }
 }
