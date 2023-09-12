@@ -18,7 +18,9 @@
 
 package org.wso2.healthcare.fhir.ballerina.packagegen.tool.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Model for FHIR resource element
@@ -26,18 +28,20 @@ import java.util.HashMap;
 public class Element {
     private String dataType;
     private String name;
-    private String rootElementName;
-    private String fixedValue;
+    private String path;
     private String min;
     private String max;
+    private List<String> fixedValue;
+    private String valueSet;
+    private HashMap<String, Element> childElements;
     private boolean isRequired;
     private boolean isArray;
-    private boolean isSliced;
-    private String path;
-    private String valueSet;
-    private boolean hasChildElements;
-    private HashMap<String, Element> childElements;
+    private boolean isSlice;
+    private boolean isExtended;
+    private String rootElementName;
     private String description;
+    private String summary;
+    private String requirement;
 
     public String getDataType() {
         return dataType;
@@ -55,11 +59,15 @@ public class Element {
         this.name = name;
     }
 
-    public String getFixedValue() {
+    public boolean hasFixedValue() {
+        return (fixedValue != null && fixedValue.size() > 0);
+    }
+
+    public List<String> getFixedValue() {
         return fixedValue;
     }
 
-    public void setFixedValue(String fixedValue) {
+    public void setFixedValue(List<String> fixedValue) {
         this.fixedValue = fixedValue;
     }
 
@@ -83,24 +91,32 @@ public class Element {
         return isArray;
     }
 
+    public void setSlice(boolean slice) {
+        isSlice = slice;
+    }
+
     public void setArray(boolean array) {
         isArray = array;
     }
 
-    public boolean isHasChildElements() {
-        return hasChildElements;
+    public boolean isSlice() {
+        return isSlice;
     }
 
-    public void setHasChildElements(boolean hasChildElements) {
-        this.hasChildElements = hasChildElements;
+    public void setIsSlice(boolean isASlice) {
+        this.isSlice = isASlice;
     }
 
-    public boolean isSliced() {
-        return isSliced;
+    public boolean isExtended() {
+        return isExtended;
     }
 
-    public void setSliced(boolean sliced) {
-        isSliced = sliced;
+    public void setExtended(boolean extended) {
+        isExtended = extended;
+    }
+
+    public boolean hasChildElements() {
+        return this.childElements != null && this.childElements.size() > 0;
     }
 
     public HashMap<String, Element> getChildElements() {
@@ -108,7 +124,6 @@ public class Element {
     }
 
     public void setChildElements(HashMap<String, Element> childElements) {
-        this.hasChildElements = true;
         this.childElements = childElements;
     }
 
@@ -130,6 +145,7 @@ public class Element {
 
     public void setMin(String min) {
         this.min = min;
+        this.isRequired = Integer.parseInt(this.min) > 0;
     }
 
     public String getMax() {
@@ -154,5 +170,21 @@ public class Element {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getSummary() {
+        return summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
+
+    public String getRequirement() {
+        return requirement;
+    }
+
+    public void setRequirement(String requirement) {
+        this.requirement = requirement;
     }
 }

@@ -29,8 +29,17 @@ public const RESOURCE_NAME_${util.resolveSpecialCharacters($resourceName.toUpper
 # FHIR $resourceName resource record.
 #
 # + resourceType - The type of the resource describes
-#foreach($element in ${annotationElements})
+#foreach($element in $resourceElements)
 # + $util.resolveSpecialCharacters($util.resolveKeywordConflict($element.getName())) - $element.getDescription()
+#if($sliceElements.get($element.getPath()))
+# * $element.getName() Slicings
+#foreach($sliceElement in $sliceElements.get($element.getPath()))
+# $foreach.count) $sliceElement.getDataType(): $sliceElement.getSummary()
+#       - min = $sliceElement.getMin()
+#       - max = $sliceElement.getMax()
+#
+#end
+#end
 #end
 @${importIdentifier}ResourceDefinition {
     resourceType: "${resourceType}",
@@ -40,7 +49,7 @@ public const RESOURCE_NAME_${util.resolveSpecialCharacters($resourceName.toUpper
     #foreach($element in ${annotationElements})
     "${element.getName()}" : {
             name: "${element.getName()}",
-            dataType: #if(!$dataTypes.contains($element.getDataType()))${importIdentifier}${element.getDataType()}#else${element.getDataType()}#end,
+            dataType: #if(!$dataTypes.contains($element.getDataType()))${importIdentifier}$util.resolveSpecialCharacters($element.getDataType())#else$util.resolveSpecialCharacters($element.getDataType())#end,
             min: ${element.getMin()},
             max: ${element.getMax()},
             isArray: ${element.isArray()},
@@ -69,12 +78,14 @@ public type $util.resolveSpecialCharacters($resourceName) record {|
     };
 #foreach($element in $resourceElements)
 #if($element.getDataType() != "Meta")
-#if( ($element.isArray() ) )
+#set($min = "1")
+#set($max = "*")
+#if( ($element.min == $min ) && ($element.max == $max ) )
     @constraint:Array {
        minLength: $element.getMinAsInt()
     }
 #end
-    #if(!$dataTypes.contains($element.getDataType()))${importIdentifier}#end${element.getDataType()}#if($element.isArray())[]#end $util.resolveKeywordConflict($util.resolveSpecialCharacters($element.getName()))#if(!$element.isRequired())?#end;
+    #if(!$dataTypes.contains($element.getDataType()))${importIdentifier}#end$util.resolveSpecialCharacters($element.getDataType())#if($element.isArray())[]#end $util.resolveKeywordConflict($util.resolveSpecialCharacters($element.getName()))#if(!$element.isRequired())?#end;
 #end
 #end
     never...;
@@ -109,8 +120,17 @@ public type Base${util.resolveSpecialCharacters($resourceName)}Meta record {|
 #if($extendedElement.getBalDataType().getType() == "record")
 # FHIR $extendedElement.getTypeName() datatype record.
 #
-#foreach($annotationElement in $extendedElement.getAnnotation().getElements())
-# + $util.resolveSpecialCharacters($util.resolveKeywordConflict($annotationElement.getName())) - $annotationElement.getDescription()
+#foreach($element in $extendedElement.getAnnotation().getElements())
+# + $util.resolveSpecialCharacters($util.resolveKeywordConflict($element.getName())) - $element.getDescription()
+#if($element.hasSlicedElements())
+# * $element.getName() Slicings
+#foreach($sliceElement in $element.getSlicedElements())
+# $foreach.count) $sliceElement.getName(): $sliceElement.getSummary()
+#       - min = $sliceElement.getMin()
+#       - max = $sliceElement.getMax()
+#
+#end
+#end
 #end
 @${importIdentifier}DataTypeDefinition {
     name: "${extendedElement.getTypeName()}",
@@ -119,7 +139,7 @@ public type Base${util.resolveSpecialCharacters($resourceName)}Meta record {|
     #foreach($annotationElement in $extendedElement.getAnnotation().getElements())
     "${annotationElement.getName()}": {
             name: "${annotationElement.getName()}",
-            dataType: #if(!$dataTypes.contains($annotationElement.getDataType()))${importIdentifier}${annotationElement.getDataType()}#else${annotationElement.getDataType()}#end,
+            dataType: #if(!$dataTypes.contains($annotationElement.getDataType()))${importIdentifier}$util.resolveSpecialCharacters($annotationElement.getDataType())#else$util.resolveSpecialCharacters($annotationElement.getDataType())#end,
             min: $annotationElement.getMin(),
             max: $annotationElement.getMax(),
             isArray: $annotationElement.isArray(),
@@ -140,16 +160,20 @@ public type Base${util.resolveSpecialCharacters($resourceName)}Meta record {|
     }
 }
 public type $util.resolveSpecialCharacters($extendedElement.getTypeName()) record {|
+    *${importIdentifier}$extendedElement.getBaseType();
+
 #foreach($childElement in $extendedElement.getElements())
-#if( ($childElement.isArray() ) )
+#set($min = "1")
+#set($max = "*")
+#if( ($childElement.min == $min ) && ($childElement.max == $max ) )
     @constraint:Array {
-       minLength: 1
+       minLength: $childElement.getMinAsInt()
     }
 #end
-#if($childElement.getFixedValue())
-    #if(!$dataTypes.contains($childElement.getDataType()))${importIdentifier}#end${childElement.getDataType()}#if($childElement.isArray())[]#end $util.resolveSpecialCharacters($util.resolveKeywordConflict($childElement.getName()))#if(!$childElement.isRequired())?#end = "${childElement.getFixedValue()}";
+#if($childElement.hasFixedValue())
+    #if(!$dataTypes.contains($childElement.getDataType()))${importIdentifier}#end$util.resolveSpecialCharacters($childElement.getDataType())#if($childElement.isArray())[]#end $util.resolveSpecialCharacters($util.resolveKeywordConflict($childElement.getName()))#if(!$childElement.isRequired())?#end = #if($childElement.isArray())[#end#foreach($value in $childElement.getFixedValue())"$value"#if($foreach.count != $childElement.getFixedValue().size()),#end#end#if($childElement.isArray())]#end;
 #else
-    #if(!$dataTypes.contains($childElement.getDataType()))${importIdentifier}#end${childElement.getDataType()}#if($childElement.isArray())[]#end $util.resolveSpecialCharacters($util.resolveKeywordConflict($childElement.getName()))#if(!$childElement.isRequired())?#end;
+    #if(!$dataTypes.contains($childElement.getDataType()))${importIdentifier}#end$util.resolveSpecialCharacters($childElement.getDataType())#if($childElement.isArray())[]#end $util.resolveSpecialCharacters($util.resolveKeywordConflict($childElement.getName()))#if(!$childElement.isRequired())?#end;
 #end
 #end
 |};

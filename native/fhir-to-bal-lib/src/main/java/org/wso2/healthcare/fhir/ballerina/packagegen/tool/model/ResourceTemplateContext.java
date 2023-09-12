@@ -20,6 +20,7 @@ package org.wso2.healthcare.fhir.ballerina.packagegen.tool.model;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -33,8 +34,10 @@ public class ResourceTemplateContext {
     private String igName;
     private String baseIgName;
     private ResourceDefinitionAnnotation resourceDefinitionAnnotation;
-    private HashMap<String, Element> elements;
-    private HashMap<String, ExtendedElement> ExtendedElements;
+    private HashMap<String, Element> snapshotElements = new HashMap<>();
+    private HashMap<String, Element> resourceElements = new HashMap<>();
+    private HashMap<String, List<Element>> sliceElements = new HashMap<>();
+    private HashMap<String, ExtendedElement> extendedElements = new HashMap<>();
     private Set<String> resourceDependencies = new HashSet<>();
 
     public String getResourceType() {
@@ -85,20 +88,36 @@ public class ResourceTemplateContext {
         this.resourceDefinitionAnnotation = resourceDefinitionAnnotation;
     }
 
-    public HashMap<String, Element> getElements() {
-        return elements;
+    public HashMap<String, Element> getSnapshotElements() {
+        return snapshotElements;
     }
 
-    public void setElements(HashMap<String, Element> elements) {
-        this.elements = elements;
+    public void setSnapshotElements(HashMap<String, Element> snapshotElements) {
+        this.snapshotElements = snapshotElements;
+    }
+
+    public HashMap<String, Element> getResourceElements() {
+        return resourceElements;
+    }
+
+    public void setResourceElements(HashMap<String, Element> resourceElements) {
+        this.resourceElements = resourceElements;
+    }
+
+    public HashMap<String, List<Element>> getSliceElements() {
+        return sliceElements;
+    }
+
+    public void setSliceElements(HashMap<String, List<Element>> sliceElements) {
+        this.sliceElements = sliceElements;
     }
 
     public HashMap<String, ExtendedElement> getExtendedElements() {
-        return ExtendedElements;
+        return extendedElements;
     }
 
     public void setExtendedElements(HashMap<String, ExtendedElement> extendedElements) {
-        ExtendedElements = extendedElements;
+        this.extendedElements = extendedElements;
     }
 
     public Set<String> getResourceDependencies() {

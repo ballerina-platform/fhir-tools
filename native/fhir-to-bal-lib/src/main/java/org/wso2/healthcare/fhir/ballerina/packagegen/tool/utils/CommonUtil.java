@@ -102,9 +102,12 @@ public class CommonUtil {
      * @return string oneliner
      */
     public static String parseMultilineString(String str) {
-        String description = str.replaceAll("\\s{2,}", " ");
-        description = description.replace("\n", " ").replace("\r", " ");
-        return description.replace("\"", "'");
+        if (str != null) {
+            String description = str.replaceAll("\\s{2,}", " ");
+            description = description.replace("\n", " ").replace("\r", " ");
+            return description.replace("\"", "'");
+        }
+        return "";
     }
 
     /**
