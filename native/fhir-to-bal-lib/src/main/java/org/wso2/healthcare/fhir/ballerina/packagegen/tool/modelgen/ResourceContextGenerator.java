@@ -22,6 +22,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hl7.fhir.r4.model.ElementDefinition;
 import org.hl7.fhir.r4.model.StructureDefinition;
+import org.hl7.fhir.r4.model.Property;
+import org.hl7.fhir.r4.model.Base;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRImplementationGuide;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRResourceDef;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.ToolConstants;
@@ -37,13 +39,15 @@ import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.CommonUtil;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.GeneratorUtils;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Comparator;
 import java.util.regex.Pattern;
 
 import static org.wso2.healthcare.fhir.ballerina.packagegen.tool.ToolConstants.CONSTRAINTS_LIB_IMPORT;
@@ -55,10 +59,10 @@ public class ResourceContextGenerator {
     private static final Log LOG = LogFactory.getLog(ResourceContextGenerator.class);
     public final Set<String> baseResources = new HashSet<>(Arrays.asList("Bundle", "OperationOutcome", "CodeSystem", "ValueSet"));
     private final BallerinaPackageGenToolConfig toolConfig;
+    private ResourceTemplateContext resourceTemplateContextInstance;
     private final Map<String, ResourceTemplateContext> resourceTemplateContextMap;
     private final Map<String, String> resourceNameTypeMap;
     private final Set<String> dataTypesRegistry;
-    private HashMap<String, ExtendedElement> resourceExtendedElementMap;
 
     public ResourceContextGenerator(BallerinaPackageGenToolConfig config, FHIRImplementationGuide ig,
                                     Set<String> dataTypesRegistry) {
@@ -80,41 +84,42 @@ public class ResourceContextGenerator {
         for (Map.Entry<String, FHIRResourceDef> definitionEntry : ig.getResources().entrySet()) {
             StructureDefinition structureDefinition = definitionEntry.getValue().getDefinition();
             if (!baseResources.contains(structureDefinition.getType())) {
-                this.resourceExtendedElementMap = new HashMap<>();
+                this.resourceNameTypeMap.put(structureDefinition.getName(), structureDefinition.getType());
 
-                ResourceTemplateContext resourceTemplateContext = new ResourceTemplateContext();
-                resourceTemplateContext.setResourceType(structureDefinition.getType());
-                resourceTemplateContext.setResourceName(structureDefinition.getName());
-                resourceTemplateContext.setProfile(definitionEntry.getValue().getDefinition().getUrl());
-                resourceTemplateContext.setIgName(ig.getName());
+                this.resourceTemplateContextInstance = new ResourceTemplateContext();
+                this.resourceTemplateContextInstance.setResourceType(structureDefinition.getType());
+                this.resourceTemplateContextInstance.setResourceName(structureDefinition.getName());
+                this.resourceTemplateContextInstance.setProfile(definitionEntry.getValue().getDefinition().getUrl());
+                this.resourceTemplateContextInstance.setIgName(ig.getName());
 
                 ResourceDefinitionAnnotation resourceDefinitionAnnotation = new ResourceDefinitionAnnotation();
                 resourceDefinitionAnnotation.setName(structureDefinition.getName());
                 resourceDefinitionAnnotation.setBaseType(CommonUtil.getSplitTokenAt(structureDefinition
                         .getBaseDefinition(), File.separator, ToolConstants.TokenPosition.END));
-                resourceDefinitionAnnotation.setProfile(resourceTemplateContext.getProfile());
+                resourceDefinitionAnnotation.setProfile(this.resourceTemplateContextInstance.getProfile());
+                resourceDefinitionAnnotation.setElements(new HashMap<>());
+                this.resourceTemplateContextInstance.setResourceDefinitionAnnotation(resourceDefinitionAnnotation);
 
-                populateResourceElementMap(structureDefinition.getSnapshot().getElement(), resourceTemplateContext);
+                populateSnapshotElementMap(structureDefinition.getSnapshot().getElement());
 
-                HashMap<String, AnnotationElement> annotationElements = new HashMap<>();
+                for (Element snapshotElement : this.resourceTemplateContextInstance.getSnapshotElements().values()) {
+                    markExtendedElements(snapshotElement);
+                    populateResourceSliceElementsMap(snapshotElement);
+                    populateResourceElementMap(snapshotElement);
+                }
 
-                HashMap<String, Element> resourceElements = (HashMap<String, Element>) resourceTemplateContext.getElements().clone();
-                for (Element resourceElement : resourceElements.values()) {
-                    populateExtendedElementsMap(resourceElement);
-                    if (!resourceElement.isSliced()) {
-                        AnnotationElement annotationElement = populateAnnotationElement(resourceElement);
-                        annotationElements.put(resourceElement.getName(), annotationElement);
-                        annotationElements.put(annotationElement.getName(), annotationElement);
-                    } else {
-                        resourceTemplateContext.getElements().remove(resourceElement.getName());
+                for (Element resourceElement : this.resourceTemplateContextInstance.getResourceElements().values()) {
+                    populateResourceExtendedElementsMap(resourceElement);
+                    populateResourceElementAnnotationsMap(resourceElement);
+                }
+
+                for (List<Element> slices : this.resourceTemplateContextInstance.getSliceElements().values()) {
+                    for (Element slice : slices) {
+                        populateResourceExtendedElementsMap(slice);
                     }
                 }
-                resourceTemplateContext.setExtendedElements(this.resourceExtendedElementMap);
-                resourceDefinitionAnnotation.setElements(annotationElements);
-                resourceTemplateContext.setResourceDefinitionAnnotation(resourceDefinitionAnnotation);
 
-                this.resourceNameTypeMap.put(structureDefinition.getName(), structureDefinition.getType());
-                this.resourceTemplateContextMap.put(structureDefinition.getName(), resourceTemplateContext);
+                this.resourceTemplateContextMap.put(structureDefinition.getName(), this.resourceTemplateContextInstance);
             }
         }
         LOG.debug("Ended: Resource Template Context population");
@@ -124,11 +129,9 @@ public class ResourceContextGenerator {
      * Populate resource elements map in a hierarchical way
      *
      * @param elementDefinitions      FHIR element definition DTO
-     * @param resourceTemplateContext resource template context
      */
-    private void populateResourceElementMap(List<ElementDefinition> elementDefinitions,
-                                            ResourceTemplateContext resourceTemplateContext) {
-        LOG.debug("Started: Resource Element Map population");
+    private void populateSnapshotElementMap(List<ElementDefinition> elementDefinitions) {
+        LOG.debug("Started: Snapshot Element Map population");
         elementDefinitions.sort(new Comparator<ElementDefinition>() {
             @Override
             public int compare(ElementDefinition e1, ElementDefinition e2) {
@@ -138,18 +141,21 @@ public class ResourceContextGenerator {
 
         String elementPath;
         String[] elementPathTokens;
-        HashMap<String, Element> resourceElementMap = new HashMap<>();
+        HashMap<String, Element> snapshotElementMap = new HashMap<>();
 
         boolean isConstraintsImportExists = false;
+        boolean isSlice;
+        String sliceNamePattern;
         for (ElementDefinition elementDefinition : elementDefinitions) {
+            isSlice = false;
 
-            isConstraintsImportExists = isConstraintsImportExists || resourceTemplateContext.getResourceDependencies()
+            isConstraintsImportExists = isConstraintsImportExists || this.resourceTemplateContextInstance.getResourceDependencies()
                     .stream()
                     .filter(d -> d.equals(CONSTRAINTS_LIB_IMPORT))
                     .findAny().isPresent();
 
             if (!isConstraintsImportExists && isMandatoryRootElement(elementDefinitions, elementDefinition)) {
-                Set<String> resourceDependencies = resourceTemplateContext.getResourceDependencies();
+                Set<String> resourceDependencies = this.resourceTemplateContextInstance.getResourceDependencies();
                 resourceDependencies.add(CONSTRAINTS_LIB_IMPORT);
             }
             elementPath = elementDefinition.getPath();
@@ -158,20 +164,21 @@ public class ResourceContextGenerator {
             // i.e : MedicationRequest.medication[x]:medicationCodeableConcept.coding
             String id = elementDefinition.getId();
             if (id.contains("[x]:")) {
-                String multiTypeFieldFHIRPath = id.substring(id.lastIndexOf("[x]:") + 4);
-                String multiTypeFieldResourcePart = id.substring(0, id.lastIndexOf("[x]:"));
-                if (multiTypeFieldFHIRPath.contains(".")) {
-                    String multiDataTypeParentFHIRPath = multiTypeFieldResourcePart.substring(0,
-                            multiTypeFieldResourcePart.lastIndexOf(".") + 1);
-                    elementPath = multiDataTypeParentFHIRPath.concat(multiTypeFieldFHIRPath);
+                elementPath = id.replaceAll("\\w+([A-Z]?\\[x]:)", "");
+                if (elementPath.contains(":")) {
+                    elementPath = elementPath.replaceAll("\\w+([A-Z]?:)", "");
+                    String[] pathTokens = elementPath.split("\\.");
+                    sliceNamePattern = ":" + pathTokens[pathTokens.length - 1];
+                    if (id.contains(sliceNamePattern)) {
+                        isSlice = true;
+                    }
                 }
             } else if (id.contains(":")) {
-                String multiTypeFieldFHIRPath = id.substring(id.lastIndexOf(":") + 1);
-                String multiTypeFieldResourcePart = id.substring(0, id.lastIndexOf(":"));
-                if (multiTypeFieldFHIRPath.contains(".")) {
-                    String multiDataTypeParentFHIRPath = multiTypeFieldResourcePart.substring(0,
-                            multiTypeFieldResourcePart.lastIndexOf(".") + 1);
-                    elementPath = multiDataTypeParentFHIRPath.concat(multiTypeFieldFHIRPath);
+                elementPath = id.replaceAll("\\w+([A-Z]?:)", "");
+                String[] pathTokens = elementPath.split("\\.");
+                sliceNamePattern = ":" + pathTokens[pathTokens.length - 1];
+                if (id.contains(sliceNamePattern)) {
+                    isSlice = true;
                 }
             }
             elementPathTokens = elementPath.split("\\.");
@@ -183,7 +190,7 @@ public class ResourceContextGenerator {
                 elementPath = elementPath.substring(resourceName.length() + 1);
 
                 if (elementPath.split("\\.").length > 1) {
-                    Map<String, Element> elementMap = resourceElementMap;
+                    Map<String, Element> elementMap = snapshotElementMap;
                     while (elementPath.split("\\.").length > 1) {
                         elementPathTokens = elementPath.split("\\.");
                         rootElementName = elementPathTokens[0];
@@ -195,9 +202,11 @@ public class ResourceContextGenerator {
                                 List<ElementDefinition.TypeRefComponent> types = elementDefinition.getType();
                                 String tempElement = elementName.split(Pattern.quote("[x]"))[0];
                                 for (ElementDefinition.TypeRefComponent type : elementDefinition.getType()) {
-                                    if (types.size() > 1)
+                                    if (types.size() > 1 || elementName.contains("[x]"))
                                         elementName = tempElement + CommonUtil.toCamelCase(type.getCode());
-                                    Element childElement = populateElement(rootElementName, elementName, type.getCode(), elementDefinition);
+
+                                    String dataType = type.getCode();
+                                    Element childElement = populateElement(rootElementName, elementName, dataType, isSlice, elementDefinition);
                                     if (rootElement.getChildElements() != null) {
                                         if (!rootElement.getChildElements().containsKey(elementName)) {
                                             rootElement.getChildElements().put(elementName, childElement);
@@ -211,31 +220,23 @@ public class ResourceContextGenerator {
                             }
                         }
                         elementPath = elementPath.substring(rootElementName.length() + 1);
-                        if (elementMap.containsKey(rootElementName) && elementMap.get(rootElementName).isHasChildElements())
+                        if (elementMap.containsKey(rootElementName) && elementMap.get(rootElementName).hasChildElements())
                             elementMap = elementMap.get(rootElementName).getChildElements();
                     }
                 } else {
                     List<ElementDefinition.TypeRefComponent> types = elementDefinition.getType();
                     String tempElement = elementPath.split(Pattern.quote("[x]"))[0];
                     for (ElementDefinition.TypeRefComponent type : elementDefinition.getType()) {
-                        if (types.size() > 1)
+                        if (types.size() > 1 || elementPath.contains("[x]"))
                             elementPath = tempElement + CommonUtil.toCamelCase(type.getCode());
-                        if (!elementDefinition.getId().equals(elementDefinition.getPath())) {
-                            if (elementDefinition.getSliceName() != null) {
-                                Element element = populateElement(resourceName, elementDefinition.getSliceName(), type.getCode(), elementDefinition);
-                                element.setSliced(true);
-                                resourceElementMap.put(elementDefinition.getSliceName(), element);
-                                continue;
-                            }
-                        }
-                        Element element = populateElement(resourceName, elementPath, type.getCode(), elementDefinition);
-                        resourceElementMap.put(elementPath, element);
+                        Element element = populateElement(resourceName, elementPath, type.getCode(), isSlice, elementDefinition);
+                        snapshotElementMap.put(elementPath, element);
                     }
                 }
             }
         }
-        resourceTemplateContext.setElements(resourceElementMap);
-        LOG.debug("Ended: Resource Element Map population");
+        this.resourceTemplateContextInstance.setSnapshotElements(snapshotElementMap);
+        LOG.debug("Ended: Snapshot Element Map population");
     }
 
     /**
@@ -247,21 +248,38 @@ public class ResourceContextGenerator {
      * @param elementDefinition element definition DTO
      * @return created element object
      */
-    private Element populateElement(String rootName, String name, String type, ElementDefinition elementDefinition) {
+    private Element populateElement(String rootName, String name, String type, boolean isSlice, ElementDefinition elementDefinition) {
         LOG.debug("Started: Resource Element population");
         Element element = new Element();
         element.setName(name);
         element.setRootElementName(rootName);
         element.setDataType(GeneratorUtils.resolveDataType(toolConfig, type));
-        if (elementDefinition.hasFixed())
-            element.setFixedValue(elementDefinition.getFixed().primitiveValue());
+
+        if (elementDefinition.hasFixed()) {
+            ArrayList<String> values = new ArrayList<>();
+            values.add(elementDefinition.getFixed().primitiveValue());
+            element.setFixedValue(values);
+        } else if(elementDefinition.hasPattern() && !elementDefinition.getPattern().children().isEmpty()) {
+            HashMap<String, Element> childElements = new HashMap<>();
+            for (Property childProperty : elementDefinition.getPattern().children()) {
+                if (childProperty.hasValues()) {
+                    Element childElement = populateChildElementProperties(childProperty, elementDefinition.getPath());
+                    childElements.put(childProperty.getName(), childElement);
+                }
+            }
+            element.setChildElements(childElements);
+        }
+
         element.setMin(String.valueOf(elementDefinition.getMin()));
         element.setMax(elementDefinition.getMax());
         element.setArray(isElementArray(elementDefinition));
+        element.setIsSlice(isSlice);
         element.setPath(elementDefinition.getPath());
         element.setRequired(elementDefinition.getMin() > 0);
         element.setValueSet(elementDefinition.getBinding().getValueSet());
         element.setDescription(CommonUtil.parseMultilineString(elementDefinition.getDefinition()));
+        element.setSummary(CommonUtil.parseMultilineString(elementDefinition.getShort()));
+        element.setRequirement(CommonUtil.parseMultilineString(elementDefinition.getRequirements()));
 
         /**
          Todo: Fix resolving of Codes from implementation Guide
@@ -287,18 +305,90 @@ public class ResourceContextGenerator {
         return element;
     }
 
+    private Element populateChildElementProperties(Property childProperty, String elementPath) {
+        Element childElement = new Element();
+        childElement.setName(childProperty.getName());
+        childElement.setDataType(childProperty.getTypeCode());
+        childElement.setMin(String.valueOf(childProperty.getMinCardinality()));
+        childElement.setMax(String.valueOf(childProperty.getMaxCardinality()));
+        childElement.setArray(childProperty.isList());
+        childElement.setMin("1");
+        if (childProperty.getMaxCardinality() == Integer.MAX_VALUE) {
+            childElement.setMax("*");
+        } else {
+            childElement.setMax(String.valueOf(childProperty.getMaxCardinality()));
+        }
+        childElement.setDescription(childProperty.getDefinition());
+        childElement.setPath(elementPath + "." + childProperty.getName());
+
+        ArrayList<String> values = new ArrayList<>();
+        for (Base value : childProperty.getValues()) {
+            if (!value.hasPrimitiveValue()) {
+                HashMap<String, Element> childElements = new HashMap<>();
+                for (Property property : value.children()) {
+                    if (property.hasValues())
+                        childElements.put(property.getName(), populateChildElementProperties(property, childElement.getPath()));
+                }
+                childElement.setChildElements(childElements);
+            } else {
+                values.add(value.primitiveValue());
+            }
+        }
+        childElement.setFixedValue(values);
+        return childElement;
+    }
+
+    private void populateResourceElementMap(Element element) {
+        if (!element.isSlice()) {
+            if (element.hasChildElements()) {
+                Iterator<Map.Entry<String, Element>> rootIterator = element.getChildElements().entrySet().iterator();
+                Iterator<Map.Entry<String, Element>> iterator = rootIterator;
+                while (iterator.hasNext()) {
+                    Map.Entry<String, Element> childEntry = iterator.next();
+                    if (childEntry.getValue().isSlice()) {
+                        iterator.remove();
+                    } else if (childEntry.getValue().hasChildElements()) {
+                        rootIterator = iterator;
+                        iterator = childEntry.getValue().getChildElements().entrySet().iterator();
+                    } else {
+                        iterator = rootIterator;
+                    }
+                }
+            }
+            this.resourceTemplateContextInstance.getResourceElements().put(element.getName(), element);
+        }
+    }
+
+    private void markExtendedElements(Element element) {
+        if (!element.getDataType().equals("Extension")) {
+            if (element.getDataType().equals("Code") || element.getDataType().equals("BackboneElement") || element.hasFixedValue()) {
+                element.setExtended(true);
+            }
+            if (element.hasChildElements()) {
+                for (Map.Entry<String, Element> childEntry : element.getChildElements().entrySet()) {
+                    markExtendedElements(childEntry.getValue());
+                    if (childEntry.getValue().isExtended()) {
+                        element.setExtended(true);
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Populate extended elements map
      *
      * @param element resource element
      */
-    private void populateExtendedElementsMap(Element element) {
+    private void populateResourceExtendedElementsMap(Element element) {
         LOG.debug("Started: Resource Extended Element Map population");
-        if (element.isHasChildElements()) {
-            for (Map.Entry<String, Element> childEntry : element.getChildElements().entrySet()) {
-                populateExtendedElementsMap(childEntry.getValue());
+        if (!element.getDataType().equals("Extension")) {
+            if (element.hasChildElements()) {
+                for (Map.Entry<String, Element> childEntry : element.getChildElements().entrySet()) {
+                    populateResourceExtendedElementsMap(childEntry.getValue());
+                }
             }
-            validateAndPopulateExtendedElement(this.resourceExtendedElementMap, element);
+            validateAndPopulateExtendedElement(element);
         }
         LOG.debug("Ended: Resource Extended Element Map population");
     }
@@ -306,56 +396,33 @@ public class ResourceContextGenerator {
     /**
      * Validate and create extended elements from resource elements
      *
-     * @param extendedElementMap extended elements map
      * @param element            resource element to be validated
      */
-    private void validateAndPopulateExtendedElement(HashMap<String, ExtendedElement> extendedElementMap,
-                                                    Element element) {
+    private void validateAndPopulateExtendedElement(Element element) {
         LOG.debug("Started: Resource Extended Element validation");
-        ExtendedElement extendedElement = null;
+        ExtendedElement extendedElement;
         String elementDataType = element.getDataType();
-        if (elementDataType.equals("code") && element.isHasChildElements()) {
-            extendedElement = populateExtendedElement(element, BallerinaDataType.Enum);
-        } else if (elementDataType.equals("BackboneElement")) {
-            extendedElement = populateExtendedElement(element, BallerinaDataType.Record);
+        if (elementDataType.equals("code") && element.hasChildElements()) {
+            extendedElement = populateExtendedElement(element, BallerinaDataType.Enum, elementDataType);
+            putExtendedElementIfAbsent(element, extendedElement);
+        } else if (element.isSlice() || elementDataType.equals("BackboneElement") || (element.isExtended() && element.hasChildElements())) {
+            extendedElement = populateExtendedElement(element, BallerinaDataType.Record, elementDataType);
             extendedElement.setElements(element.getChildElements());
 
             DataTypeDefinitionAnnotation annotation = new DataTypeDefinitionAnnotation();
             annotation.setName(extendedElement.getTypeName());
 
-            HashMap<String, AnnotationElement> annotationElementMap = new HashMap<>();
-            for (Element subElement : element.getChildElements().values()) {
-                AnnotationElement annotationElement = populateAnnotationElement(subElement);
-                annotationElementMap.put(annotationElement.getName(), annotationElement);
-            }
-            annotation.setElements(annotationElementMap);
-            extendedElement.setAnnotation(annotation);
-        } else if (element.isSliced()) {
-            extendedElement = populateExtendedElement(element, BallerinaDataType.Record);
-            extendedElement.setElements(element.getChildElements());
-
-            DataTypeDefinitionAnnotation annotation = new DataTypeDefinitionAnnotation();
-            annotation.setName(extendedElement.getTypeName());
-
-            HashMap<String, AnnotationElement> annotationElementMap = new HashMap<>();
-            for (Element subElement : element.getChildElements().values()) {
-                AnnotationElement annotationElement = populateAnnotationElement(subElement);
-                annotationElementMap.put(annotationElement.getName(), annotationElement);
-            }
-            annotation.setElements(annotationElementMap);
-            extendedElement.setAnnotation(annotation);
-        }
-        if (extendedElement != null) {
-            boolean isAlreadyExists = false;
-            for (Map.Entry<String, ExtendedElement> elementEntry : extendedElementMap.entrySet()) {
-                isAlreadyExists = elementEntry.getKey().equals(extendedElement.getTypeName());
-                if (isAlreadyExists) {
-                    element.setDataType(elementEntry.getValue().getTypeName());
-                    break;
+            if (element.hasChildElements()) {
+                HashMap<String, AnnotationElement> childElementAnnotations = new HashMap<>();
+                for (Element subElement : element.getChildElements().values()) {
+                    AnnotationElement annotationElement = populateAnnotationElement(subElement);
+                    childElementAnnotations.put(annotationElement.getName(), annotationElement);
                 }
+                annotation.setElements(childElementAnnotations);
             }
-            if (!isAlreadyExists)
-                extendedElementMap.put(extendedElement.getTypeName(), extendedElement);
+            extendedElement.setAnnotation(annotation);
+
+            putExtendedElementIfAbsent(element, extendedElement);
         }
         LOG.debug("Ended: Resource Extended Element validation");
     }
@@ -367,18 +434,60 @@ public class ResourceContextGenerator {
      * @param balType Preferred Ballerina data type for the extended element
      * @return created extended element object
      */
-    private ExtendedElement populateExtendedElement(Element element, BallerinaDataType balType) {
+    private ExtendedElement populateExtendedElement(Element element, BallerinaDataType balType, String baseType) {
         LOG.debug("Started: Resource Extended Element population");
         ExtendedElement extendedElement = new ExtendedElement();
         String extendedElementTypeName = generateExtendedElementIdentifier(element);
         extendedElement.setTypeName(extendedElementTypeName);
         element.setDataType(extendedElementTypeName);
         extendedElement.setBalDataType(balType);
+        extendedElement.setBaseType(baseType);
+
         if (element.getChildElements() != null)
             extendedElement.setElements(element.getChildElements());
 
         LOG.debug("Ended: Resource Extended Element population");
+
         return extendedElement;
+    }
+
+    private void putExtendedElementIfAbsent(Element element, ExtendedElement extendedElement) {
+        if (extendedElement != null) {
+            boolean isAlreadyExists = this.resourceTemplateContextInstance.getExtendedElements().containsKey(extendedElement.getTypeName());
+            if (isAlreadyExists) {
+                element.setDataType(this.resourceTemplateContextInstance.getExtendedElements().get(extendedElement.getTypeName()).getTypeName());
+            } else {
+                this.resourceTemplateContextInstance.getExtendedElements().put(extendedElement.getTypeName(), extendedElement);
+            }
+        }
+    }
+
+    private void populateResourceSliceElementsMap(Element element) {
+        LOG.debug("Started: Resource Slice Element Map population");
+        if (element.hasChildElements()) {
+            for (Map.Entry<String, Element> childEntry : element.getChildElements().entrySet()) {
+                populateResourceSliceElementsMap(childEntry.getValue());
+            }
+        }
+
+        if (element.isSlice()) {
+            if(this.resourceTemplateContextInstance.getSliceElements().get(element.getPath()) != null) {
+                this.resourceTemplateContextInstance.getSliceElements().get(element.getPath()).add(element);
+            } else {
+                ArrayList<Element> slices = new ArrayList<>();
+                slices.add(element);
+                this.resourceTemplateContextInstance.getSliceElements().put(element.getPath(), slices);
+            }
+        }
+        LOG.debug("Ended: Resource Slice Element Map population");
+    }
+
+    private void populateResourceElementAnnotationsMap(Element element) {
+        LOG.debug("Started: Resource Element Annotation Map population");
+        AnnotationElement annotationElement = populateAnnotationElement(element);
+        this.resourceTemplateContextInstance.getResourceDefinitionAnnotation().getElements().put(element.getName(), annotationElement);
+        this.resourceTemplateContextInstance.getResourceDefinitionAnnotation().getElements().put(annotationElement.getName(), annotationElement);
+        LOG.debug("Ended: Resource Element Annotation Map population");
     }
 
     /**
@@ -412,12 +521,12 @@ public class ResourceContextGenerator {
         LOG.debug("Started: Extended Element Identifier generation");
         StringBuilder suggestedIdentifier = new StringBuilder();
         String[] tokens = element.getPath().split("\\.");
+        tokens[0] = this.resourceTemplateContextInstance.getResourceName();
         for (String token : tokens) {
             suggestedIdentifier.append(CommonUtil.toCamelCase(token));
         }
 
-
-        if (element.isSliced()) {
+        if (element.isSlice()) {
             suggestedIdentifier.append(CommonUtil.toCamelCase(element.getName()));
         } else {
             int count = 0;

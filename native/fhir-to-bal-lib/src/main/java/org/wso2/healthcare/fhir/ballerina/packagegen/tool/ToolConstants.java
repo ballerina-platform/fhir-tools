@@ -81,4 +81,6 @@ public class ToolConstants {
     }
 
     public static final String LICENSE_YEAR = "2023";
+
+    public static final String DATA_TYPE_BINDING_NAME = "http://hl7.org/fhir/StructureDefinition/elementdefinition-bindingName";
 }

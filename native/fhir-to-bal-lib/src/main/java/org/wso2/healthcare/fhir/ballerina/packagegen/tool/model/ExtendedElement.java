@@ -26,6 +26,7 @@ import java.util.HashMap;
 public class ExtendedElement {
     private String typeName;
     private BallerinaDataType balDataType;
+    private String baseType;
     private DataTypeDefinitionAnnotation annotation;
     private HashMap<String, Element> elements;
 
@@ -43,6 +44,14 @@ public class ExtendedElement {
 
     public void setBalDataType(BallerinaDataType balDataType) {
         this.balDataType = balDataType;
+    }
+
+    public String getBaseType() {
+        return baseType;
+    }
+
+    public void setBaseType(String baseType) {
+        this.baseType = baseType;
     }
 
     public DataTypeDefinitionAnnotation getAnnotation() {

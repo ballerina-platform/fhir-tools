@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
@@ -128,7 +127,8 @@ public class ResourceTemplateGenerator extends AbstractFHIRTemplateGenerator {
         templateContext.setProperty("profile", resourceTemplateContext.getProfile());
         templateContext.setProperty("baseType", resourceTemplateContext.getResourceDefinitionAnnotation().getBaseType());
         templateContext.setProperty("annotationElements", resourceTemplateContext.getResourceDefinitionAnnotation().getElements());
-        templateContext.setProperty("resourceElements", resourceTemplateContext.getElements());
+        templateContext.setProperty("resourceElements", resourceTemplateContext.getResourceElements());
+        templateContext.setProperty("sliceElements", resourceTemplateContext.getSliceElements());
         templateContext.setProperty("extendedElements", resourceTemplateContext.getExtendedElements());
 
         packageContext.getDataTypesRegistry().add("boolean");
