@@ -150,9 +150,7 @@ public class ResourceTemplateGenerator extends AbstractFHIRTemplateGenerator {
                 .filter(d -> d.equals(CONSTRAINTS_LIB_IMPORT))
                 .findFirst();
 
-        if (dependency.isPresent()) {
-            resourceDependencies.add(dependency.get());
-        }
+        dependency.ifPresent(resourceDependencies::add);
         templateContext.setProperty("imports", resourceDependencies);
 
         return templateContext;

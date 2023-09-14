@@ -18,15 +18,19 @@
 
 package org.wso2.healthcare.fhir.ballerina.packagegen.tool.model;
 
+import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.GeneratorUtils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Model for FHIR resource element
  */
 public class Element {
     private String dataType;
+    private Map<String, String> profiles;
     private String name;
     private String path;
     private int min;
@@ -48,6 +52,24 @@ public class Element {
 
     public void setDataType(String dataType) {
         this.dataType = dataType;
+    }
+    public Map<String, String> getProfiles() {
+        return profiles;
+    }
+
+    public void setProfiles(Map<String, String> profiles) {
+        this.profiles = profiles;
+    }
+
+    public void addProfile(String profile, String dataType) {
+        if (this.profiles == null) {
+            this.profiles = new HashMap<>();
+        }
+        this.profiles.putIfAbsent(profile, dataType);
+    }
+
+    public String getTypeWithImportPrefix() {
+        return isExtended ? this.dataType : GeneratorUtils.getBalTypeWithImport(this.dataType);
     }
 
     public String getName() {

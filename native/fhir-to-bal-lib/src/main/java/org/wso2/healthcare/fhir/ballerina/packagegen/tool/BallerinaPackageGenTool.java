@@ -22,6 +22,7 @@ import org.wso2.healthcare.codegen.tool.framework.commons.config.ToolConfig;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.TemplateGenerator;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.ToolContext;
 import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenException;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRDataTypeDef;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.config.BallerinaPackageGenToolConfig;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.modelgen.PackageContextGenerator;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.templategen.PackageTemplateGenerator;
@@ -60,10 +61,10 @@ public class BallerinaPackageGenTool extends AbstractFHIRTool {
 
         if (packageGenToolConfig.isEnabled()) {
             String targetRoot = packageGenToolConfig.getTargetDir();
-
+            Map<String, FHIRDataTypeDef> dataTypes = ((FHIRSpecificationData) toolContext.getSpecificationData()).getDataTypes();
             PackageContextGenerator packageContextGenerator = new PackageContextGenerator(
                     packageGenToolConfig,
-                    enabledIgs);
+                    enabledIgs, toolContext.getSpecificationData());
 
             PackageTemplateGenerator packageTemplateGenerator = new PackageTemplateGenerator(targetRoot);
 
@@ -73,6 +74,7 @@ public class BallerinaPackageGenTool extends AbstractFHIRTool {
                 throw new CodeGenException("Package context is not available.");
             }
             properties.put("packageContext", packageContextGenerator.getPackageContext());
+            properties.put("datatypeContext", packageContextGenerator.getPackageContext().getDatatypeTemplateContextMap());
             packageTemplateGenerator.setGeneratorProperties(properties);
             return packageTemplateGenerator;
         }
