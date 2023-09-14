@@ -91,7 +91,7 @@ public type $util.resolveSpecialCharacters($resourceName) record {|
        maxLength: $element.getMax()
     }
 #end
-    #if(!$dataTypes.contains($element.getDataType()))${importIdentifier}#end$util.resolveSpecialCharacters($element.getDataType())#if($element.isArray())[]#end $util.resolveKeywordConflict($util.resolveSpecialCharacters($element.getName()))#if(!$element.isRequired())?#end;
+    #foreach($profileEntry in $element.profiles.entrySet())#if(!$dataTypes.contains($profileEntry.value))${importIdentifier}#end$util.resolveSpecialCharacters($profileEntry.value)#if($element.isArray())[]#end#if($velocityCount != $element.profiles.size())|#end#end $util.resolveKeywordConflict($util.resolveSpecialCharacters($element.getName()))#if(!$element.isRequired())?#end;
 #end
     ${importIdentifier}Element ...;
 |};

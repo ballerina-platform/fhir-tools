@@ -18,6 +18,7 @@
 
 package org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils;
 
+import org.apache.commons.lang.StringUtils;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.config.BallerinaPackageGenToolConfig;
 
 import java.util.HashMap;
@@ -71,6 +72,11 @@ public class VelocityUtil {
         put("field", "'field");
     }};
 
+    //default constructor
+    public VelocityUtil() {
+        this.toolConfig = new BallerinaPackageGenToolConfig();
+    }
+
     public VelocityUtil(BallerinaPackageGenToolConfig config) {
         this.toolConfig = config;
     }
@@ -88,6 +94,14 @@ public class VelocityUtil {
             return this.toolConfig.getBallerinaKeywordConfig().get(keyword).getReplace();
         }
         return keyword;
+    }
+
+    public String resolveMultiDataTypeFieldNames(String fieldName, String typeName) {
+        if (fieldName.endsWith("[x]")) {
+            return resolveKeywordConflict(fieldName.substring(0, fieldName.length() - 3) +
+                    StringUtils.capitalize(typeName));
+        }
+        return resolveKeywordConflict(fieldName);
     }
 
     /**

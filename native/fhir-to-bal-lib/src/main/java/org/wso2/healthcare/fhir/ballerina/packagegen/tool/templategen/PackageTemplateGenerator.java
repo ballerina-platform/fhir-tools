@@ -60,6 +60,9 @@ public class PackageTemplateGenerator extends AbstractFHIRTemplateGenerator {
         ResourceTemplateGenerator resourceTemplateGenerator =
                 new ResourceTemplateGenerator(targetDir);
         this.setChildTemplateGenerator(resourceTemplateGenerator);
+        DatatypeTemplateGenerator datatypeTemplateGenerator =
+                new DatatypeTemplateGenerator(targetDir);
+        resourceTemplateGenerator.setChildTemplateGenerator(datatypeTemplateGenerator);
         LOG.debug("Package Template Generator Ended");
     }
 

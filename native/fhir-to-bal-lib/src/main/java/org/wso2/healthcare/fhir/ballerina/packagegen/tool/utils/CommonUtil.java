@@ -164,11 +164,11 @@ public class CommonUtil {
                 words += "and ";
             }
 
-            String[] unitsMap = { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
+            String[] unitsMap = {"zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
                     "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen",
-                    "nineteen" };
-            String[] tensMap = { "zero", "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty",
-                    "ninety" };
+                    "nineteen"};
+            String[] tensMap = {"zero", "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty",
+                    "ninety"};
 
             if (number < 20) {
                 words += unitsMap[number];
@@ -193,5 +193,12 @@ public class CommonUtil {
         String replacement = "$1_$2";
         str = str.replaceAll(regex, replacement).toLowerCase();
         return str;
+    }
+
+    public static String convertFhirElemMaxToBal(String max) {
+        if (max.equals("*")) {
+            return "int:MAX_VALUE";
+        }
+        return max;
     }
 }

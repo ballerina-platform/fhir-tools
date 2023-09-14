@@ -53,6 +53,13 @@ public abstract class AbstractAnnotation {
         this.elements = elements;
     }
 
+    public void addElement(AnnotationElement element) {
+        if (this.elements == null) {
+            this.elements = new HashMap<>();
+        }
+        this.elements.put(element.getName(), element);
+    }
+
     public ProcessingMetaInfo getProcessingMetaInfo() {
         return processingMetaInfo;
     }
