@@ -72,7 +72,7 @@ public class Element {
     }
 
     public boolean isRequired() {
-        return isRequired;
+        return Integer.parseInt(this.min) > 0;
     }
 
     public void setRequired(boolean required) {
@@ -145,7 +145,6 @@ public class Element {
 
     public void setMin(String min) {
         this.min = min;
-        this.isRequired = Integer.parseInt(this.min) > 0;
     }
 
     public String getMax() {
