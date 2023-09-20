@@ -143,22 +143,14 @@ public class ResourceContextGenerator {
         String[] elementPathTokens;
         HashMap<String, Element> snapshotElementMap = new HashMap<>();
 
-        boolean isConstraintsImportExists = false;
+        boolean isCardinalityConstrained;
+        boolean isConstraintsImportExists;
         boolean isSlice;
         String sliceNamePattern;
         for (ElementDefinition elementDefinition : elementDefinitions) {
             isSlice = false;
-
-            isConstraintsImportExists = isConstraintsImportExists || this.resourceTemplateContextInstance.getResourceDependencies()
-                    .stream()
-                    .filter(d -> d.equals(CONSTRAINTS_LIB_IMPORT))
-                    .findAny().isPresent();
-
-            if (!isConstraintsImportExists && isMandatoryRootElement(elementDefinitions, elementDefinition)) {
-                Set<String> resourceDependencies = this.resourceTemplateContextInstance.getResourceDependencies();
-                resourceDependencies.add(CONSTRAINTS_LIB_IMPORT);
-            }
             elementPath = elementDefinition.getPath();
+
             // Adding logic to handle multi datatype element definitions in the
             // format of <RESOURCE>.<field>[x]:<field><Datatype>.<childPath>
             // i.e : MedicationRequest.medication[x]:medicationCodeableConcept.coding
@@ -301,6 +293,7 @@ public class ResourceContextGenerator {
             }
             element.setChildElements(childElements);
         }
+        markConstrainedElements(element);
         LOG.debug("Ended: Resource Element population");
         return element;
     }
@@ -335,6 +328,7 @@ public class ResourceContextGenerator {
             }
         }
         childElement.setFixedValue(values);
+        markConstrainedElements(childElement);
         return childElement;
     }
 
@@ -356,6 +350,17 @@ public class ResourceContextGenerator {
                 }
             }
             this.resourceTemplateContextInstance.getResourceElements().put(element.getName(), element);
+        }
+    }
+
+    private void markConstrainedElements(Element element) {
+        boolean isCardinalityConstrained = (Integer.parseInt(element.getMin()) >= 1) && (element.getMax().equals("*"));
+        boolean isConstraintsImportExists = this.resourceTemplateContextInstance.getResourceDependencies()
+                .stream()
+                .anyMatch(d -> d.equals(CONSTRAINTS_LIB_IMPORT));
+
+        if (!isConstraintsImportExists && isCardinalityConstrained) {
+            this.resourceTemplateContextInstance.getResourceDependencies().add(CONSTRAINTS_LIB_IMPORT);
         }
     }
 
@@ -563,35 +568,6 @@ public class ResourceContextGenerator {
     private boolean isCodedString(String string) {
         String[] codes = string.split(Pattern.quote("|"));
         return codes.length > 1;
-    }
-
-    /**
-     * Checks whether a given element is a mandatory root level element of FHIR resource.
-     *
-     * @param elementDefinitions List of element definitions of a FHIR resource
-     * @param elementDefinition  Element definition of a given element
-     * @return True if the given element is a mandatory root level element of FHIR resource
-     */
-    private boolean isMandatoryRootElement(List<ElementDefinition> elementDefinitions, ElementDefinition elementDefinition) {
-        boolean isMandatoryCardinality = elementDefinition.getMin() == 1 && elementDefinition.getMax().equals("*");
-        long fhirPathLevel = elementDefinition.getPath().codePoints().filter(ch -> ch == '.').count();
-        if (isMandatoryCardinality && fhirPathLevel == 1) {
-            return true;
-        }
-        //getting the root level parent FHIR path position of a given element.
-        int position = elementDefinition.getPath().indexOf(".", elementDefinition.getPath().indexOf(".") + 1);
-        if (position == -1) {
-            return false;
-        }
-        //getting the root level parent FHIR path of a given element.
-        String parentFhirPath = elementDefinition.getPath().substring(0, position);
-        for (ElementDefinition definition : elementDefinitions) {
-            if (definition.getPath().equals(parentFhirPath) && definition.getType().size() > 0 &&
-                    definition.getType().get(0).getCode().equals("BackboneElement")) {
-                return isMandatoryCardinality;
-            }
-        }
-        return false;
     }
 
     public Map<String, ResourceTemplateContext> getResourceTemplateContextMap() {
