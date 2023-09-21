@@ -28,9 +28,9 @@
 
     <packaging>pom</packaging>
     <modules>
-        <module>native/health-cli</module>
-        <module>native/fhir-to-bal-lib</module>
         <module>native/fhir-to-bal-template</module>
+        <module>native/fhir-to-bal-lib</module>
+        <module>native/health-cli</module>
         <module>ballerina</module>
     </modules>
 
