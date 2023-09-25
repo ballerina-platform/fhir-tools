@@ -73,11 +73,7 @@ public type $util.resolveSpecialCharacters($resourceName) record {|
 
     RESOURCE_NAME_${util.resolveSpecialCharacters($resourceName.toUpperCase())} resourceType = RESOURCE_NAME_${util.resolveSpecialCharacters($resourceName.toUpperCase())};
 
-    Base${util.resolveSpecialCharacters($resourceName)}Meta meta = {
-        profile : [PROFILE_BASE_${util.resolveSpecialCharacters($resourceName.toUpperCase())}]
-    };
 #foreach($element in $resourceElements)
-#if($element.getDataType() != "Meta")
 #set($min = "1")
 #set($max = "*")
 #if( ($element.min == $min ) && ($element.max == $max ) )
@@ -87,33 +83,7 @@ public type $util.resolveSpecialCharacters($resourceName) record {|
 #end
     #if(!$dataTypes.contains($element.getDataType()))${importIdentifier}#end$util.resolveSpecialCharacters($element.getDataType())#if($element.isArray())[]#end $util.resolveKeywordConflict($util.resolveSpecialCharacters($element.getName()))#if(!$element.isRequired())?#end;
 #end
-#end
     never...;
-|};
-
-@${importIdentifier}DataTypeDefinition {
-    name: "Base${resourceType}Meta",
-    baseType: ${importIdentifier}Meta,
-    elements: {},
-    serializers: {
-        'xml: ${importIdentifier}complexDataTypeXMLSerializer,
-        'json: ${importIdentifier}complexDataTypeJsonSerializer
-    }
-}
-public type Base${util.resolveSpecialCharacters($resourceName)}Meta record {|
-    *${importIdentifier}Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    ${importIdentifier}Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    ${importIdentifier}id versionId?;
-    ${importIdentifier}instant lastUpdated?;
-    ${importIdentifier}uri 'source?;
-    ${importIdentifier}canonical[] profile = ["${profile}"];
-    ${importIdentifier}Coding[] security?;
-    ${importIdentifier}Coding[] tag?;
 |};
 
 #foreach($extendedElement in $extendedElements)
