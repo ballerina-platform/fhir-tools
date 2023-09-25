@@ -143,8 +143,6 @@ public class ResourceContextGenerator {
         String[] elementPathTokens;
         HashMap<String, Element> snapshotElementMap = new HashMap<>();
 
-        boolean isCardinalityConstrained;
-        boolean isConstraintsImportExists;
         boolean isSlice;
         String sliceNamePattern;
         for (ElementDefinition elementDefinition : elementDefinitions) {
@@ -354,7 +352,7 @@ public class ResourceContextGenerator {
     }
 
     private void markConstrainedElements(Element element) {
-        boolean isCardinalityConstrained = (Integer.parseInt(element.getMin()) >= 1) && (element.getMax().equals("*"));
+        boolean isCardinalityConstrained = (Integer.parseInt(element.getMin()) >= 1) && ("*".equals(element.getMax()));
         boolean isConstraintsImportExists = this.resourceTemplateContextInstance.getResourceDependencies()
                 .stream()
                 .anyMatch(d -> d.equals(CONSTRAINTS_LIB_IMPORT));
@@ -365,8 +363,8 @@ public class ResourceContextGenerator {
     }
 
     private void markExtendedElements(Element element) {
-        if (!element.getDataType().equals("Extension")) {
-            if (element.getDataType().equals("Code") || element.getDataType().equals("BackboneElement") || element.hasFixedValue()) {
+        if (!"Extension".equals(element.getDataType())) {
+            if ("Meta".equals(element.getDataType()) || "Code".equals(element.getDataType()) || "BackboneElement".equals(element.getDataType()) || element.hasFixedValue()) {
                 element.setExtended(true);
             }
             if (element.hasChildElements()) {
