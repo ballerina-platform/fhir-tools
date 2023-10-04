@@ -101,6 +101,7 @@ public class ResourceContextGenerator {
                 this.resourceTemplateContextInstance.setResourceDefinitionAnnotation(resourceDefinitionAnnotation);
 
                 populateSnapshotElementMap(structureDefinition.getSnapshot().getElement());
+                populateDifferentialElementIdsList(structureDefinition.getDifferential().getElement());
 
                 for (Element snapshotElement : this.resourceTemplateContextInstance.getSnapshotElements().values()) {
                     markExtendedElements(snapshotElement);
@@ -184,6 +185,8 @@ public class ResourceContextGenerator {
                     while (elementPath.split("\\.").length > 1) {
                         elementPathTokens = elementPath.split("\\.");
                         rootElementName = elementPathTokens[0];
+                        if (rootElementName.contains("[x]"))
+                            rootElementName = rootElementName.replace("[x]", elementDefinition.getBase().getPath().split("\\.")[0]);
 
                         if (elementPathTokens.length == 2) {
                             elementName = elementPathTokens[1];
@@ -209,6 +212,8 @@ public class ResourceContextGenerator {
                                 }
                             }
                         }
+                        if (elementPath.contains("[x]"))
+                            elementPath = elementPath.replace("[x]", elementDefinition.getBase().getPath().split("\\.")[0]);
                         elementPath = elementPath.substring(rootElementName.length() + 1);
                         if (elementMap.containsKey(rootElementName) && elementMap.get(rootElementName).hasChildElements())
                             elementMap = elementMap.get(rootElementName).getChildElements();
@@ -227,6 +232,18 @@ public class ResourceContextGenerator {
         }
         this.resourceTemplateContextInstance.setSnapshotElements(snapshotElementMap);
         LOG.debug("Ended: Snapshot Element Map population");
+    }
+
+    private void populateDifferentialElementIdsList(List<ElementDefinition> elementDefinitions) {
+        String elementPath;
+        for (ElementDefinition elementDefinition : elementDefinitions) {
+            elementPath = elementDefinition.getPath();
+            String relativePath = elementPath.replace(this.resourceTemplateContextInstance.getResourceType() + ".", "");
+            String[] pathTokens = relativePath.split("\\.");
+            if (pathTokens.length > 1) {
+                this.resourceTemplateContextInstance.getDifferentialElementIds().add(pathTokens[0]);
+            }
+        }
     }
 
     /**
@@ -260,12 +277,12 @@ public class ResourceContextGenerator {
             element.setChildElements(childElements);
         }
 
-        element.setMin(String.valueOf(elementDefinition.getMin()));
-        element.setMax(elementDefinition.getMax());
+        element.setMin(elementDefinition.getMin());
+
+        element.setMax(GeneratorUtils.getMaxCardinality(elementDefinition.getMax()));
         element.setArray(isElementArray(elementDefinition));
         element.setIsSlice(isSlice);
         element.setPath(elementDefinition.getPath());
-        element.setRequired(elementDefinition.getMin() > 0);
         element.setValueSet(elementDefinition.getBinding().getValueSet());
         element.setDescription(CommonUtil.parseMultilineString(elementDefinition.getDefinition()));
         element.setSummary(CommonUtil.parseMultilineString(elementDefinition.getShort()));
@@ -300,15 +317,9 @@ public class ResourceContextGenerator {
         Element childElement = new Element();
         childElement.setName(childProperty.getName());
         childElement.setDataType(childProperty.getTypeCode());
-        childElement.setMin(String.valueOf(childProperty.getMinCardinality()));
-        childElement.setMax(String.valueOf(childProperty.getMaxCardinality()));
         childElement.setArray(childProperty.isList());
-        childElement.setMin("1");
-        if (childProperty.getMaxCardinality() == Integer.MAX_VALUE) {
-            childElement.setMax("*");
-        } else {
-            childElement.setMax(String.valueOf(childProperty.getMaxCardinality()));
-        }
+        childElement.setMin(1);
+        childElement.setMax(childProperty.getMaxCardinality());
         childElement.setDescription(childProperty.getDefinition());
         childElement.setPath(elementPath + "." + childProperty.getName());
 
@@ -352,7 +363,7 @@ public class ResourceContextGenerator {
     }
 
     private void markConstrainedElements(Element element) {
-        boolean isCardinalityConstrained = (Integer.parseInt(element.getMin()) >= 1) && ("*".equals(element.getMax()));
+        boolean isCardinalityConstrained = (element.getMin() >= 1) && (element.getMax() > 1);
         boolean isConstraintsImportExists = this.resourceTemplateContextInstance.getResourceDependencies()
                 .stream()
                 .anyMatch(d -> d.equals(CONSTRAINTS_LIB_IMPORT));
@@ -364,7 +375,7 @@ public class ResourceContextGenerator {
 
     private void markExtendedElements(Element element) {
         if (!"Extension".equals(element.getDataType())) {
-            if ("Meta".equals(element.getDataType()) || "Code".equals(element.getDataType()) || "BackboneElement".equals(element.getDataType()) || element.hasFixedValue()) {
+            if (this.resourceTemplateContextInstance.getDifferentialElementIds().contains(element.getName()) || "Code".equals(element.getDataType()) || "BackboneElement".equals(element.getDataType()) || element.hasFixedValue()) {
                 element.setExtended(true);
             }
             if (element.hasChildElements()) {
@@ -444,7 +455,9 @@ public class ResourceContextGenerator {
         extendedElement.setTypeName(extendedElementTypeName);
         element.setDataType(extendedElementTypeName);
         extendedElement.setBalDataType(balType);
-        extendedElement.setBaseType(baseType);
+        if (!GeneratorUtils.isPrimitiveElement(baseType))
+            extendedElement.setBaseType(baseType);
+
 
         if (element.getChildElements() != null)
             extendedElement.setElements(element.getChildElements());
@@ -504,8 +517,8 @@ public class ResourceContextGenerator {
         AnnotationElement annotationElement = new AnnotationElement();
         annotationElement.setName(element.getName());
         annotationElement.setDataType(element.getDataType());
-        annotationElement.setMin(element.getMin());
-        annotationElement.setMax(element.getMax());
+        annotationElement.setMin(String.valueOf(element.getMin()));
+        annotationElement.setMax(element.getMax()==Integer.MAX_VALUE?"*":String.valueOf(element.getMax()));
         annotationElement.setArray(element.isArray());
         annotationElement.setDescription(element.getDescription());
         annotationElement.setPath(element.getPath());
@@ -545,6 +558,27 @@ public class ResourceContextGenerator {
         this.dataTypesRegistry.add(suggestedIdentifier.toString());
         LOG.debug("Ended: Extended Element Identifier generation");
         return suggestedIdentifier.toString();
+    }
+
+    // write a method to copy an element to new element
+    private Element copyElement(Element element) {
+        Element newElement = new Element();
+        newElement.setName(element.getName());
+        newElement.setDataType(element.getDataType());
+        newElement.setMin(element.getMin());
+        newElement.setMax(element.getMax());
+        newElement.setArray(element.isArray());
+        newElement.setDescription(element.getDescription());
+        newElement.setPath(element.getPath());
+        newElement.setValueSet(element.getValueSet());
+        newElement.setIsSlice(element.isSlice());
+        newElement.setFixedValue(element.getFixedValue());
+        newElement.setSummary(element.getSummary());
+        newElement.setRequirement(element.getRequirement());
+        newElement.setRootElementName(element.getRootElementName());
+        newElement.setExtended(element.isExtended());
+        newElement.setChildElements(element.getChildElements());
+        return newElement;
     }
 
     /**

@@ -34,9 +34,14 @@ public const RESOURCE_NAME_${util.resolveSpecialCharacters($resourceName.toUpper
 #if($sliceElements.get($element.getPath()))
 # * $element.getName() Slicings
 #foreach($sliceElement in $sliceElements.get($element.getPath()))
+#if ($sliceElement.getMax() == $INT_MAX)
+#set($max = "*")
+#else
+#set($max = $sliceElement.getMax())
+#end
 # $foreach.count) $sliceElement.getDataType(): $sliceElement.getSummary()
 #       - min = $sliceElement.getMin()
-#       - max = $sliceElement.getMax()
+#       - max = $max
 #
 #end
 #end
@@ -74,16 +79,21 @@ public type $util.resolveSpecialCharacters($resourceName) record {|
     RESOURCE_NAME_${util.resolveSpecialCharacters($resourceName.toUpperCase())} resourceType = RESOURCE_NAME_${util.resolveSpecialCharacters($resourceName.toUpperCase())};
 
 #foreach($element in $resourceElements)
-#set($min = "1")
-#set($max = "*")
-#if( ($element.min == $min ) && ($element.max == $max ) )
+#set($min = 1)
+#set($max = $INT_MAX)
+#if( ($element.min >= $min ) && ($element.max == $max) )
     @constraint:Array {
-       minLength: $element.getMinAsInt()
+       minLength: $element.getMin()
+    }
+#elseif( ($element.min >= $min ) && ($element.max > 1) )
+    @constraint:Array {
+       minLength: $element.getMin(),
+       maxLength: $element.getMax()
     }
 #end
     #if(!$dataTypes.contains($element.getDataType()))${importIdentifier}#end$util.resolveSpecialCharacters($element.getDataType())#if($element.isArray())[]#end $util.resolveKeywordConflict($util.resolveSpecialCharacters($element.getName()))#if(!$element.isRequired())?#end;
 #end
-    never...;
+    ${importIdentifier}Element ...;
 |};
 
 #foreach($extendedElement in $extendedElements)
@@ -93,7 +103,7 @@ public type $util.resolveSpecialCharacters($resourceName) record {|
 #foreach($element in $extendedElement.getAnnotation().getElements())
 # + $util.resolveSpecialCharacters($util.resolveKeywordConflict($element.getName())) - $element.getDescription()
 #if($element.hasSlicedElements())
-# * $element.getName() Slicings
+# * $element.getName() Slicing
 #foreach($sliceElement in $element.getSlicedElements())
 # $foreach.count) $sliceElement.getName(): $sliceElement.getSummary()
 #       - min = $sliceElement.getMin()
@@ -130,14 +140,21 @@ public type $util.resolveSpecialCharacters($resourceName) record {|
     }
 }
 public type $util.resolveSpecialCharacters($extendedElement.getTypeName()) record {|
+#if ($extendedElement.getBaseType())
     *${importIdentifier}$extendedElement.getBaseType();
+#end
 
 #foreach($childElement in $extendedElement.getElements())
-#set($min = "1")
-#set($max = "*")
-#if( ($childElement.min == $min ) && ($childElement.max == $max ) )
+#set($min = 1)
+#set($max = $INT_MAX)
+#if( ($childElement.getMin() >= $min ) && ($childElement.getMax() == $max) )
     @constraint:Array {
-       minLength: $childElement.getMinAsInt()
+       minLength: $childElement.getMin()
+    }
+#elseif( ($childElement.min >= $min ) && ($childElement.max > 1) )
+    @constraint:Array {
+       minLength: $childElement.getMin(),
+       maxLength: $childElement.getMax()
     }
 #end
 #if($childElement.hasFixedValue())

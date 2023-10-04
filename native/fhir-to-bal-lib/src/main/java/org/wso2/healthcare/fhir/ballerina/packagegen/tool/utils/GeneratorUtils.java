@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
 public class GeneratorUtils {
     private final static HashMap<String, String> DATA_TYPE_MAP = new HashMap<String, String>() {{
         put("http://hl7.org/fhirpath/System.String", "string");
+        put("http://hl7.org/fhirpath/System.Date", "date");
         put("url", "urlType");
     }};
 
@@ -99,5 +100,29 @@ public class GeneratorUtils {
             }
         }
         return newSearchParameterMap;
+    }
+
+    /**
+     * Check whether the data type is a primitive element
+     *
+     * @param dataType data type
+     * @return true if the data type is a primitive element
+     */
+    public static boolean isPrimitiveElement(String dataType) {
+        return dataType.equals("string") || dataType.equals("boolean") || dataType.equals("integer") ||
+                dataType.equals("decimal") || dataType.equals("uri") || dataType.equals("url") ||
+                dataType.equals("canonical") || dataType.equals("base64Binary") || dataType.equals("instant") ||
+                dataType.equals("date") || dataType.equals("dateTime") || dataType.equals("time") ||
+                dataType.equals("code") || dataType.equals("oid") || dataType.equals("id") ||
+                dataType.equals("markdown") || dataType.equals("unsignedInt") || dataType.equals("positiveInt") ||
+                dataType.equals("integer64") || dataType.equals("uuid");
+    }
+
+    public static int getMaxCardinality(String maxCardinality) {
+        if (maxCardinality.equals("*")) {
+            return Integer.MAX_VALUE;
+        } else {
+            return Integer.parseInt(maxCardinality);
+        }
     }
 }

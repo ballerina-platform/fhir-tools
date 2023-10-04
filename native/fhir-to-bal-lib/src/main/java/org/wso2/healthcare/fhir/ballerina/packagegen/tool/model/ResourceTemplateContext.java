@@ -18,6 +18,7 @@
 
 package org.wso2.healthcare.fhir.ballerina.packagegen.tool.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -35,6 +36,7 @@ public class ResourceTemplateContext {
     private String baseIgName;
     private ResourceDefinitionAnnotation resourceDefinitionAnnotation;
     private HashMap<String, Element> snapshotElements = new HashMap<>();
+    private List<String> differentialElementIds = new ArrayList<>();
     private HashMap<String, Element> resourceElements = new HashMap<>();
     private HashMap<String, List<Element>> sliceElements = new HashMap<>();
     private HashMap<String, ExtendedElement> extendedElements = new HashMap<>();
@@ -94,6 +96,14 @@ public class ResourceTemplateContext {
 
     public void setSnapshotElements(HashMap<String, Element> snapshotElements) {
         this.snapshotElements = snapshotElements;
+    }
+
+    public List<String> getDifferentialElementIds() {
+        return differentialElementIds;
+    }
+
+    public void setDifferentialElementIds(List<String> differentialElementIds) {
+        this.differentialElementIds = differentialElementIds;
     }
 
     public HashMap<String, Element> getResourceElements() {

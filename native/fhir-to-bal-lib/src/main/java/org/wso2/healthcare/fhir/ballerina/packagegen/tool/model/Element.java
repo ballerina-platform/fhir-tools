@@ -29,12 +29,11 @@ public class Element {
     private String dataType;
     private String name;
     private String path;
-    private String min;
-    private String max;
+    private int min;
+    private int max;
     private List<String> fixedValue;
     private String valueSet;
     private HashMap<String, Element> childElements;
-    private boolean isRequired;
     private boolean isArray;
     private boolean isSlice;
     private boolean isExtended;
@@ -72,11 +71,7 @@ public class Element {
     }
 
     public boolean isRequired() {
-        return Integer.parseInt(this.min) > 0;
-    }
-
-    public void setRequired(boolean required) {
-        isRequired = required;
+        return this.min > 0;
     }
 
     public String getPath() {
@@ -135,23 +130,19 @@ public class Element {
         this.rootElementName = rootElementName;
     }
 
-    public String getMin() {
+    public int getMin() {
         return min;
     }
 
-    public int getMinAsInt() {
-        return Integer.parseInt(min);
-    }
-
-    public void setMin(String min) {
+    public void setMin(int min) {
         this.min = min;
     }
 
-    public String getMax() {
+    public int getMax() {
         return max;
     }
 
-    public void setMax(String max) {
+    public void setMax(int max) {
         this.max = max;
     }
 
