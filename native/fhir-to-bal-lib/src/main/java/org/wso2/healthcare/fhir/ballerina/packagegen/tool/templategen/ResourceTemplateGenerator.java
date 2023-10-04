@@ -130,6 +130,7 @@ public class ResourceTemplateGenerator extends AbstractFHIRTemplateGenerator {
         templateContext.setProperty("resourceElements", resourceTemplateContext.getResourceElements());
         templateContext.setProperty("sliceElements", resourceTemplateContext.getSliceElements());
         templateContext.setProperty("extendedElements", resourceTemplateContext.getExtendedElements());
+        templateContext.setProperty("INT_MAX", Integer.MAX_VALUE);
 
         packageContext.getDataTypesRegistry().add("boolean");
         packageContext.getDataTypesRegistry().add("string");
