@@ -30,7 +30,7 @@ import org.wso2.healthcare.fhir.ballerina.packagegen.tool.config.DependencyConfi
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.PackageTemplateContext;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.ResourceTemplateContext;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.CommonUtil;
-import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.VelocityUtil;
+import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.GeneratorUtils;
 
 import java.io.Console;
 import java.io.File;
@@ -41,7 +41,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -51,7 +50,6 @@ public class PackageTemplateGenerator extends AbstractFHIRTemplateGenerator {
 
     private static final Log LOG = LogFactory.getLog(PackageTemplateGenerator.class);
     private final Map<String, Object> packageProperties = new HashMap<>();
-    private VelocityUtil velocityUtil;
     private PackageTemplateContext packageTemplateContext;
 
     public PackageTemplateGenerator(String targetDir) throws CodeGenException {
@@ -71,7 +69,6 @@ public class PackageTemplateGenerator extends AbstractFHIRTemplateGenerator {
         LOG.debug("Started: Package Template Generation");
         this.packageTemplateContext = (PackageTemplateContext) generatorProperties.get("packageContext");
         BallerinaPackageGenToolConfig toolConfig = (BallerinaPackageGenToolConfig) generatorProperties.get("toolConfig");
-        this.velocityUtil = new VelocityUtil(toolConfig);
 
         String packagePath = this.getTargetDir() + File.separator + toolConfig.getPackageConfig().getName();
         String packageName = toolConfig.getPackageConfig().getName();
@@ -210,7 +207,7 @@ public class PackageTemplateGenerator extends AbstractFHIRTemplateGenerator {
     private TemplateContext createTemplateContextForPackageMD(BallerinaPackageGenToolConfig toolConfig) {
         LOG.debug("Started: Package.md generation");
         TemplateContext templateContext = this.getNewTemplateContext();
-        templateContext.setProperty("newline", this.velocityUtil.getNewLine());
+        templateContext.setProperty("newline", GeneratorUtils.getInstance().getNewLine());
         templateContext.setProperty("packageName", this.packageProperties.get("packageName"));
         templateContext.setProperty("isBasePackage", this.packageProperties.get("isBasePackage"));
         templateContext.setProperty("packageIdentifier", this.packageProperties.get("packageIdentifier"));
@@ -234,8 +231,8 @@ public class PackageTemplateGenerator extends AbstractFHIRTemplateGenerator {
     private TemplateContext createTemplateContextForInitializer() {
         LOG.debug("Started: Initializer.bal generation");
         TemplateContext templateContext = this.getNewTemplateContext();
-        templateContext.setProperty("util", this.velocityUtil);
-        templateContext.setProperty("newline", this.velocityUtil.getNewLine());
+        templateContext.setProperty("util", GeneratorUtils.getInstance());
+        templateContext.setProperty("newline", GeneratorUtils.getInstance().getNewLine());
         templateContext.setProperty("igTitle", this.packageTemplateContext.getIgTemplateContext().getTitle());
         templateContext.setProperty("igName", this.packageTemplateContext.getIgTemplateContext().getIgName());
         templateContext.setProperty("igCode", this.packageTemplateContext.getIgTemplateContext().getIgCode());
@@ -262,7 +259,7 @@ public class PackageTemplateGenerator extends AbstractFHIRTemplateGenerator {
     private TemplateContext createTemplateContextForVariables() {
         LOG.debug("Started: Variables.bal generation");
         TemplateContext templateContext = this.getNewTemplateContext();
-        templateContext.setProperty("newline", this.velocityUtil.getNewLine());
+        templateContext.setProperty("newline", GeneratorUtils.getInstance().getNewLine());
         templateContext.setProperty("igCode", this.packageTemplateContext.getIgTemplateContext().getIgCode().toUpperCase());
         templateContext.setProperty("isBasePackage", this.packageProperties.get("isBasePackage"));
         templateContext.setProperty("licenseYear", ToolConstants.LICENSE_YEAR);

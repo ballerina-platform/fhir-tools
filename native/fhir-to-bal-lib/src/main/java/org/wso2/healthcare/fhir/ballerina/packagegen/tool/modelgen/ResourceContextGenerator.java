@@ -60,7 +60,8 @@ import static org.wso2.healthcare.fhir.ballerina.packagegen.tool.ToolConstants.C
  */
 public class ResourceContextGenerator {
     private static final Log LOG = LogFactory.getLog(ResourceContextGenerator.class);
-    public final Set<String> baseResources = new HashSet<>(Arrays.asList("Bundle", "OperationOutcome", "CodeSystem", "ValueSet"));
+    public final Set<String> baseResources = new HashSet<>(Arrays.asList("Bundle", "OperationOutcome", "CodeSystem",
+            "ValueSet", "DomainResource", "Resource"));
     private final BallerinaPackageGenToolConfig toolConfig;
     private ResourceTemplateContext resourceTemplateContextInstance;
     private final Map<String, ResourceTemplateContext> resourceTemplateContextMap;
@@ -92,12 +93,13 @@ public class ResourceContextGenerator {
 
                 this.resourceTemplateContextInstance = new ResourceTemplateContext();
                 this.resourceTemplateContextInstance.setResourceType(structureDefinition.getType());
-                this.resourceTemplateContextInstance.setResourceName(structureDefinition.getName());
+                this.resourceTemplateContextInstance.setResourceName(GeneratorUtils.getInstance().resolveSpecialCharacters(structureDefinition.getName()));
                 this.resourceTemplateContextInstance.setProfile(definitionEntry.getValue().getDefinition().getUrl());
                 this.resourceTemplateContextInstance.setIgName(ig.getName());
 
                 ResourceDefinitionAnnotation resourceDefinitionAnnotation = new ResourceDefinitionAnnotation();
-                resourceDefinitionAnnotation.setName(structureDefinition.getName());
+                resourceDefinitionAnnotation.setName(GeneratorUtils.getInstance().resolveSpecialCharacters(structureDefinition.getName()));
+                DataTypesRegistry.getInstance().addDataType(GeneratorUtils.getInstance().resolveSpecialCharacters(structureDefinition.getName()));
                 resourceDefinitionAnnotation.setBaseType(CommonUtil.getSplitTokenAt(structureDefinition
                         .getBaseDefinition(), File.separator, ToolConstants.TokenPosition.END));
                 resourceDefinitionAnnotation.setProfile(this.resourceTemplateContextInstance.getProfile());
@@ -261,17 +263,17 @@ public class ResourceContextGenerator {
     private Element populateElement(String rootName, String name, ElementDefinition.TypeRefComponent type, boolean isSlice, ElementDefinition elementDefinition) {
         LOG.debug("Started: Resource Element population");
         Element element = new Element();
-        element.setName(name);
+        element.setName(GeneratorUtils.getInstance().resolveSpecialCharacters(name));
         element.setRootElementName(rootName);
-        element.setDataType(GeneratorUtils.resolveDataType(toolConfig, type.getCode()));
+        element.setDataType(GeneratorUtils.getInstance().resolveDataType(toolConfig, type.getCode()));
         //Adding profiles of the resource element type
         List<CanonicalType> profiles = type.getProfile();
-        if (profiles.size() > 0) {
+        if (!profiles.isEmpty()) {
             for (CanonicalType profile : profiles) {
                 if (datatypeTemplateContextMap.containsKey(profile.getValue())) {
                     element.addProfile(profile.getValue(), datatypeTemplateContextMap.get(profile.getValue()).getName());
                     DataTypesRegistry.getInstance().addDataType(datatypeTemplateContextMap.get(profile.getValue()).getName());
-                } else if (profile.getValue().startsWith("http://hl7.org/fhir/StructureDefinition/")) {
+                } else {
                     element.addProfile(profile.getValue(), element.getDataType());
                 }
             }
@@ -294,7 +296,6 @@ public class ResourceContextGenerator {
         }
 
         element.setMin(elementDefinition.getMin());
-
         element.setMax(GeneratorUtils.getMaxCardinality(elementDefinition.getMax()));
         element.setArray(isElementArray(elementDefinition));
         element.setIsSlice(isSlice);
@@ -304,14 +305,14 @@ public class ResourceContextGenerator {
         element.setSummary(CommonUtil.parseMultilineString(elementDefinition.getShort()));
         element.setRequirement(CommonUtil.parseMultilineString(elementDefinition.getRequirements()));
 
-        /**
+        /*
          Todo: Fix resolving of Codes from implementation Guide
          Refer Issue: https://github.com/wso2-enterprise/open-healthcare/issues/928
-         **/
+         */
         if (element.getDataType().equals("code")) {
             GeneratorUtils.populateCodeValuesForCodeElements(elementDefinition, element);
         }
-        markConstrainedElements(element);
+//        markConstrainedElements(element);
         LOG.debug("Ended: Resource Element population");
         return element;
     }
@@ -340,7 +341,7 @@ public class ResourceContextGenerator {
             }
         }
         childElement.setFixedValue(values);
-        markConstrainedElements(childElement);
+//        markConstrainedElements(childElement);
         return childElement;
     }
 
@@ -361,6 +362,7 @@ public class ResourceContextGenerator {
                     }
                 }
             }
+            markConstrainedElements(element);
             this.resourceTemplateContextInstance.getResourceElements().put(element.getName(), element);
         }
     }
@@ -420,11 +422,12 @@ public class ResourceContextGenerator {
         ExtendedElement extendedElement;
         String elementDataType = element.getDataType();
         if (elementDataType.equals("code") && element.hasChildElements()) {
-            extendedElement = GeneratorUtils.populateExtendedElement(element, BallerinaDataType.Enum, elementDataType,
+            extendedElement = GeneratorUtils.getInstance().populateExtendedElement(element, BallerinaDataType.Enum, elementDataType,
                     this.resourceTemplateContextInstance.getResourceName());
             putExtendedElementIfAbsent(element, extendedElement);
         } else if (element.isSlice() || elementDataType.equals("BackboneElement") || (element.isExtended() && element.hasChildElements())) {
-            extendedElement = GeneratorUtils.populateExtendedElement(element, BallerinaDataType.Record, elementDataType,
+            markConstrainedElements(element);
+            extendedElement = GeneratorUtils.getInstance().populateExtendedElement(element, BallerinaDataType.Record, elementDataType,
                     this.resourceTemplateContextInstance.getResourceName());
             extendedElement.setElements(element.getChildElements());
 
@@ -434,7 +437,8 @@ public class ResourceContextGenerator {
             if (element.hasChildElements()) {
                 HashMap<String, AnnotationElement> childElementAnnotations = new HashMap<>();
                 for (Element subElement : element.getChildElements().values()) {
-                    AnnotationElement annotationElement = GeneratorUtils.populateAnnotationElement(subElement);
+                    markConstrainedElements(subElement);
+                    AnnotationElement annotationElement = GeneratorUtils.getInstance().populateAnnotationElement(subElement);
                     childElementAnnotations.put(annotationElement.getName(), annotationElement);
                 }
                 annotation.setElements(childElementAnnotations);
@@ -445,7 +449,6 @@ public class ResourceContextGenerator {
         }
         LOG.debug("Ended: Resource Extended Element validation");
     }
-
 
     private void putExtendedElementIfAbsent(Element element, ExtendedElement extendedElement) {
         if (extendedElement != null) {
@@ -480,33 +483,10 @@ public class ResourceContextGenerator {
 
     private void populateResourceElementAnnotationsMap(Element element) {
         LOG.debug("Started: Resource Element Annotation Map population");
-        AnnotationElement annotationElement = GeneratorUtils.populateAnnotationElement(element);
+        AnnotationElement annotationElement = GeneratorUtils.getInstance().populateAnnotationElement(element);
         this.resourceTemplateContextInstance.getResourceDefinitionAnnotation().getElements().put(element.getName(), annotationElement);
         this.resourceTemplateContextInstance.getResourceDefinitionAnnotation().getElements().put(annotationElement.getName(), annotationElement);
         LOG.debug("Ended: Resource Element Annotation Map population");
-    }
-
-
-
-    // write a method to copy an element to new element
-    private Element copyElement(Element element) {
-        Element newElement = new Element();
-        newElement.setName(element.getName());
-        newElement.setDataType(element.getDataType());
-        newElement.setMin(element.getMin());
-        newElement.setMax(element.getMax());
-        newElement.setArray(element.isArray());
-        newElement.setDescription(element.getDescription());
-        newElement.setPath(element.getPath());
-        newElement.setValueSet(element.getValueSet());
-        newElement.setIsSlice(element.isSlice());
-        newElement.setFixedValue(element.getFixedValue());
-        newElement.setSummary(element.getSummary());
-        newElement.setRequirement(element.getRequirement());
-        newElement.setRootElementName(element.getRootElementName());
-        newElement.setExtended(element.isExtended());
-        newElement.setChildElements(element.getChildElements());
-        return newElement;
     }
 
     /**

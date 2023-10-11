@@ -111,7 +111,7 @@ public class AnnotationElement {
     }
 
     public String getDataTypeWithImportPrefix() {
-        return isExtended ? this.dataType : GeneratorUtils.getBalTypeWithImport(this.dataType);
+        return isExtended ? this.dataType : GeneratorUtils.getInstance().getTypeWithImport(this.dataType);
     }
 
     public boolean isExtended() {

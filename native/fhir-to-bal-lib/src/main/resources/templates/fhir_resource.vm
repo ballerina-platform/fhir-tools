@@ -158,7 +158,7 @@ public type $util.resolveSpecialCharacters($extendedElement.getTypeName()) recor
     }
 #end
 #if($childElement.hasFixedValue())
-    #if(!$dataTypes.contains($childElement.getDataType()))${importIdentifier}#end$util.resolveSpecialCharacters($childElement.getDataType())#if($childElement.isArray())[]#end $util.resolveSpecialCharacters($util.resolveKeywordConflict($childElement.getName()))#if(!$childElement.isRequired())?#end = #if($childElement.isArray())[#end#foreach($value in $childElement.getFixedValue())"$value"#if($foreach.count != $childElement.getFixedValue().size()),#end#end#if($childElement.isArray())]#end;
+    #if(!$dataTypes.contains($childElement.getDataType()))${importIdentifier}#end$util.resolveSpecialCharacters($childElement.getDataType())#if($childElement.isArray())[]#end $util.resolveSpecialCharacters($util.resolveKeywordConflict($childElement.getName()))#if(!$childElement.isRequired())?#end = #if($childElement.isArray())[#end#foreach($value in $childElement.getFixedValue())$util.getTypedValue($value, $childElement.getDataType())#if($foreach.count != $childElement.getFixedValue().size()),#end#end#if($childElement.isArray())]#end;
 #else
     #if(!$dataTypes.contains($childElement.getDataType()))${importIdentifier}#end$util.resolveSpecialCharacters($childElement.getDataType())#if($childElement.isArray())[]#end $util.resolveSpecialCharacters($util.resolveKeywordConflict($childElement.getName()))#if(!$childElement.isRequired())?#end;
 #end

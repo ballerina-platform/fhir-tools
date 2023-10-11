@@ -28,6 +28,7 @@ import org.wso2.healthcare.fhir.ballerina.packagegen.tool.config.BallerinaPackag
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.DatatypeTemplateContext;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.PackageTemplateContext;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.CommonUtil;
+import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.GeneratorUtils;
 
 import java.io.File;
 import java.util.Collections;
@@ -55,15 +56,17 @@ public class DatatypeTemplateGenerator extends AbstractFHIRTemplateGenerator {
         if (datatypeContexts == null) {
             throw new CodeGenException("Datatype context is not available.");
         }
-        PackageTemplateContext packageTemplateContext =
-                (PackageTemplateContext) generatorProperties.get("packageContext");
+        PackageTemplateContext packageTemplateContext = (PackageTemplateContext) generatorProperties.get("packageContext");
         List<String> importList = Collections.singletonList(packageTemplateContext.getBasePackageName());
         TemplateContext templateContext = this.getNewTemplateContext();
+        templateContext.setProperty("util", GeneratorUtils.getInstance());
         templateContext.setProperty("datatypeContext", datatypeContexts);
         templateContext.setProperty("imports", importList);
-        String filePath = CommonUtil.generateFilePath(packagePath, "", "datatypes.bal");
 
-        this.getTemplateEngine().generateOutputAsFile(ToolConstants.TEMPLATE_PATH +
-                File.separator + "fhir_extended_datatypes.vm", templateContext, "", filePath);
+        if (!datatypeContexts.isEmpty()) {
+            String filePath = CommonUtil.generateFilePath(packagePath, "", "datatypes.bal");
+            this.getTemplateEngine().generateOutputAsFile(ToolConstants.TEMPLATE_PATH +
+                    File.separator + "fhir_extended_datatypes.vm", templateContext, "", filePath);
+        }
     }
 }

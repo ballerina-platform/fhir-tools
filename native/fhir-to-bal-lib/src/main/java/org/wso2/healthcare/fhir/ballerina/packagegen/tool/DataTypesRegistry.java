@@ -17,6 +17,7 @@
  */
 package org.wso2.healthcare.fhir.ballerina.packagegen.tool;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,7 +29,7 @@ public class DataTypesRegistry {
     private final Set<String> dataTypesRegistry;
 
     private DataTypesRegistry() {
-        dataTypesRegistry = new HashSet<>();
+        dataTypesRegistry = new HashSet<>(Arrays.asList("boolean", "string", "decimal"));
     }
 
     public static DataTypesRegistry getInstance() {

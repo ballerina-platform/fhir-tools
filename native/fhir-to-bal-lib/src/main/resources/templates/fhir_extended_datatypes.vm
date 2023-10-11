@@ -24,7 +24,7 @@ import $import;
 #end
 
 #foreach ($mapEntry in $datatypeContext.entrySet())
-@r4:DataTypeDefinition {
+@${util.getBasePackageIdentifier()}DataTypeDefinition {
     name: "${mapEntry.value.annotation.name}",
     baseType: (),
     elements: {
@@ -44,34 +44,33 @@ import $import;
     #end
     },
     serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
+        'xml: ${util.getBasePackageIdentifier()}complexDataTypeXMLSerializer,
+        'json: ${util.getBasePackageIdentifier()}complexDataTypeJsonSerializer
     }
 }
 public type ${mapEntry.value.name} record {|
+#if($util.isTypeInclusion($mapEntry.value.baseDataType))
+    *$util.getTypeWithImport($mapEntry.value.baseDataType);
 
-    *r4:${mapEntry.value.baseDataType};
+#end
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
     string id?;
-    r4:Extension[] extension?;
+    ${util.getBasePackageIdentifier()}Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    #foreach ($elementMapEntry in ${mapEntry.value.elements.entrySet()})
-#if($elementMapEntry)
-${elementMapEntry.value.getTypeWithImportPrefix()}#if($elementMapEntry.value.isArray())[]#end ${elementMapEntry.value.name}#if(!$elementMapEntry.value.isRequired())?#end;
+#foreach ($elementMapEntry in ${mapEntry.value.elements.entrySet()})
+#if($elementMapEntry && $elementMapEntry.value.max != 0)
+    ${util.getTypeWithImport($util.mapToValueSetDatatype($mapEntry.value.baseDataType, $elementMapEntry.value.name, $elementMapEntry.value.dataType))}#if($elementMapEntry.value.isArray())[]#end ${elementMapEntry.value.name}#if(!$elementMapEntry.value.isRequired())?#end;
 #end
-    #end
-
+#end
 |};
 
 #foreach ($elementMapEntry in ${mapEntry.value.extendedElements.entrySet()})
 #if($elementMapEntry.value.getBalDataType().getType() == 'enum')
 public enum $elementMapEntry.value.typeName {
-    #foreach ($childElementMapEntry in ${elementMapEntry.value.elements.entrySet()})
-        CODE_${elementMapEntry.value.typeName.toUpperCase()}_${childElementMapEntry.key.toUpperCase()} = "$childElementMapEntry.key"#if($velocityCount != $elementMapEntry.value.elements.entrySet().size()),#end
-
-    #end
-
-};
+#foreach ($childElementMapEntry in ${elementMapEntry.value.elements.entrySet()})
+    CODE_${elementMapEntry.value.typeName.toUpperCase()}_${childElementMapEntry.key.toUpperCase()} = "$childElementMapEntry.key"#if($velocityCount != $elementMapEntry.value.elements.entrySet().size()),$util.getNewLine()#end
+#end
+$util.getNewLine()};
 
 #end
 #end

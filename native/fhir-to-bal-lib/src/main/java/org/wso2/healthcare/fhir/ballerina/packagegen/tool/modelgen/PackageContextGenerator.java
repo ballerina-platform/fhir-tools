@@ -30,6 +30,7 @@ import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.PackageTemplateC
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.SearchParameter;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRImplementationGuide;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRSearchParamDef;
+import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.GeneratorUtils;
 
 import java.util.*;
 
@@ -40,14 +41,13 @@ public class PackageContextGenerator {
 
     private static final Log LOG = LogFactory.getLog(PackageContextGenerator.class);
     private final BallerinaPackageGenToolConfig toolConfig;
-    private final Set<String> dataTypesRegistry;
     private PackageTemplateContext packageContext;
 
     public PackageContextGenerator(BallerinaPackageGenToolConfig config,
                                    Map<String, FHIRImplementationGuide> igEntries, SpecificationData specificationData) {
         LOG.debug("Package Context Generator Initiated");
         this.toolConfig = config;
-        this.dataTypesRegistry = new HashSet<>();
+        GeneratorUtils.getInstance().setToolConfig(config);
         populatePackageContext(igEntries, (FHIRSpecificationData) specificationData);
     }
 
@@ -55,7 +55,7 @@ public class PackageContextGenerator {
      * Populate package context
      *
      * @param igEntries         available IGs map
-     * @param specificationData
+     * @param specificationData specification data
      */
     private void populatePackageContext(Map<String, FHIRImplementationGuide> igEntries,
                                         FHIRSpecificationData specificationData) {

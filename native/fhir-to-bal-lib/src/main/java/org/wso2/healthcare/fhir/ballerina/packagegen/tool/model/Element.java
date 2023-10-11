@@ -20,7 +20,6 @@ package org.wso2.healthcare.fhir.ballerina.packagegen.tool.model;
 
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.GeneratorUtils;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +68,7 @@ public class Element {
     }
 
     public String getTypeWithImportPrefix() {
-        return isExtended ? this.dataType : GeneratorUtils.getBalTypeWithImport(this.dataType);
+        return isExtended ? this.dataType : GeneratorUtils.getInstance().getTypeWithImport(this.dataType);
     }
 
     public String getName() {
@@ -81,7 +80,7 @@ public class Element {
     }
 
     public boolean hasFixedValue() {
-        return (fixedValue != null && fixedValue.size() > 0);
+        return (fixedValue != null && !fixedValue.isEmpty());
     }
 
     public List<String> getFixedValue() {
@@ -133,7 +132,7 @@ public class Element {
     }
 
     public boolean hasChildElements() {
-        return this.childElements != null && this.childElements.size() > 0;
+        return this.childElements != null && !this.childElements.isEmpty();
     }
 
     public HashMap<String, Element> getChildElements() {

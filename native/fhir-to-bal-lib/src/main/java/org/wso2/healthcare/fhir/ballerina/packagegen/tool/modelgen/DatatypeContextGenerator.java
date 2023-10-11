@@ -21,7 +21,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hl7.fhir.r4.model.ElementDefinition;
-import org.wso2.healthcare.codegen.tool.framework.fhir.core.common.FHIRSpecUtils;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.common.FHIRSpecificationData;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRDataTypeDef;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.ToolConstants;
@@ -33,7 +32,6 @@ import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.Element;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.ExtendedElement;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.CommonUtil;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.GeneratorUtils;
-import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.VelocityUtil;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -48,7 +46,13 @@ public class DatatypeContextGenerator {
     private static final Log LOG = LogFactory.getLog(DatatypeContextGenerator.class);
     private final Map<String, FHIRDataTypeDef> datatypeDefnMap;
     private final Map<String, DatatypeTemplateContext> dataTypeTemplateContextMap;
-    private static final List<String> DEFAULT_DATA_TYPES = Arrays.asList(FHIRSpecUtils.getDefaultBaseDataTypeProfiles());
+    private static final List<String> DEFAULT_DATA_TYPES = Arrays.asList("Ratio", "Period", "Range", "Attachment",
+            "Identifier", "Annotation", "HumanName", "CodeableConcept", "ContactPoint", "Coding", "Money", "Address",
+            "Timing", "BackboneElement", "Quantity", "SampledData", "Signature", "Age", "Distance", "Duration", "Count",
+            "MoneyQuantity", "SimpleQuantity", "ContactDetail", "Contributor", "DataRequirement", "RelatedArtifact",
+            "Element", "UsageContext", "ParameterDefinition", "Expression", "TriggerDefinition", "Reference", "Meta",
+            "Dosage", "xhtml", "ElementDefinition", "Extension", "Narrative", "ProdCharacteristic", "Population", "SubstanceAmount"
+    );
 
     public DatatypeContextGenerator(FHIRSpecificationData fhirSpecificationData) {
         this.datatypeDefnMap = fhirSpecificationData.getDataTypes();
@@ -65,18 +69,16 @@ public class DatatypeContextGenerator {
     }
 
     private void populateDatatypeContext() {
-        VelocityUtil velocityUtil = new VelocityUtil();
         for (Map.Entry<String, FHIRDataTypeDef> datatypeDefnEntry : datatypeDefnMap.entrySet()) {
             FHIRDataTypeDef datatypeDefn = datatypeDefnEntry.getValue();
-            String datatypeName = datatypeDefn.getDefinition().getName();
-            if (DEFAULT_DATA_TYPES.contains(datatypeName + ".profile.json")) {
+            if (DEFAULT_DATA_TYPES.contains(datatypeDefn.getDefinition().getName())) {
                 continue;
             }
             DatatypeTemplateContext context = new DatatypeTemplateContext();
-            context.setName(datatypeName);
+            context.setName(GeneratorUtils.getInstance().getUniqueIdentifierFromId(datatypeDefn.getDefinition().getId()));
             context.setBaseDataType(datatypeDefn.getDefinition().getType());
             DataTypeDefinitionAnnotation annotation = new DataTypeDefinitionAnnotation();
-            annotation.setName(datatypeName);
+            annotation.setName(datatypeDefn.getDefinition().getName());
             context.setAnnotation(annotation);
             for (ElementDefinition elementDefinition : datatypeDefn.getDefinition().getSnapshot().getElement()) {
                 if (elementDefinition.getPath().contains(".")) {
@@ -86,12 +88,12 @@ public class DatatypeContextGenerator {
                         continue;
                     }
                     Element element = new Element();
-                    element.setMax(CommonUtil.convertFhirElemMaxToBal(elementDefinition.getMax()));
-                    element.setMin(String.valueOf(elementDefinition.getMin()));
+                    element.setMax(GeneratorUtils.getMaxCardinality(elementDefinition.getMax()));
+                    element.setMin(elementDefinition.getMin());
                     element.setArray(!elementDefinition.getMax().equals("0") && !elementDefinition.getMax().equals("1"));
                     String typeCode = elementDefinition.getType().get(0).getCode();
-                    if (GeneratorUtils.shouldReplacedByBalType(typeCode)) {
-                        element.setDataType(GeneratorUtils.resolveDataType(typeCode));
+                    if (GeneratorUtils.getInstance().shouldReplacedByBalType(typeCode)) {
+                        element.setDataType(GeneratorUtils.getInstance().resolveDataType(typeCode));
                     } else {
                         element.setDataType(typeCode);
                     }
@@ -101,14 +103,13 @@ public class DatatypeContextGenerator {
                     } else if ("code".equals(typeCode)) {
                         GeneratorUtils.populateCodeValuesForCodeElements(elementDefinition, element);
                     }
-                    element.setName(velocityUtil.resolveMultiDataTypeFieldNames(elementName, typeCode));
+                    element.setName(GeneratorUtils.getInstance().resolveMultiDataTypeFieldNames(elementName, typeCode));
                     element.setDescription(CommonUtil.parseMultilineString(elementDefinition.getDefinition()));
                     element.setPath(elementDefinition.getPath());
-                    element.setRequired(elementDefinition.getMin() > 0);
                     //populate extended elements
                     populateExtendedElementsMap(element, context);
                     //populate annotations
-                    AnnotationElement annotationElement = GeneratorUtils.populateAnnotationElement(element);
+                    AnnotationElement annotationElement = GeneratorUtils.getInstance().populateAnnotationElement(element);
                     annotation.addElement(annotationElement);
                     context.addElement(element);
                 }
@@ -128,7 +129,7 @@ public class DatatypeContextGenerator {
             ExtendedElement extendedElement;
             String elementDataType = element.getDataType();
             if (elementDataType.equals("code") && element.hasChildElements()) {
-                extendedElement = GeneratorUtils.populateExtendedElement(element, BallerinaDataType.Enum, elementDataType,
+                extendedElement = GeneratorUtils.getInstance().populateExtendedElement(element, BallerinaDataType.Enum, elementDataType,
                         context.getName());
                 context.getExtendedElements().putIfAbsent(extendedElement.getTypeName(), extendedElement);
                 element.setName(extendedElement.getTypeName());
