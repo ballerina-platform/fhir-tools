@@ -78,7 +78,7 @@ public class BallerinaProjectGenerator extends AbstractFHIRTemplateGenerator {
             projectProperties.put("servicePackageImportIdentifier", servicePackage.substring(servicePackage.lastIndexOf(".") + 1));
             projectProperties.put("igPackageImportIdentifier", igPackage.substring(igPackage.lastIndexOf(".") + 1));
             projectProperties.put("resourcePackageImportIdentifier", resourcePackage.substring(resourcePackage.lastIndexOf(".") + 1));
-            projectProperties.put("projectAPIPath", this.getTargetDir() + entry.getKey().toLowerCase() + BallerinaProjectConstants.PROJECT_API_SUFFIX);
+            projectProperties.put("projectAPIPath", this.getTargetDir() + entry.getKey().toLowerCase());
 
             ServiceGenerator balServiceGenerator = new ServiceGenerator(this.getTargetDir());
             balServiceGenerator.generate(toolContext, projectProperties);
@@ -88,9 +88,6 @@ public class BallerinaProjectGenerator extends AbstractFHIRTemplateGenerator {
 
             MetaGenerator metaGenerator = new MetaGenerator(this.getTargetDir());
             metaGenerator.generate(toolContext, projectProperties);
-
-            TestGenerator testGenerator = new TestGenerator(this.getTargetDir());
-            testGenerator.generate(toolContext, projectProperties);
         }
     }
 }

@@ -51,7 +51,7 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
     private final List<InteractionConfig> interactionConfigs = new ArrayList<>();
     private String basePackage;
     private String servicePackage;
-    private String internationalResourcePackage;
+    private String resourcePackage;
 
     @Override
     public void configure(ConfigType<?> configObj) throws CodeGenException {
@@ -61,8 +61,7 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
             this.metadataConfig = new MetadataConfig(jsonConfigObj.getAsJsonObject("package"));
             this.fhirVersion = jsonConfigObj.
                     getAsJsonObject("fhir").getAsJsonPrimitive("version").getAsString();
-            populateIgConfigs(jsonConfigObj.
-                    getAsJsonArray("includedIGs"));
+            populateIgConfigs(jsonConfigObj.getAsJsonArray("includedIGs"));
             populateOperationConfigs(jsonConfigObj.
                     getAsJsonObject("builtIn").getAsJsonArray("operations"));
             populateSearchParamConfigs(jsonConfigObj.
@@ -80,7 +79,7 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
                         .getAsJsonPrimitive("servicePackage").getAsString();
             }
             if (jsonConfigObj.getAsJsonPrimitive("resourcePackage") != null) {
-                this.internationalResourcePackage = jsonConfigObj
+                this.resourcePackage = jsonConfigObj
                         .getAsJsonPrimitive("resourcePackage").getAsString();
             }
         }
@@ -99,6 +98,9 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
                 break;
             case "project.package.namePrefix":
                 this.metadataConfig.setNamePrefix(value.getAsString());
+                break;
+            case "project.package.resourcePackage":
+                this.resourcePackage = value.getAsString();
                 break;
             case "project.package.dependency":
                 addStandaloneDependency(value);
@@ -204,7 +206,7 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
     public String getServicePackage() {
         return servicePackage;
     }
-    public String getInternationalResourcePackage() {
-        return internationalResourcePackage;
+    public String getResourcePackage() {
+        return resourcePackage;
     }
 }

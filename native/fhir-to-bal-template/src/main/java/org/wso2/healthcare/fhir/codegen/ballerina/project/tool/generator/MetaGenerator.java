@@ -41,9 +41,6 @@ public class MetaGenerator extends AbstractFHIRTemplateGenerator {
     public void generate(ToolContext toolContext, Map<String, Object> generatorProperties) throws CodeGenException {
         String directoryPath = generatorProperties.get("projectAPIPath") + File.separator;
         this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
-                File.separator + "configToml.vm", createTemplateContextForMeta(generatorProperties), directoryPath,
-                "Config.toml");
-        this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
                 File.separator + "packageMd.vm", createTemplateContextForMeta(generatorProperties), directoryPath,
                 "Package.md");
         this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +

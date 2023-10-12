@@ -23,15 +23,20 @@ package org.wso2.healthcare.fhir.codegen.ballerina.project.tool;
  */
 public class BallerinaProjectConstants {
     public static final String CONFIG_ENABLE = "enable";
-
-    public static final String CONFIG_TOOL_PROJECT = "project";
     public static final String CONFIG_PROFILE_IG = "implementationGuide";
     public static final String RESOURCE_PATH_TEMPLATES = "template";
-    public static final String TOML_FIELD_CONFIG_PROFILE_IG = "implementation_guide";
-    public static final String TOML_FIELD_TOOLS_CONFIG_PROJECT = "tools.config.project";
-    public static final String GENERATION_DIR = "generated-templates";
     public static final String PROJECT_API_SUFFIX = ".api";
     public static final String BASE_PACKAGE_IMPORT_SUFFIX = "ballerinax/health.fhir.";
     public static final String SERVICE_PACKAGE_IMPORT_SUFFIX = "ballerinax/health.fhir";
     public static final String INTERNATIONAL_PACKAGE_IMPORT_SUFFIX = "ballerinax/health.fhir.r4.international401";
+
+    public static final String READ_METHOD_DESC = "Read the current state of single resource based on its id.";
+    public static final String VREAD_METHOD_DESC = "Read the state of a specific version of a resource based on its id.";
+    public static final String SEARCH_TYPE_METHOD_DESC = "Search for resources based on a set of criteria.";
+    public static final String CREATE_METHOD_DESC = "Create a new resource.";
+    public static final String UPDATE_METHOD_DESC = "Update the current state of a resource completely.";
+    public static final String PATCH_METHOD_DESC = "Update the current state of a resource partially.";
+    public static final String DELETE_METHOD_DESC = "Delete a resource.";
+    public static final String HISTORY_INSTANCE_METHOD_DESC = "Retrieve the update history for a particular resource.";
+    public static final String HISTORY_TYPE_METHOD_DESC = "Retrieve the update history for all resources.";
 }

@@ -84,8 +84,11 @@ public class FhirSubCmd implements BLauncherCmd {
     @CommandLine.Option(names = "--excluded-profile", description = "Profiles to be excluded in the template")
     private String[] excludedProfiles;
 
+    @CommandLine.Option(names = "--resource-package", description = "Resource package name for the templates to be generated")
+    private String resourcePackage;
     @CommandLine.Option(names = "--dependency", converter = JsonTypeConverter.class, description = "custom dependency to be added")
     private JsonElement dependency;
+
 
     @CommandLine.Parameters(description = "Custom arguments")
     private List<String> argList;
@@ -178,6 +181,7 @@ public class FhirSubCmd implements BLauncherCmd {
         argsMap.put("--package-version", packageVersion);
         argsMap.put("--included-profile", includedProfiles);
         argsMap.put("--excluded-profile", excludedProfiles);
+        argsMap.put("--resource-package", resourcePackage);
         argsMap.put("--dependency", dependency);
         getTargetOutputPath();
         //spec path is the last argument

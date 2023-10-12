@@ -95,10 +95,6 @@ public class ResourceMethod extends Function {
     private String resolveContext() {
         String context = this.resourceName;
         switch (this.type) {
-            case "search":
-            case "create": {
-                break;
-            }
             case "read":
             case "update":
             case "patch":
@@ -106,20 +102,20 @@ public class ResourceMethod extends Function {
                 context = context + "/[string id]";
                 break;
             }
-            case "history": {
-                context = context + "/[string id]/_history";
+            case "vread": {
+                context = context + "/[string id]/_history/[string vid]";
+                break;
+            }
+            case "search":
+            case "create": {
                 break;
             }
             case "history-instance": {
-                context = context + "/[string id]/_history/[string vid]";
+                context = context + "/[string id]/_history";
                 break;
             }
             case "history-type": {
                 context = context + "/_history";
-                break;
-            }
-            case "history-system": {
-                context = "/_history";
                 break;
             }
         }

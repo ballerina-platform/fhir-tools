@@ -115,7 +115,6 @@ public class BallerinaProjectTool extends AbstractFHIRTool {
      * Populate Ballerina Service model according to configured IGs and Profiles.
      */
     private void populateBalService() {
-
         for (Map.Entry<String, FHIRImplementationGuide> entry : igMap.entrySet()) {
             String igName = entry.getKey();
             for (Map.Entry<String, FHIRResourceDef> definitionEntry : entry.getValue().getResources().entrySet()) {
@@ -237,9 +236,9 @@ public class BallerinaProjectTool extends AbstractFHIRTool {
             fhirServiceImportStatement = ballerinaProjectToolConfig.getServicePackage();
         }
 
-        if (ballerinaProjectToolConfig.getInternationalResourcePackage() != null &&
-                !ballerinaProjectToolConfig.getInternationalResourcePackage().isEmpty()) {
-            fhirInternationalImportStatement = ballerinaProjectToolConfig.getServicePackage();
+        if (ballerinaProjectToolConfig.getResourcePackage() != null &&
+                !ballerinaProjectToolConfig.getResourcePackage().isEmpty()) {
+            fhirInternationalImportStatement = ballerinaProjectToolConfig.getResourcePackage();
         }
         dependenciesMap.put("basePackage", fhirBaseImportStatement.toLowerCase());
         dependenciesMap.put("servicePackage", fhirServiceImportStatement.toLowerCase());

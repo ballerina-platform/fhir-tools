@@ -9,7 +9,7 @@
             "org": "healthcare",
             "name": "healthcare.fhir",
             "version": "1.0.0",
-            "ballerinaDistribution": "2201.6.0",
+            "ballerinaDistribution": "2201.7.0",
             "authors": [
               "Ballerina"
             ],
@@ -29,7 +29,7 @@
             "org": "healthcare",
             "namePrefix": "health.fhir.templates",
             "version": "1.0.0",
-            "distribution": "2201.6.0",
+            "distribution": "2201.7.0",
             "authors": [
               "Ballerina"
             ],
@@ -41,20 +41,10 @@
           "fhir": {
             "version": "r4"
           },
-          "dependencies": [
-            {
-              "org": "ballerinax",
-              "name": "health.fhir.r4",
-              "version": "4.1.0",
-              "importStatement": "ballerinax/health.fhir.r4"
-            },
-            {
-              "org": "ballerinax",
-              "name": "health.fhirr4",
-              "version": "1.0.8",
-              "importStatement": "ballerinax/health.fhirr4"
-            }
-          ],
+          "basePackage": "ballerinax/health.fhir.r4",
+          "servicePackage": "ballerinax/health.fhirr4",
+          "resourcePackage": "ballerinax/health.fhir.r4.international401",
+          "dependencies": [],
           "builtIn": {
             "operations": [
             ],
@@ -63,6 +53,10 @@
             "interactions": [
               {
                 "name": "read",
+                "enable": true
+              },
+              {
+                "name": "vread",
                 "enable": true
               },
               {
@@ -75,11 +69,23 @@
               },
               {
                 "name": "update",
-                "enable": false
+                "enable": true
+              },
+              {
+                "name": "patch",
+                "enable": true
               },
               {
                 "name": "delete",
-                "enable": false
+                "enable": true
+              },
+              {
+                "name": "history-instance",
+                "enable": true
+              },
+              {
+                "name": "history-type",
+                "enable": true
               }
             ]
           }
