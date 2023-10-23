@@ -20,6 +20,9 @@ package org.wso2.healthcare.fhir.ballerina.packagegen.tool.modelgen;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.healthcare.codegen.tool.framework.commons.core.SpecificationData;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.common.FHIRSpecificationData;
+import org.wso2.healthcare.fhir.ballerina.packagegen.tool.DataTypesRegistry;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.config.BallerinaPackageGenToolConfig;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.config.DependencyConfig;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.IGTemplateContext;
@@ -27,6 +30,7 @@ import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.PackageTemplateC
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.SearchParameter;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRImplementationGuide;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRSearchParamDef;
+import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.GeneratorUtils;
 
 import java.util.*;
 
@@ -37,23 +41,24 @@ public class PackageContextGenerator {
 
     private static final Log LOG = LogFactory.getLog(PackageContextGenerator.class);
     private final BallerinaPackageGenToolConfig toolConfig;
-    private final Set<String> dataTypesRegistry;
     private PackageTemplateContext packageContext;
 
     public PackageContextGenerator(BallerinaPackageGenToolConfig config,
-                                   Map<String, FHIRImplementationGuide> igEntries) {
+                                   Map<String, FHIRImplementationGuide> igEntries, SpecificationData specificationData) {
         LOG.debug("Package Context Generator Initiated");
         this.toolConfig = config;
-        this.dataTypesRegistry = new HashSet<>();
-        populatePackageContext(igEntries);
+        GeneratorUtils.getInstance().setToolConfig(config);
+        populatePackageContext(igEntries, (FHIRSpecificationData) specificationData);
     }
 
     /**
      * Populate package context
      *
-     * @param igEntries   available IGs map
+     * @param igEntries         available IGs map
+     * @param specificationData specification data
      */
-    private void populatePackageContext(Map<String, FHIRImplementationGuide> igEntries) {
+    private void populatePackageContext(Map<String, FHIRImplementationGuide> igEntries,
+                                        FHIRSpecificationData specificationData) {
         LOG.debug("Started: Package Context population");
         for (Map.Entry<String, FHIRImplementationGuide> entry : igEntries.entrySet()) {
             this.packageContext = new PackageTemplateContext();
@@ -81,6 +86,7 @@ public class PackageContextGenerator {
 
             FHIRImplementationGuide implementationGuide = entry.getValue();
 
+            populateDatatypeTemplateContext(specificationData);
             populateResourceTemplateContext(implementationGuide);
             populateIGTemplateContexts(entry.getValue().getName(), implementationGuide);
         }
@@ -95,11 +101,18 @@ public class PackageContextGenerator {
     private void populateResourceTemplateContext(FHIRImplementationGuide ig) {
         LOG.debug("Started: Resource Template Context population");
         ResourceContextGenerator resourceContextGenerator = new ResourceContextGenerator(this.toolConfig, ig,
-                this.dataTypesRegistry);
+                packageContext.getDatatypeTemplateContextMap());
         this.packageContext.setResourceTemplateContextMap(resourceContextGenerator.getResourceTemplateContextMap());
         this.packageContext.setResourceNameTypeMap(resourceContextGenerator.getResourceNameTypeMap());
-        this.packageContext.setDataTypesRegistry(resourceContextGenerator.getDataTypesRegistry());
+        this.packageContext.setDataTypesRegistry(DataTypesRegistry.getInstance().getDataTypesRegistry());
         LOG.debug("Ended: Resource Template Context population");
+    }
+
+    private void populateDatatypeTemplateContext(FHIRSpecificationData specificationData) {
+        LOG.debug("Started: Datatype Template Context population");
+        DatatypeContextGenerator datatypeContextGenerator = new DatatypeContextGenerator(specificationData);
+        this.packageContext.setDatatypeTemplateContextMap(datatypeContextGenerator.getDataTypeTemplateContextMap());
+        LOG.debug("Ended: Datatype Template Context population");
     }
 
     /**

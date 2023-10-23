@@ -18,6 +18,8 @@
 
 package org.wso2.healthcare.fhir.ballerina.packagegen.tool.model;
 
+import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.GeneratorUtils;
+
 /**
  * Model for Ballerina Annotation Element
  */
@@ -31,6 +33,7 @@ public class AnnotationElement {
     private String path;
     private String valueSet;
     private boolean mustSupport;
+    private boolean isExtended;
 
     public String getName() {
         return name;
@@ -105,5 +108,17 @@ public class AnnotationElement {
 
     public void setMustSupport(boolean mustSupport) {
         this.mustSupport = mustSupport;
+    }
+
+    public String getDataTypeWithImportPrefix() {
+        return isExtended ? this.dataType : GeneratorUtils.getInstance().getTypeWithImport(this.dataType);
+    }
+
+    public boolean isExtended() {
+        return isExtended;
+    }
+
+    public void setExtended(boolean extended) {
+        isExtended = extended;
     }
 }

@@ -64,16 +64,11 @@ public class ToolConstants {
     public static final String CONFIG_BALLERINA_KEYWORD_KEYWORD_TOML = "tools.config.ballerina_keyword.keyword";
     public static final String CONFIG_BALLERINA_KEYWORD_REPLACE = "replace";
     public static final String CONFIG_BALLERINA_KEYWORD_REPLACE_TOML = "tools.config.ballerina_keyword.replace";
-
-    public static final String BASE_IG = "international";
     public static final String TEMPLATE_PATH = "templates";
-    public static final String R4_BASE_PATH = "r4base/packages/healthcare.fhir.r4";
-    public static final String GENERATION_DIR = "generated-package";
     public static final String BAL_EXTENSION = ".bal";
     public static final String TOML_EXTENSION = ".toml";
     public static final String MD_EXTENSION = ".md";
     public static final String CONSTRAINTS_LIB_IMPORT = "ballerina/constraint";
-
     public enum TokenPosition {
         BEGIN,
         MIDDLE,
@@ -81,6 +76,5 @@ public class ToolConstants {
     }
 
     public static final String LICENSE_YEAR = "2023";
-
-    public static final String DATA_TYPE_BINDING_NAME = "http://hl7.org/fhir/StructureDefinition/elementdefinition-bindingName";
+    public static final String DATA_TYPE_EXTENSION = "Extension";
 }

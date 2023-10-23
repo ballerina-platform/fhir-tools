@@ -28,7 +28,7 @@ import org.wso2.healthcare.fhir.ballerina.packagegen.tool.config.BallerinaPackag
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.PackageTemplateContext;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.ResourceTemplateContext;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.CommonUtil;
-import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.VelocityUtil;
+import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.GeneratorUtils;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.AbstractFHIRTemplateGenerator;
 
 import java.io.File;
@@ -49,7 +49,6 @@ public class ResourceTemplateGenerator extends AbstractFHIRTemplateGenerator {
 
     private static final Log LOG = LogFactory.getLog(ResourceTemplateGenerator.class);
     private final Map<String, Object> resourceProperties = new HashMap<>();
-    private VelocityUtil velocityUtil;
     private PackageTemplateContext packageTemplateContext;
     private List<ResourceTemplateContext> resourceTemplateContexts;
 
@@ -63,7 +62,6 @@ public class ResourceTemplateGenerator extends AbstractFHIRTemplateGenerator {
         LOG.debug("Started: Resource Templates Generation");
         this.packageTemplateContext = (PackageTemplateContext) generatorProperties.get("packageContext");
         BallerinaPackageGenToolConfig toolConfig = (BallerinaPackageGenToolConfig) generatorProperties.get("toolConfig");
-        velocityUtil = new VelocityUtil(toolConfig);
 
         String packagePath = this.getTargetDir() + File.separator + toolConfig.getPackageConfig().getName();
         this.resourceProperties.put("packagePath", packagePath);
@@ -119,8 +117,8 @@ public class ResourceTemplateGenerator extends AbstractFHIRTemplateGenerator {
     private TemplateContext createTemplateContextForResourceSkeletons(ResourceTemplateContext resourceTemplateContext,
                                                                       PackageTemplateContext packageContext) {
         TemplateContext templateContext = this.getNewTemplateContext();
-        templateContext.setProperty("util", this.velocityUtil);
-        templateContext.setProperty("newline", this.velocityUtil.getNewLine());
+        templateContext.setProperty("util", GeneratorUtils.getInstance());
+        templateContext.setProperty("newline", GeneratorUtils.getInstance().getNewLine());
         templateContext.setProperty("licenseYear", ToolConstants.LICENSE_YEAR);
         templateContext.setProperty("resourceType", resourceTemplateContext.getResourceType());
         templateContext.setProperty("resourceName", resourceTemplateContext.getResourceName());
@@ -131,10 +129,6 @@ public class ResourceTemplateGenerator extends AbstractFHIRTemplateGenerator {
         templateContext.setProperty("sliceElements", resourceTemplateContext.getSliceElements());
         templateContext.setProperty("extendedElements", resourceTemplateContext.getExtendedElements());
         templateContext.setProperty("INT_MAX", Integer.MAX_VALUE);
-
-        packageContext.getDataTypesRegistry().add("boolean");
-        packageContext.getDataTypesRegistry().add("string");
-        packageContext.getDataTypesRegistry().add("decimal");
         templateContext.setProperty("dataTypes", packageContext.getDataTypesRegistry());
 
         templateContext.setProperty("isBasePackage", this.resourceProperties.get("isBasePackage"));
@@ -150,9 +144,7 @@ public class ResourceTemplateGenerator extends AbstractFHIRTemplateGenerator {
                 .filter(d -> d.equals(CONSTRAINTS_LIB_IMPORT))
                 .findFirst();
 
-        if (dependency.isPresent()) {
-            resourceDependencies.add(dependency.get());
-        }
+        dependency.ifPresent(resourceDependencies::add);
         templateContext.setProperty("imports", resourceDependencies);
 
         return templateContext;

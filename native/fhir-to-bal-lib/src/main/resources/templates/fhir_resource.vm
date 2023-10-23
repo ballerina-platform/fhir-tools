@@ -91,7 +91,7 @@ public type $util.resolveSpecialCharacters($resourceName) record {|
        maxLength: $element.getMax()
     }
 #end
-    #if(!$dataTypes.contains($element.getDataType()))${importIdentifier}#end$util.resolveSpecialCharacters($element.getDataType())#if($element.isArray())[]#end $util.resolveKeywordConflict($util.resolveSpecialCharacters($element.getName()))#if(!$element.isRequired())?#end;
+    #foreach($profileEntry in $element.profiles.entrySet())#if(!$dataTypes.contains($profileEntry.value))${importIdentifier}#end$util.resolveSpecialCharacters($profileEntry.value)#if($element.isArray())[]#end#if($velocityCount != $element.profiles.size())|#end#end $util.resolveKeywordConflict($util.resolveSpecialCharacters($element.getName()))#if(!$element.isRequired())?#end;
 #end
     ${importIdentifier}Element ...;
 |};
@@ -158,7 +158,7 @@ public type $util.resolveSpecialCharacters($extendedElement.getTypeName()) recor
     }
 #end
 #if($childElement.hasFixedValue())
-    #if(!$dataTypes.contains($childElement.getDataType()))${importIdentifier}#end$util.resolveSpecialCharacters($childElement.getDataType())#if($childElement.isArray())[]#end $util.resolveSpecialCharacters($util.resolveKeywordConflict($childElement.getName()))#if(!$childElement.isRequired())?#end = #if($childElement.isArray())[#end#foreach($value in $childElement.getFixedValue())"$value"#if($foreach.count != $childElement.getFixedValue().size()),#end#end#if($childElement.isArray())]#end;
+    #if(!$dataTypes.contains($childElement.getDataType()))${importIdentifier}#end$util.resolveSpecialCharacters($childElement.getDataType())#if($childElement.isArray())[]#end $util.resolveSpecialCharacters($util.resolveKeywordConflict($childElement.getName()))#if(!$childElement.isRequired())?#end = #if($childElement.isArray())[#end#foreach($value in $childElement.getFixedValue())$util.getTypedValue($value, $childElement.getDataType())#if($foreach.count != $childElement.getFixedValue().size()),#end#end#if($childElement.isArray())]#end;
 #else
     #if(!$dataTypes.contains($childElement.getDataType()))${importIdentifier}#end$util.resolveSpecialCharacters($childElement.getDataType())#if($childElement.isArray())[]#end $util.resolveSpecialCharacters($util.resolveKeywordConflict($childElement.getName()))#if(!$childElement.isRequired())?#end;
 #end

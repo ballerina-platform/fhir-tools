@@ -18,15 +18,18 @@
 
 package org.wso2.healthcare.fhir.ballerina.packagegen.tool.model;
 
-import java.util.ArrayList;
+import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.GeneratorUtils;
+
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Model for FHIR resource element
  */
 public class Element {
     private String dataType;
+    private Map<String, String> profiles;
     private String name;
     private String path;
     private int min;
@@ -49,6 +52,24 @@ public class Element {
     public void setDataType(String dataType) {
         this.dataType = dataType;
     }
+    public Map<String, String> getProfiles() {
+        return profiles;
+    }
+
+    public void setProfiles(Map<String, String> profiles) {
+        this.profiles = profiles;
+    }
+
+    public void addProfile(String profile, String dataType) {
+        if (this.profiles == null) {
+            this.profiles = new HashMap<>();
+        }
+        this.profiles.putIfAbsent(profile, dataType);
+    }
+
+    public String getTypeWithImportPrefix() {
+        return isExtended ? this.dataType : GeneratorUtils.getInstance().getTypeWithImport(this.dataType);
+    }
 
     public String getName() {
         return name;
@@ -59,7 +80,7 @@ public class Element {
     }
 
     public boolean hasFixedValue() {
-        return (fixedValue != null && fixedValue.size() > 0);
+        return (fixedValue != null && !fixedValue.isEmpty());
     }
 
     public List<String> getFixedValue() {
@@ -111,7 +132,7 @@ public class Element {
     }
 
     public boolean hasChildElements() {
-        return this.childElements != null && this.childElements.size() > 0;
+        return this.childElements != null && !this.childElements.isEmpty();
     }
 
     public HashMap<String, Element> getChildElements() {

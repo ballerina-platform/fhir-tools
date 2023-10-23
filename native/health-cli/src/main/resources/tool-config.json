@@ -9,7 +9,7 @@
             "org": "healthcare",
             "name": "healthcare.fhir",
             "version": "1.0.0",
-            "ballerinaDistribution": "2201.6.0",
+            "ballerinaDistribution": "2201.7.0",
             "authors": [
               "Ballerina"
             ],
@@ -29,7 +29,7 @@
             "org": "healthcare",
             "namePrefix": "health.fhir.templates",
             "version": "1.0.0",
-            "distribution": "2201.6.0",
+            "distribution": "2201.7.0",
             "authors": [
               "Ballerina"
             ],

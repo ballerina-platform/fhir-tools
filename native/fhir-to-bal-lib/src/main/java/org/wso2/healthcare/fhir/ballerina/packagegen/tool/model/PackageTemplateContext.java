@@ -29,6 +29,7 @@ public class PackageTemplateContext {
     private IGTemplateContext igTemplateContext;
     private String basePackageName;
     private Map<String, ResourceTemplateContext> resourceTemplateContextMap;
+    private Map<String, DatatypeTemplateContext> datatypeTemplateContextMap;
     private Map<String, String> resourceNameTypeMap;
     private Set<String> dataTypesRegistry;
     private Map<String, String> dependenciesMap;
@@ -56,6 +57,18 @@ public class PackageTemplateContext {
 
     public void setResourceTemplateContextMap(Map<String, ResourceTemplateContext> resourceTemplateContextMap) {
         this.resourceTemplateContextMap = resourceTemplateContextMap;
+    }
+
+    public Map<String, DatatypeTemplateContext> getDatatypeTemplateContextMap() {
+        return datatypeTemplateContextMap;
+    }
+
+    public void setDatatypeTemplateContextMap(Map<String, DatatypeTemplateContext> datatypeTemplateContextMap) {
+        this.datatypeTemplateContextMap = datatypeTemplateContextMap;
+    }
+
+    public void addDatatypeTemplateContext(String datatypeName, DatatypeTemplateContext context) {
+        this.datatypeTemplateContextMap.putIfAbsent(datatypeName, context);
     }
 
     public Map<String, String> getResourceNameTypeMap() {
