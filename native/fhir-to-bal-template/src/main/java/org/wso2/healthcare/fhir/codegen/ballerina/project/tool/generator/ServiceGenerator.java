@@ -30,6 +30,7 @@ import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.ResourceMet
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,56 +59,53 @@ public class ServiceGenerator extends AbstractFHIRTemplateGenerator {
         HashMap<String, String> dependencies = (HashMap<String, String>) generatorProperties.get("dependencies");
         ballerinaService.addImport(dependencies.get("basePackage"));
         ballerinaService.addImport(dependencies.get("servicePackage"));
-        ballerinaService.addImport(dependencies.get("igPackage"));
+        ballerinaService.addImport(dependencies.get("resourcePackage"));
+
+        String basePackageIdentifier = (String) generatorProperties.get("basePackageImportIdentifier");
+        String httpMethod = "get";
+        String returnType = String.format("%s|%s:FHIRError", resourceName, basePackageIdentifier);
+        ArrayList<String> params;
+        String methodDescription = "";
 
         for (InteractionConfig interactionConfig : ballerinaProjectToolConfig.getInteractionConfigs()) {
-            String httpMethod = "get";
-            String returnType = resourceName;
-            ArrayList<String> params = new ArrayList<>();
-            params.add(String.format("%s:FHIRContext fhirContext", generatorProperties.get(
-                    "basePackageImportIdentifier")));
-            String methodDescription = "";
+            params = new ArrayList<>(Collections.singletonList(String.format("%s:FHIRContext fhirContext", basePackageIdentifier)));
             switch (interactionConfig.getName()) {
-                case "search":
-                    returnType = "Bundle";
-                    methodDescription = "Search the resource type based on some filter criteria";
-                    break;
                 case "read":
-                    methodDescription = "Read the current state of the resource";
+                    methodDescription = BallerinaProjectConstants.READ_METHOD_DESC;
+                    break;
+                case "vread":
+                    methodDescription = BallerinaProjectConstants.VREAD_METHOD_DESC;
+                    break;
+                case "search":
+                    returnType = String.format("%s:%s|%s:FHIRError", basePackageIdentifier, "Bundle", basePackageIdentifier);
+                    methodDescription = BallerinaProjectConstants.SEARCH_TYPE_METHOD_DESC;
                     break;
                 case "create":
                     httpMethod = "post";
-                    params.add(String.format("%s payload", resourceName));
-                    methodDescription = "Create a new resource with a server assigned id";
+                    params.add(String.format("%s %s", resourceName, resourceName.toLowerCase()));
+                    methodDescription = BallerinaProjectConstants.CREATE_METHOD_DESC;
                     break;
                 case "update":
                     httpMethod = "put";
-                    params.add(String.format("%s payload", resourceName));
-                    methodDescription = "Update an existing resource by its id (or create it if it is new)";
+                    params.add(String.format("%s %s", resourceName, resourceName.toLowerCase()));
+                    methodDescription = BallerinaProjectConstants.UPDATE_METHOD_DESC;
                     break;
                 case "patch":
                     httpMethod = "patch";
-                    params.add(String.format("%s payload", resourceName));
-                    methodDescription = "Update an existing resource by posting a set of changes to it";
+                    params.add(String.format("%s patch", "json"));
+                    methodDescription = BallerinaProjectConstants.PATCH_METHOD_DESC;
                     break;
                 case "delete":
                     httpMethod = "delete";
-                    methodDescription = "Delete an existing resource by its id";
-                    break;
-                case "history":
-                    returnType = "Bundle";
-                    methodDescription = "Retrieve the change history for a particular resource";
+                    methodDescription = BallerinaProjectConstants.DELETE_METHOD_DESC;
                     break;
                 case "history-instance":
-                    returnType = "Bundle";
-                    methodDescription = "Retrieve the change history instance for a particular resource";
+                    returnType = String.format("%s:%s|%s:FHIRError", basePackageIdentifier, "Bundle", basePackageIdentifier);
+                    methodDescription = BallerinaProjectConstants.HISTORY_INSTANCE_METHOD_DESC;
                     break;
                 case "history-type":
-                    returnType = "Bundle";
-                    methodDescription = "Retrieve the change history for a particular resource type";
-                    break;
-                case "history-system":
-                    methodDescription = "Retrieve the change history for all resources";
+                    returnType = String.format("%s:%s|%s:FHIRError", basePackageIdentifier, "Bundle", basePackageIdentifier);
+                    methodDescription = BallerinaProjectConstants.HISTORY_TYPE_METHOD_DESC;
                     break;
                 default:
                     break;
@@ -117,18 +115,17 @@ public class ServiceGenerator extends AbstractFHIRTemplateGenerator {
             ballerinaService.addResourceMethod(resourceMethod);
         }
 
-        //todo: validate operations and search parameters against the resource type
         ballerinaService.setOperationConfigs(ballerinaProjectToolConfig.getOperationConfig());
         return ballerinaService;
     }
 
     private TemplateContext createTemplateContextForBalService(Map<String, Object> generatorProperties) {
-
         TemplateContext templateContext = this.getNewTemplateContext();
         BallerinaService ballerinaService = initializeServiceWithDefaults(generatorProperties);
         templateContext.setProperty("service", ballerinaService);
         templateContext.setProperty("basePackageImportIdentifier", generatorProperties.get("basePackageImportIdentifier"));
         templateContext.setProperty("servicePackageImportIdentifier", generatorProperties.get("servicePackageImportIdentifier"));
+        templateContext.setProperty("resourcePackageImportIdentifier", generatorProperties.get("resourcePackageImportIdentifier"));
         return templateContext;
     }
 }

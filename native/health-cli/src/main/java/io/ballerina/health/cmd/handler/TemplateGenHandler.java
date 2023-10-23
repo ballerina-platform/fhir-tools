@@ -46,6 +46,7 @@ public class TemplateGenHandler implements Handler {
     private String packageName;
     private String orgName;
     private String version;
+    private String resourcePackage;
 
     private String[] includedProfiles;
     private String[] excludedProfiles;
@@ -77,6 +78,7 @@ public class TemplateGenHandler implements Handler {
         this.packageName = (String) argsMap.get("--package-name");
         this.orgName = (String) argsMap.get("--org-name");
         this.version = (String) argsMap.get("--package-version");
+        this.resourcePackage = (String) argsMap.get("--resource-package");
         if (argsMap.get("--dependency") != null) {
             this.dependency = (JsonElement) argsMap.get("--dependency");
         }
@@ -131,6 +133,10 @@ public class TemplateGenHandler implements Handler {
                 }
                 if (dependency != null) {
                     toolConfigInstance.overrideConfig("project.package.dependency", dependency);
+                }
+                if (resourcePackage != null) {
+                    JsonElement overrideConfig = new Gson().toJsonTree(resourcePackage);
+                    toolConfigInstance.overrideConfig("project.package.resourcePackage", overrideConfig);
                 }
                 toolConfigInstance.overrideConfig("project.package.igConfig", populateIGConfig(
                                 HealthCmdConstants.CMD_DEFAULT_IG_NAME,
