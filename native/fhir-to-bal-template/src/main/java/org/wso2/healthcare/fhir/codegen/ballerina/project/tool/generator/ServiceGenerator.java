@@ -54,67 +54,11 @@ public class ServiceGenerator extends AbstractFHIRTemplateGenerator {
     private BallerinaService initializeServiceWithDefaults(Map<String, Object> generatorProperties) {
 
         BallerinaProjectToolConfig ballerinaProjectToolConfig = (BallerinaProjectToolConfig) generatorProperties.get("config");
-        String resourceName = ((String) generatorProperties.get("resourceType"));
         BallerinaService ballerinaService = (BallerinaService) generatorProperties.get("service");
         HashMap<String, String> dependencies = (HashMap<String, String>) generatorProperties.get("dependencies");
         ballerinaService.addImport(dependencies.get("basePackage"));
         ballerinaService.addImport(dependencies.get("servicePackage"));
         ballerinaService.addImport(dependencies.get("resourcePackage"));
-
-        String basePackageIdentifier = (String) generatorProperties.get("basePackageImportIdentifier");
-        String httpMethod = "get";
-        String returnType = String.format("%s|%s:FHIRError", resourceName, basePackageIdentifier);
-        ArrayList<String> params;
-        String methodDescription = "";
-
-        for (InteractionConfig interactionConfig : ballerinaProjectToolConfig.getInteractionConfigs()) {
-            params = new ArrayList<>(Collections.singletonList(String.format("%s:FHIRContext fhirContext", basePackageIdentifier)));
-            switch (interactionConfig.getName()) {
-                case "read":
-                    methodDescription = BallerinaProjectConstants.READ_METHOD_DESC;
-                    break;
-                case "vread":
-                    methodDescription = BallerinaProjectConstants.VREAD_METHOD_DESC;
-                    break;
-                case "search":
-                    returnType = String.format("%s:%s|%s:FHIRError", basePackageIdentifier, "Bundle", basePackageIdentifier);
-                    methodDescription = BallerinaProjectConstants.SEARCH_TYPE_METHOD_DESC;
-                    break;
-                case "create":
-                    httpMethod = "post";
-                    params.add(String.format("%s %s", resourceName, resourceName.toLowerCase()));
-                    methodDescription = BallerinaProjectConstants.CREATE_METHOD_DESC;
-                    break;
-                case "update":
-                    httpMethod = "put";
-                    params.add(String.format("%s %s", resourceName, resourceName.toLowerCase()));
-                    methodDescription = BallerinaProjectConstants.UPDATE_METHOD_DESC;
-                    break;
-                case "patch":
-                    httpMethod = "patch";
-                    params.add(String.format("%s patch", "json"));
-                    methodDescription = BallerinaProjectConstants.PATCH_METHOD_DESC;
-                    break;
-                case "delete":
-                    httpMethod = "delete";
-                    methodDescription = BallerinaProjectConstants.DELETE_METHOD_DESC;
-                    break;
-                case "history-instance":
-                    returnType = String.format("%s:%s|%s:FHIRError", basePackageIdentifier, "Bundle", basePackageIdentifier);
-                    methodDescription = BallerinaProjectConstants.HISTORY_INSTANCE_METHOD_DESC;
-                    break;
-                case "history-type":
-                    returnType = String.format("%s:%s|%s:FHIRError", basePackageIdentifier, "Bundle", basePackageIdentifier);
-                    methodDescription = BallerinaProjectConstants.HISTORY_TYPE_METHOD_DESC;
-                    break;
-                default:
-                    break;
-            }
-            ResourceMethod resourceMethod = new ResourceMethod(interactionConfig.getName(), resourceName, params, httpMethod,
-                    returnType, methodDescription);
-            ballerinaService.addResourceMethod(resourceMethod);
-        }
-
         ballerinaService.setOperationConfigs(ballerinaProjectToolConfig.getOperationConfig());
         return ballerinaService;
     }

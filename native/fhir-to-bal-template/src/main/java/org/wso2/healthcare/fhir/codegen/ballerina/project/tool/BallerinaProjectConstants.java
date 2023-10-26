@@ -30,13 +30,4 @@ public class BallerinaProjectConstants {
     public static final String SERVICE_PACKAGE_IMPORT_SUFFIX = "ballerinax/health.fhir";
     public static final String INTERNATIONAL_PACKAGE_IMPORT_SUFFIX = "ballerinax/health.fhir.r4.international401";
 
-    public static final String READ_METHOD_DESC = "Read the current state of single resource based on its id.";
-    public static final String VREAD_METHOD_DESC = "Read the state of a specific version of a resource based on its id.";
-    public static final String SEARCH_TYPE_METHOD_DESC = "Search for resources based on a set of criteria.";
-    public static final String CREATE_METHOD_DESC = "Create a new resource.";
-    public static final String UPDATE_METHOD_DESC = "Update the current state of a resource completely.";
-    public static final String PATCH_METHOD_DESC = "Update the current state of a resource partially.";
-    public static final String DELETE_METHOD_DESC = "Delete a resource.";
-    public static final String HISTORY_INSTANCE_METHOD_DESC = "Retrieve the update history for a particular resource.";
-    public static final String HISTORY_TYPE_METHOD_DESC = "Retrieve the update history for all resources.";
 }

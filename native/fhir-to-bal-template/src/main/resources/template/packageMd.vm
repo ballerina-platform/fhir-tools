@@ -1,18 +1,15 @@
-
 #set ( $single_hash = '#' )
 #set ( $double_hash = '##' )
 #set ( $triple_hash = '###' )
 #set ( $underscore = '_' )
-
 ${single_hash} $service.getName() Template
 
 ${double_hash} Template Overview
 
 This template provides a boilerplate code for rapid implementation of FHIR APIs and creating, accessing and manipulating FHIR resources.
 
-
 | Module/Element       | Version |
-|---| --- |
+| -------------------- | ------- |
 | FHIR version         | $service.getFhirVersion() |
 | Implementation Guide | #**##foreach($ig in $igURLs)[$ig]($ig)#if($foreach.hasNext), #end#end |
 | Profile URL          |#**##foreach($profile in $profileURLs)[$profile]($profile)#if($foreach.hasNext), #end#end|
@@ -23,22 +20,20 @@ ${double_hash}# Dependency List
 - $config.getServicePackage()
 - $config.getResourcePackage()
 
-This template includes,
-
-- Ballerina service for ${service.getName()} FHIR resource with following FHIR interactions.
+This template includes a Ballerina service for ${service.getName()} FHIR resource with following FHIR interactions.
 #**##foreach($config in $config.getInteractionConfigs())#if($config.isEnabled())
 - $config.getNameUppercase()
 #**##end
 #**##end
-- Generated Utility functions to handle context data
 
 ${double_hash} Prerequisites
 
 Pull the template from central
 
-    ` bal new -t ballerinax/$templateName $apiName `
+    ` bal new -t $metaConfig.getOrg()/$templateName $apiName `
 
 ${double_hash} Run the template
+
 - Run the Ballerina project created by the service template by executing bal run from the root.
 - Once successfully executed, Listener will be started at port 9090. Then you need to invoke the service using the following curl command
     ` $ curl http://localhost:9090/fhir/r4/$service.getName() `
