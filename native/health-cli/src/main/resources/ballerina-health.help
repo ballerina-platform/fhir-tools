@@ -52,8 +52,6 @@ COMMANDS
                         Package name can be explicitly set using this argument.
                         Unless specified, default name of the implementation
                         guide will be taken to construct the name of the package.
-                        For the template mode, this value will be added as a prefix
-                        to the template name.
                         Refer https://ballerina.io/learn/package-references/#the-name-field
                     --org-name <org-name-of-the-package>
                         Organization name of the Ballerina package/template to be generated.
@@ -73,6 +71,11 @@ COMMANDS
                         generating templates, specify the profile URL
                         as the value of this parameter.
                         This argument can be used more than once.
+                    --ig-package <ig-resource-package-used-for-template>
+                        Fully qualified name of the Ballerina package containing IG resources.
+                        This option can be used to generate templates specifically for the
+                        resources in the given IG. The package name part of this value will be added
+                        as a prefix to the template name.
 
             EXAMPLES
                     Generate a Ballerina package for the FHIR artifacts of USCore
@@ -80,21 +83,21 @@ COMMANDS
                         $ bal health fhir -m package --package-name uscore401 \
                         ./path_to_uscore_definitions
 
-                    Generate Ballerina package for the FHIR artifacts of
+                    Generate a Ballerina package for the FHIR artifacts of
                     USCore implementation guide and write the output
                     to the given directory.
                         $ bal health fhir -m package --package-name uscore401 \
                         -o ./output_path ./path_to_uscore_definitions
 
-                    Generate a Ballerina templates for all the FHIR resource profiles
+                    Generate Ballerina templates for all the FHIR resource profiles
                     of USCore implementation guide.
-                        $ bal health fhir -m template --package-name uscore401 \
+                        $ bal health fhir -m template --ig-package ballerinax/health.fhir.r4.uscore501 \
                         ./path_to_uscore_definitions
 
-                    Generate a Ballerina templates for all the FHIR resource profiles
+                    Generate Ballerina templates for all the FHIR resource profiles
                     of USCore implementation guide with a custom dependency.
 
-                        $ bal health fhir -m package --package-name uscore401 \
+                        $ bal health fhir -m template --ig-package ballerinax/health.fhir.r4.uscore501 \
                         --dependency "{"org":"health","name":"fhir.r5","version":"1.0.0"}"
                         -o ./output_path ./path_to_uscore_definitions
 

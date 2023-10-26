@@ -27,7 +27,7 @@
           "enable": true,
           "package": {
             "org": "healthcare",
-            "namePrefix": "health.fhir.templates",
+            "namePrefix": "health.fhir.r4.international401",
             "version": "1.0.0",
             "distribution": "2201.7.0",
             "authors": [

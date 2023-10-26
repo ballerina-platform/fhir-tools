@@ -78,12 +78,12 @@ public class TemplateGenHandler implements Handler {
         this.packageName = (String) argsMap.get("--package-name");
         this.orgName = (String) argsMap.get("--org-name");
         this.version = (String) argsMap.get("--package-version");
-        this.resourcePackage = (String) argsMap.get("--resource-package");
+        this.resourcePackage = (String) argsMap.get("--ig-package");
         if (argsMap.get("--dependency") != null) {
             this.dependency = (JsonElement) argsMap.get("--dependency");
         }
-        this.includedProfiles = (String[]) argsMap.get("--included-profiles");
-        this.excludedProfiles = (String[]) argsMap.get("--excluded-profiles");
+        this.includedProfiles = (String[]) argsMap.get("--included-profile");
+        this.excludedProfiles = (String[]) argsMap.get("--excluded-profile");
     }
 
     @Override
@@ -119,10 +119,6 @@ public class TemplateGenHandler implements Handler {
                         toolExecConfig.getAsJsonObject().getAsJsonObject("config")));
 
                 //override default configs for package-gen mode with user provided configs
-                if (packageName != null && !packageName.isEmpty()) {
-                    JsonElement overrideConfig = new Gson().toJsonTree(packageName.toLowerCase());
-                    toolConfigInstance.overrideConfig("project.package.namePrefix", overrideConfig);
-                }
                 if (orgName != null && !orgName.isEmpty()) {
                     JsonElement overrideConfig = new Gson().toJsonTree(orgName.toLowerCase());
                     toolConfigInstance.overrideConfig("project.package.org", overrideConfig);
@@ -136,7 +132,10 @@ public class TemplateGenHandler implements Handler {
                 }
                 if (resourcePackage != null) {
                     JsonElement overrideConfig = new Gson().toJsonTree(resourcePackage);
+                    JsonElement nameConfig =
+                            new Gson().toJsonTree(resourcePackage.substring(resourcePackage.lastIndexOf('/') + 1));
                     toolConfigInstance.overrideConfig("project.package.resourcePackage", overrideConfig);
+                    toolConfigInstance.overrideConfig("project.package.namePrefix", nameConfig);
                 }
                 toolConfigInstance.overrideConfig("project.package.igConfig", populateIGConfig(
                                 HealthCmdConstants.CMD_DEFAULT_IG_NAME,

@@ -43,7 +43,7 @@ public class MetadataConfig {
             authors.add(authorElem.getAsString());
         }
         for (JsonElement authorElem : packageConfig.getAsJsonArray("keywords").getAsJsonArray()) {
-            authors.add(authorElem.getAsString());
+            keywords.add(authorElem.getAsString());
         }
     }
 
