@@ -44,6 +44,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.LogManager;
 
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_MODE_TEMPLATE;
+
 @CommandLine.Command(name = "fhir", description = "Generates Ballerina service/client for FHIR contract " +
         "for Ballerina service.")
 public class FhirSubCmd implements BLauncherCmd {
@@ -143,8 +145,11 @@ public class FhirSubCmd implements BLauncherCmd {
             HealthCmdUtils.exitError(exitWhenFinish);
         }
         if (this.engageSubCommand(argList)) {
-            printStream.println("Ballerina FHIR package generation completed successfully. Generated " +
-                    mode + " can be found at " + targetOutputPath);
+            if (CMD_MODE_TEMPLATE.equals(mode)) {
+                printStream.println("Ballerina FHIR API templates generation completed successfully. Generated templates can be found at " + targetOutputPath);
+            } else {
+                printStream.println("Ballerina FHIR package generation completed successfully. Generated package can be found at " + targetOutputPath);
+            }
         } else {
             printStream.println("Invalid mode received for FHIR tool command.");
             printStream.println("Try bal health --help for more information.");
