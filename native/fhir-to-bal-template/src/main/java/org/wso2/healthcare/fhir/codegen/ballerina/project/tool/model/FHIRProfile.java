@@ -130,6 +130,12 @@ public class FHIRProfile {
     }
 
     public void setPackagePrefix(BallerinaProjectToolConfig config) {
-        this.packagePrefix = config.getResourcePackage().substring(config.getResourcePackage().lastIndexOf(".") + 1);
+        String igPackage = config.getResourcePackage();
+        if (igPackage.contains("/")) {
+            String pkgNameWithoutOrg = igPackage.split("/")[1];
+            this.packagePrefix = pkgNameWithoutOrg.substring(pkgNameWithoutOrg.lastIndexOf(".") + 1);
+        } else {
+            this.packagePrefix = igPackage.substring(igPackage.lastIndexOf(".") + 1);
+        }
     }
 }
