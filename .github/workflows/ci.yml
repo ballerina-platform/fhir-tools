@@ -1,0 +1,51 @@
+name: ci
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Checkout codegen framework
+        uses: actions/checkout@v3
+        with:
+          repository: wso2/open-healthcare-codegen-tool-framework
+          path: './open-healthcare-codegen-tool-framework'
+
+      - name: Setup Maven
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - name: Setup Ballerina
+        uses: ballerina-platform/setup-ballerina@v1.1.0
+        with:
+          version: 2201.7.0
+
+      - name: Create settings.xml
+        run: echo '<settings>
+              <servers>
+                <server>
+                  <id>ballerina-language-repo</id>
+                  <username>${{ github.actor }}</username>
+                  <password>${{ secrets.GITHUB_TOKEN }}</password>
+                </server>
+              </servers>
+            </settings>' > ~/.m2/settings.xml
+
+      - name: Build codegen framework
+        run: |
+         mvn clean install -f open-healthcare-codegen-tool-framework/pom.xml
+
+      - name: Run maven build
+        run: |
+         mvn clean install
+   
