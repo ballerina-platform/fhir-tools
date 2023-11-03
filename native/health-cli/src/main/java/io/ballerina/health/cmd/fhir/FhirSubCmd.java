@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.LogManager;
 
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_MODE_PACKAGE;
 import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_MODE_TEMPLATE;
 
 @CommandLine.Command(name = "fhir", description = "Generates Ballerina service/client for FHIR contract " +
@@ -86,10 +87,8 @@ public class FhirSubCmd implements BLauncherCmd {
     @CommandLine.Option(names = "--excluded-profile", description = "Profiles to be excluded in the template")
     private String[] excludedProfiles;
 
-    @CommandLine.Option(names = "--ig-package", description = "Resource package name for the templates to be generated")
-    private String resourcePackage;
-    @CommandLine.Option(names = "--dependency", converter = JsonTypeConverter.class, description = "custom dependency to be added")
-    private JsonElement dependency;
+    @CommandLine.Option(names = "--dependent-package", description = "Dependent package name for the templates to be generated")
+    private String dependentPackage;
 
 
     @CommandLine.Parameters(description = "Custom arguments")
@@ -144,6 +143,18 @@ public class FhirSubCmd implements BLauncherCmd {
             printStream.println("Try bal health --help for more information.");
             HealthCmdUtils.exitError(exitWhenFinish);
         }
+        if (CMD_MODE_PACKAGE.equals(mode) && (packageName == null || packageName.isEmpty())) {
+            // package name is a required param in package mode
+            printStream.println("Package name [--package-name] is required for package generation.");
+            printStream.println("Try bal health --help for more information.");
+            HealthCmdUtils.exitError(exitWhenFinish);
+        }
+        if (CMD_MODE_TEMPLATE.equals(mode) && (dependentPackage == null || dependentPackage.isEmpty())) {
+            // dependent package is a required param in template mode
+            printStream.println("Dependent package [--dependent-package] is required for template generation.");
+            printStream.println("Try bal health --help for more information.");
+            HealthCmdUtils.exitError(exitWhenFinish);
+        }
         if (this.engageSubCommand(argList)) {
             if (CMD_MODE_TEMPLATE.equals(mode)) {
                 printStream.println("Ballerina FHIR API templates generation completed successfully. Generated templates can be found at " + targetOutputPath);
@@ -186,8 +197,7 @@ public class FhirSubCmd implements BLauncherCmd {
         argsMap.put("--package-version", packageVersion);
         argsMap.put("--included-profile", includedProfiles);
         argsMap.put("--excluded-profile", excludedProfiles);
-        argsMap.put("--ig-package", resourcePackage);
-        argsMap.put("--dependency", dependency);
+        argsMap.put("--dependent-package", dependentPackage);
         getTargetOutputPath();
         //spec path is the last argument
         try {

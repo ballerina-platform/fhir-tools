@@ -52,7 +52,6 @@ public class TomlGenerator extends AbstractFHIRTemplateGenerator {
         TemplateContext templateContext = this.getNewTemplateContext();
         BallerinaProjectToolConfig config = (BallerinaProjectToolConfig) generatorProperties.get("config");
         templateContext.setProperty("metaConfig", config.getMetadataConfig());
-        templateContext.setProperty("dependencyList", config.getDependencyConfig());
         templateContext.setProperty("resourceType", generatorProperties.get("resourceType") + "API");
         templateContext.setProperty("templateName", config.getMetadataConfig().getNamePrefix() + "." +
                 generatorProperties.get("resourceType").toString().toLowerCase());

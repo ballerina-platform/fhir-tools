@@ -236,12 +236,12 @@ public class BallerinaProjectTool extends AbstractFHIRTool {
             fhirServiceImportStatement = ballerinaProjectToolConfig.getServicePackage();
         }
 
-        if (ballerinaProjectToolConfig.getResourcePackage() != null &&
-                !ballerinaProjectToolConfig.getResourcePackage().isEmpty()) {
-            fhirInternationalImportStatement = ballerinaProjectToolConfig.getResourcePackage();
+        if (ballerinaProjectToolConfig.getDependentPackage() != null &&
+                !ballerinaProjectToolConfig.getDependentPackage().isEmpty()) {
+            fhirInternationalImportStatement = ballerinaProjectToolConfig.getDependentPackage();
         }
         dependenciesMap.put("basePackage", fhirBaseImportStatement.toLowerCase());
         dependenciesMap.put("servicePackage", fhirServiceImportStatement.toLowerCase());
-        dependenciesMap.put("resourcePackage", fhirInternationalImportStatement.toLowerCase());
+        dependenciesMap.put("dependentPackage", fhirInternationalImportStatement.toLowerCase());
     }
 }

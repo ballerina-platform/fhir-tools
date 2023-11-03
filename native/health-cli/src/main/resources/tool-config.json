@@ -43,7 +43,7 @@
           },
           "basePackage": "ballerinax/health.fhir.r4",
           "servicePackage": "ballerinax/health.fhirr4",
-          "resourcePackage": "ballerinax/health.fhir.r4.international401",
+          "dependentPackage": "ballerinax/health.fhir.r4.international401",
           "dependencies": [],
           "builtIn": {
             "operations": [

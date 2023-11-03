@@ -46,12 +46,10 @@ public class TemplateGenHandler implements Handler {
     private String packageName;
     private String orgName;
     private String version;
-    private String resourcePackage;
+    private String dependentPackage;
 
     private String[] includedProfiles;
     private String[] excludedProfiles;
-
-    private JsonElement dependency;
 
     private JsonObject configJson;
     private PrintStream printStream;
@@ -78,10 +76,7 @@ public class TemplateGenHandler implements Handler {
         this.packageName = (String) argsMap.get("--package-name");
         this.orgName = (String) argsMap.get("--org-name");
         this.version = (String) argsMap.get("--package-version");
-        this.resourcePackage = (String) argsMap.get("--ig-package");
-        if (argsMap.get("--dependency") != null) {
-            this.dependency = (JsonElement) argsMap.get("--dependency");
-        }
+        this.dependentPackage = (String) argsMap.get("--dependent-package");
         this.includedProfiles = (String[]) argsMap.get("--included-profile");
         this.excludedProfiles = (String[]) argsMap.get("--excluded-profile");
     }
@@ -127,14 +122,11 @@ public class TemplateGenHandler implements Handler {
                     JsonElement overrideConfig = new Gson().toJsonTree(version.toLowerCase());
                     toolConfigInstance.overrideConfig("project.package.version", overrideConfig);
                 }
-                if (dependency != null) {
-                    toolConfigInstance.overrideConfig("project.package.dependency", dependency);
-                }
-                if (resourcePackage != null) {
-                    JsonElement overrideConfig = new Gson().toJsonTree(resourcePackage);
+                if (dependentPackage != null) {
+                    JsonElement overrideConfig = new Gson().toJsonTree(dependentPackage);
                     JsonElement nameConfig =
-                            new Gson().toJsonTree(resourcePackage.substring(resourcePackage.lastIndexOf('/') + 1));
-                    toolConfigInstance.overrideConfig("project.package.resourcePackage", overrideConfig);
+                            new Gson().toJsonTree(dependentPackage.substring(dependentPackage.lastIndexOf('/') + 1));
+                    toolConfigInstance.overrideConfig("project.package.dependentPackage", overrideConfig);
                     toolConfigInstance.overrideConfig("project.package.namePrefix", nameConfig);
                 }
                 toolConfigInstance.overrideConfig("project.package.igConfig", populateIGConfig(

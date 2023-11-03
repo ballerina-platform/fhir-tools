@@ -51,7 +51,7 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
     private final List<InteractionConfig> interactionConfigs = new ArrayList<>();
     private String basePackage;
     private String servicePackage;
-    private String resourcePackage;
+    private String dependentPackage;
 
     @Override
     public void configure(ConfigType<?> configObj) throws CodeGenException {
@@ -78,9 +78,9 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
                 this.servicePackage = jsonConfigObj
                         .getAsJsonPrimitive("servicePackage").getAsString();
             }
-            if (jsonConfigObj.getAsJsonPrimitive("resourcePackage") != null) {
-                this.resourcePackage = jsonConfigObj
-                        .getAsJsonPrimitive("resourcePackage").getAsString();
+            if (jsonConfigObj.getAsJsonPrimitive("dependentPackage") != null) {
+                this.dependentPackage = jsonConfigObj
+                        .getAsJsonPrimitive("dependentPackage").getAsString();
             }
         }
         //todo: add toml type config handling
@@ -99,11 +99,8 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
             case "project.package.namePrefix":
                 this.metadataConfig.setNamePrefix(value.getAsString());
                 break;
-            case "project.package.resourcePackage":
-                this.resourcePackage = value.getAsString();
-                break;
-            case "project.package.dependency":
-                addStandaloneDependency(value);
+            case "project.package.dependentPackage":
+                this.dependentPackage = value.getAsString();
                 break;
             case "project.package.igConfig":
                 this.includedIGConfigs.put(
@@ -153,16 +150,6 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
         }
     }
 
-    public void addStandaloneDependency(JsonElement dependency) {
-
-        JsonObject dependencyObj = dependency.getAsJsonObject();
-        String name = dependencyObj.getAsJsonPrimitive("name").getAsString();
-        String orgName = dependencyObj.getAsJsonPrimitive("org").getAsString();
-        String version = dependencyObj.getAsJsonPrimitive("version").getAsString();
-        String importStatement = orgName + "/" + name;
-        dependencyConfigs.add(new DependencyConfig(orgName, name, version, importStatement.toLowerCase()));
-    }
-
     public MetadataConfig getMetadataConfig() {
         return metadataConfig;
     }
@@ -206,7 +193,7 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
     public String getServicePackage() {
         return servicePackage;
     }
-    public String getResourcePackage() {
-        return resourcePackage;
+    public String getDependentPackage() {
+        return dependentPackage;
     }
 }
