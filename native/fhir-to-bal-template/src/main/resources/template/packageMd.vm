@@ -18,7 +18,7 @@ ${double_hash}# Dependency List
 
 - $config.getBasePackage()
 - $config.getServicePackage()
-- $config.getResourcePackage()
+- $config.getDependentPackage()
 
 This template includes a Ballerina service for ${service.getName()} FHIR resource with following FHIR interactions.
 #**##foreach($config in $config.getInteractionConfigs())#if($config.isEnabled())

@@ -58,7 +58,7 @@ public class ServiceGenerator extends AbstractFHIRTemplateGenerator {
         HashMap<String, String> dependencies = (HashMap<String, String>) generatorProperties.get("dependencies");
         ballerinaService.addImport(dependencies.get("basePackage"));
         ballerinaService.addImport(dependencies.get("servicePackage"));
-        ballerinaService.addImport(dependencies.get("resourcePackage"));
+        ballerinaService.addImport(dependencies.get("dependentPackage"));
         ballerinaService.setOperationConfigs(ballerinaProjectToolConfig.getOperationConfig());
         return ballerinaService;
     }
@@ -69,7 +69,7 @@ public class ServiceGenerator extends AbstractFHIRTemplateGenerator {
         templateContext.setProperty("service", ballerinaService);
         templateContext.setProperty("basePackageImportIdentifier", generatorProperties.get("basePackageImportIdentifier"));
         templateContext.setProperty("servicePackageImportIdentifier", generatorProperties.get("servicePackageImportIdentifier"));
-        templateContext.setProperty("resourcePackageImportIdentifier", generatorProperties.get("resourcePackageImportIdentifier"));
+        templateContext.setProperty("dependentPackageImportIdentifier", generatorProperties.get("dependentPackageImportIdentifier"));
         return templateContext;
     }
 }

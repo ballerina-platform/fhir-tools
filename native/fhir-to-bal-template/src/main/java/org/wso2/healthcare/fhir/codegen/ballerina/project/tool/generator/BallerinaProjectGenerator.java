@@ -73,11 +73,11 @@ public class BallerinaProjectGenerator extends AbstractFHIRTemplateGenerator {
             String basePackage = dependenciesMap.get("basePackage");
             String servicePackage = dependenciesMap.get("servicePackage");
             String igPackage = dependenciesMap.get("igPackage");
-            String resourcePackage = dependenciesMap.get("resourcePackage");
+            String dependentPackage = dependenciesMap.get("dependentPackage");
             projectProperties.put("basePackageImportIdentifier", basePackage.substring(basePackage.lastIndexOf(".") + 1));
             projectProperties.put("servicePackageImportIdentifier", servicePackage.substring(servicePackage.lastIndexOf(".") + 1));
             projectProperties.put("igPackageImportIdentifier", igPackage.substring(igPackage.lastIndexOf(".") + 1));
-            projectProperties.put("resourcePackageImportIdentifier", resourcePackage.substring(resourcePackage.lastIndexOf(".") + 1));
+            projectProperties.put("dependentPackageImportIdentifier", dependentPackage.substring(dependentPackage.lastIndexOf(".") + 1));
             projectProperties.put("projectAPIPath", this.getTargetDir() + entry.getKey().toLowerCase());
 
             ServiceGenerator balServiceGenerator = new ServiceGenerator(this.getTargetDir());
