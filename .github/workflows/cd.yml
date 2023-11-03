@@ -1,0 +1,152 @@
+name: cd
+
+on:
+  workflow_dispatch:
+    inputs:
+      bal_central_environment:
+        description: Ballerina Central Environment
+        type: choice
+        options:
+        - STAGE
+        - DEV
+        - PROD
+        required: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+       JAVA_OPTS: -Xmx4G
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Checkout codegen framework
+        uses: actions/checkout@v3
+        with:
+          repository: wso2/open-healthcare-codegen-tool-framework
+          path: './open-healthcare-codegen-tool-framework'
+
+      - name: Setup Java and Maven
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - name: Setup Ballerina
+        uses: ballerina-platform/setup-ballerina@v1.1.0
+        with:
+          version: 2201.7.0
+
+      - name: Create settings.xml
+        run: echo '<settings>
+              <servers>
+                <server>
+                  <id>ballerina-language-repo</id>
+                  <username>${{ github.actor }}</username>
+                  <password>${{ secrets.GITHUB_TOKEN }}</password>
+                </server>
+              </servers>
+            </settings>' > ~/.m2/settings.xml
+
+      - name: Build codegen framework
+        run: |
+         mvn clean install -f open-healthcare-codegen-tool-framework/pom.xml
+         
+      - name: Run maven build
+        run: |
+         mvn clean install
+
+      - name: Push to Staging
+        if: inputs.bal_central_environment == 'STAGE'
+        working-directory: ballerina/target/health-tool-ballerina
+        run: bal push
+        env:
+          BALLERINA_STAGE_CENTRAL: true
+          BALLERINA_CENTRAL_ACCESS_TOKEN: ${{ secrets.BALLERINA_CENTRAL_STAGE_ACCESS_TOKEN }}
+
+      - name: Push to Dev
+        if: inputs.bal_central_environment == 'DEV'
+        working-directory: ballerina/target/health-tool-ballerina
+        run: bal push
+        env:
+          BALLERINA_DEV_CENTRAL: true
+          BALLERINA_CENTRAL_ACCESS_TOKEN: ${{ secrets.BALLERINA_CENTRAL_DEV_ACCESS_TOKEN }}     
+
+      - name: Push to Prod
+        if: inputs.bal_central_environment == 'PROD'
+        working-directory: ballerina/target/health-tool-ballerina
+        run: bal push
+        env:
+          BALLERINA_CENTRAL_ACCESS_TOKEN: ${{ secrets.BALLERINA_CENTRAL_ACCESS_TOKEN }}
+
+      - name: Publish Release
+        if: inputs.bal_central_environment == 'PROD'
+        id: publish_release
+        run: |
+          # Get Branch Name
+          BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
+          echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_OUTPUT
+          # Release name
+          RELEASE_NAME=${BRANCH_NAME#release-}
+          curl \
+            -s -X POST \
+            -H "Authorization: Bearer ${{ secrets.BALLERINA_BOT_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            -d '{
+              "tag_name": "'$RELEASE_NAME'",
+              "name": "'$RELEASE_NAME'",
+              "body": "[Automated] Creating tag:  '$RELEASE_NAME'.",
+              "draft": false,
+              "prerelease": false,
+              "target_commitish": "'$BRANCH_NAME'"
+            }' \
+            "https://api.github.com/repos/${{ github.repository }}/releases"
+
+      - name: Update version in the pom files
+        if: ${{ inputs.bal_central_environment == 'PROD' }}
+        id: increment_patch_version
+        run: |
+          CURRENT_VERSION=$(grep -Po -m 1 '(?<=<version>)[\d.]+' pom.xml)
+          IFS='.' read -ra VERSION_PARTS <<< "$CURRENT_VERSION"
+          PATCH_VERSION=$((VERSION_PARTS[2] + 1))
+          NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.$PATCH_VERSION"
+          echo "NEW_VERSION=${NEW_VERSION}" >> $GITHUB_OUTPUT
+          echo "CURRENT_VERSION=${CURRENT_VERSION}" >> $GITHUB_OUTPUT
+          #Bump the versions in each pom file
+          sed -i "0,/<version>${CURRENT_VERSION}<\/version>/s//<version>${NEW_VERSION}<\/version>/" pom.xml
+          sed -i "0,/<version>${CURRENT_VERSION}<\/version>/s//<version>${NEW_VERSION}<\/version>/" ballerina/pom.xml
+          sed -i "0,/<version>${CURRENT_VERSION}<\/version>/s//<version>${NEW_VERSION}<\/version>/" native/fhir-to-bal-lib/pom.xml
+          sed -i "0,/<version>${CURRENT_VERSION}<\/version>/s//<version>${NEW_VERSION}<\/version>/" native/fhir-to-bal-template/pom.xml
+          sed -i "0,/<version>${CURRENT_VERSION}<\/version>/s//<version>${NEW_VERSION}<\/version>/" native/health-cli/pom.xml
+
+      - name: Commit changes and make a PR
+        if: ${{ inputs.bal_central_environment == 'PROD' }}
+        run: |
+          # Commit changes
+          git config --global user.name ${{ secrets.BALLERINA_BOT_USERNAME }}
+          git config --global user.email ${{ secrets.BALLERINA_BOT_EMAIL }}
+          git add fhirr4/pom.xml
+          git add fhirr4/ballerina/pom.xml
+          git add fhirr4/compiler-plugin/pom.xml
+          git add fhirr4/native/pom.xml   
+          git commit -m "[Release Health Tool ${{ steps.increment_patch_version.outputs.CURRENT_VERSION }}] Prepare for next dev cycle"
+          git push origin ${{ steps.publish_release.outputs.BRANCH_NAME }}
+          
+          # Set the base and head branches
+          BASE_BRANCH="main"
+          HEAD_BRANCH="${{ steps.publish_release.outputs.BRANCH_NAME }}"
+          # Create the pull request using the GitHub REST API
+          RESPONSE=$(curl -s -X POST \
+            -H "Authorization: Bearer ${{ secrets.BALLERINA_BOT_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            -d '{
+              "title": "[Release Health Tool ${{ steps.increment_patch_version.outputs.CURRENT_VERSION }}] Prepare for next dev cycle",
+              "body": "",
+              "head": "'"$HEAD_BRANCH"'",
+              "base": "'"$BASE_BRANCH"'"
+            }' \
+            "https://api.github.com/repos/${{ github.repository }}/pulls")
+          # Extract the pull request URL from the response
+          PR_URL=$(echo "$RESPONSE" | jq -r '.html_url')
+
+          echo "Pull Request created: $PR_URL"
