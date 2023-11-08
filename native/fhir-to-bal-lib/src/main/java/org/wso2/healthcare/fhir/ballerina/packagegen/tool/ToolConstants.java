@@ -69,6 +69,8 @@ public class ToolConstants {
     public static final String TOML_EXTENSION = ".toml";
     public static final String MD_EXTENSION = ".md";
     public static final String CONSTRAINTS_LIB_IMPORT = "ballerina/constraint";
+    public static final String ELEMENT = "Element";
+
     public enum TokenPosition {
         BEGIN,
         MIDDLE,

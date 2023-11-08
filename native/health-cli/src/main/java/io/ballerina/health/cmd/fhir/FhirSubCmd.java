@@ -155,6 +155,13 @@ public class FhirSubCmd implements BLauncherCmd {
             printStream.println("Try bal health --help for more information.");
             HealthCmdUtils.exitError(exitWhenFinish);
         }
+        if (dependentPackage != null && !dependentPackage.isEmpty()) {
+            if (!dependentPackage.matches("^[^/]+/[^/]+$")) {
+                printStream.println("Format of the dependent package is incorrect.");
+                printStream.println("Try bal health --help for more information.");
+                HealthCmdUtils.exitError(exitWhenFinish);
+            }
+        }
         if (this.engageSubCommand(argList)) {
             if (CMD_MODE_TEMPLATE.equals(mode)) {
                 printStream.println("Ballerina FHIR API templates generation completed successfully. Generated templates can be found at " + targetOutputPath);

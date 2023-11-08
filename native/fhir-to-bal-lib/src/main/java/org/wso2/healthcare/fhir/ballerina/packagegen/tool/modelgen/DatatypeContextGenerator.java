@@ -94,6 +94,8 @@ public class DatatypeContextGenerator {
                     String typeCode = elementDefinition.getType().get(0).getCode();
                     if (GeneratorUtils.getInstance().shouldReplacedByBalType(typeCode)) {
                         element.setDataType(GeneratorUtils.getInstance().resolveDataType(typeCode));
+                    } else if (ToolConstants.ELEMENT.equals(typeCode)) {
+                        element.setDataType(ToolConstants.ELEMENT + CommonUtil.toCamelCase(elementName));
                     } else {
                         element.setDataType(typeCode);
                     }

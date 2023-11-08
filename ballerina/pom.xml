@@ -33,7 +33,7 @@
 
     <properties>
         <version.health.cli>${project.version}</version.health.cli>
-        <version.ballerina>2201.6.0</version.ballerina>
+        <version.ballerina>2201.8.1</version.ballerina>
     </properties>
 
     <build>

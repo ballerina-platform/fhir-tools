@@ -2,8 +2,8 @@
 
 ## Building form Source
 ### Prerequisites
-- [Java 11](https://openjdk.org/projects/jdk/11/) (v11.0.19)
-- [Ballerina Swan Lake Update 7](https://ballerina.io/downloads/) (v2201.7.0)
+- [Java 17](https://openjdk.org/projects/jdk/17/)
+- [Ballerina Swan Lake Update 8](https://ballerina.io/downloads/) (v2201.8.1)
 - Add your Github Personal Access Token to the `.m2/settings.xml` to get access the `ballerina-lang` dependencies.
   (Make sure to have the id as `ballerina-language-repo`)
 ```xml
