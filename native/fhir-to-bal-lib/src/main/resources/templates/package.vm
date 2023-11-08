@@ -1,4 +1,6 @@
 #set( $H = '#' )
+Ballerina package containing FHIR resource data models
+compliant with $igUrl implementation guide.
 
 #if(!$isBasePackage)
 $H FHIR R4 ${igName} package

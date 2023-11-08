@@ -265,7 +265,11 @@ public class ResourceContextGenerator {
         Element element = new Element();
         element.setName(GeneratorUtils.getInstance().resolveSpecialCharacters(name));
         element.setRootElementName(rootName);
-        element.setDataType(GeneratorUtils.getInstance().resolveDataType(toolConfig, type.getCode()));
+        if (ToolConstants.ELEMENT.equals(type.getCode())) {
+            element.setDataType(ToolConstants.ELEMENT + CommonUtil.toCamelCase(name));
+        } else {
+            element.setDataType(GeneratorUtils.getInstance().resolveDataType(toolConfig, type.getCode()));
+        }
         //Adding profiles of the resource element type
         List<CanonicalType> profiles = type.getProfile();
         if (!profiles.isEmpty()) {
