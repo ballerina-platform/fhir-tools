@@ -12,11 +12,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          path: './fhir-tools'
 
       - name: Checkout codegen framework
         uses: actions/checkout@v3
         with:
           repository: wso2/open-healthcare-codegen-tool-framework
+          ref: v1.0.0
           path: './open-healthcare-codegen-tool-framework'
 
       - name: Setup Maven
@@ -47,5 +50,5 @@ jobs:
 
       - name: Run maven build
         run: |
-         mvn clean install
+         mvn clean install -f fhir-tools/pom.xml
    
