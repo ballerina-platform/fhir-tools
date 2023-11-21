@@ -37,6 +37,7 @@ import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.FHIRProfile
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.SearchParam;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -117,11 +118,18 @@ public class BallerinaProjectTool extends AbstractFHIRTool {
     private void populateBalService() {
         for (Map.Entry<String, FHIRImplementationGuide> entry : igMap.entrySet()) {
             String igName = entry.getKey();
-            for (Map.Entry<String, FHIRResourceDef> definitionEntry : entry.getValue().getResources().entrySet()) {
-                if (definitionEntry.getValue().getDefinition().getKind().toCode().equalsIgnoreCase("RESOURCE")) {
-                    validateAndAddFHIRResource(definitionEntry.getValue().getDefinition(), igName);
+            // extract structure definitions of resource types
+            Map<String, FHIRResourceDef> resourceDefMap = new HashMap<>();
+            entry.getValue().getResources().forEach((k, resourceDef) -> {
+                if (resourceDef.getDefinition().getKind().toCode().equalsIgnoreCase("RESOURCE")) {
+                    resourceDefMap.put(k, resourceDef);
                 }
-            }
+            });
+            // filter structure definitions based on included/excluded
+            List<StructureDefinition> structureDefinitions = retrieveStructureDef(igName, resourceDefMap);
+            structureDefinitions.forEach(definition -> {
+                addResourceProfile(definition, definition.getType(), definition.getName(), definition.getUrl(), igName);
+            });
             //adding Search parameters
             for (Map.Entry<String, FHIRSearchParamDef> parameter : entry.getValue().getSearchParameters().entrySet()) {
                 List<CodeType> baseResources = parameter.getValue().getSearchParameter().getBase();
@@ -137,6 +145,58 @@ public class BallerinaProjectTool extends AbstractFHIRTool {
         }
     }
 
+    private List<StructureDefinition> retrieveStructureDef(String igName, Map<String, FHIRResourceDef> resourceDefMap) {
+        List<StructureDefinition> structureDefinitions = new ArrayList<>();
+        List<String> includedProfiles =
+                ballerinaProjectToolConfig.getIncludedIGConfigs().get(igName).getIncludedProfiles();
+        List<String> excludedProfiles =
+                ballerinaProjectToolConfig.getIncludedIGConfigs().get(igName).getExcludedProfiles();
+        if (!includedProfiles.isEmpty()) {
+            for (String profile : includedProfiles) {
+                if (resourceDefMap.containsKey(profile)) {
+                    structureDefinitions.add(resourceDefMap.get(profile).getDefinition());
+                } else {
+                    // invalid url
+                    System.out.println("Invalid fhir profile to include: " + profile);
+                }
+            }
+            if (structureDefinitions.isEmpty()) {
+                // nothing included
+                // generate template for all the profiles
+                System.out.println("Generating templates for all FHIR profiles...");
+                resourceDefMap.forEach((k, resourceDef) -> {
+                    structureDefinitions.add(resourceDef.getDefinition());
+                });
+            }
+            return structureDefinitions;
+        }
+        if (!excludedProfiles.isEmpty()) {
+            Map<String, FHIRResourceDef> resourceDefMapCopy = new HashMap<>(resourceDefMap);
+            for (String profile : excludedProfiles) {
+                if (resourceDefMapCopy.containsKey(profile)) {
+                    resourceDefMapCopy.remove(profile);
+                } else {
+                    // invalid url
+                    System.out.println("Invalid fhir profile to exclude: " + profile);
+                }
+            }
+            resourceDefMapCopy.forEach((k, resourceDef) -> {
+                structureDefinitions.add(resourceDef.getDefinition());
+            });
+            if (resourceDefMap.size() == resourceDefMapCopy.size()) {
+                System.out.println("Generating templates for all FHIR profiles...");
+            }
+            return structureDefinitions;
+        }
+        // nothing included or excluded
+        // generate templates for all the profiles
+        System.out.println("Generating templates for all FHIR profiles...");
+        resourceDefMap.forEach((k, v) -> {
+            structureDefinitions.add(v.getDefinition());
+        });
+        return structureDefinitions;
+    }
+
     private SearchParam getSearchParam(Map.Entry<String, FHIRSearchParamDef> parameter, String apiName) {
         SearchParam param = new SearchParam(parameter.getValue().getSearchParameter().getName(),
                 parameter.getValue().getSearchParameter().getCode());
@@ -148,31 +208,6 @@ public class BallerinaProjectTool extends AbstractFHIRTool {
             param.setBuiltIn(true);
         }
         return param;
-    }
-
-    /**
-     * Validate Ballerina service based on include-exclude configs.
-     *
-     * @param structureDefinition FHIR StructureDefinition
-     * @param igName              IG name
-     */
-    public void validateAndAddFHIRResource(StructureDefinition structureDefinition, String igName) {
-
-        String resourceType = structureDefinition.getType();
-        String profile = structureDefinition.getName();
-        String url = structureDefinition.getUrl();
-
-        if (ballerinaProjectToolConfig.getIncludedIGConfigs().get(igName).getIncludedProfiles().isEmpty()) {
-            //add all resources of the IG except ones listed in excluded list
-            if (!ballerinaProjectToolConfig.getIncludedIGConfigs().get(igName).getExcludedProfiles().contains(url)) {
-                addResourceProfile(structureDefinition, resourceType, profile, url, igName);
-            }
-        } else {
-            //add resources listed in included list. Neglect excluded list
-            if (ballerinaProjectToolConfig.getIncludedIGConfigs().get(igName).getIncludedProfiles().contains(url)) {
-                addResourceProfile(structureDefinition, resourceType, profile, url, igName);
-            }
-        }
     }
 
     /**

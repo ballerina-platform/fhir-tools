@@ -156,11 +156,17 @@ public class FhirSubCmd implements BLauncherCmd {
             HealthCmdUtils.exitError(exitWhenFinish);
         }
         if (dependentPackage != null && !dependentPackage.isEmpty()) {
-            if (!dependentPackage.matches("^[^/]+/[^/]+$")) {
+            // regex matching ballerinax/health.fhir.r4
+            if (!dependentPackage.matches("^(?!.*__)[a-zA-Z0-9][a-zA-Z0-9_]+[a-zA-Z0-9]/[a-zA-Z0-9][a-zA-Z0-9._]+[a-zA-Z0-9]$")) {
                 printStream.println("Format of the dependent package is incorrect.");
                 printStream.println("Try bal health --help for more information.");
                 HealthCmdUtils.exitError(exitWhenFinish);
             }
+        }
+        if (includedProfiles != null && excludedProfiles != null) {
+            printStream.println("Both --included-profile and --excluded-profile cannot be used together.");
+            printStream.println("Try bal health --help for more information.");
+            HealthCmdUtils.exitError(exitWhenFinish);
         }
         if (this.engageSubCommand(argList)) {
             if (CMD_MODE_TEMPLATE.equals(mode)) {

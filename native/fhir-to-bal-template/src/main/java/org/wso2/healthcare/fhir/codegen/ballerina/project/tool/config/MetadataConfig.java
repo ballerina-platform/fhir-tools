@@ -72,7 +72,20 @@ public class MetadataConfig {
     }
 
     public void setOrg(String org) {
-        this.org = org;
+        // org name of a ballerina package can have only alhpa-numeric chars and '_'
+        // it cannot have consecutive '_'
+        // and it cannot start/end with '_'
+        String normalizedOrg = org.replaceAll("[^a-zA-Z0-9_]", "_");
+        if (normalizedOrg.contains("__")) {
+            normalizedOrg = normalizedOrg.replaceAll("_{2,}", "_");
+        }
+        if (normalizedOrg.startsWith("_")) {
+            normalizedOrg = normalizedOrg.substring(1);
+        }
+        if (normalizedOrg.endsWith("_")) {
+            normalizedOrg = normalizedOrg.substring(0, normalizedOrg.length() - 1);
+        }
+        this.org = normalizedOrg;
     }
 
     public void setNamePrefix(String namePrefix) {

@@ -113,7 +113,20 @@ public class PackageConfig {
     }
 
     public void setOrg(String org) {
-        this.org = org;
+        // org name of a ballerina package can have only alhpa-numeric chars and '_'
+        // it cannot have consecutive '_'
+        // and it cannot start/end with '_'
+        String normalizedOrg = org.replaceAll("[^a-zA-Z0-9_]", "_");
+        if (normalizedOrg.contains("__")) {
+            normalizedOrg = normalizedOrg.replaceAll("_{2,}", "_");
+        }
+        if (normalizedOrg.startsWith("_")) {
+            normalizedOrg = ProjectUtils.removeFirstChar(normalizedOrg);
+        }
+        if (normalizedOrg.endsWith("_")) {
+            normalizedOrg = ProjectUtils.removeLastChar(normalizedOrg);
+        }
+        this.org = normalizedOrg;
     }
 
     public void setName(String name) {
