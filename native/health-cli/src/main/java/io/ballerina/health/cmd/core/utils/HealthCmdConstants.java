@@ -31,5 +31,27 @@ public class HealthCmdConstants {
     public static final String CMD_DEFAULT_IG_NAME = "healthcare.fhir";
     public static final String CMD_DEFAULT_ORG_NAME = "healthcare";
 
+    public class PrintStrings {
+
+        public static final String HELP_FOR_MORE_INFO = "[INFO] Try bal health --help for more information.";
+        public static final String TEMPLATE_GEN_SUCCESS = "[INFO] Ballerina FHIR API templates generation completed " +
+                                                          "successfully. Generated templates can be found at: ";
+        public static final String PKG_GEN_SUCCESS = "[INFO] Ballerina FHIR package generation completed successfully."
+                                                     + " Generated package can be found at: ";
+
+        public static final String INVALID_SPEC_PATH = "[ERROR] Invalid specification path received for FHIR tool command.";
+        public static final String HELP_NOT_AVAILABLE = "[ERROR] Helper text is not available.";
+        public static final String HELP_ERROR = "[ERROR] An Error occurred internally while fetching the Help text.";
+        public static final String INVALID_NUM_OF_ARGS = "[ERROR] Invalid number of arguments received for FHIR tool "
+                                                         + "command.";
+        public static final String INVALID_MODE = "[ERROR] Invalid mode received for FHIR tool command.";
+        public static final String PKG_NAME_REQUIRED = "[ERROR] Package name [--package-name] is required for package "
+                                                       + "generation.";
+        public static final String DEPENDENT_REQUIRED = "[ERROR] Dependent package [--dependent-package] is required "
+                                                        + "for template generation.";
+        public static final String DEPENDENT_INCORRECT = "[ERROR] Format of the dependent package is incorrect.";
+        public static final String INCLUDED_EXCLUDED_TOGETHER = "[ERROR] Both --included-profile and "
+                                                                + "--excluded-profile cannot be used together.";
+    }
 
 }

@@ -98,11 +98,11 @@ public class HealthCmd implements BLauncherCmd {
                 }
                 return;
             } catch (IOException e) {
-                printStream.println("Helper text is not available.");
+                printStream.println(HealthCmdConstants.PrintStrings.HELP_NOT_AVAILABLE);
                 HealthCmdUtils.throwLauncherException(e);
             }
         }
-        printStream.println("An Error occurred internally while fetching the Help text.");
+        printStream.println(HealthCmdConstants.PrintStrings.HELP_ERROR);
         HealthCmdUtils.exitError(true);
     }
 

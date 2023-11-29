@@ -18,13 +18,11 @@
 
 package io.ballerina.health.cmd.fhir;
 
-import com.google.gson.JsonElement;
 import io.ballerina.cli.BLauncherCmd;
 import io.ballerina.cli.launcher.BLauncherException;
 import io.ballerina.health.cmd.core.exception.BallerinaHealthException;
 import io.ballerina.health.cmd.core.utils.HealthCmdConstants;
 import io.ballerina.health.cmd.core.utils.HealthCmdUtils;
-import io.ballerina.health.cmd.core.utils.JsonTypeConverter;
 import io.ballerina.health.cmd.handler.Handler;
 import io.ballerina.health.cmd.handler.HandlerFactory;
 import picocli.CommandLine;
@@ -36,7 +34,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -50,6 +47,7 @@ import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_MODE_TEM
 @CommandLine.Command(name = "fhir", description = "Generates Ballerina service/client for FHIR contract " +
         "for Ballerina service.")
 public class FhirSubCmd implements BLauncherCmd {
+
     private final PrintStream printStream;
     private final boolean exitWhenFinish;
     private final String toolName = "fhir";
@@ -124,59 +122,59 @@ public class FhirSubCmd implements BLauncherCmd {
                     }
                     return;
                 } catch (IOException e) {
-                    printStream.println("Helper text is not available.");
+                    printStream.println(HealthCmdConstants.PrintStrings.HELP_NOT_AVAILABLE);
                     HealthCmdUtils.throwLauncherException(e);
                 }
             }
-            printStream.println("An Error occurred internally while fetching the Help text.");
+            printStream.println(HealthCmdConstants.PrintStrings.HELP_ERROR);
             HealthCmdUtils.exitError(exitWhenFinish);
         }
         if (argList == null || argList.isEmpty()) {
             //at minimum arg count is 1 (spec path)
-            printStream.println("Invalid number of arguments received for FHIR tool command.");
-            printStream.println("Try bal health --help for more information.");
+            printStream.println(HealthCmdConstants.PrintStrings.INVALID_NUM_OF_ARGS);
+            printStream.println(HealthCmdConstants.PrintStrings.HELP_FOR_MORE_INFO);
             HealthCmdUtils.exitError(exitWhenFinish);
         }
         if (mode == null || mode.isEmpty()) {
             //mode is required param
-            printStream.println("Invalid mode received for FHIR tool command.");
-            printStream.println("Try bal health --help for more information.");
+            printStream.println(HealthCmdConstants.PrintStrings.INVALID_MODE);
+            printStream.println(HealthCmdConstants.PrintStrings.HELP_FOR_MORE_INFO);
             HealthCmdUtils.exitError(exitWhenFinish);
         }
         if (CMD_MODE_PACKAGE.equals(mode) && (packageName == null || packageName.isEmpty())) {
             // package name is a required param in package mode
-            printStream.println("Package name [--package-name] is required for package generation.");
-            printStream.println("Try bal health --help for more information.");
+            printStream.println(HealthCmdConstants.PrintStrings.PKG_NAME_REQUIRED);
+            printStream.println(HealthCmdConstants.PrintStrings.HELP_FOR_MORE_INFO);
             HealthCmdUtils.exitError(exitWhenFinish);
         }
         if (CMD_MODE_TEMPLATE.equals(mode) && (dependentPackage == null || dependentPackage.isEmpty())) {
             // dependent package is a required param in template mode
-            printStream.println("Dependent package [--dependent-package] is required for template generation.");
-            printStream.println("Try bal health --help for more information.");
+            printStream.println(HealthCmdConstants.PrintStrings.DEPENDENT_REQUIRED);
+            printStream.println(HealthCmdConstants.PrintStrings.HELP_FOR_MORE_INFO);
             HealthCmdUtils.exitError(exitWhenFinish);
         }
         if (dependentPackage != null && !dependentPackage.isEmpty()) {
             // regex matching ballerinax/health.fhir.r4
             if (!dependentPackage.matches("^(?!.*__)[a-zA-Z0-9][a-zA-Z0-9_]+[a-zA-Z0-9]/[a-zA-Z0-9][a-zA-Z0-9._]+[a-zA-Z0-9]$")) {
-                printStream.println("Format of the dependent package is incorrect.");
-                printStream.println("Try bal health --help for more information.");
+                printStream.println(HealthCmdConstants.PrintStrings.DEPENDENT_INCORRECT);
+                printStream.println(HealthCmdConstants.PrintStrings.HELP_FOR_MORE_INFO);
                 HealthCmdUtils.exitError(exitWhenFinish);
             }
         }
         if (includedProfiles != null && excludedProfiles != null) {
-            printStream.println("Both --included-profile and --excluded-profile cannot be used together.");
-            printStream.println("Try bal health --help for more information.");
+            printStream.println(HealthCmdConstants.PrintStrings.INCLUDED_EXCLUDED_TOGETHER);
+            printStream.println(HealthCmdConstants.PrintStrings.HELP_FOR_MORE_INFO);
             HealthCmdUtils.exitError(exitWhenFinish);
         }
         if (this.engageSubCommand(argList)) {
             if (CMD_MODE_TEMPLATE.equals(mode)) {
-                printStream.println("Ballerina FHIR API templates generation completed successfully. Generated templates can be found at " + targetOutputPath);
+                printStream.println(HealthCmdConstants.PrintStrings.TEMPLATE_GEN_SUCCESS + targetOutputPath);
             } else {
-                printStream.println("Ballerina FHIR package generation completed successfully. Generated package can be found at " + targetOutputPath);
+                printStream.println(HealthCmdConstants.PrintStrings.PKG_GEN_SUCCESS + targetOutputPath);
             }
         } else {
-            printStream.println("Invalid mode received for FHIR tool command.");
-            printStream.println("Try bal health --help for more information.");
+            printStream.println(HealthCmdConstants.PrintStrings.INVALID_MODE);
+            printStream.println(HealthCmdConstants.PrintStrings.HELP_FOR_MORE_INFO);
         }
 
         HealthCmdUtils.exitError(exitWhenFinish);
@@ -216,7 +214,7 @@ public class FhirSubCmd implements BLauncherCmd {
         try {
             specificationPath = HealthCmdUtils.validateAndSetSpecificationPath(argList.get(argList.size() - 1), executionPath.toString());
         } catch (BallerinaHealthException e) {
-            printStream.println("Invalid specification path received for FHIR tool command.");
+            printStream.println(HealthCmdConstants.PrintStrings.INVALID_SPEC_PATH);
             throw new BLauncherException();
         }
         Handler toolHandler = null;

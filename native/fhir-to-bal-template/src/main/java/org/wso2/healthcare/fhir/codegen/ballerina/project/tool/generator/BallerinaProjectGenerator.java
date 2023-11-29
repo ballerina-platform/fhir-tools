@@ -56,9 +56,9 @@ public class BallerinaProjectGenerator extends AbstractFHIRTemplateGenerator {
             if ("n".equalsIgnoreCase(input)) {
                 System.exit(0);
             } else if ("y".equalsIgnoreCase(input)) {
-                System.out.println("Overwriting the existing templates.");
+                System.out.println(BallerinaProjectConstants.PrintStrings.OVERWRITING_EXISTING_TEMPLATES);
             } else {
-                System.out.println("Invalid input. Exiting the tool.");
+                System.out.println(BallerinaProjectConstants.PrintStrings.INVALID_INPUT);
                 System.exit(0);
             }
         }

@@ -79,4 +79,9 @@ public class ToolConstants {
 
     public static final String LICENSE_YEAR = "2023";
     public static final String DATA_TYPE_EXTENSION = "Extension";
+
+    public class PrintStrings {
+        public static final String OVERWRITING_EXISTING_PACKAGE = "[INFO] Overwriting the existing package.";
+        public static final String INVALID_INPUT = "[ERROR] Invalid input. Exiting the tool.";
+    }
 }

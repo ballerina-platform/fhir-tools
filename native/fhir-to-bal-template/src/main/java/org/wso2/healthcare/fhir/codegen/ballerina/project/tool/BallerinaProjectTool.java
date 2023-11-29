@@ -157,13 +157,13 @@ public class BallerinaProjectTool extends AbstractFHIRTool {
                     structureDefinitions.add(resourceDefMap.get(profile).getDefinition());
                 } else {
                     // invalid url
-                    System.out.println("Invalid fhir profile to include: " + profile);
+                    System.out.println(BallerinaProjectConstants.PrintStrings.INVALID_PROFILE + profile);
                 }
             }
             if (structureDefinitions.isEmpty()) {
                 // nothing included
                 // generate template for all the profiles
-                System.out.println("Generating templates for all FHIR profiles...");
+                System.out.println(BallerinaProjectConstants.PrintStrings.TEMPLATES_FOR_ALL_PROFILES);
                 resourceDefMap.forEach((k, resourceDef) -> {
                     structureDefinitions.add(resourceDef.getDefinition());
                 });
@@ -177,20 +177,20 @@ public class BallerinaProjectTool extends AbstractFHIRTool {
                     resourceDefMapCopy.remove(profile);
                 } else {
                     // invalid url
-                    System.out.println("Invalid fhir profile to exclude: " + profile);
+                    System.out.println(BallerinaProjectConstants.PrintStrings.INVALID_PROFILE + profile);
                 }
             }
             resourceDefMapCopy.forEach((k, resourceDef) -> {
                 structureDefinitions.add(resourceDef.getDefinition());
             });
             if (resourceDefMap.size() == resourceDefMapCopy.size()) {
-                System.out.println("Generating templates for all FHIR profiles...");
+                System.out.println(BallerinaProjectConstants.PrintStrings.TEMPLATES_FOR_ALL_PROFILES);
             }
             return structureDefinitions;
         }
         // nothing included or excluded
         // generate templates for all the profiles
-        System.out.println("Generating templates for all FHIR profiles...");
+        System.out.println(BallerinaProjectConstants.PrintStrings.TEMPLATES_FOR_ALL_PROFILES);
         resourceDefMap.forEach((k, v) -> {
             structureDefinitions.add(v.getDefinition());
         });
