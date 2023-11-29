@@ -79,9 +79,9 @@ public class PackageTemplateGenerator extends AbstractFHIRTemplateGenerator {
             if ("n".equalsIgnoreCase(input)) {
                 System.exit(0);
             } else if ("y".equalsIgnoreCase(input)) {
-                System.out.println("Overwriting the existing package.");
+                System.out.println(ToolConstants.PrintStrings.OVERWRITING_EXISTING_PACKAGE);
             } else {
-                System.out.println("Invalid input. Exiting the tool.");
+                System.out.println(ToolConstants.PrintStrings.INVALID_INPUT);
                 System.exit(0);
             }
         }

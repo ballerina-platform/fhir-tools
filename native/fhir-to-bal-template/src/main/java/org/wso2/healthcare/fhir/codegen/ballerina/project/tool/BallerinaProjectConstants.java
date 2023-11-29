@@ -30,4 +30,13 @@ public class BallerinaProjectConstants {
     public static final String SERVICE_PACKAGE_IMPORT_SUFFIX = "ballerinax/health.fhir";
     public static final String INTERNATIONAL_PACKAGE_IMPORT_SUFFIX = "ballerinax/health.fhir.r4.international401";
 
+    public class PrintStrings {
+
+        public static final String OVERWRITING_EXISTING_TEMPLATES = "[INFO] Overwriting the existing templates.";
+        public static final String TEMPLATES_FOR_ALL_PROFILES = "[INFO] Generating templates for all FHIR profiles...";
+
+        public static final String INVALID_PROFILE = "[WARN] Invalid FHIR profile: ";
+
+        public static final String INVALID_INPUT = "[ERROR] Invalid input. Exiting the tool.";
+    }
 }
