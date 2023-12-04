@@ -135,7 +135,7 @@ public class ResourceContextGenerator {
     /**
      * Populate resource elements map in a hierarchical way
      *
-     * @param elementDefinitions      FHIR element definition DTO
+     * @param elementDefinitions FHIR element definition DTO
      */
     private void populateSnapshotElementMap(List<ElementDefinition> elementDefinitions) {
         LOG.debug("Started: Snapshot Element Map population");
@@ -274,11 +274,13 @@ public class ResourceContextGenerator {
         List<CanonicalType> profiles = type.getProfile();
         if (!profiles.isEmpty()) {
             for (CanonicalType profile : profiles) {
+                String profileType = CommonUtil.getSplitTokenAt(profile.getValue(), "/", ToolConstants.TokenPosition.END);
+                profileType = GeneratorUtils.getInstance().getUniqueIdentifierFromId(profileType);
                 if (datatypeTemplateContextMap.containsKey(profile.getValue())) {
-                    element.addProfile(profile.getValue(), datatypeTemplateContextMap.get(profile.getValue()).getName());
-                    DataTypesRegistry.getInstance().addDataType(datatypeTemplateContextMap.get(profile.getValue()).getName());
+                    element.addProfile(profile.getValue(), profileType);
+                    DataTypesRegistry.getInstance().addDataType(profileType);
                 } else {
-                    element.addProfile(profile.getValue(), element.getDataType());
+                    element.addProfile(profile.getValue(), profileType);
                 }
             }
         } else {
