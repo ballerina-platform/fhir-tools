@@ -400,7 +400,7 @@ public class GeneratorUtils {
         return specialChar.replaceAll(Pattern.quote("[x]"), "")
                 .replaceAll(Pattern.quote("/"), "")
                 .replaceAll("-", "_")
-                .replaceAll("\\s+", "_");
+                .replaceAll("\\s+", "");
     }
 
     /**
