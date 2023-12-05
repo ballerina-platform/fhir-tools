@@ -22,12 +22,19 @@ import org.apache.commons.text.CaseUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * Utility class for Ballerina project generator.
  */
 public class BallerinaProjectUtil {
 
+    /**
+     * Aggregate substrings to a camelcase string.
+     *
+     * @param substrings list of substrings
+     * @return aggregated string
+     */
     public static String aggregateCamelcase(List<String> substrings) {
 
         String aggregatedName = substrings.get(0).toLowerCase();
@@ -40,5 +47,18 @@ public class BallerinaProjectUtil {
             aggregatedName = String.format("%s%s", aggregatedName, CaseUtils.toCamelCase(substring, true, '_'));
         }
         return aggregatedName;
+    }
+
+    /**
+     * Resolve for special character
+     *
+     * @param specialChar special character
+     * @return preferred string replacement
+     */
+    public static String resolveSpecialCharacters(String specialChar) {
+        return specialChar.replaceAll(Pattern.quote("[x]"), "")
+                .replaceAll(Pattern.quote("/"), "")
+                .replaceAll("-", "_")
+                .replaceAll("\\s+", "");
     }
 }
