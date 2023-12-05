@@ -37,6 +37,7 @@ import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.FHIRProfile
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.SearchParam;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +50,9 @@ public class BallerinaProjectTool extends AbstractFHIRTool {
     private final Map<String, FHIRImplementationGuide> igMap = new HashMap<>();
     private final Map<String, BallerinaService> serviceMap = new HashMap<>();
     private final Map<String, String> dependenciesMap = new HashMap<>();
+
+    private final List<String> EXCLUDED_FHIR_APIS = new ArrayList<>(Arrays.asList("Bundle",
+            "CodeSystem", "DomainResource", "OperationOutcome", "Resource", "ValueSet"));
     private BallerinaProjectToolConfig ballerinaProjectToolConfig;
 
     @Override
@@ -121,7 +125,8 @@ public class BallerinaProjectTool extends AbstractFHIRTool {
             // extract structure definitions of resource types
             Map<String, FHIRResourceDef> resourceDefMap = new HashMap<>();
             entry.getValue().getResources().forEach((k, resourceDef) -> {
-                if (resourceDef.getDefinition().getKind().toCode().equalsIgnoreCase("RESOURCE")) {
+                if (!EXCLUDED_FHIR_APIS.contains(resourceDef.getDefinition().getName()) && resourceDef.getDefinition()
+                        .getKind().toCode().equalsIgnoreCase("RESOURCE")) {
                     resourceDefMap.put(k, resourceDef);
                 }
             });
@@ -201,7 +206,7 @@ public class BallerinaProjectTool extends AbstractFHIRTool {
         SearchParam param = new SearchParam(parameter.getValue().getSearchParameter().getName(),
                 parameter.getValue().getSearchParameter().getCode());
         param.setSearchParamDef(parameter.getValue().getSearchParameter());
-        param.setDescription(parameter.getValue().getSearchParameter().getDescription());
+        param.setDescription(parameter.getValue().getSearchParameter().getDescription().replace("\"",""));
         param.setDocumentation(parameter.getValue().getSearchParameter().getUrl());
         param.setTargetResource(apiName);
         if (ballerinaProjectToolConfig.getSearchParamConfigs().contains(param.getSearchParamDef().getCode())) {

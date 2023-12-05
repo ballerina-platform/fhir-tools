@@ -24,7 +24,7 @@ import $import.toLowerCase();
 # Generic type to wrap all implemented profiles.
 # Add required profile types here.
 # public type $service.getName() $basePackageImportIdentifier:$service.getName()|<other_$service.getName()_Profile>;
-public type $service.getName()#**##foreach($profile in $service.getProfileList()) $profile.getPackagePrefix():$profile.getName()#if($foreach.hasNext)| #end#end;
+public type $service.getName() #**##foreach($profile in $service.getProfileList())$profile.getPackagePrefix():$profile.getName()#if($foreach.hasNext)|#end#end;
 
 # initialize source system endpoint here
 

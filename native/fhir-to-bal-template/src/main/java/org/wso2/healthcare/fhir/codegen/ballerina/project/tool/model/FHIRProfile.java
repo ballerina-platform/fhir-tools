@@ -22,6 +22,7 @@ import com.google.gson.JsonObject;
 import org.apache.commons.text.CaseUtils;
 import org.hl7.fhir.r4.model.StructureDefinition;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.config.BallerinaProjectToolConfig;
+import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.util.BallerinaProjectUtil;
 
 import java.util.*;
 
@@ -47,7 +48,7 @@ public class FHIRProfile {
         this.profileDef = profileDef;
         this.url = url;
         this.importsList = new HashSet<>();
-        this.name = profileDef.getName();
+        this.name = BallerinaProjectUtil.resolveSpecialCharacters(profileDef.getName());
     }
 
     public StructureDefinition getProfileDef() {
