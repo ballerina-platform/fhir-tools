@@ -92,7 +92,7 @@ public class Element {
     }
 
     public boolean isRequired() {
-        return this.min > 0;
+        return this.min > 0 || this.hasFixedValue();
     }
 
     public String getPath() {
