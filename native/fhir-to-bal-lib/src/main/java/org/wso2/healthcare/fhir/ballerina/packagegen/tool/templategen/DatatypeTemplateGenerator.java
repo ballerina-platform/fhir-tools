@@ -60,6 +60,7 @@ public class DatatypeTemplateGenerator extends AbstractFHIRTemplateGenerator {
         List<String> importList = Collections.singletonList(packageTemplateContext.getBasePackageName());
         TemplateContext templateContext = this.getNewTemplateContext();
         templateContext.setProperty("util", GeneratorUtils.getInstance());
+        templateContext.setProperty("licenseYear", ToolConstants.LICENSE_YEAR);
         templateContext.setProperty("datatypeContext", datatypeContexts);
         templateContext.setProperty("imports", importList);
 
