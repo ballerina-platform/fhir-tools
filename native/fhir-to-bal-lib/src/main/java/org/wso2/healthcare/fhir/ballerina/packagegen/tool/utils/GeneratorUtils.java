@@ -311,6 +311,7 @@ public class GeneratorUtils {
         }
         element.setDataType(extendedElement.getTypeName());
         extendedElement.setBalDataType(balType);
+        extendedElement.setPath(element.getPath());
         if (element.getChildElements() != null) {
             extendedElement.setElements(element.getChildElements());
         }

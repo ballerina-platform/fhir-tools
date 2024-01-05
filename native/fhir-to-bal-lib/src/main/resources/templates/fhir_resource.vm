@@ -141,7 +141,7 @@ public type $util.resolveSpecialCharacters($resourceName) record {|
 }
 public type $util.resolveSpecialCharacters($extendedElement.getTypeName()) record {|
 #if ($extendedElement.getBaseType())
-    *${importIdentifier}$extendedElement.getBaseType();
+    *#if(!$dataTypes.contains($extendedElement.getBaseType()))${importIdentifier}#end$extendedElement.getBaseType();
 #end
 
 #foreach($childElement in $extendedElement.getElements())
