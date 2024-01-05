@@ -27,6 +27,7 @@ public class ExtendedElement {
     private String typeName;
     private BallerinaDataType balDataType;
     private String baseType;
+    private String path;
     private DataTypeDefinitionAnnotation annotation;
     private HashMap<String, Element> elements;
 
@@ -52,6 +53,14 @@ public class ExtendedElement {
 
     public void setBaseType(String baseType) {
         this.baseType = baseType;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public DataTypeDefinitionAnnotation getAnnotation() {

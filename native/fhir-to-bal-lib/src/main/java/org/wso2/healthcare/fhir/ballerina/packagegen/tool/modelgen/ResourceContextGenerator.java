@@ -174,7 +174,7 @@ public class ResourceContextGenerator {
                 elementPath = id.replaceAll("\\w+([A-Z]?:)", "");
                 String[] pathTokens = elementPath.split("\\.");
                 sliceNamePattern = ":" + pathTokens[pathTokens.length - 1];
-                if (id.contains(sliceNamePattern)) {
+                if (id.endsWith(sliceNamePattern)) {
                     isSlice = true;
                 }
             }
@@ -450,7 +450,11 @@ public class ResourceContextGenerator {
                 annotation.setElements(childElementAnnotations);
             }
             extendedElement.setAnnotation(annotation);
-
+            if (!element.isSlice() && this.resourceTemplateContextInstance.getSliceElements().containsKey(element.getPath())) {
+                for (Element slice : this.resourceTemplateContextInstance.getSliceElements().get(element.getPath())) {
+                    slice.setDataType(extendedElement.getTypeName());
+                }
+            }
             putExtendedElementIfAbsent(element, extendedElement);
         }
         LOG.debug("Ended: Resource Extended Element validation");
