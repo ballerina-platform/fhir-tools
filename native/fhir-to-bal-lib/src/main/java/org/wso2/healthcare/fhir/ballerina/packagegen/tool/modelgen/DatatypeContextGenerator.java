@@ -71,11 +71,13 @@ public class DatatypeContextGenerator {
     private void populateDatatypeContext() {
         for (Map.Entry<String, FHIRDataTypeDef> datatypeDefnEntry : datatypeDefnMap.entrySet()) {
             FHIRDataTypeDef datatypeDefn = datatypeDefnEntry.getValue();
-            if (DEFAULT_DATA_TYPES.contains(datatypeDefn.getDefinition().getName())) {
+            if (DEFAULT_DATA_TYPES.contains(datatypeDefn.getDefinition().getName())
+                    || "Extension".equals(datatypeDefn.getDefinition().getType())) {
                 continue;
             }
             DatatypeTemplateContext context = new DatatypeTemplateContext();
-            context.setName(GeneratorUtils.getInstance().getUniqueIdentifierFromId(datatypeDefn.getDefinition().getId()));
+            String typeName = CommonUtil.getSplitTokenAt(datatypeDefn.getDefinition().getUrl(), "/", ToolConstants.TokenPosition.END);
+            context.setName(GeneratorUtils.getInstance().getUniqueIdentifierFromId(typeName));
             context.setBaseDataType(datatypeDefn.getDefinition().getType());
             DataTypeDefinitionAnnotation annotation = new DataTypeDefinitionAnnotation();
             annotation.setName(datatypeDefn.getDefinition().getName());
