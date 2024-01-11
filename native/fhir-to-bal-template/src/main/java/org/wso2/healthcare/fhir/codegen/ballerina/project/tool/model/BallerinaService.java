@@ -27,18 +27,20 @@ import java.util.List;
  * Ballerina service model
  */
 public class BallerinaService {
-    private String name;
-    private String fhirVersion;
-    private List<String> importsList;
-    private List<String> interceptorsList;
-    private List<String> profiles;
+    private final String name;
+    private final String fhirVersion;
+    private final List<String> importsList;
+    private final List<String> interceptorsList;
+    private final List<String> profiles;
     //todo: remove this and use the latest Profilelist
-    private List<FHIRProfile> profileList;
+    private final List<FHIRProfile> profileList;
 
     private List<OperationConfig> operationConfigs;
-    private List<SearchParam> searchParamConfigs;
-    private List<ResourceMethod> resourceMethods;
-    private List<String> igs;
+    private final List<SearchParam> searchParamConfigs;
+    private final List<ResourceMethod> resourceMethods;
+    private final List<String> igs;
+    private FHIRInteractionMethods fhirInteractionMethodsContent;
+    private int port;
 
     public BallerinaService(String name, String fhirVersion) {
         this.name = name;
@@ -50,6 +52,9 @@ public class BallerinaService {
         searchParamConfigs = new ArrayList<>();
         igs = new ArrayList<>();
         profileList = new ArrayList<>();
+        this.fhirInteractionMethodsContent = new FHIRInteractionMethods();
+        //default port
+        this.port = 9090;
     }
 
     public String getName() {
@@ -125,5 +130,21 @@ public class BallerinaService {
 
     public void addFhirProfile(FHIRProfile profile){
         profileList.add(profile);
+    }
+
+    public FHIRInteractionMethods getFhirInteractionMethodsContent() {
+        return fhirInteractionMethodsContent;
+    }
+
+    public void setFhirInteractionMethodsContent(FHIRInteractionMethods fhirInteractionMethodsContent) {
+        this.fhirInteractionMethodsContent = fhirInteractionMethodsContent;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
     }
 }

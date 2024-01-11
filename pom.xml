@@ -31,6 +31,7 @@
         <module>native/fhir-to-bal-template</module>
         <module>native/fhir-to-bal-lib</module>
         <module>native/health-cli</module>
+        <module>native/fhir-prebuilt-service-gen</module>
         <module>ballerina</module>
     </modules>
 
@@ -52,6 +53,7 @@
         <version.swagger.core>2.1.5</version.swagger.core>
         <version.swagger.parser>2.0.26</version.swagger.parser>
         <version.jackson.annotations>2.12.1</version.jackson.annotations>
+        <version.jackson.core>2.12.1</version.jackson.core>
     </properties>
 
     <dependencies>

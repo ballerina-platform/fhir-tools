@@ -36,6 +36,8 @@ public class ErrorMessages {
 
     public static final String INVALID_MODE = "Invalid mode, Please check the mode and retry";
 
+    public static final String INVALID_OPTION_PROVIDED = "Invalid option provided, Please check the option and retry";
+
     public static final String TOOL_IMPL_NOT_FOUND = "Tool implementation not found for the given tool. Please check " +
             "the distribution libs and try again";
 

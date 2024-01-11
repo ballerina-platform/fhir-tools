@@ -25,6 +25,7 @@ import org.wso2.healthcare.codegen.tool.framework.fhir.core.AbstractFHIRTemplate
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.BallerinaProjectConstants;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.config.BallerinaProjectToolConfig;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.BallerinaService;
+import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.util.BallerinaProjectUtil;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -53,8 +54,13 @@ public class TomlGenerator extends AbstractFHIRTemplateGenerator {
         BallerinaProjectToolConfig config = (BallerinaProjectToolConfig) generatorProperties.get("config");
         templateContext.setProperty("metaConfig", config.getMetadataConfig());
         templateContext.setProperty("resourceType", generatorProperties.get("resourceType") + "API");
-        templateContext.setProperty("templateName", config.getMetadataConfig().getNamePrefix() + "." +
-                generatorProperties.get("resourceType").toString().toLowerCase());
+        if (generatorProperties.containsKey("templateName")) {
+            templateContext.setProperty("templateName", BallerinaProjectUtil.resolveSpecialCharacters(
+                    (String) generatorProperties.get("templateName")));
+        } else {
+            templateContext.setProperty("templateName", config.getMetadataConfig().getNamePrefix() + "." +
+                    generatorProperties.get("resourceType").toString().toLowerCase());
+        }
         templateContext.setProperty("keywords", this.generateKeywords(config,
                 (BallerinaService) generatorProperties.get("service")));
         templateContext.setProperty("basePackageImportIdentifier", generatorProperties.get(

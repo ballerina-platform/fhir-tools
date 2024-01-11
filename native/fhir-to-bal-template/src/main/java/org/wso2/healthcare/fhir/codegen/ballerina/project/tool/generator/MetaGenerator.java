@@ -40,15 +40,21 @@ public class MetaGenerator extends AbstractFHIRTemplateGenerator {
     @Override
     public void generate(ToolContext toolContext, Map<String, Object> generatorProperties) throws CodeGenException {
         String directoryPath = generatorProperties.get("projectAPIPath") + File.separator;
-        this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
-                File.separator + "packageMd.vm", createTemplateContextForMeta(generatorProperties), directoryPath,
-                "Package.md");
+        String apiConfigFileName = "api_config.bal";
+        if (generatorProperties.containsKey("apiConfigFileName")) {
+            apiConfigFileName = (String) generatorProperties.get("apiConfigFileName");
+        }
+        if (!generatorProperties.containsKey("disablePackageMd")) {
+            this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
+                            File.separator + "packageMd.vm", createTemplateContextForMeta(generatorProperties), directoryPath,
+                    "Package.md");
+        }
         this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
                 File.separator + "gitignore.vm", createTemplateContextForMeta(generatorProperties), directoryPath,
                 ".gitignore");
         this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
                 File.separator + "apiConfig.vm", createTemplateContextForMeta(generatorProperties), directoryPath,
-                "api_config.bal");
+                apiConfigFileName);
     }
 
     private TemplateContext createTemplateContextForMeta(Map<String, Object> generatorProperties) {
@@ -75,6 +81,12 @@ public class MetaGenerator extends AbstractFHIRTemplateGenerator {
         templateContext.setProperty("apiName", generatorProperties.get("resourceType") + "API");
         templateContext.setProperty("templateName", config.getMetadataConfig().getNamePrefix() + "." +
                 generatorProperties.get("resourceType").toString().toLowerCase());
+        templateContext.setProperty("currentYear", Calendar.getInstance().get(Calendar.YEAR));
+        //default api config
+        templateContext.setProperty("apiConfName", "apiConfig");
+        if (generatorProperties.containsKey("apiConfName")) {
+            templateContext.setProperty("apiConfName", generatorProperties.get("apiConfName"));
+        }
 
         Map<String, String> dependencies = (HashMap<String, String>) generatorProperties.get("dependencies");
         templateContext.setProperty("basePackage", dependencies.get("basePackage"));

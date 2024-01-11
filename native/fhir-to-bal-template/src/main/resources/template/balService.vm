@@ -1,5 +1,5 @@
 #set($sqBrackets=[])
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com). All Rights Reserved.
+// Copyright (c) $currentYear, WSO2 LLC. (http://www.wso2.com). All Rights Reserved.
 
 // This software is the property of WSO2 LLC. and its suppliers, if any.
 // Dissemination of any information or reproduction of any material contained
@@ -18,7 +18,9 @@
 
 import ballerina/http;
 #foreach($import in $service.getImportsList())
+#if ($import)
 import $import.toLowerCase();
+#end
 #end
 
 # Generic type to wrap all implemented profiles.
@@ -29,47 +31,79 @@ public type $service.getName() #**##foreach($profile in $service.getProfileList(
 # initialize source system endpoint here
 
 # A service representing a network-accessible API
-# bound to port `9090`.
-service / on new $servicePackageImportIdentifier:Listener(9090, apiConfig) {
+# bound to port `$service.getPort()`.
+service / on new $servicePackageImportIdentifier:Listener($service.getPort(), $apiConfName) {
 
     // Read the current state of single resource based on its id.
     isolated resource function get fhir/$service.getFhirVersion()/$service.getName()/[string id] ($basePackageImportIdentifier:FHIRContext fhirContext) returns $service.getName()|$basePackageImportIdentifier:OperationOutcome|$basePackageImportIdentifier:FHIRError {
+#if($service.getFhirInteractionMethodsContent().getReadMethodContent())
+        $service.getFhirInteractionMethodsContent().getReadMethodContent()
+#else
         return $basePackageImportIdentifier:createFHIRError("Not implemented", $basePackageImportIdentifier:ERROR, $basePackageImportIdentifier:INFORMATIONAL, httpStatusCode = http:STATUS_NOT_IMPLEMENTED);
+#end
     }
 
     // Read the state of a specific version of a resource based on its id.
     isolated resource function get fhir/$service.getFhirVersion()/$service.getName()/[string id]/_history/[string vid] ($basePackageImportIdentifier:FHIRContext fhirContext) returns $service.getName()|$basePackageImportIdentifier:OperationOutcome|$basePackageImportIdentifier:FHIRError {
+#if($service.getFhirInteractionMethodsContent().getVreadMethodContent())
+        $service.getFhirInteractionMethodsContent().getVreadMethodContent()
+#else
         return $basePackageImportIdentifier:createFHIRError("Not implemented", $basePackageImportIdentifier:ERROR, $basePackageImportIdentifier:INFORMATIONAL, httpStatusCode = http:STATUS_NOT_IMPLEMENTED);
+#end
     }
 
     // Search for resources based on a set of criteria.
     isolated resource function get fhir/$service.getFhirVersion()/$service.getName() ($basePackageImportIdentifier:FHIRContext fhirContext) returns $basePackageImportIdentifier:Bundle|$basePackageImportIdentifier:OperationOutcome|$basePackageImportIdentifier:FHIRError {
+#if($service.getFhirInteractionMethodsContent().getSearchMethodContent())
+        $service.getFhirInteractionMethodsContent().getSearchMethodContent()
+#else
         return $basePackageImportIdentifier:createFHIRError("Not implemented", $basePackageImportIdentifier:ERROR, $basePackageImportIdentifier:INFORMATIONAL, httpStatusCode = http:STATUS_NOT_IMPLEMENTED);
+#end
     }
 
     // Create a new resource.
-    isolated resource function post fhir/$service.getFhirVersion()/$service.getName() ($basePackageImportIdentifier:FHIRContext fhirContext, $service.getName() procedure) returns $service.getName()|$basePackageImportIdentifier:OperationOutcome|$basePackageImportIdentifier:FHIRError {
+    isolated resource function post fhir/$service.getFhirVersion()/$service.getName() ($basePackageImportIdentifier:FHIRContext fhirContext, $service.getName() payload) returns $service.getName()|$basePackageImportIdentifier:OperationOutcome|$basePackageImportIdentifier:FHIRError {
+#if($service.getFhirInteractionMethodsContent().getCreateMethodContent())
+        $service.getFhirInteractionMethodsContent().getCreateMethodContent()
+#else
         return $basePackageImportIdentifier:createFHIRError("Not implemented", $basePackageImportIdentifier:ERROR, $basePackageImportIdentifier:INFORMATIONAL, httpStatusCode = http:STATUS_NOT_IMPLEMENTED);
+#end
     }
 
     // Update the current state of a resource completely.
     isolated resource function put fhir/$service.getFhirVersion()/$service.getName()/[string id] ($basePackageImportIdentifier:FHIRContext fhirContext, $service.getName() $service.getName().toLowerCase()) returns $service.getName()|$basePackageImportIdentifier:OperationOutcome|$basePackageImportIdentifier:FHIRError {
+#if($service.getFhirInteractionMethodsContent().getUpdateMethodContent())
+        $service.getFhirInteractionMethodsContent().getUpdateMethodContent()
+#else
         return $basePackageImportIdentifier:createFHIRError("Not implemented", $basePackageImportIdentifier:ERROR, $basePackageImportIdentifier:INFORMATIONAL, httpStatusCode = http:STATUS_NOT_IMPLEMENTED);
+#end
     }
 
     // Update the current state of a resource partially.
     isolated resource function patch fhir/$service.getFhirVersion()/$service.getName()/[string id] ($basePackageImportIdentifier:FHIRContext fhirContext, json patch) returns $service.getName()|$basePackageImportIdentifier:OperationOutcome|$basePackageImportIdentifier:FHIRError {
+#if($service.getFhirInteractionMethodsContent().getPatchMethodContent())
+        $service.getFhirInteractionMethodsContent().getPatchMethodContent()
+#else
         return $basePackageImportIdentifier:createFHIRError("Not implemented", $basePackageImportIdentifier:ERROR, $basePackageImportIdentifier:INFORMATIONAL, httpStatusCode = http:STATUS_NOT_IMPLEMENTED);
+#end
     }
 
     // Delete a resource.
     isolated resource function delete fhir/$service.getFhirVersion()/$service.getName()/[string id] ($basePackageImportIdentifier:FHIRContext fhirContext) returns $basePackageImportIdentifier:OperationOutcome|$basePackageImportIdentifier:FHIRError {
+#if($service.getFhirInteractionMethodsContent().getDeleteMethodContent())
+        $service.getFhirInteractionMethodsContent().getDeleteMethodContent()
+#else
         return $basePackageImportIdentifier:createFHIRError("Not implemented", $basePackageImportIdentifier:ERROR, $basePackageImportIdentifier:INFORMATIONAL, httpStatusCode = http:STATUS_NOT_IMPLEMENTED);
+#end
     }
 
     // Retrieve the update history for a particular resource.
     isolated resource function get fhir/$service.getFhirVersion()/$service.getName()/[string id]/_history ($basePackageImportIdentifier:FHIRContext fhirContext) returns $basePackageImportIdentifier:Bundle|$basePackageImportIdentifier:OperationOutcome|$basePackageImportIdentifier:FHIRError {
+#if($service.getFhirInteractionMethodsContent().getHistoryMethodContent())
+        $service.getFhirInteractionMethodsContent().getHistoryMethodContent()
+#else
         return $basePackageImportIdentifier:createFHIRError("Not implemented", $basePackageImportIdentifier:ERROR, $basePackageImportIdentifier:INFORMATIONAL, httpStatusCode = http:STATUS_NOT_IMPLEMENTED);
+#end
     }
 
     // Retrieve the update history for all resources.

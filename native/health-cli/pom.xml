@@ -68,6 +68,35 @@
             <artifactId>jackson-annotations</artifactId>
             <version>${version.jackson.annotations}</version>
         </dependency>
+        <dependency>
+            <groupId>io.ballerina</groupId>
+            <artifactId>fhir-to-bal-lib</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.ballerina</groupId>
+            <artifactId>fhir-to-bal-template</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.ballerina</groupId>
+            <artifactId>fhir-prebuilt-service-gen</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ballerinalang</groupId>
+            <artifactId>ballerina-lang</artifactId>
+            <version>${version.ballerina.cli}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${version.jackson.core}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -77,8 +106,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
+                    <source>17</source>
+                    <target>17</target>
                 </configuration>
             </plugin>
             <plugin>

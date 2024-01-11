@@ -31,18 +31,23 @@ public class HandlerFactory {
     public static Handler createHandler(String command, PrintStream printStream, String specificationPath)
             throws BallerinaHealthException {
         switch (command) {
-            case "template":
+            case "template" -> {
                 Handler templateHandler = new TemplateGenHandler();
                 templateHandler.init(printStream, specificationPath);
                 return templateHandler;
-            case "client":
+            }
+            case "client" -> {
                 return new ClientGenHandler();
-            case "package":
+            }
+            case "package" -> {
                 Handler packageHandler = new PackageGenHandler();
                 packageHandler.init(printStream, specificationPath);
                 return packageHandler;
-            default:
-                throw new BallerinaHealthException(ErrorMessages.INVALID_MODE);
+            }
+            case "proxy" -> {
+                return new FHIRServiceGenHandler(printStream, specificationPath);
+            }
+            default -> throw new BallerinaHealthException(ErrorMessages.INVALID_MODE);
         }
     }
 }

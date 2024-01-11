@@ -1,0 +1,22 @@
+#if($interactionType == 'READ')
+$resourceType|error fhirInteractionResult = executeFhirInteraction("${resourceType}", fhirContext, id, (), ${profileList.get(0).packagePrefix}:${profileList.get(0).name}).ensureType();
+        if fhirInteractionResult is error {
+            return r4:createFHIRError("Error occurred while executing the $resourceType $interactionType.toLowerCase() interaction.", r4:CODE_SEVERITY_ERROR,
+                r4:TRANSIENT_EXCEPTION, cause = fhirInteractionResult);
+        }
+        return fhirInteractionResult;
+#elseif ($interactionType == 'SEARCH')
+        r4:Bundle|error fhirInteractionResult = executeFhirInteraction("${resourceType}", fhirContext, (), (), ${profileList.get(0).packagePrefix}:${profileList.get(0).name}).ensureType();
+        if fhirInteractionResult is error {
+            return r4:createFHIRError("Error occurred while executing the $resourceType $interactionType.toLowerCase() interaction.", r4:CODE_SEVERITY_ERROR,
+                r4:TRANSIENT_EXCEPTION, cause = fhirInteractionResult);
+        }
+        return fhirInteractionResult;
+#elseif ($interactionType == 'CREATE')
+$resourceType|error fhirInteractionResult = executeFhirInteraction("${resourceType}", fhirContext, (), payload, ${profileList.get(0).packagePrefix}:${profileList.get(0).name}).ensureType();
+        if fhirInteractionResult is error {
+            return r4:createFHIRError("Error occurred while executing the $resourceType $interactionType.toLowerCase() interaction.", r4:CODE_SEVERITY_ERROR,
+                r4:TRANSIENT_EXCEPTION, cause = fhirInteractionResult);
+        }
+        return fhirInteractionResult;
+#end

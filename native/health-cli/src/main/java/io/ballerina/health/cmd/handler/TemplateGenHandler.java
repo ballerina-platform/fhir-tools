@@ -73,12 +73,12 @@ public class TemplateGenHandler implements Handler {
     @Override
     public void setArgs(Map<String, Object> argsMap) {
 
-        this.packageName = (String) argsMap.get("--package-name");
-        this.orgName = (String) argsMap.get("--org-name");
-        this.version = (String) argsMap.get("--package-version");
-        this.dependentPackage = (String) argsMap.get("--dependent-package");
-        this.includedProfiles = (String[]) argsMap.get("--included-profile");
-        this.excludedProfiles = (String[]) argsMap.get("--excluded-profile");
+        this.packageName = (String) argsMap.get(HealthCmdConstants.CommandOptions.CMD_OPT_PACKAGE_NAME);
+        this.orgName = (String) argsMap.get(HealthCmdConstants.CommandOptions.CMD_OPT_ORG_NAME);
+        this.version = (String) argsMap.get(HealthCmdConstants.CommandOptions.CMD_OPT_PACKAGE_VERSION);
+        this.dependentPackage = (String) argsMap.get(HealthCmdConstants.CommandOptions.CMD_OPT_DEPENDENT_PACKAGE);
+        this.includedProfiles = (String[]) argsMap.get(HealthCmdConstants.CommandOptions.CMD_OPT_INCLUDED_PROFILE);
+        this.excludedProfiles = (String[]) argsMap.get(HealthCmdConstants.CommandOptions.CMD_EXCLUDED_PROFILE);
     }
 
     @Override

@@ -88,6 +88,15 @@ public class FhirSubCmd implements BLauncherCmd {
     @CommandLine.Option(names = "--dependent-package", description = "Dependent package name for the templates to be generated")
     private String dependentPackage;
 
+    @CommandLine.Option(names = "--project-name", description = "Project name for the prebuilt service to be generated")
+    private String projectName;
+
+    @CommandLine.Option(names = "--capability-statement", description = "Capability statement path")
+    private String capabilityStatementPath;
+
+    @CommandLine.Option(names = "--smart-configuration", description = "Smart configuration path")
+    private String smartConfigPath;
+
 
     @CommandLine.Parameters(description = "Custom arguments")
     private List<String> argList;
@@ -203,12 +212,15 @@ public class FhirSubCmd implements BLauncherCmd {
     public boolean engageSubCommand(List<String> argList) {
 
         Map<String, Object> argsMap = new HashMap<>();
-        argsMap.put("--package-name", packageName);
-        argsMap.put("--org-name", orgName);
-        argsMap.put("--package-version", packageVersion);
-        argsMap.put("--included-profile", includedProfiles);
-        argsMap.put("--excluded-profile", excludedProfiles);
-        argsMap.put("--dependent-package", dependentPackage);
+        argsMap.put(HealthCmdConstants.CommandOptions.CMD_OPT_PACKAGE_NAME, packageName);
+        argsMap.put(HealthCmdConstants.CommandOptions.CMD_OPT_ORG_NAME, orgName);
+        argsMap.put(HealthCmdConstants.CommandOptions.CMD_OPT_PACKAGE_VERSION, packageVersion);
+        argsMap.put(HealthCmdConstants.CommandOptions.CMD_OPT_INCLUDED_PROFILE, includedProfiles);
+        argsMap.put(HealthCmdConstants.CommandOptions.CMD_EXCLUDED_PROFILE, excludedProfiles);
+        argsMap.put(HealthCmdConstants.CommandOptions.CMD_DEPENDENT_PACKAGE, dependentPackage);
+        argsMap.put(HealthCmdConstants.CommandOptions.CMD_OPT_PROJECT_NAME, projectName);
+        argsMap.put(HealthCmdConstants.CommandOptions.CMD_OPT_CAPABILITY_STATEMENT, capabilityStatementPath);
+        argsMap.put(HealthCmdConstants.CommandOptions.CMD_OPT_SMART_CONFIGURATION, smartConfigPath);
         getTargetOutputPath();
         //spec path is the last argument
         try {
@@ -217,7 +229,7 @@ public class FhirSubCmd implements BLauncherCmd {
             printStream.println(HealthCmdConstants.PrintStrings.INVALID_SPEC_PATH);
             throw new BLauncherException();
         }
-        Handler toolHandler = null;
+        Handler toolHandler;
         try {
             toolHandler = HandlerFactory.createHandler(mode, printStream, specificationPath.toString());
         } catch (BallerinaHealthException e) {
