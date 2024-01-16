@@ -339,3 +339,18 @@ path = "resources/transactions-5.0.8.jar"
 
 [[dependency]]
 path = "resources/okhttp-3.14.0.jar"
+
+[[dependency]]
+path = "resources/swagger-models-2.1.5.jar"
+
+[[dependency]]
+path = "resources/swagger-parser-v3-2.0.26.jar"
+
+[[dependency]]
+path = "resources/swagger-core-2.1.7.jar"
+
+[[dependency]]
+path = "resources/snakeyaml-1.27.jar"
+
+[[dependency]]
+path = "resources/jackson-dataformat-yaml-2.12.1.jar"
