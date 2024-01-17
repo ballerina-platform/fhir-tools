@@ -26,6 +26,7 @@ public class BallerinaProjectConstants {
     public static final String CONFIG_PROFILE_IG = "implementationGuide";
     public static final String RESOURCE_PATH_TEMPLATES = "template";
     public static final String PROJECT_API_SUFFIX = ".api";
+    public static final String YAML_FILE_EXTENSION = ".yaml";
     public static final String BASE_PACKAGE_IMPORT_SUFFIX = "ballerinax/health.fhir.";
     public static final String SERVICE_PACKAGE_IMPORT_SUFFIX = "ballerinax/health.fhir";
     public static final String INTERNATIONAL_PACKAGE_IMPORT_SUFFIX = "ballerinax/health.fhir.r4.international401";
@@ -39,4 +40,5 @@ public class BallerinaProjectConstants {
 
         public static final String INVALID_INPUT = "[ERROR] Invalid input. Exiting the tool.";
     }
+    public static final String OAS_DEF_DIR_NAME = "oas";
 }

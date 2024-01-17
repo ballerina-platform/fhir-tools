@@ -49,6 +49,9 @@
         <maven-jar-plugin.version>3.1.2</maven-jar-plugin.version>
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
         <maven-exec-plugin.version>1.6.0</maven-exec-plugin.version>
+        <version.swagger.core>2.1.5</version.swagger.core>
+        <version.swagger.parser>2.0.26</version.swagger.parser>
+        <version.jackson.annotations>2.12.1</version.jackson.annotations>
     </properties>
 
     <dependencies>
@@ -94,6 +97,22 @@
             <groupId>org.apache.velocity</groupId>
             <artifactId>velocity</artifactId>
             <version>${velocity.version}</version>
+        </dependency>
+        <!-- OpenAPI related -->
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-models</artifactId>
+            <version>${version.swagger.core}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger.parser.v3</groupId>
+            <artifactId>swagger-parser</artifactId>
+            <version>${version.swagger.parser}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${version.jackson.annotations}</version>
         </dependency>
     </dependencies>
 
