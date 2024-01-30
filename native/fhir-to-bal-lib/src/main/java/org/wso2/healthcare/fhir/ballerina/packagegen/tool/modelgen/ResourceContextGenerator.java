@@ -106,6 +106,7 @@ public class ResourceContextGenerator {
                 resourceDefinitionAnnotation.setElements(new HashMap<>());
                 this.resourceTemplateContextInstance.setResourceDefinitionAnnotation(resourceDefinitionAnnotation);
 
+                populateElementDefinitionMap(structureDefinition.getSnapshot().getElement());
                 populateSnapshotElementMap(structureDefinition.getSnapshot().getElement());
                 populateDifferentialElementIdsList(structureDefinition.getDifferential().getElement());
 
@@ -130,6 +131,12 @@ public class ResourceContextGenerator {
             }
         }
         LOG.debug("Ended: Resource Template Context population");
+    }
+
+    private void populateElementDefinitionMap(List<ElementDefinition> elementDefinitions) {
+        for (ElementDefinition elementDefinition : elementDefinitions) {
+            this.resourceTemplateContextInstance.getSnapshotElementDefinitions().put(elementDefinition.getId(), elementDefinition);
+        }
     }
 
     /**
@@ -476,6 +483,12 @@ public class ResourceContextGenerator {
         if (element.hasChildElements()) {
             for (Map.Entry<String, Element> childEntry : element.getChildElements().entrySet()) {
                 populateResourceSliceElementsMap(childEntry.getValue());
+                if (element.isSlice()) {
+                    ElementDefinition elementDefinition = this.resourceTemplateContextInstance.getSnapshotElementDefinitions().get(childEntry.getValue().getPath());
+                    if (elementDefinition != null && "*".equals(elementDefinition.getMax()) && childEntry.getValue().getMax() != Integer.MAX_VALUE) {
+                        childEntry.getValue().setArray(true);
+                    }
+                }
             }
         }
 
