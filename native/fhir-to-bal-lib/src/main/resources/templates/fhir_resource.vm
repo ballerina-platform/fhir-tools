@@ -151,7 +151,7 @@ public type $util.resolveSpecialCharacters($extendedElement.getTypeName()) recor
     @constraint:Array {
        minLength: $childElement.getMin()
     }
-#elseif( ($childElement.min >= $min ) && ($childElement.max > 1) )
+#elseif( $childElement.isArray() && ($childElement.min >= $min ) && ($childElement.max >= 1) )
     @constraint:Array {
        minLength: $childElement.getMin(),
        maxLength: $childElement.getMax()

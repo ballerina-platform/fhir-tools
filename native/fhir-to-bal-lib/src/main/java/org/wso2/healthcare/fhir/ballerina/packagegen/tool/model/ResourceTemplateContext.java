@@ -18,6 +18,8 @@
 
 package org.wso2.healthcare.fhir.ballerina.packagegen.tool.model;
 
+import org.hl7.fhir.r4.model.ElementDefinition;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,6 +37,9 @@ public class ResourceTemplateContext {
     private String igName;
     private String baseIgName;
     private ResourceDefinitionAnnotation resourceDefinitionAnnotation;
+    // This was added to check the cardinality discrepancies of slice elements against their base elements
+    // Related issue: https://github.com/wso2-enterprise/open-healthcare/issues/1504
+    private HashMap<String, ElementDefinition> snapshotElementDefinitions = new HashMap<>();
     private HashMap<String, Element> snapshotElements = new HashMap<>();
     private List<String> differentialElementIds = new ArrayList<>();
     private HashMap<String, Element> resourceElements = new HashMap<>();
@@ -88,6 +93,14 @@ public class ResourceTemplateContext {
 
     public void setResourceDefinitionAnnotation(ResourceDefinitionAnnotation resourceDefinitionAnnotation) {
         this.resourceDefinitionAnnotation = resourceDefinitionAnnotation;
+    }
+
+    public HashMap<String, ElementDefinition> getSnapshotElementDefinitions() {
+        return snapshotElementDefinitions;
+    }
+
+    public void setSnapshotElementDefinitions(HashMap<String, ElementDefinition> snapshotElementDefinitions) {
+        this.snapshotElementDefinitions = snapshotElementDefinitions;
     }
 
     public HashMap<String, Element> getSnapshotElements() {

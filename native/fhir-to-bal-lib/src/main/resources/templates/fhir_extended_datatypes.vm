@@ -68,7 +68,7 @@ public type ${mapEntry.value.name} record {|
 #if($elementMapEntry.value.getBalDataType().getType() == 'enum')
 public enum $elementMapEntry.value.typeName {
 #foreach ($childElementMapEntry in ${elementMapEntry.value.elements.entrySet()})
-    CODE_${elementMapEntry.value.typeName.toUpperCase()}_${childElementMapEntry.key.toUpperCase()} = "$childElementMapEntry.key"#if($velocityCount != $elementMapEntry.value.elements.entrySet().size()),$util.getNewLine()#end
+    CODE_${elementMapEntry.value.typeName.toUpperCase()}_$util.resolveSpecialCharacters(${childElementMapEntry.key.toUpperCase()}).toUpperCase() = "$childElementMapEntry.key"#if($velocityCount != $elementMapEntry.value.elements.entrySet().size()),$util.getNewLine()#end
 #end
 $util.getNewLine()};
 
