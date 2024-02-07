@@ -61,4 +61,15 @@ public class BallerinaProjectUtil {
                 .replaceAll("-", "_")
                 .replaceAll("\\s+", "");
     }
+
+    public static String resolveFhirVersionToRevisionCode(String fhirVersion) {
+        if (fhirVersion.startsWith("4.")) {
+            return "r4";
+        } else if (fhirVersion.equals("5.")) {
+            return "r5";
+        } else {
+            // default to r4
+            return "r4";
+        }
+    }
 }

@@ -39,4 +39,24 @@ public class BallerinaProjectConstants {
 
         public static final String INVALID_INPUT = "[ERROR] Invalid input. Exiting the tool.";
     }
+
+    public static class CapabilityStmt {
+        public static final String REFERENCE_SERVER_CAPABILITIES = "referenceServerCapabilities";
+        public static final String CAPABILITY_STATEMENT = "CapabilityStatement";
+        public static final String STRUCTURE_DEFINITION = "StructureDefinition";
+    }
+
+    public static class BalCentral {
+        public static final String CENTRAL_URL = "https://api.central.ballerina.io/2.0/";
+        public static final String PACKAGES_PATH = "/registry/packages/";
+        public static final String DOCS_PATH = "/docs/";
+        public static final String IMPORT_STATEMENT = "importStatement";
+        public static final String DOCS_DATA = "docsData";
+        public static final String MODULES = "modules";
+        public static final String CONSTANTS = "constants";
+        public static final String RECORDS = "records";
+        public static final String VALUE = "value";
+        public static final String NAME = "name";
+        public static final String PROFILE_BASE_PREFIX = "PROFILE_BASE_";
+    }
 }

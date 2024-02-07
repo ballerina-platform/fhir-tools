@@ -51,6 +51,15 @@ public class FHIRProfile {
         this.name = BallerinaProjectUtil.resolveSpecialCharacters(profileDef.getName());
     }
 
+    public FHIRProfile(String url, String igName, String resourceType, String resourceRecordName) {
+        this.igName = igName;
+        this.resourceType = resourceType;
+        isAbstract = false;
+        this.url = url;
+        this.importsList = new HashSet<>();
+        this.name = resourceRecordName;
+    }
+
     public StructureDefinition getProfileDef() {
         return profileDef;
     }
@@ -138,5 +147,9 @@ public class FHIRProfile {
         } else {
             this.packagePrefix = igPackage.substring(igPackage.lastIndexOf(".") + 1);
         }
+    }
+
+    public void setPackagePrefix(String packagePrefix) {
+        this.packagePrefix = packagePrefix;
     }
 }

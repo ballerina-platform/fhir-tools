@@ -27,6 +27,7 @@ import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.config.BallerinaP
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.BallerinaService;
 
 import java.io.File;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,9 +43,13 @@ public class ServiceGenerator extends AbstractFHIRTemplateGenerator {
     @Override
     public void generate(ToolContext toolContext, Map<String, Object> generatorProperties) throws CodeGenException {
         String directoryPath = generatorProperties.get("projectAPIPath") + File.separator;
+        String serviceFileName = "service.bal";
+        if (generatorProperties.containsKey("serviceFileName")) {
+            serviceFileName = (String) generatorProperties.get("serviceFileName");
+        }
         this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
                 File.separator + "balService.vm", createTemplateContextForBalService(
-                generatorProperties), directoryPath, "service.bal");
+                generatorProperties), directoryPath, serviceFileName);
     }
 
     private BallerinaService initializeServiceWithDefaults(Map<String, Object> generatorProperties) {
@@ -62,10 +67,25 @@ public class ServiceGenerator extends AbstractFHIRTemplateGenerator {
     private TemplateContext createTemplateContextForBalService(Map<String, Object> generatorProperties) {
         TemplateContext templateContext = this.getNewTemplateContext();
         BallerinaService ballerinaService = initializeServiceWithDefaults(generatorProperties);
+        if (generatorProperties.containsKey("servicePort")) {
+            ballerinaService.setPort((Integer) generatorProperties.get("servicePort"));
+        }
         templateContext.setProperty("service", ballerinaService);
+        if (generatorProperties.containsKey("interactionMethods")) {
+            Map<String, String> interactionMethods = (Map<String, String>) generatorProperties.get("interactionMethods");
+            interactionMethods.forEach((key, value) -> {
+                ballerinaService.getFhirInteractionMethodsContent().setInteractionContentByType(key, value);
+            });
+        }
         templateContext.setProperty("basePackageImportIdentifier", generatorProperties.get("basePackageImportIdentifier"));
         templateContext.setProperty("servicePackageImportIdentifier", generatorProperties.get("servicePackageImportIdentifier"));
         templateContext.setProperty("dependentPackageImportIdentifier", generatorProperties.get("dependentPackageImportIdentifier"));
+        //default api config
+        templateContext.setProperty("apiConfName", "apiConfig");
+        if (generatorProperties.containsKey("apiConfName")) {
+            templateContext.setProperty("apiConfName", generatorProperties.get("apiConfName"));
+        }
+        templateContext.setProperty("currentYear", Calendar.getInstance().get(Calendar.YEAR));
         return templateContext;
     }
 }

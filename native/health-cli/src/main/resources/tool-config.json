@@ -90,6 +90,26 @@
             ]
           }
         }
+      },
+      "service" : {
+        "config": {
+          "name": "BallerinaFhirServiceGenerationTool",
+          "enable": true,
+          "igPackageInfo" : {
+            "http://hl7.org/fhir/us/core/StructureDefinition" : {
+              "packagePrefix" : "uscore501",
+              "importStatement" : "ballerinax/health.fhir.r4.uscore501"
+            },
+            "http://hl7.org/fhir/StructureDefinition" : {
+              "packagePrefix" : "international401",
+              "importStatement" : "ballerinax/health.fhir.r4.international401"
+            },
+            "http://hl7.org.au/fhir/StructureDefinition" : {
+              "packagePrefix" : "aubase410",
+              "importStatement" : "ballerinax/health.fhir.r4.aubase410"
+            }
+          }
+        }
       }
     },
     "terminologies": [

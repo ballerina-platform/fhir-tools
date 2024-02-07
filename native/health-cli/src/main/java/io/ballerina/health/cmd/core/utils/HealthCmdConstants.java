@@ -22,6 +22,7 @@ public class HealthCmdConstants {
 
     public static final String CMD_MODE_TEMPLATE = "template";
     public static final String CMD_MODE_PACKAGE = "package";
+    public static final String CMD_MODE_SERVICE_GEN = "service";
     public static final String CMD_SUB_FHIR = "fhir";
     public static final String CMD_SUB_HL7 = "hl7";
     public static final String CMD_CONFIG_FILENAME = "tool-config.json";
@@ -52,6 +53,20 @@ public class HealthCmdConstants {
         public static final String DEPENDENT_INCORRECT = "[ERROR] Format of the dependent package is incorrect.";
         public static final String INCLUDED_EXCLUDED_TOGETHER = "[ERROR] Both --included-profile and "
                                                                 + "--excluded-profile cannot be used together.";
+    }
+
+    public static class CommandOptions {
+        public static final String CMD_OPT_PACKAGE_NAME = "--package-name";
+        public static final String CMD_OPT_ORG_NAME = "--org-name";
+        public static final String CMD_OPT_PACKAGE_VERSION = "--package-version";
+        public static final String CMD_OPT_INCLUDED_PROFILE = "--included-profile";
+        public static final String CMD_OPT_DEPENDENT_PACKAGE = "--dependent-package";
+        public static final String CMD_EXCLUDED_PROFILE = "--excluded-profile";
+        public static final String CMD_DEPENDENT_PACKAGE = "--dependent-package";
+        public static final String CMD_OPT_PROJECT_NAME = "--project-name";
+        public static final String CMD_OPT_SERVER_NAME = "--server-name";
+        public static final String CMD_OPT_CAPABILITY_STATEMENT = "--capability-statement";
+        public static final String CMD_OPT_SMART_CONFIGURATION = "--smart-configuration";
     }
 
 }
