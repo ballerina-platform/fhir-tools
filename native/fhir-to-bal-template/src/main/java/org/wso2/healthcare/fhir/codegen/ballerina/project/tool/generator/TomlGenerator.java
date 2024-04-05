@@ -44,7 +44,7 @@ public class TomlGenerator extends AbstractFHIRTemplateGenerator {
     public void generate(ToolContext toolContext, Map<String, Object> generatorProperties) throws CodeGenException {
         String directoryPath = generatorProperties.get("projectAPIPath") + File.separator;
         this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES
-                        + File.separator + "ballerinaToml.vm",
+                        + BallerinaProjectConstants.RESOURCE_PATH_SEPERATOR + "ballerinaToml.vm",
                 createTemplateContextForToml(generatorProperties), directoryPath, "Ballerina.toml");
     }
 

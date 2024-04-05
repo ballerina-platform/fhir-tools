@@ -29,6 +29,7 @@ public class BallerinaProjectConstants {
     public static final String BASE_PACKAGE_IMPORT_SUFFIX = "ballerinax/health.fhir.";
     public static final String SERVICE_PACKAGE_IMPORT_SUFFIX = "ballerinax/health.fhir";
     public static final String INTERNATIONAL_PACKAGE_IMPORT_SUFFIX = "ballerinax/health.fhir.r4.international401";
+    public static final String RESOURCE_PATH_SEPERATOR = "/";
 
     public class PrintStrings {
 

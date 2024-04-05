@@ -135,22 +135,22 @@ public class PackageTemplateGenerator extends AbstractFHIRTemplateGenerator {
             String packagePath = (String) this.packageProperties.get("packagePath");
             String filePath = CommonUtil.generateFilePath(packagePath, "Ballerina"
                     + ToolConstants.TOML_EXTENSION, "");
-            this.getTemplateEngine().generateOutputAsFile(ToolConstants.TEMPLATE_PATH + File.separator + "ballerina_toml.vm",
+            this.getTemplateEngine().generateOutputAsFile(ToolConstants.TEMPLATE_PATH + ToolConstants.RESOURCE_PATH_SEPERATOR + "ballerina_toml.vm",
                     this.createTemplateContextForBallerinaToml(toolConfig), "", filePath);
 
             filePath = CommonUtil.generateFilePath(packagePath, "Package"
                     + ToolConstants.MD_EXTENSION, "");
-            this.getTemplateEngine().generateOutputAsFile(ToolConstants.TEMPLATE_PATH + File.separator + "package.vm",
+            this.getTemplateEngine().generateOutputAsFile(ToolConstants.TEMPLATE_PATH + ToolConstants.RESOURCE_PATH_SEPERATOR + "package.vm",
                     this.createTemplateContextForPackageMD(toolConfig), "", filePath);
 
             filePath = CommonUtil.generateFilePath(packagePath, "initializer"
                     + ToolConstants.BAL_EXTENSION, "");
-            this.getTemplateEngine().generateOutputAsFile(ToolConstants.TEMPLATE_PATH + File.separator + "initializer.vm",
+            this.getTemplateEngine().generateOutputAsFile(ToolConstants.TEMPLATE_PATH + ToolConstants.RESOURCE_PATH_SEPERATOR + "initializer.vm",
                     this.createTemplateContextForInitializer(), "", filePath);
 
             filePath = CommonUtil.generateFilePath(packagePath, "variables"
                     + ToolConstants.BAL_EXTENSION, "");
-            this.getTemplateEngine().generateOutputAsFile(ToolConstants.TEMPLATE_PATH + File.separator + "variables.vm",
+            this.getTemplateEngine().generateOutputAsFile(ToolConstants.TEMPLATE_PATH + ToolConstants.RESOURCE_PATH_SEPERATOR + "variables.vm",
                     this.createTemplateContextForVariables(), "", filePath);
         } catch (CodeGenException e) {
             throw new CodeGenException("Error occurred while generating template artifacts for ballerina package ", e);

@@ -101,7 +101,7 @@ public class ResourceContextGenerator {
                 resourceDefinitionAnnotation.setName(GeneratorUtils.getInstance().resolveSpecialCharacters(structureDefinition.getName()));
                 DataTypesRegistry.getInstance().addDataType(GeneratorUtils.getInstance().resolveSpecialCharacters(structureDefinition.getName()));
                 resourceDefinitionAnnotation.setBaseType(CommonUtil.getSplitTokenAt(structureDefinition
-                        .getBaseDefinition(), File.separator, ToolConstants.TokenPosition.END));
+                        .getBaseDefinition(), ToolConstants.RESOURCE_PATH_SEPERATOR, ToolConstants.TokenPosition.END));
                 resourceDefinitionAnnotation.setProfile(this.resourceTemplateContextInstance.getProfile());
                 resourceDefinitionAnnotation.setElements(new HashMap<>());
                 this.resourceTemplateContextInstance.setResourceDefinitionAnnotation(resourceDefinitionAnnotation);

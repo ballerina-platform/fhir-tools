@@ -41,13 +41,13 @@ public class MetaGenerator extends AbstractFHIRTemplateGenerator {
     public void generate(ToolContext toolContext, Map<String, Object> generatorProperties) throws CodeGenException {
         String directoryPath = generatorProperties.get("projectAPIPath") + File.separator;
         this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
-                File.separator + "packageMd.vm", createTemplateContextForMeta(generatorProperties), directoryPath,
+                BallerinaProjectConstants.RESOURCE_PATH_SEPERATOR + "packageMd.vm", createTemplateContextForMeta(generatorProperties), directoryPath,
                 "Package.md");
         this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
-                File.separator + "gitignore.vm", createTemplateContextForMeta(generatorProperties), directoryPath,
+                BallerinaProjectConstants.RESOURCE_PATH_SEPERATOR + "gitignore.vm", createTemplateContextForMeta(generatorProperties), directoryPath,
                 ".gitignore");
         this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
-                File.separator + "apiConfig.vm", createTemplateContextForMeta(generatorProperties), directoryPath,
+                BallerinaProjectConstants.RESOURCE_PATH_SEPERATOR + "apiConfig.vm", createTemplateContextForMeta(generatorProperties), directoryPath,
                 "api_config.bal");
     }
 
