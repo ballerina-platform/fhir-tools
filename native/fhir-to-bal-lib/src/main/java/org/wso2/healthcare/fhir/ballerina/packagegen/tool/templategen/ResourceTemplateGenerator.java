@@ -99,7 +99,7 @@ public class ResourceTemplateGenerator extends AbstractFHIRTemplateGenerator {
                         + ToolConstants.BAL_EXTENSION, "");
 
                 this.getTemplateEngine().generateOutputAsFile(ToolConstants.TEMPLATE_PATH +
-                                File.separator + "fhir_resource.vm", this.createTemplateContextForResourceSkeletons(
+                                ToolConstants.RESOURCE_PATH_SEPERATOR + "fhir_resource.vm", this.createTemplateContextForResourceSkeletons(
                                         resourceTemplateContext, this.packageTemplateContext), "", filePath);
             }
         } catch (CodeGenException e) {

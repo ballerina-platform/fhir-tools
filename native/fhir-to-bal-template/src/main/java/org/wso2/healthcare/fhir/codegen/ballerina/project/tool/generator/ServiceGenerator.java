@@ -43,7 +43,7 @@ public class ServiceGenerator extends AbstractFHIRTemplateGenerator {
     public void generate(ToolContext toolContext, Map<String, Object> generatorProperties) throws CodeGenException {
         String directoryPath = generatorProperties.get("projectAPIPath") + File.separator;
         this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
-                File.separator + "balService.vm", createTemplateContextForBalService(
+                BallerinaProjectConstants.RESOURCE_PATH_SEPERATOR + "balService.vm", createTemplateContextForBalService(
                 generatorProperties), directoryPath, "service.bal");
     }
 

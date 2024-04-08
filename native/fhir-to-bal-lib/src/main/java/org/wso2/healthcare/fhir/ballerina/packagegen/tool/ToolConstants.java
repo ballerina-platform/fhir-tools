@@ -70,6 +70,7 @@ public class ToolConstants {
     public static final String MD_EXTENSION = ".md";
     public static final String CONSTRAINTS_LIB_IMPORT = "ballerina/constraint";
     public static final String ELEMENT = "Element";
+    public static final String RESOURCE_PATH_SEPERATOR = "/";
 
     public enum TokenPosition {
         BEGIN,

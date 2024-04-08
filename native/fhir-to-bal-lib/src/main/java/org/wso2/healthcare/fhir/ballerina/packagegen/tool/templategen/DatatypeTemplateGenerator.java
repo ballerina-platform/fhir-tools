@@ -67,7 +67,7 @@ public class DatatypeTemplateGenerator extends AbstractFHIRTemplateGenerator {
         if (!datatypeContexts.isEmpty()) {
             String filePath = CommonUtil.generateFilePath(packagePath, "", "datatypes.bal");
             this.getTemplateEngine().generateOutputAsFile(ToolConstants.TEMPLATE_PATH +
-                    File.separator + "fhir_extended_datatypes.vm", templateContext, "", filePath);
+                    ToolConstants.RESOURCE_PATH_SEPERATOR + "fhir_extended_datatypes.vm", templateContext, "", filePath);
         }
     }
 }
