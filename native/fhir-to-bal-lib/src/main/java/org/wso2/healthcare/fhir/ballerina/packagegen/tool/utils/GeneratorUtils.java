@@ -307,7 +307,7 @@ public class GeneratorUtils {
         String extendedElementTypeName = generateExtendedElementIdentifier(element, typeNamePrefix);
         extendedElement.setTypeName(extendedElementTypeName);
         if (element.getProfiles() != null && element.getProfiles().containsKey(element.getDataType())) {
-            element.getProfiles().replace(element.getDataType(), extendedElement.getTypeName());
+            element.getProfiles().get(element.getDataType()).setProfileType(extendedElement.getTypeName());
         }
         element.setDataType(extendedElement.getTypeName());
         extendedElement.setBalDataType(balType);

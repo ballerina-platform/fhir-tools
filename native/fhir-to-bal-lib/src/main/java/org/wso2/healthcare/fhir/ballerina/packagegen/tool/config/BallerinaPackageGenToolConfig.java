@@ -109,6 +109,9 @@ public class BallerinaPackageGenToolConfig extends AbstractToolConfig {
             case "packageConfig.org":
                 this.packageConfig.setOrg(value.getAsString());
                 break;
+            case "packageConfig.parentPackage":
+                this.packageConfig.setParentPackage(value.getAsString());
+                break;
             case "packageConfig.name.append":
                 this.packageConfig.setName(packageConfig.getName() + "." + value.getAsString());
                 break;

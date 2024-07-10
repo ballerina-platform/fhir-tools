@@ -29,7 +29,7 @@ import java.util.Map;
  */
 public class Element {
     private String dataType;
-    private Map<String, String> profiles;
+    private Map<String, DataTypeProfile> profiles;
     private String name;
     private String path;
     private int min;
@@ -52,11 +52,11 @@ public class Element {
     public void setDataType(String dataType) {
         this.dataType = dataType;
     }
-    public Map<String, String> getProfiles() {
+    public Map<String, DataTypeProfile> getProfiles() {
         return profiles;
     }
 
-    public void setProfiles(Map<String, String> profiles) {
+    public void setProfiles(Map<String, DataTypeProfile> profiles) {
         this.profiles = profiles;
     }
 
@@ -64,7 +64,8 @@ public class Element {
         if (this.profiles == null) {
             this.profiles = new HashMap<>();
         }
-        this.profiles.putIfAbsent(profile, dataType);
+        DataTypeProfile dataTypeProfile = new DataTypeProfile(profile, dataType);
+        this.profiles.putIfAbsent(profile, dataTypeProfile);
     }
 
     public String getTypeWithImportPrefix() {
@@ -198,4 +199,5 @@ public class Element {
     public void setRequirement(String requirement) {
         this.requirement = requirement;
     }
+
 }
