@@ -79,6 +79,9 @@ public class FhirSubCmd implements BLauncherCmd {
     @CommandLine.Option(names = {"--package-version"}, description = "version of the Ballerina package")
     private String packageVersion;
 
+    @CommandLine.Option(names = {"--parent-package"}, description = "version of the Ballerina package")
+    private String parentPackage;
+
     @CommandLine.Option(names = "--included-profile", description = "Profiles to be included in the template")
     private String[] includedProfiles;
 
@@ -209,6 +212,7 @@ public class FhirSubCmd implements BLauncherCmd {
         argsMap.put("--included-profile", includedProfiles);
         argsMap.put("--excluded-profile", excludedProfiles);
         argsMap.put("--dependent-package", dependentPackage);
+        argsMap.put("--parent-package", parentPackage);
         getTargetOutputPath();
         //spec path is the last argument
         try {

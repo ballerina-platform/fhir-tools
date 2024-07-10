@@ -45,6 +45,7 @@ public class FhirPackageGenHandler implements Handler {
     private String packageName;
     private String orgName;
     private String version;
+    private String parentPackage;
 
     private JsonObject configJson;
     private PrintStream printStream;
@@ -70,6 +71,7 @@ public class FhirPackageGenHandler implements Handler {
         this.packageName = (String) argsMap.get("--package-name");
         this.orgName = (String) argsMap.get("--org-name");
         this.version = (String) argsMap.get("--package-version");
+        this.parentPackage = (String) argsMap.get("--parent-package");
 
     }
 
@@ -117,6 +119,11 @@ public class FhirPackageGenHandler implements Handler {
                     JsonElement overrideConfig = new Gson().toJsonTree(version.toLowerCase());
                     toolConfigInstance.overrideConfig("packageConfig.version", overrideConfig);
                 }
+                if (parentPackage == null || parentPackage.isEmpty()) {
+                    parentPackage = "";
+                }
+                JsonElement overrideConfig = new Gson().toJsonTree(parentPackage);
+                toolConfigInstance.overrideConfig("packageConfig.parentPackage", overrideConfig);
 
                 tool = (Tool) toolClazz.getConstructor().newInstance();
                 tool.initialize(toolConfigInstance);

@@ -40,6 +40,7 @@ public class PackageConfig {
     private String repository;
     private String basePackage;
     private List<DependencyConfig> dependencyConfigList;
+    private String parentPackage;
 
     public PackageConfig(JsonObject packageConfigJson) {
         this.org = packageConfigJson.getAsJsonPrimitive(ToolConstants.CONFIG_PACKAGE_ORG).getAsString();
@@ -49,6 +50,7 @@ public class PackageConfig {
         this.authors = packageConfigJson.getAsJsonArray(ToolConstants.CONFIG_PACKAGE_AUTHORS).getAsString();
         this.repository = packageConfigJson.getAsJsonPrimitive(ToolConstants.CONFIG_PACKAGE_REPOSITORY).getAsString();
         this.basePackage = packageConfigJson.getAsJsonPrimitive(ToolConstants.CONFIG_BASE_PACKAGE).getAsString();
+        this.parentPackage = packageConfigJson.getAsJsonPrimitive(ToolConstants.CONFIG_PARENT_PACKAGE).getAsString();
         populateDependencies(packageConfigJson.getAsJsonArray(ToolConstants.CONFIG_PACKAGE_DEPENDENCY).getAsJsonArray());
     }
 
@@ -60,6 +62,7 @@ public class PackageConfig {
         this.authors = packageConfigToml.getString(ToolConstants.CONFIG_PACKAGE_AUTHORS_TOML);
         this.repository = packageConfigToml.getString(ToolConstants.CONFIG_PACKAGE_REPOSITORY_TOML);
         this.basePackage = packageConfigToml.getString(ToolConstants.CONFIG_BASE_PACKAGE_TOML);
+        this.parentPackage = packageConfigToml.getString(ToolConstants.CONFIG_PARENT_PACKAGE_TOML);
         populateDependencies(packageConfigToml.getArrayOrEmpty(ToolConstants.CONFIG_PACKAGE_DEPENDENCY_TOML));
     }
 
@@ -157,5 +160,13 @@ public class PackageConfig {
 
     public void setDependencyConfigList(List<DependencyConfig> dependencyConfigList) {
         this.dependencyConfigList = dependencyConfigList;
+    }
+
+    public String getParentPackage() {
+        return parentPackage;
+    }
+
+    public void setParentPackage(String parentPackage) {
+        this.parentPackage = parentPackage;
     }
 }
