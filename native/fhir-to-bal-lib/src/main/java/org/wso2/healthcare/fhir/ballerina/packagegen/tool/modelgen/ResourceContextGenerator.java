@@ -137,13 +137,10 @@ public class ResourceContextGenerator {
     private void populateElementDefinitionMap(List<ElementDefinition> elementDefinitions) {
         for (ElementDefinition elementDefinition : elementDefinitions) {
             String id = elementDefinition.getId();
-            if (id.contains(":")) {
-                if (id.substring(id.indexOf("."), id.lastIndexOf(":")).contains(":")) {
-                    //todo: rewrite the logic using regex
-
-                    // nested slice; ignore processing
-                    continue;
-                }
+            int colonCount = StringUtils.countMatches(id, ":");
+            if (colonCount>1) {
+                // nested slice; ignore processing
+                continue;
             }
             this.resourceTemplateContextInstance.getSnapshotElementDefinitions().put(id, elementDefinition);
         }

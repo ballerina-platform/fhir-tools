@@ -79,7 +79,8 @@ public class FhirSubCmd implements BLauncherCmd {
     @CommandLine.Option(names = {"--package-version"}, description = "version of the Ballerina package")
     private String packageVersion;
 
-    @CommandLine.Option(names = {"--parent-package"}, description = "version of the Ballerina package")
+    @CommandLine.Option(names = {"--parent-package"}, description = "fully qualified name of the parent " +
+            "package. (if exists)")
     private String parentPackage;
 
     @CommandLine.Option(names = "--included-profile", description = "Profiles to be included in the template")
