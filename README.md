@@ -5,7 +5,7 @@
 - [Java 17](https://openjdk.org/projects/jdk/17/)
 - [Ballerina Swan Lake Update 8](https://ballerina.io/downloads/) (v2201.8.1)
 - Add your Github Personal Access Token to the `.m2/settings.xml` to get access the `ballerina-lang` dependencies.
-  (Make sure to have the id as `ballerina-language-repo`)
+  (The access token should have the sufficient read access and make sure to have the id as `ballerina-language-repo` setting.xml file)
 ```xml
 <servers>
     <server>
@@ -15,6 +15,8 @@
     </server>
 </servers>
 ```
+- Build the [Codegen tool framework](https://github.com/wso2/open-healthcare-codegen-tool-framework) repo locally. 
+  This will add the required dependencies to your local maven repository.
 ### Build
 ```shell
  mvn clean install
