@@ -68,6 +68,11 @@
             <artifactId>jackson-annotations</artifactId>
             <version>${version.jackson.annotations}</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${version.gson}</version>
+        </dependency>
     </dependencies>
 
     <build>

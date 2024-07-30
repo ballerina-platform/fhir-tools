@@ -52,6 +52,7 @@
         <version.swagger.core>2.1.5</version.swagger.core>
         <version.swagger.parser>2.0.26</version.swagger.parser>
         <version.jackson.annotations>2.12.1</version.jackson.annotations>
+        <version.gson>2.11.0</version.gson>
     </properties>
 
     <dependencies>
@@ -113,6 +114,12 @@
             <artifactId>jackson-annotations</artifactId>
             <version>${version.jackson.annotations}</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${version.gson}</version>
+        </dependency>
+
     </dependencies>
 
     <repositories>
