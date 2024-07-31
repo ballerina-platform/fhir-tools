@@ -28,19 +28,23 @@ import java.io.PrintStream;
  */
 public class HandlerFactory {
 
-    public static Handler createHandler(String command, PrintStream printStream, String specificationPath)
+    public static Handler createHandler(String subCommand, String mode, PrintStream printStream, String specificationPath)
             throws BallerinaHealthException {
-        switch (command) {
-            case "template":
-                Handler templateHandler = new TemplateGenHandler();
+        switch (subCommand+":"+mode) {
+            case "fhir:template":
+                Handler templateHandler = new FhirTemplateGenHandler();
                 templateHandler.init(printStream, specificationPath);
                 return templateHandler;
-            case "client":
-                return new ClientGenHandler();
-            case "package":
-                Handler packageHandler = new PackageGenHandler();
+            case "fhir:client":
+                return new FhirClientGenHandler();
+            case "fhir:package":
+                Handler packageHandler = new FhirPackageGenHandler();
                 packageHandler.init(printStream, specificationPath);
                 return packageHandler;
+            case "cds:template":
+                Handler crdTemplateHnadler = new CrdTemplateGenHandler();
+                crdTemplateHnadler.init(printStream, specificationPath);
+                return crdTemplateHnadler;
             default:
                 throw new BallerinaHealthException(ErrorMessages.INVALID_MODE);
         }

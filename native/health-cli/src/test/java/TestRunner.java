@@ -44,6 +44,7 @@ public class TestRunner {
         argsMap.put("--excluded-profile", null);
         argsMap.put("--dependency", null);
         String mode = "package";
+        String command = "fhir";
 
         String resourcePath = Paths.get(Objects.requireNonNull(TestRunner.class.getClassLoader().getResource("io")).getPath()).getParent().getParent().toString() + "/test-classes" + "/profiles.USCore";
         File resourcesDirectory = new File(resourcePath);
@@ -60,7 +61,7 @@ public class TestRunner {
         }
         Handler toolHandler = null;
         try {
-            toolHandler = HandlerFactory.createHandler(mode, System.out, specificationPath.toString());
+            toolHandler = HandlerFactory.createHandler(command, mode, System.out, specificationPath.toString());
         } catch (BallerinaHealthException e) {
             System.out.println(e);
             throw new BLauncherException();

@@ -87,7 +87,7 @@ public class HealthCmd implements BLauncherCmd {
     private void printHelpTextAsStream() {
         Class<?> clazz = FhirSubCmd.class;
         ClassLoader classLoader = clazz.getClassLoader();
-        InputStream inputStream = classLoader.getResourceAsStream(HealthCmdConstants.CMD_HELPTEXT_FILENAME);
+        InputStream inputStream = classLoader.getResourceAsStream(HealthCmdConstants.CMD_HELP_TEXT_FILENAME);
         if (inputStream != null) {
             try (InputStreamReader inputStreamREader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
                  BufferedReader br = new BufferedReader(inputStreamREader)) {

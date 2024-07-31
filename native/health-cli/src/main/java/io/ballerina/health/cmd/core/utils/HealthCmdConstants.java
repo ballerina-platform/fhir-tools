@@ -27,7 +27,8 @@ public class HealthCmdConstants {
     public static final String CMD_CONFIG_FILENAME = "tool-config.json";
     public static final String CMD_MVN_ARTIFACT_NAME = "health-tools";
     public static final String CMD_RESOURCE_PATH_SUFFIX = "/modules/health/resources";
-    public static final String CMD_HELPTEXT_FILENAME = "ballerina-health.help";
+    public static final String CMD_HELP_TEXT_FILENAME = "ballerina-health.help";
+    public static final String CMD_CDS_HELP_TEXT_FILENAME = "ballerina-health-cds.help";
     public static final String CMD_DEFAULT_IG_NAME = "FHIR";
     public static final String CMD_DEFAULT_ORG_NAME = "healthcare";
 
