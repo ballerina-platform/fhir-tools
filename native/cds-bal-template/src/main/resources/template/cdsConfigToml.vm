@@ -1,0 +1,20 @@
+#set ($map = $service.getCdsHooks())
+#foreach($mapEntry in $map.entrySet())
+[[ballerinax.health.fhir.cds.cds_services]]
+id = "$mapEntry.value.getId()"
+hook = "$mapEntry.value.getHook()"
+title = "$mapEntry.value.getTitle()"
+description = "$mapEntry.value.getDescription()"
+#if ($mapEntry.value.getUsageRequirements())
+usageRequirements = "$mapEntry.value.getUsageRequirements()"
+#end
+#if ($mapEntry.value.getPrefetch())
+[ballerinax.health.fhir.cds.cds_services.prefetch]
+#set ($mapPrefetch = $mapEntry.value.getPrefetch())
+#foreach($mapPrefetchEntry in $mapPrefetch.entrySet())
+$mapPrefetchEntry.key = "$mapPrefetchEntry.value"
+#end
+#end
+
+#end
+
