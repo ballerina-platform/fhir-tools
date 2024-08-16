@@ -1,5 +1,5 @@
 import ballerina/http;
-import thiyanarumugam/health.fhir.cds;
+import ballerinax/health.fhir.cds;
 
 service http:InterceptableService / on new http:Listener(8080) {
 

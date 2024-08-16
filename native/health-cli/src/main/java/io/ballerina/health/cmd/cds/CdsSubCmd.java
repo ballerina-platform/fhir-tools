@@ -148,6 +148,7 @@ public class CdsSubCmd implements BLauncherCmd {
         argsMap.put(CMD_OPTION_ORG_NAME, orgName);
         argsMap.put(CMD_OPTION_PACKAGE_VERSION, packageVersion);
         getTargetOutputPath();
+
         //spec path is the last argument
         //resolved path from the input parameter
         Path cdsToolConfigFilePath;
@@ -157,6 +158,7 @@ public class CdsSubCmd implements BLauncherCmd {
             printStream.println(HealthCmdConstants.PrintStrings.INVALID_SPEC_PATH);
             throw new BLauncherException();
         }
+
         Handler toolHandler;
         try {
             toolHandler = HandlerFactory.createHandler(toolName, mode, printStream, cdsToolConfigFilePath.toString());

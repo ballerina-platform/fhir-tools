@@ -55,6 +55,7 @@ public class CdsBallerinaProjectTool extends AbstractTool {
         String targetRoot = ballerinaProjectToolConfig.getTargetDir();
         String targetDirectory = targetRoot + File.separator;
         BallerinaProjectGenerator cdsBalGenerator = new BallerinaProjectGenerator(targetDirectory);
+
         Map<String, Object> generatorProperties = new HashMap<>();
         generatorProperties.put(CONFIG, ballerinaProjectToolConfig);
         cdsBalGenerator.setGeneratorProperties(generatorProperties);

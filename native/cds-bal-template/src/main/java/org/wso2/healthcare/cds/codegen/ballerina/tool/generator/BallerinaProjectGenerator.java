@@ -52,8 +52,6 @@ public class BallerinaProjectGenerator extends AbstractFHIRTemplateGenerator {
     public void generate(ToolContext toolContext, Map<String, Object> generatorProperties) throws CodeGenException {
 
         BallerinaProjectToolConfig ballerinaProjectToolConfig = (BallerinaProjectToolConfig) generatorProperties.get(CONFIG);
-
-        //evaluate usage of ? typed map as generator properties.
         String packagePath = this.getTargetDir() + ballerinaProjectToolConfig.getMetadataConfig().getNamePrefix() + File.separator;
 
         // Provide option to check and overwrite the existing package

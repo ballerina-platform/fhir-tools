@@ -1,4 +1,4 @@
-import thiyanarumugam/health.fhir.cds;
+import ballerinax/health.fhir.cds;
 
 #set ($map = $service.getCdsHooks())
 # This method acts like an interface to route the feedback request appropriate feedback

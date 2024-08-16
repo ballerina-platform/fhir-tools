@@ -1,6 +1,6 @@
 import ballerina/http;
 import ballerina/lang.regexp;
-import thiyanarumugam/health.fhir.cds;
+import ballerinax/health.fhir.cds;
 
 service class ResponseErrorInterceptor {
     *http:ResponseErrorInterceptor;

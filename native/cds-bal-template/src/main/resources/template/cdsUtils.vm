@@ -1,7 +1,7 @@
 import ballerina/constraint;
 
 import ballerina/http;
-import thiyanarumugam/health.fhir.cds;
+import ballerinax/health.fhir.cds;
 
 # This method will engage the followings
 # Request validation
