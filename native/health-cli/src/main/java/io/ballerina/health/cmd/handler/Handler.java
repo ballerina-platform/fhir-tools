@@ -68,6 +68,8 @@ public interface Handler {
             }
         } else if (HealthCmdConstants.CMD_SUB_HL7.equals(libName)) {
             printStream.println(ErrorMessages.LIB_INITIALIZING_FAILED + "HL7 library is not supported yet");
+        } else if (HealthCmdConstants.CMD_SUB_CDS.equals(libName)) {
+            printStream.println("CDS library has been initialised");
         } else {
             printStream.println(ErrorMessages.LIB_INITIALIZING_FAILED + "Unknown library name");
         }

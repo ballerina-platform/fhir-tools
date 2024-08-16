@@ -24,13 +24,34 @@ public class HealthCmdConstants {
     public static final String CMD_MODE_PACKAGE = "package";
     public static final String CMD_SUB_FHIR = "fhir";
     public static final String CMD_SUB_HL7 = "hl7";
+    public static final String CMD_SUB_CDS = "cds";
     public static final String CMD_CONFIG_FILENAME = "tool-config.json";
+    public static final String CMD_CDS_CONFIG_FILENAME = "cds-tool-config.json";
     public static final String CMD_MVN_ARTIFACT_NAME = "health-tools";
     public static final String CMD_RESOURCE_PATH_SUFFIX = "/modules/health/resources";
     public static final String CMD_HELP_TEXT_FILENAME = "ballerina-health.help";
     public static final String CMD_CDS_HELP_TEXT_FILENAME = "ballerina-health-cds.help";
     public static final String CMD_DEFAULT_IG_NAME = "FHIR";
     public static final String CMD_DEFAULT_ORG_NAME = "healthcare";
+    public static final String CMD_OPTION_PACKAGE_NAME = "--package-name";
+    public static final String CMD_OPTION_ORG_NAME = "--org-name";
+    public static final String CMD_OPTION_PACKAGE_VERSION = "--package-version";
+    public static final String CMD_OPTION_DEPENDENT_PACKAGE = "--dependent-package";
+    public static final String CMD_FHIR_MODE_TEMPLATE = "fhir:template";
+    public static final String CMD_FHIR_MODE_CLIENT = "fhir:client";
+    public static final String CMD_FHIR_MODE_PACKAGE = "fhir:package";
+    public static final String CMD_CDS_MODE_TEMPLATE = "cds:template";
+    public static final String CDS = "cds";
+    public static final String TOOLS = "tools";
+    public static final String HOOKS = "hooks";
+    public static final String CDS_CONFIG_CLASS_NAME = "org.wso2.healthcare.cds.codegen.ballerina.tool.config.BallerinaProjectToolConfig";
+    public static final String CDS_TOOL_CLASS_NAME = "org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectTool";
+    public static final String PROJECT_PACKAGE_ORG = "project.package.org";
+    public static final String PROJECT_PACKAGE_VERSION = "project.package.version";
+    public static final String PROJECT_PACKAGE_DEPENDENT_PACKAGE = "project.package.dependentPackage";
+    public static final String PROJECT_PACKAGE_NAME_PREFIX = "project.package.namePrefix";
+
+
 
     public class PrintStrings {
 
@@ -40,7 +61,7 @@ public class HealthCmdConstants {
         public static final String PKG_GEN_SUCCESS = "[INFO] Ballerina FHIR package generation completed successfully."
                                                      + " Generated package can be found at: ";
 
-        public static final String INVALID_SPEC_PATH = "[ERROR] Invalid specification path received for FHIR tool command.";
+        public static final String INVALID_SPEC_PATH = "[ERROR] Invalid specification path received.";
         public static final String HELP_NOT_AVAILABLE = "[ERROR] Helper text is not available.";
         public static final String HELP_ERROR = "[ERROR] An Error occurred internally while fetching the Help text.";
         public static final String INVALID_NUM_OF_ARGS = "[ERROR] Invalid number of arguments received for FHIR tool "

@@ -1,0 +1,100 @@
+NAME
+        ballerina-health - Generate a Ballerina package or template for a
+        given health specification (eg.:FHIR implementation guides) files.
+
+SYNOPSIS
+        bal health fhir [-m | --mode] package --package-name <package-name> \
+                        <FHIR-specification-directory-path>
+                        [-m | --mode] template --dependent-package <dependent-package> \
+                        <FHIR-specification-directory-path>
+
+DESCRIPTION
+        Generate a Ballerina package or template with relevant records and types
+        from a given health specification (eg.:FHIR implementation guides) files.
+
+        The generated Ballerina sources will be written into the provided
+        output location. Make sure to add the directory path which contains
+        FHIR specification, as the last argument.
+
+        You can download FHIR specification files from the respective
+        Implementation Guide's official website. (Published list of
+        Implementation Guides can be found in http://fhir.org/guides/registry/)
+
+        The ballerina-health tool is compatible with Ballerina
+        version 2201.8.1 (Swan Lake Update 8) onwards.
+
+OPTIONS
+       -v, --version
+            Print version information.
+
+       -h, --help
+            Print the usage details of a command.
+
+COMMANDS
+        fhir
+            Refer to the FHIR specification when generating the Ballerina artifacts.
+
+            OPTIONS
+                    -m, --mode <mode-type>
+                        Mode can be 'package' or 'template'. If the mode is set to
+                        'package', a Ballerina package will be generated including all the
+                        records and types. If the mode is set to ‘template’, tool will
+                        generate Ballerina templates for each FHIR resource definition
+                        available in the specified path. This is a MANDATORY input for fhir
+                        command.
+
+                    --package-name <name-of-package>
+                        Only applicable in ‘package’ mode. Name of the Ballerina package
+                        to be generated. This is a MANDATORY input in ‘package’ mode.
+                        Refer https://ballerina.io/learn/package-references/#the-name-field
+
+                    --dependent-package <qualified-ballerina-package-name>
+                        Only applicable in ‘template’ mode. Fully qualified name of the
+                        published Ballerina package containing IG resources
+                        [eg: <org>/<package>]. This option can be used to generate
+                        templates specifically for the resources in the given IG. The
+                        package name part of this value will be added as a prefix to the
+                        template name. This is a MANDATORY input in ‘template’ mode.
+
+                    -o, --output <output>
+                        Location of the generated Ballerina artifacts. If this
+                        path is not specified, the output will be written to
+                        the same directory from which the command is run.
+
+                    --org-name <org-name-of-the-package>
+                        Organization name of the Ballerina package/template to be generated.
+                        Refer https://ballerina.io/learn/package-references/#the-org-field
+
+                    --package-version <version-of-the-package>
+                        Version of the Ballerina package/template to be generated.
+                        Refer https://semver.org/
+
+                    --included-profile <profiles-to-included>
+                        Only applicable in ‘template’ mode. If only a specific profile/s
+                        needs to be generated as templates, specify the profile URL as the
+                        value of this parameter. This argument can be used more than once.
+
+                    --excluded-profile <profiles-to-excluded>
+                        Only applicable in ‘template’ mode. If only a specific profile/s
+                        needs to be skipped when generating templates, specify the
+                        profile URL as the value of this parameter. This argument
+                        can be used more than once.
+
+            EXAMPLES
+                    Generate a Ballerina package for the FHIR artifacts of USCore
+                    implementation guide.
+                        $ bal health fhir -m package --package-name uscore401 \
+                        ./path_to_uscore_definitions
+
+                    Generate a Ballerina package for the FHIR artifacts of
+                    USCore implementation guide and write the output
+                    to the given directory.
+                        $ bal health fhir -m package --package-name uscore401 \
+                        -o ./output_path ./path_to_uscore_definitions
+
+                    Generate Ballerina templates for all the FHIR resource profiles
+                    of USCore implementation guide.
+                        $ bal health fhir -m template \
+                        --dependent-package ballerinax/health.fhir.r4.uscore501 \
+                        ./path_to_uscore_definitions
+

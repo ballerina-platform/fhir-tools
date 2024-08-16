@@ -19,17 +19,14 @@
 package io.ballerina.health.cmd;
 
 import io.ballerina.cli.BLauncherCmd;
+import io.ballerina.health.cmd.cds.CdsSubCmd;
 import io.ballerina.health.cmd.core.utils.HealthCmdConstants;
 import io.ballerina.health.cmd.core.utils.HealthCmdUtils;
 import io.ballerina.health.cmd.fhir.FhirSubCmd;
 import io.ballerina.health.cmd.hl7.Hl7SubCmd;
 import picocli.CommandLine;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -38,7 +35,8 @@ import java.util.List;
         description = "Ballerina Health Artifact Generator Tool",
         subcommands = {
                 FhirSubCmd.class,
-                Hl7SubCmd.class
+                Hl7SubCmd.class,
+                CdsSubCmd.class
         }
 )
 public class HealthCmd implements BLauncherCmd {

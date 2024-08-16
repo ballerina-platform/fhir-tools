@@ -1,0 +1,32 @@
+{
+  "cds": {
+    "tools": {
+      "template": {
+        "config": {
+          "name": "BallerinaCdsProjectGenerationTool",
+          "enable": true,
+          "package": {
+            "org": "ballerinax",
+            "namePrefix": "health.fhir.templates.crd",
+            "version": "1.0.0",
+            "distribution": "2201.8.6",
+            "authors": [
+              "Ballerina"
+            ],
+            "keywords": [
+              "Healthcare",
+              "FHIR",
+              "CRD",
+              "Da Vinci",
+              "CDS",
+              "Coverage Requirements Discovery"
+            ]
+          },
+          "basePackage": "ballerinax/health.fhir.r4",
+          "dependentPackage": "ballerinax/health.fhir.r4.cds",
+          "dependencies": []
+        }
+      }
+    }
+  }
+}

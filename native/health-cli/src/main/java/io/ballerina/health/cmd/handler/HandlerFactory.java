@@ -23,6 +23,8 @@ import io.ballerina.health.cmd.core.utils.ErrorMessages;
 
 import java.io.PrintStream;
 
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.*;
+
 /**
  * Factory class to create handlers.
  */
@@ -30,21 +32,21 @@ public class HandlerFactory {
 
     public static Handler createHandler(String subCommand, String mode, PrintStream printStream, String specificationPath)
             throws BallerinaHealthException {
-        switch (subCommand+":"+mode) {
-            case "fhir:template":
+        switch (subCommand + ":" + mode) {
+            case CMD_FHIR_MODE_TEMPLATE:
                 Handler templateHandler = new FhirTemplateGenHandler();
                 templateHandler.init(printStream, specificationPath);
                 return templateHandler;
-            case "fhir:client":
+            case CMD_FHIR_MODE_CLIENT:
                 return new FhirClientGenHandler();
-            case "fhir:package":
+            case CMD_FHIR_MODE_PACKAGE:
                 Handler packageHandler = new FhirPackageGenHandler();
                 packageHandler.init(printStream, specificationPath);
                 return packageHandler;
-            case "cds:template":
-                Handler crdTemplateHnadler = new CrdTemplateGenHandler();
-                crdTemplateHnadler.init(printStream, specificationPath);
-                return crdTemplateHnadler;
+            case CMD_CDS_MODE_TEMPLATE:
+                Handler crdTemplateGenHandler = new CrdTemplateGenHandler();
+                crdTemplateGenHandler.init(printStream, specificationPath);
+                return crdTemplateGenHandler;
             default:
                 throw new BallerinaHealthException(ErrorMessages.INVALID_MODE);
         }

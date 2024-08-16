@@ -30,6 +30,7 @@
     <modules>
         <module>native/fhir-to-bal-template</module>
         <module>native/fhir-to-bal-lib</module>
+        <module>native/cds-bal-template</module>
         <module>native/health-cli</module>
         <module>ballerina</module>
     </modules>
@@ -53,6 +54,7 @@
         <version.swagger.parser>2.0.26</version.swagger.parser>
         <version.jackson.annotations>2.12.1</version.jackson.annotations>
         <version.gson>2.11.0</version.gson>
+        <version.cava-toml>0.5.0</version.cava-toml>
     </properties>
 
     <dependencies>
@@ -119,7 +121,11 @@
             <artifactId>gson</artifactId>
             <version>${version.gson}</version>
         </dependency>
-
+        <dependency>
+            <groupId>net.consensys.cava</groupId>
+            <artifactId>cava-toml</artifactId>
+            <version>${version.cava-toml}</version>
+        </dependency>
     </dependencies>
 
     <repositories>

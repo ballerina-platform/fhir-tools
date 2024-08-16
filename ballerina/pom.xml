@@ -95,6 +95,12 @@
                                     <fileset dir="${repo_root}/native/fhir-to-bal-template/target">
                                         <include name="fhir-to-bal-template-${project.version}.jar"/>
                                     </fileset>
+
+                                    <!--Copy cds-bal-lib jar-->
+                                    <fileset dir="${repo_root}/native/cds-bal-template/target">
+                                        <include name="cds-bal-template-${project.version}.jar"/>
+                                    </fileset>
+
                                 </copy>
                             </tasks>
                         </configuration>
