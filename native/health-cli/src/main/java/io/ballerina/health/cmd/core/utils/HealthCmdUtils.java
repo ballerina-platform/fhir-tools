@@ -79,7 +79,7 @@ public class HealthCmdUtils {
     }
 
     public static Path getSpecificationPath(String specPathParam, String executionPath) throws BallerinaHealthException {
-        if (specPathParam == null) {
+        if (specPathParam == null && specPathParam.isEmpty()) {
             throw new BallerinaHealthException("Cannot find valid spec path pointed. Please check the path "
                     + specPathParam + " is valid.");
         }

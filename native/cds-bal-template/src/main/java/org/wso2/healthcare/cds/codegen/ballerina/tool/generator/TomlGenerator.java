@@ -44,11 +44,11 @@ public class TomlGenerator extends AbstractFHIRTemplateGenerator {
     public void generate(ToolContext toolContext, Map<String, Object> generatorProperties) throws CodeGenException {
         String directoryPath = getTargetDir();
         this.getTemplateEngine().generateOutputAsFile(CdsBallerinaProjectConstants.RESOURCE_PATH_TEMPLATES
-                        + CdsBallerinaProjectConstants.RESOURCE_PATH_SEPERATOR + BAL_TOML_VM,
+                        + CdsBallerinaProjectConstants.RESOURCE_PATH_SEPARATOR + BAL_TOML_VM,
                 createTemplateContextForToml(generatorProperties), directoryPath, BAL_TOML_FILE);
 
         this.getTemplateEngine().generateOutputAsFile(CdsBallerinaProjectConstants.RESOURCE_PATH_TEMPLATES
-                        + CdsBallerinaProjectConstants.RESOURCE_PATH_SEPERATOR + BAL_CONFIG_TOML_VM,
+                        + CdsBallerinaProjectConstants.RESOURCE_PATH_SEPARATOR + BAL_CONFIG_TOML_VM,
                 createTemplateContextForToml(generatorProperties), directoryPath, BAL_CONFIG_TOML_FILE);
     }
 

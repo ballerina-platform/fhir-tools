@@ -82,15 +82,14 @@ public class CrdTemplateGenHandler implements Handler {
         }
 
         if (toolExecConfigs != null) {
-            JsonElement jsonElement = parseTomlToJson(cdsHookDefinitionFilePath);
+            JsonElement cdsHooksJson = parseTomlToJson(cdsHookDefinitionFilePath);
 
-            JsonObject js = toolExecConfigs.getAsJsonObject();
-            js.add(HOOKS, jsonElement);
-            toolExecConfigs = js;
-            JsonObject toolExecConfig = toolExecConfigs.getAsJsonObject();
+            JsonObject toolExecConfigsAsJsonObject = toolExecConfigs.getAsJsonObject();
+            toolExecConfigsAsJsonObject.add(HOOKS, cdsHooksJson);
+            toolExecConfigs = toolExecConfigsAsJsonObject;
 
             Tool tool;
-            TemplateGenerator mainTemplateGenerator = null;
+            TemplateGenerator crdTemplateGenerator = null;
             try {
                 ClassLoader classLoader = this.getClass().getClassLoader();
                 Class<?> configClazz = classLoader.loadClass(CDS_CONFIG_CLASS_NAME);
@@ -99,7 +98,7 @@ public class CrdTemplateGenHandler implements Handler {
                 toolConfigInstance.setToolName(HealthCmdConstants.CMD_MODE_TEMPLATE);
 
                 toolConfigInstance.configure(new JsonConfigType(
-                        toolExecConfig.getAsJsonObject()));
+                        toolExecConfigs.getAsJsonObject()));
 
                 //override default configs for package-gen mode with user provided configs
                 if (orgName != null && !orgName.isEmpty()) {
@@ -118,7 +117,7 @@ public class CrdTemplateGenHandler implements Handler {
                 Class<?> toolClazz = classLoader.loadClass(CDS_TOOL_CLASS_NAME);
                 tool = (Tool) toolClazz.getConstructor().newInstance();
                 tool.initialize(toolConfigInstance);
-                mainTemplateGenerator = tool.execute(null);
+                crdTemplateGenerator = tool.execute(null);
             } catch (ClassNotFoundException e) {
                 printStream.println(ErrorMessages.TOOL_IMPL_NOT_FOUND + e.getMessage());
                 HealthCmdUtils.throwLauncherException(e);
@@ -132,18 +131,16 @@ public class CrdTemplateGenHandler implements Handler {
             } catch (InvocationTargetException | NoSuchMethodException e) {
                 throw new RuntimeException(e);
             }
-            if (mainTemplateGenerator != null) {
+            if (crdTemplateGenerator != null) {
                 try {
-                    mainTemplateGenerator.generate(
-                            null,
-                            mainTemplateGenerator.getGeneratorProperties());
+                    crdTemplateGenerator.generate(null, crdTemplateGenerator.getGeneratorProperties());
                 } catch (CodeGenException e) {
                     printStream.println(ErrorMessages.UNKNOWN_ERROR + e.getMessage());
                     HealthCmdUtils.throwLauncherException(e);
                 }
                 return true;
             } else {
-                printStream.println("Template generator is not registered for the tool: " + HealthCmdConstants.CMD_MODE_PACKAGE);
+                printStream.println("Template generator is not registered for the tool: " + HealthCmdConstants.CMD_MODE_TEMPLATE);
                 printStream.println(ErrorMessages.CONFIG_INITIALIZING_FAILED);
             }
         }

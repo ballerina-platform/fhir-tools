@@ -32,7 +32,7 @@ public class HandlerFactory {
 
     public static Handler createHandler(String subCommand, String mode, PrintStream printStream, String specificationPath)
             throws BallerinaHealthException {
-        switch (subCommand + ":" + mode) {
+        switch (subCommand + SEMICOLON + mode) {
             case CMD_FHIR_MODE_TEMPLATE:
                 Handler templateHandler = new FhirTemplateGenHandler();
                 templateHandler.init(printStream, specificationPath);

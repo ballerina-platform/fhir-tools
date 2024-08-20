@@ -38,34 +38,34 @@ import java.util.logging.LogManager;
 
 import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.*;
 
-@CommandLine.Command(name = "cds", description = "Generates Ballerina service for provided cds hook definitions.")
+@CommandLine.Command(name = CDS, description = CDS_SUB_TOOL_DESCRIPTION)
 public class CdsSubCmd implements BLauncherCmd {
 
     private final PrintStream printStream;
     private final boolean exitWhenFinish;
-    private final String toolName = "cds";
-    private final Path executionPath = Paths.get(System.getProperty("user.dir"));
+    private final String toolName = CDS;
+    private final Path executionPath = Paths.get(System.getProperty(USER_DIR));
     private Path targetOutputPath;
 
-    @CommandLine.Option(names = {"--help", "-h", "?"}, usageHelp = true, hidden = true)
+    @CommandLine.Option(names = {CMD_OPTION_HELP, CMD_OPTION_HELP_SHORTER_1, CMD_OPTION_HELP_SHORTER_2}, usageHelp = true, hidden = true)
     private boolean helpFlag;
 
-    @CommandLine.Option(names = {"-m", "--mode"}, description = "Execution mode. Only \"template\" option is supported.")
+    @CommandLine.Option(names = {CMD_OPTION_MODE_SHORTER, CMD_OPTION_MODE}, description = CMD_OPTION_CDS_MODE_DESCRIPTION)
     private String mode;
 
-    @CommandLine.Option(names = {"-o", "--output"}, description = "Location of the generated Ballerina artifacts.")
+    @CommandLine.Option(names = {CMD_OPTION_OUTPUT_SHORTER, CMD_OPTION_OUTPUT}, description = CMD_OPTION_OUTPUT_DESCRIPTION)
     private String outputPath;
 
-    @CommandLine.Option(names = {"--package-name"}, description = "Name of the Ballerina package")
+    @CommandLine.Option(names = {CMD_OPTION_PACKAGE_NAME}, description = CMD_OPTION_PACKAGE_NAME_DESCRIPTION)
     private String packageName;
 
-    @CommandLine.Option(names = {"--org-name"}, description = "Organization name of the Ballerina package")
+    @CommandLine.Option(names = {CMD_OPTION_ORG_NAME}, description = CMD_OPTION_ORG_NAME_DESCRIPTION)
     private String orgName;
 
-    @CommandLine.Option(names = {"--package-version"}, description = "version of the Ballerina package")
+    @CommandLine.Option(names = {CMD_OPTION_PACKAGE_VERSION}, description = CMD_OPTION_PACKAGE_VERSION_DESCRIPTION)
     private String packageVersion;
 
-    @CommandLine.Parameters(description = "Custom arguments")
+    @CommandLine.Parameters(description = CMD_OPTION_CUSTOM_ARGS_DESCRIPTION)
     private List<String> argList;
 
     public CdsSubCmd(PrintStream printStream, boolean exitWhenFinish) {
@@ -92,7 +92,8 @@ public class CdsSubCmd implements BLauncherCmd {
                     String content = br.readLine();
                     printStream.append(content);
                     while ((content = br.readLine()) != null) {
-                        printStream.append('\n').append(content);
+                        // System.lineSeparator() is equal to \n
+                        printStream.append(System.lineSeparator()).append(content);
                     }
                     return;
                 } catch (IOException e) {
@@ -104,11 +105,13 @@ public class CdsSubCmd implements BLauncherCmd {
             HealthCmdUtils.exitError(exitWhenFinish);
         }
         if (argList == null || argList.isEmpty()) {
-            //at minimum arg count is 1 (spec path)
+            //at minimum arg count is 1 (cds hooks file path)
             printStream.println(HealthCmdConstants.PrintStrings.INVALID_NUM_OF_ARGS);
             printStream.println(HealthCmdConstants.PrintStrings.HELP_FOR_MORE_INFO);
             HealthCmdUtils.exitError(exitWhenFinish);
         }
+
+        // By default, only template mode is supported for cds sub command
         mode = CMD_MODE_TEMPLATE;
 
         if (this.engageSubCommand(argList)) {

@@ -35,5 +35,3 @@ isolated function connectFeedbackSystemFor$mapEntry.key (cds:Feedbacks feedback)
 }
 
 #end
-
-

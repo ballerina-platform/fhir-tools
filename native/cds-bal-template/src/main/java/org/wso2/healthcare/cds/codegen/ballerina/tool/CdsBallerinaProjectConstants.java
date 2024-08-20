@@ -26,7 +26,7 @@ public class CdsBallerinaProjectConstants {
     public static final String RESOURCE_PATH_TEMPLATES = "template";
     public static final String TEMPLATE_NAME = "templateName";
     public static final String KEYWORDS = "keywords";
-    public static final String RESOURCE_PATH_SEPERATOR = "/";
+    public static final String RESOURCE_PATH_SEPARATOR = "/";
     public static final String CONFIG = "config";
     public static final String PACKAGE = "package";
     public static final String DEPENDENCIES = "dependencies";
@@ -41,8 +41,12 @@ public class CdsBallerinaProjectConstants {
     public static final String CMD_MESSAGE_OVERRIDE_OUTPUT_DIRECTORY = "Generated templates already exists. Do you want to overwrite? (y/n): ";
     public static final String YES = "y";
     public static final String NO = "n";
+    public static final int ZERO = 0;
+    public static final int ONE = 1;
     public static final String SERVICE = "service";
-    public static final String REGEX_STRING = "[-|_]";
+    public static final String REGEX_STRING_FOR_UNDERSCORE_AND_HYPHEN = "[-|_]";
+    public static final String REGEX_STRING_FOR_NON_WORD_CHARACTER = "\\W+";
+    public static final String UNDERSCORE = "_";
     public static final String BAL_SERVICE_VM = "cdsBalService.vm";
     public static final String BAL_INTERCEPTOR_VM = "cdsInterceptor.vm";
     public static final String BAL_UTILS_VM = "cdsUtils.vm";
@@ -67,8 +71,14 @@ public class CdsBallerinaProjectConstants {
     public static final String DESCRIPTION = "description";
     public static final String PREFETCH = "prefetch";
     public static final String USAGE_REQUIREMENTS = "usageRequirements";
-    
-    public class PrintStrings {
+    public static final String ORG = "org";
+    public static final String NAME_PREFIX = "namePrefix";
+    public static final String NAME = "name";
+    public static final String VERSION = "version";
+    public static final String DISTRIBUTION = "distribution";
+    public static final String AUTHORS = "authors";
+
+    public static class PrintStrings {
         public static final String OVERWRITING_EXISTING_TEMPLATES = "[INFO] Overwriting the existing templates.";
         public static final String INVALID_INPUT = "[ERROR] Invalid input. Exiting the tool.";
     }

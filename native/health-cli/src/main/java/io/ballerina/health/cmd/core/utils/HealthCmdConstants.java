@@ -33,15 +33,12 @@ public class HealthCmdConstants {
     public static final String CMD_CDS_HELP_TEXT_FILENAME = "ballerina-health-cds.help";
     public static final String CMD_DEFAULT_IG_NAME = "FHIR";
     public static final String CMD_DEFAULT_ORG_NAME = "healthcare";
-    public static final String CMD_OPTION_PACKAGE_NAME = "--package-name";
-    public static final String CMD_OPTION_ORG_NAME = "--org-name";
-    public static final String CMD_OPTION_PACKAGE_VERSION = "--package-version";
-    public static final String CMD_OPTION_DEPENDENT_PACKAGE = "--dependent-package";
     public static final String CMD_FHIR_MODE_TEMPLATE = "fhir:template";
     public static final String CMD_FHIR_MODE_CLIENT = "fhir:client";
     public static final String CMD_FHIR_MODE_PACKAGE = "fhir:package";
     public static final String CMD_CDS_MODE_TEMPLATE = "cds:template";
     public static final String CDS = "cds";
+    public static final String CDS_SUB_TOOL_DESCRIPTION = "Generates Ballerina service for provided cds hook definitions.";
     public static final String TOOLS = "tools";
     public static final String HOOKS = "hooks";
     public static final String CDS_CONFIG_CLASS_NAME = "org.wso2.healthcare.cds.codegen.ballerina.tool.config.BallerinaProjectToolConfig";
@@ -50,16 +47,35 @@ public class HealthCmdConstants {
     public static final String PROJECT_PACKAGE_VERSION = "project.package.version";
     public static final String PROJECT_PACKAGE_DEPENDENT_PACKAGE = "project.package.dependentPackage";
     public static final String PROJECT_PACKAGE_NAME_PREFIX = "project.package.namePrefix";
+    public static final String USER_DIR = "user.dir";
+    public static final String SEMICOLON = ":";
 
+    public static final String CMD_OPTION_HELP = "--help";
+    public static final String CMD_OPTION_HELP_SHORTER_1 = "-h";
+    public static final String CMD_OPTION_HELP_SHORTER_2 = "?";
+    public static final String CMD_OPTION_MODE = "--mode";
+    public static final String CMD_OPTION_MODE_SHORTER = "-m";
+    public static final String CMD_OPTION_CDS_MODE_DESCRIPTION = "Execution mode. Only \"template\" option is supported.";
+    public static final String CMD_OPTION_OUTPUT = "--output";
+    public static final String CMD_OPTION_OUTPUT_SHORTER = "-o";
+    public static final String CMD_OPTION_OUTPUT_DESCRIPTION = "Location of the generated Ballerina artifacts.";
+    public static final String CMD_OPTION_PACKAGE_NAME = "--package-name";
+    public static final String CMD_OPTION_PACKAGE_NAME_DESCRIPTION = "Name of the Ballerina package";
+    public static final String CMD_OPTION_ORG_NAME = "--org-name";
+    public static final String CMD_OPTION_ORG_NAME_DESCRIPTION = "Organization name of the Ballerina package";
+    public static final String CMD_OPTION_PACKAGE_VERSION = "--package-version";
+    public static final String CMD_OPTION_PACKAGE_VERSION_DESCRIPTION = "version of the Ballerina package";
+    public static final String CMD_OPTION_DEPENDENT_PACKAGE = "--dependent-package";
+    public static final String CMD_OPTION_CUSTOM_ARGS_DESCRIPTION = "Custom arguments";
 
 
     public class PrintStrings {
 
         public static final String HELP_FOR_MORE_INFO = "[INFO] Try bal health --help for more information.";
         public static final String TEMPLATE_GEN_SUCCESS = "[INFO] Ballerina templates generation completed " +
-                                                          "successfully. Generated templates can be found at: ";
+                "successfully. Generated templates can be found at: ";
         public static final String PKG_GEN_SUCCESS = "[INFO] Ballerina FHIR package generation completed successfully."
-                                                     + " Generated package can be found at: ";
+                + " Generated package can be found at: ";
 
         public static final String INVALID_SPEC_PATH = "[ERROR] Invalid specification path received.";
         public static final String HELP_NOT_AVAILABLE = "[ERROR] Helper text is not available.";
@@ -67,12 +83,12 @@ public class HealthCmdConstants {
         public static final String INVALID_NUM_OF_ARGS = "[ERROR] Invalid number of arguments received for the command.";
         public static final String INVALID_MODE = "[ERROR] Invalid mode received for tool command.";
         public static final String PKG_NAME_REQUIRED = "[ERROR] Package name [--package-name] is required for package "
-                                                       + "generation.";
+                + "generation.";
         public static final String DEPENDENT_REQUIRED = "[ERROR] Dependent package [--dependent-package] is required "
-                                                        + "for template generation.";
+                + "for template generation.";
         public static final String DEPENDENT_INCORRECT = "[ERROR] Format of the dependent package is incorrect.";
         public static final String INCLUDED_EXCLUDED_TOGETHER = "[ERROR] Both --included-profile and "
-                                                                + "--excluded-profile cannot be used together.";
+                + "--excluded-profile cannot be used together.";
     }
 
 }

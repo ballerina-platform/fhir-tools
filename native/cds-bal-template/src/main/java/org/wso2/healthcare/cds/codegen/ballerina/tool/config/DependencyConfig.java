@@ -20,24 +20,23 @@ package org.wso2.healthcare.cds.codegen.ballerina.tool.config;
 
 import com.google.gson.JsonObject;
 
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.*;
+
 public class DependencyConfig {
     private final String org;
     private final String name;
     private final String version;
-    private final String importStatement;
 
     public DependencyConfig(JsonObject packageConfig) {
-        this.org = packageConfig.getAsJsonPrimitive("org").getAsString();
-        this.name = packageConfig.getAsJsonPrimitive("name").getAsString();
-        this.version = packageConfig.getAsJsonPrimitive("version").getAsString();
-        this.importStatement = packageConfig.getAsJsonPrimitive("importStatement").getAsString().toLowerCase();
+        this.org = packageConfig.getAsJsonPrimitive(ORG).getAsString();
+        this.name = packageConfig.getAsJsonPrimitive(NAME).getAsString();
+        this.version = packageConfig.getAsJsonPrimitive(VERSION).getAsString();
     }
 
     public DependencyConfig(String org, String name, String version, String importStatement) {
         this.org = org;
         this.name = name;
         this.version = version;
-        this.importStatement = importStatement;
     }
 
     public String getOrg() {
@@ -50,9 +49,5 @@ public class DependencyConfig {
 
     public String getVersion() {
         return version;
-    }
-
-    public String getImportStatement() {
-        return importStatement;
     }
 }

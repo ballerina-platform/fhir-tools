@@ -24,6 +24,8 @@ import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.*;
+
 public class MetadataConfig {
 
     private String org;
@@ -35,15 +37,32 @@ public class MetadataConfig {
 
     public MetadataConfig(JsonObject packageConfig) {
         //todo: add null checks
-        this.org = packageConfig.getAsJsonPrimitive("org").getAsString();
-        this.namePrefix = packageConfig.getAsJsonPrimitive("namePrefix").getAsString();
-        this.version = packageConfig.getAsJsonPrimitive("version").getAsString();
-        this.distribution = packageConfig.getAsJsonPrimitive("distribution").getAsString();
-        for (JsonElement authorElem : packageConfig.getAsJsonArray("authors").getAsJsonArray()) {
-            authors.add(authorElem.getAsString());
+        if (packageConfig.has(ORG)) {
+            this.org = packageConfig.getAsJsonPrimitive(ORG).getAsString();
         }
-        for (JsonElement authorElem : packageConfig.getAsJsonArray("keywords").getAsJsonArray()) {
-            keywords.add(authorElem.getAsString());
+
+        if (packageConfig.has(NAME_PREFIX)) {
+            this.namePrefix = packageConfig.getAsJsonPrimitive(NAME_PREFIX).getAsString();
+        }
+
+        if (packageConfig.has(VERSION)) {
+            this.version = packageConfig.getAsJsonPrimitive(VERSION).getAsString();
+        }
+
+        if (packageConfig.has(DISTRIBUTION)) {
+            this.distribution = packageConfig.getAsJsonPrimitive(DISTRIBUTION).getAsString();
+        }
+
+        if (packageConfig.has(AUTHORS)) {
+            for (JsonElement authorElem : packageConfig.getAsJsonArray(AUTHORS).getAsJsonArray()) {
+                authors.add(authorElem.getAsString());
+            }
+        }
+
+        if (packageConfig.has(KEYWORDS)) {
+            for (JsonElement authorElem : packageConfig.getAsJsonArray(KEYWORDS).getAsJsonArray()) {
+                keywords.add(authorElem.getAsString());
+            }
         }
     }
 
@@ -72,18 +91,18 @@ public class MetadataConfig {
     }
 
     public void setOrg(String org) {
-        // org name of a ballerina package can have only alhpa-numeric chars and '_'
+        // org name of a ballerina package can have only alphanumeric chars and '_'
         // it cannot have consecutive '_'
         // and it cannot start/end with '_'
-        String normalizedOrg = org.replaceAll("[^a-zA-Z0-9_]", "_");
-        if (normalizedOrg.contains("__")) {
-            normalizedOrg = normalizedOrg.replaceAll("_{2,}", "_");
+        String normalizedOrg = org.replaceAll(REGEX_STRING_FOR_NON_WORD_CHARACTER, UNDERSCORE);
+        if (normalizedOrg.contains(UNDERSCORE + UNDERSCORE)) {
+            normalizedOrg = normalizedOrg.replaceAll("_{2,}", UNDERSCORE);
         }
-        if (normalizedOrg.startsWith("_")) {
-            normalizedOrg = normalizedOrg.substring(1);
+        if (normalizedOrg.startsWith(UNDERSCORE)) {
+            normalizedOrg = normalizedOrg.substring(ONE);
         }
-        if (normalizedOrg.endsWith("_")) {
-            normalizedOrg = normalizedOrg.substring(0, normalizedOrg.length() - 1);
+        if (normalizedOrg.endsWith(UNDERSCORE)) {
+            normalizedOrg = normalizedOrg.substring(ZERO, normalizedOrg.length() - ONE);
         }
         this.org = normalizedOrg;
     }

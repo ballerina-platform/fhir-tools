@@ -39,10 +39,10 @@ public class MetaGenerator extends AbstractFHIRTemplateGenerator {
     public void generate(ToolContext toolContext, Map<String, Object> generatorProperties) throws CodeGenException {
         String directoryPath = getTargetDir();
         this.getTemplateEngine().generateOutputAsFile(CdsBallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
-                        CdsBallerinaProjectConstants.RESOURCE_PATH_SEPERATOR + BAL_PACKAGE_MD_VM, createTemplateContextForMeta(generatorProperties), directoryPath,
+                        CdsBallerinaProjectConstants.RESOURCE_PATH_SEPARATOR + BAL_PACKAGE_MD_VM, createTemplateContextForMeta(generatorProperties), directoryPath,
                 BAL_PACKAGE_MD_FILE);
         this.getTemplateEngine().generateOutputAsFile(CdsBallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
-                        CdsBallerinaProjectConstants.RESOURCE_PATH_SEPERATOR + BAL_GIT_IGNORE_VM, createTemplateContextForMeta(generatorProperties), directoryPath,
+                        CdsBallerinaProjectConstants.RESOURCE_PATH_SEPARATOR + BAL_GIT_IGNORE_VM, createTemplateContextForMeta(generatorProperties), directoryPath,
                 BAL_GIT_IGNORE_FILE);
     }
 

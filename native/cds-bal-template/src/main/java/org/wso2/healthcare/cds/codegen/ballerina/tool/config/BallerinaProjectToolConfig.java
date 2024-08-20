@@ -23,7 +23,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants;
 import org.wso2.healthcare.cds.codegen.ballerina.tool.model.CdsHook;
 import org.wso2.healthcare.codegen.tool.framework.commons.Constants;
 import org.wso2.healthcare.codegen.tool.framework.commons.config.AbstractToolConfig;
@@ -42,10 +41,8 @@ import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProject
 public class BallerinaProjectToolConfig extends AbstractToolConfig {
 
     private static final Log LOG = LogFactory.getLog(BallerinaProjectToolConfig.class);
-    private boolean isEnabled;
     private MetadataConfig metadataConfig;
     private final List<DependencyConfig> dependencyConfigs = new ArrayList<>();
-    private String servicePackage;
     private String dependentPackage;
     private final List<CdsHook> cdsHooks = new ArrayList<>();
 
@@ -54,7 +51,6 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
         if (Constants.JSON_CONFIG_TYPE.equals(configObj.getType())) {
             JsonObject jsonConfigObj = ((JsonConfigType) configObj).getConfigObj();
             jsonConfigObj = jsonConfigObj.getAsJsonObject(CONFIG);
-            this.isEnabled = jsonConfigObj.getAsJsonPrimitive(CdsBallerinaProjectConstants.CONFIG_ENABLE).getAsBoolean();
             this.metadataConfig = new MetadataConfig(jsonConfigObj.getAsJsonObject(PACKAGE));
             populateDependencyConfigs(jsonConfigObj.
                     getAsJsonArray(DEPENDENCIES));
@@ -73,13 +69,12 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
         if (cdsHookConfig.get(CDS_SERVICES) instanceof JsonObject) {
             System.out.println(cdsHookConfig.getAsJsonObject(CDS_SERVICES));
 
-        } else if (cdsHookConfig.get("cds_services") instanceof JsonArray) {
+        } else if (cdsHookConfig.get(CDS_SERVICES) instanceof JsonArray) {
             System.out.println(cdsHookConfig.getAsJsonArray(CDS_SERVICES));
 
             cdsHookConfig.getAsJsonArray(CDS_SERVICES).forEach(a -> {
                 cdsHooks.add(new CdsHook(a.getAsJsonObject()));
             });
-
         }
     }
 
@@ -120,14 +115,6 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
 
     public List<DependencyConfig> getDependencyConfigs() {
         return dependencyConfigs;
-    }
-
-    public boolean isEnabled() {
-        return isEnabled;
-    }
-
-    public String getServicePackage() {
-        return servicePackage;
     }
 
     public String getDependentPackage() {

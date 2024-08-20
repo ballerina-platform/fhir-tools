@@ -44,26 +44,26 @@ public class ServiceGenerator extends AbstractFHIRTemplateGenerator {
         TemplateContext templateContext = createTemplateContextForBalService(generatorProperties);
 
         this.getTemplateEngine().generateOutputAsFile(
-                CdsBallerinaProjectConstants.RESOURCE_PATH_TEMPLATES + CdsBallerinaProjectConstants.RESOURCE_PATH_SEPERATOR + BAL_SERVICE_VM,
+                CdsBallerinaProjectConstants.RESOURCE_PATH_TEMPLATES + CdsBallerinaProjectConstants.RESOURCE_PATH_SEPARATOR + BAL_SERVICE_VM,
                 templateContext,
                 directoryPath,
                 BAL_SERVICE_FILE);
         this.getTemplateEngine().generateOutputAsFile(
-                CdsBallerinaProjectConstants.RESOURCE_PATH_TEMPLATES + CdsBallerinaProjectConstants.RESOURCE_PATH_SEPERATOR + BAL_INTERCEPTOR_VM,
+                CdsBallerinaProjectConstants.RESOURCE_PATH_TEMPLATES + CdsBallerinaProjectConstants.RESOURCE_PATH_SEPARATOR + BAL_INTERCEPTOR_VM,
                 templateContext,
                 directoryPath,
                 BAL_INTERCEPTOR_FILE);
         this.getTemplateEngine().generateOutputAsFile(
-                CdsBallerinaProjectConstants.RESOURCE_PATH_TEMPLATES + CdsBallerinaProjectConstants.RESOURCE_PATH_SEPERATOR + BAL_UTILS_VM,
+                CdsBallerinaProjectConstants.RESOURCE_PATH_TEMPLATES + CdsBallerinaProjectConstants.RESOURCE_PATH_SEPARATOR + BAL_UTILS_VM,
                 templateContext,
                 directoryPath,
                 BAL_UTILS_FILE);
-        this.getTemplateEngine().generateOutputAsFile(CdsBallerinaProjectConstants.RESOURCE_PATH_TEMPLATES + CdsBallerinaProjectConstants.RESOURCE_PATH_SEPERATOR + BAL_DECISION_SYSTEM_CONNECTION_VM,
+        this.getTemplateEngine().generateOutputAsFile(CdsBallerinaProjectConstants.RESOURCE_PATH_TEMPLATES + CdsBallerinaProjectConstants.RESOURCE_PATH_SEPARATOR + BAL_DECISION_SYSTEM_CONNECTION_VM,
                 templateContext,
                 directoryPath,
                 BAL_DECISION_SYSTEM_CONNECTION_FILE);
         this.getTemplateEngine().generateOutputAsFile(
-                CdsBallerinaProjectConstants.RESOURCE_PATH_TEMPLATES + CdsBallerinaProjectConstants.RESOURCE_PATH_SEPERATOR + BAL_FEEDBACK_SYSTEM_CONNECTION_VM,
+                CdsBallerinaProjectConstants.RESOURCE_PATH_TEMPLATES + CdsBallerinaProjectConstants.RESOURCE_PATH_SEPARATOR + BAL_FEEDBACK_SYSTEM_CONNECTION_VM,
                 templateContext,
                 directoryPath,
                 BAL_FEEDBACK_SYSTEM_CONNECTION_FILE);
