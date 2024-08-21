@@ -18,9 +18,16 @@
 
 package io.ballerina.health.cmd.handler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.networknt.schema.JsonSchema;
+import com.networknt.schema.JsonSchemaFactory;
+import com.networknt.schema.SpecVersion;
+import com.networknt.schema.ValidationMessage;
 import io.ballerina.health.cmd.core.config.HealthCmdConfig;
 import io.ballerina.health.cmd.core.exception.BallerinaHealthException;
 import io.ballerina.health.cmd.core.utils.ErrorMessages;
@@ -32,11 +39,14 @@ import org.wso2.healthcare.codegen.tool.framework.commons.core.Tool;
 import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenException;
 import org.wso2.healthcare.codegen.tool.framework.commons.model.JsonConfigType;
 
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
+import java.util.Set;
 
 import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.*;
+import static io.ballerina.health.cmd.core.utils.HealthCmdUtils.exitError;
 import static io.ballerina.health.cmd.core.utils.HealthCmdUtils.parseTomlToJson;
 
 /**
@@ -49,6 +59,7 @@ public class CrdTemplateGenHandler implements Handler {
     private String version;
 
     private JsonObject configJson;
+    private InputStream cdsHooksJsonSchemaStream;
     private PrintStream printStream;
 
     @Override
@@ -58,6 +69,8 @@ public class CrdTemplateGenHandler implements Handler {
         try {
             configJson = HealthCmdConfig.getParsedConfigFromStream(HealthCmdUtils.getResourceFile(
                     this.getClass(), HealthCmdConstants.CMD_CDS_CONFIG_FILENAME));
+
+            cdsHooksJsonSchemaStream = HealthCmdUtils.getResourceFile(this.getClass(), CMD_CDS_JSON_SCHEMA_FILENAME);
         } catch (BallerinaHealthException e) {
             throw new RuntimeException(e);
         }
@@ -83,6 +96,9 @@ public class CrdTemplateGenHandler implements Handler {
 
         if (toolExecConfigs != null) {
             JsonElement cdsHooksJson = parseTomlToJson(cdsHookDefinitionFilePath);
+
+            // This method will validate the cds hooks json with the json schema
+            validateCdsHooks(cdsHooksJson);
 
             JsonObject toolExecConfigsAsJsonObject = toolExecConfigs.getAsJsonObject();
             toolExecConfigsAsJsonObject.add(HOOKS, cdsHooksJson);
@@ -145,5 +161,32 @@ public class CrdTemplateGenHandler implements Handler {
             }
         }
         return false;
+    }
+
+
+    // This method will validate the cds hooks json with the json schema
+    // If there are any validation errors, it will print all and exit
+    private void validateCdsHooks(JsonElement cdsHooksJson) {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V4);
+        JsonSchema jsonSchema = factory.getSchema(cdsHooksJsonSchemaStream);
+        JsonNode jsonNode;
+        try {
+            jsonNode = mapper.readTree(cdsHooksJson.toString());
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        Set<ValidationMessage> errors = jsonSchema.validate(jsonNode);
+
+        if (!errors.isEmpty()) {
+            printStream.println("CDS hooks validation failed!");
+        }
+
+        for (ValidationMessage error : errors) {
+            printStream.println(error.getMessage());
+        }
+        if (!errors.isEmpty()) {
+            exitError(true);
+        }
     }
 }

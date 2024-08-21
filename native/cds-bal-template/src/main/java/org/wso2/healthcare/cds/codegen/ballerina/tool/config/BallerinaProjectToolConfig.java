@@ -62,7 +62,6 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
             jsonConfigObj = ((JsonConfigType) configObj).getConfigObj().getAsJsonObject(HOOKS);
             loadCdsHooks(jsonConfigObj);
         }
-
     }
 
     public void loadCdsHooks(JsonObject cdsHookConfig) {

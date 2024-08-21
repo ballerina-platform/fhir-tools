@@ -27,6 +27,7 @@ public class HealthCmdConstants {
     public static final String CMD_SUB_CDS = "cds";
     public static final String CMD_CONFIG_FILENAME = "tool-config.json";
     public static final String CMD_CDS_CONFIG_FILENAME = "cds-tool-config.json";
+    public static final String CMD_CDS_JSON_SCHEMA_FILENAME = "cds-hooks-json-schema.json";
     public static final String CMD_MVN_ARTIFACT_NAME = "health-tools";
     public static final String CMD_RESOURCE_PATH_SUFFIX = "/modules/health/resources";
     public static final String CMD_HELP_TEXT_FILENAME = "ballerina-health.help";

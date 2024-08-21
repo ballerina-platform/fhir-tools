@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "cds_services": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "hook": {
+            "type": "string",
+            "enum": ["patient-view", "order-sign", "order-select", "order-dispatch", "encounter-start", "encounter-discharge", "appointment-book"]
+          },
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "prefetch": {
+            "type": "object"
+          },
+          "usageRequirements": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "description",
+          "hook",
+          "id",
+          "title"
+        ]
+      }
+    }
+  },
+  "required": [
+    "cds_services"
+  ]
+}
