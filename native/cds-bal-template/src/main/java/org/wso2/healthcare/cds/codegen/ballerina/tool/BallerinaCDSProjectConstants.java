@@ -21,7 +21,7 @@ package org.wso2.healthcare.cds.codegen.ballerina.tool;
 /**
  * Constants for Ballerina Project Gen tool
  */
-public class CdsBallerinaProjectConstants {
+public class BallerinaCDSProjectConstants {
     public static final String CONFIG_ENABLE = "enable";
     public static final String RESOURCE_PATH_TEMPLATES = "template";
     public static final String TEMPLATE_NAME = "templateName";

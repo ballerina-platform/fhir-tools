@@ -18,8 +18,8 @@
 
 package org.wso2.healthcare.cds.codegen.ballerina.tool.generator;
 
-import org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants;
-import org.wso2.healthcare.cds.codegen.ballerina.tool.config.BallerinaProjectToolConfig;
+import org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants;
+import org.wso2.healthcare.cds.codegen.ballerina.tool.config.BallerinaCDSProjectToolConfig;
 import org.wso2.healthcare.cds.codegen.ballerina.tool.model.BallerinaService;
 import org.wso2.healthcare.cds.codegen.ballerina.tool.model.CdsHook;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.ToolContext;
@@ -35,32 +35,32 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.CMD_MESSAGE_OVERRIDE_OUTPUT_DIRECTORY;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.CONFIG;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.NO;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.ONE;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.REGEX_STRING_FOR_NON_WORD_CHARACTER;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.REGEX_STRING_FOR_UNDERSCORE_AND_HYPHEN;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.SERVICE;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.UNDERSCORE;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.YES;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.ZERO;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.CMD_MESSAGE_OVERRIDE_OUTPUT_DIRECTORY;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.CONFIG;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.NO;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.ONE;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.REGEX_STRING_FOR_NON_WORD_CHARACTER;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.REGEX_STRING_FOR_UNDERSCORE_AND_HYPHEN;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.SERVICE;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.UNDERSCORE;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.YES;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.ZERO;
 
 
 /**
  * Generator class to wrap all the generator classes in Ballerina project generator.
  */
-public class BallerinaProjectGenerator extends AbstractFHIRTemplateGenerator {
+public class BallerinaCDSProjectGenerator extends AbstractFHIRTemplateGenerator {
 
-    public BallerinaProjectGenerator(String targetDir) throws CodeGenException {
+    public BallerinaCDSProjectGenerator(String targetDir) throws CodeGenException {
         super(targetDir);
     }
 
     @Override
     public void generate(ToolContext toolContext, Map<String, Object> generatorProperties) throws CodeGenException {
 
-        BallerinaProjectToolConfig ballerinaProjectToolConfig = (BallerinaProjectToolConfig) generatorProperties.get(CONFIG);
-        String packagePath = this.getTargetDir() + ballerinaProjectToolConfig.getMetadataConfig().getNamePrefix() + File.separator;
+        BallerinaCDSProjectToolConfig ballerinaCDSProjectToolConfig = (BallerinaCDSProjectToolConfig) generatorProperties.get(CONFIG);
+        String packagePath = this.getTargetDir() + ballerinaCDSProjectToolConfig.getMetadataConfig().getNamePrefix() + File.separator;
 
         // Provide option to check and overwrite the existing package
         Console console = System.console();
@@ -69,9 +69,9 @@ public class BallerinaProjectGenerator extends AbstractFHIRTemplateGenerator {
             if (NO.equalsIgnoreCase(input)) {
                 System.exit(ZERO);
             } else if (YES.equalsIgnoreCase(input)) {
-                System.out.println(CdsBallerinaProjectConstants.PrintStrings.OVERWRITING_EXISTING_TEMPLATES);
+                System.out.println(BallerinaCDSProjectConstants.PrintStrings.OVERWRITING_EXISTING_TEMPLATES);
             } else {
-                System.out.println(CdsBallerinaProjectConstants.PrintStrings.INVALID_INPUT);
+                System.out.println(BallerinaCDSProjectConstants.PrintStrings.INVALID_INPUT);
                 System.exit(ZERO);
             }
         }
@@ -92,7 +92,7 @@ public class BallerinaProjectGenerator extends AbstractFHIRTemplateGenerator {
 
     private BallerinaService populateServiceObject(Map<String, Object> generatorProperties) {
         BallerinaService ballerinaService = new BallerinaService();
-        BallerinaProjectToolConfig config = (BallerinaProjectToolConfig) generatorProperties.get(CONFIG);
+        BallerinaCDSProjectToolConfig config = (BallerinaCDSProjectToolConfig) generatorProperties.get(CONFIG);
         ballerinaService.setName(config.getMetadataConfig().getNamePrefix());
 
         Map<String, CdsHook> cdsHookMap = new HashMap<>();

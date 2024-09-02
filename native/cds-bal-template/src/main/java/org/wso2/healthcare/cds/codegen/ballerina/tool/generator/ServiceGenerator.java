@@ -18,7 +18,7 @@
 
 package org.wso2.healthcare.cds.codegen.ballerina.tool.generator;
 
-import org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants;
+import org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants;
 import org.wso2.healthcare.cds.codegen.ballerina.tool.model.BallerinaService;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.TemplateContext;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.ToolContext;
@@ -27,17 +27,17 @@ import org.wso2.healthcare.codegen.tool.framework.fhir.core.AbstractFHIRTemplate
 
 import java.util.Map;
 
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.BAL_DECISION_SYSTEM_CONNECTION_FILE;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.BAL_DECISION_SYSTEM_CONNECTION_VM;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.BAL_FEEDBACK_SYSTEM_CONNECTION_FILE;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.BAL_FEEDBACK_SYSTEM_CONNECTION_VM;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.BAL_INTERCEPTOR_FILE;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.BAL_INTERCEPTOR_VM;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.BAL_SERVICE_FILE;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.BAL_SERVICE_VM;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.BAL_UTILS_FILE;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.BAL_UTILS_VM;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.SERVICE;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.BAL_DECISION_SYSTEM_CONNECTION_FILE;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.BAL_DECISION_SYSTEM_CONNECTION_VM;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.BAL_FEEDBACK_SYSTEM_CONNECTION_FILE;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.BAL_FEEDBACK_SYSTEM_CONNECTION_VM;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.BAL_INTERCEPTOR_FILE;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.BAL_INTERCEPTOR_VM;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.BAL_SERVICE_FILE;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.BAL_SERVICE_VM;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.BAL_UTILS_FILE;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.BAL_UTILS_VM;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.SERVICE;
 
 
 /**
@@ -55,26 +55,26 @@ public class ServiceGenerator extends AbstractFHIRTemplateGenerator {
         TemplateContext templateContext = createTemplateContextForBalService(generatorProperties);
 
         this.getTemplateEngine().generateOutputAsFile(
-                CdsBallerinaProjectConstants.RESOURCE_PATH_TEMPLATES + CdsBallerinaProjectConstants.RESOURCE_PATH_SEPARATOR + BAL_SERVICE_VM,
+                BallerinaCDSProjectConstants.RESOURCE_PATH_TEMPLATES + BallerinaCDSProjectConstants.RESOURCE_PATH_SEPARATOR + BAL_SERVICE_VM,
                 templateContext,
                 directoryPath,
                 BAL_SERVICE_FILE);
         this.getTemplateEngine().generateOutputAsFile(
-                CdsBallerinaProjectConstants.RESOURCE_PATH_TEMPLATES + CdsBallerinaProjectConstants.RESOURCE_PATH_SEPARATOR + BAL_INTERCEPTOR_VM,
+                BallerinaCDSProjectConstants.RESOURCE_PATH_TEMPLATES + BallerinaCDSProjectConstants.RESOURCE_PATH_SEPARATOR + BAL_INTERCEPTOR_VM,
                 templateContext,
                 directoryPath,
                 BAL_INTERCEPTOR_FILE);
         this.getTemplateEngine().generateOutputAsFile(
-                CdsBallerinaProjectConstants.RESOURCE_PATH_TEMPLATES + CdsBallerinaProjectConstants.RESOURCE_PATH_SEPARATOR + BAL_UTILS_VM,
+                BallerinaCDSProjectConstants.RESOURCE_PATH_TEMPLATES + BallerinaCDSProjectConstants.RESOURCE_PATH_SEPARATOR + BAL_UTILS_VM,
                 templateContext,
                 directoryPath,
                 BAL_UTILS_FILE);
-        this.getTemplateEngine().generateOutputAsFile(CdsBallerinaProjectConstants.RESOURCE_PATH_TEMPLATES + CdsBallerinaProjectConstants.RESOURCE_PATH_SEPARATOR + BAL_DECISION_SYSTEM_CONNECTION_VM,
+        this.getTemplateEngine().generateOutputAsFile(BallerinaCDSProjectConstants.RESOURCE_PATH_TEMPLATES + BallerinaCDSProjectConstants.RESOURCE_PATH_SEPARATOR + BAL_DECISION_SYSTEM_CONNECTION_VM,
                 templateContext,
                 directoryPath,
                 BAL_DECISION_SYSTEM_CONNECTION_FILE);
         this.getTemplateEngine().generateOutputAsFile(
-                CdsBallerinaProjectConstants.RESOURCE_PATH_TEMPLATES + CdsBallerinaProjectConstants.RESOURCE_PATH_SEPARATOR + BAL_FEEDBACK_SYSTEM_CONNECTION_VM,
+                BallerinaCDSProjectConstants.RESOURCE_PATH_TEMPLATES + BallerinaCDSProjectConstants.RESOURCE_PATH_SEPARATOR + BAL_FEEDBACK_SYSTEM_CONNECTION_VM,
                 templateContext,
                 directoryPath,
                 BAL_FEEDBACK_SYSTEM_CONNECTION_FILE);

@@ -24,21 +24,21 @@ import com.google.gson.JsonObject;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.DESCRIPTION;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.HOOK;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.ID;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.PREFETCH;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.TITLE;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.USAGE_REQUIREMENTS;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.DESCRIPTION;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.HOOK;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.ID;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.PREFETCH;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.TITLE;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.USAGE_REQUIREMENTS;
 
 
 public class CdsHook {
-    String id;
-    HookType hook;
-    String title;
-    String description;
-    Map<String, String> prefetch;
-    String usageRequirements;
+    private String id;
+    private HookType hook;
+    private String title;
+    private String description;
+    private Map<String, String> prefetch;
+    private String usageRequirements;
 
     public CdsHook() {
     }

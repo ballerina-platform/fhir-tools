@@ -24,16 +24,16 @@ import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.AUTHORS;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.DISTRIBUTION;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.KEYWORDS;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.NAME_PREFIX;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.ONE;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.ORG;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.REGEX_STRING_FOR_NON_WORD_CHARACTER;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.UNDERSCORE;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.VERSION;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.ZERO;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.AUTHORS;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.DISTRIBUTION;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.KEYWORDS;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.NAME_PREFIX;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.ONE;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.ORG;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.REGEX_STRING_FOR_NON_WORD_CHARACTER;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.UNDERSCORE;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.VERSION;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.ZERO;
 
 
 public class MetadataConfig {
@@ -46,7 +46,6 @@ public class MetadataConfig {
     private final List<String> keywords = new ArrayList<>();
 
     public MetadataConfig(JsonObject packageConfig) {
-        //todo: add null checks
         if (packageConfig.has(ORG)) {
             this.org = packageConfig.getAsJsonPrimitive(ORG).getAsString();
         }

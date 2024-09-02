@@ -18,8 +18,8 @@
 
 package org.wso2.healthcare.cds.codegen.ballerina.tool;
 
-import org.wso2.healthcare.cds.codegen.ballerina.tool.config.BallerinaProjectToolConfig;
-import org.wso2.healthcare.cds.codegen.ballerina.tool.generator.BallerinaProjectGenerator;
+import org.wso2.healthcare.cds.codegen.ballerina.tool.config.BallerinaCDSProjectToolConfig;
+import org.wso2.healthcare.cds.codegen.ballerina.tool.generator.BallerinaCDSProjectGenerator;
 import org.wso2.healthcare.codegen.tool.framework.commons.config.ToolConfig;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.AbstractTool;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.TemplateGenerator;
@@ -30,14 +30,14 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.CONFIG;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.CONFIG;
 
-public class CdsBallerinaProjectTool extends AbstractTool {
-    private BallerinaProjectToolConfig ballerinaProjectToolConfig;
+public class BallerinaCDSProjectTool extends AbstractTool {
+    private BallerinaCDSProjectToolConfig ballerinaCDSProjectToolConfig;
 
     @Override
     public void initialize(ToolConfig toolConfig) throws CodeGenException {
-        ballerinaProjectToolConfig = (BallerinaProjectToolConfig) toolConfig;
+        ballerinaCDSProjectToolConfig = (BallerinaCDSProjectToolConfig) toolConfig;
     }
 
     @Override
@@ -52,12 +52,12 @@ public class CdsBallerinaProjectTool extends AbstractTool {
 
     @Override
     public TemplateGenerator execute(ToolContext toolContext) throws CodeGenException {
-        String targetRoot = ballerinaProjectToolConfig.getTargetDir();
+        String targetRoot = ballerinaCDSProjectToolConfig.getTargetDir();
         String targetDirectory = targetRoot + File.separator;
-        BallerinaProjectGenerator cdsBalGenerator = new BallerinaProjectGenerator(targetDirectory);
+        BallerinaCDSProjectGenerator cdsBalGenerator = new BallerinaCDSProjectGenerator(targetDirectory);
 
         Map<String, Object> generatorProperties = new HashMap<>();
-        generatorProperties.put(CONFIG, ballerinaProjectToolConfig);
+        generatorProperties.put(CONFIG, ballerinaCDSProjectToolConfig);
         cdsBalGenerator.setGeneratorProperties(generatorProperties);
         return cdsBalGenerator;
     }

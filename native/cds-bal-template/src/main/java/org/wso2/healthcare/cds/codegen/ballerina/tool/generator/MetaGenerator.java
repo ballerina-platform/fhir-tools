@@ -18,8 +18,8 @@
 
 package org.wso2.healthcare.cds.codegen.ballerina.tool.generator;
 
-import org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants;
-import org.wso2.healthcare.cds.codegen.ballerina.tool.config.BallerinaProjectToolConfig;
+import org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants;
+import org.wso2.healthcare.cds.codegen.ballerina.tool.config.BallerinaCDSProjectToolConfig;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.TemplateContext;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.ToolContext;
 import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenException;
@@ -27,12 +27,12 @@ import org.wso2.healthcare.codegen.tool.framework.fhir.core.AbstractFHIRTemplate
 
 import java.util.Map;
 
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.BAL_GIT_IGNORE_FILE;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.BAL_GIT_IGNORE_VM;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.BAL_PACKAGE_MD_FILE;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.BAL_PACKAGE_MD_VM;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.CONFIG;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.META_CONFIG;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.BAL_GIT_IGNORE_FILE;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.BAL_GIT_IGNORE_VM;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.BAL_PACKAGE_MD_FILE;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.BAL_PACKAGE_MD_VM;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.CONFIG;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.META_CONFIG;
 
 
 public class MetaGenerator extends AbstractFHIRTemplateGenerator {
@@ -44,18 +44,18 @@ public class MetaGenerator extends AbstractFHIRTemplateGenerator {
     @Override
     public void generate(ToolContext toolContext, Map<String, Object> generatorProperties) throws CodeGenException {
         String directoryPath = getTargetDir();
-        this.getTemplateEngine().generateOutputAsFile(CdsBallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
-                        CdsBallerinaProjectConstants.RESOURCE_PATH_SEPARATOR + BAL_PACKAGE_MD_VM, createTemplateContextForMeta(generatorProperties), directoryPath,
+        this.getTemplateEngine().generateOutputAsFile(BallerinaCDSProjectConstants.RESOURCE_PATH_TEMPLATES +
+                        BallerinaCDSProjectConstants.RESOURCE_PATH_SEPARATOR + BAL_PACKAGE_MD_VM, createTemplateContextForMeta(generatorProperties), directoryPath,
                 BAL_PACKAGE_MD_FILE);
-        this.getTemplateEngine().generateOutputAsFile(CdsBallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
-                        CdsBallerinaProjectConstants.RESOURCE_PATH_SEPARATOR + BAL_GIT_IGNORE_VM, createTemplateContextForMeta(generatorProperties), directoryPath,
+        this.getTemplateEngine().generateOutputAsFile(BallerinaCDSProjectConstants.RESOURCE_PATH_TEMPLATES +
+                        BallerinaCDSProjectConstants.RESOURCE_PATH_SEPARATOR + BAL_GIT_IGNORE_VM, createTemplateContextForMeta(generatorProperties), directoryPath,
                 BAL_GIT_IGNORE_FILE);
     }
 
     private TemplateContext createTemplateContextForMeta(Map<String, Object> generatorProperties) {
 
         TemplateContext templateContext = this.getNewTemplateContext();
-        BallerinaProjectToolConfig config = (BallerinaProjectToolConfig) generatorProperties.get(CONFIG);
+        BallerinaCDSProjectToolConfig config = (BallerinaCDSProjectToolConfig) generatorProperties.get(CONFIG);
         templateContext.setProperty(CONFIG, config);
         templateContext.setProperty(META_CONFIG, config.getMetadataConfig());
         return templateContext;

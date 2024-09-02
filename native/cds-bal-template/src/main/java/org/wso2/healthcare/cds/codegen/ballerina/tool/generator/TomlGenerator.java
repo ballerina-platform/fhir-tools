@@ -18,8 +18,8 @@
 
 package org.wso2.healthcare.cds.codegen.ballerina.tool.generator;
 
-import org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants;
-import org.wso2.healthcare.cds.codegen.ballerina.tool.config.BallerinaProjectToolConfig;
+import org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants;
+import org.wso2.healthcare.cds.codegen.ballerina.tool.config.BallerinaCDSProjectToolConfig;
 import org.wso2.healthcare.cds.codegen.ballerina.tool.model.BallerinaService;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.TemplateContext;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.ToolContext;
@@ -29,15 +29,15 @@ import org.wso2.healthcare.codegen.tool.framework.fhir.core.AbstractFHIRTemplate
 import java.util.ArrayList;
 import java.util.Map;
 
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.BAL_CONFIG_TOML_FILE;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.BAL_CONFIG_TOML_VM;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.BAL_TOML_FILE;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.BAL_TOML_VM;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.CONFIG;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.KEYWORDS;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.META_CONFIG;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.SERVICE;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.TEMPLATE_NAME;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.BAL_CONFIG_TOML_FILE;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.BAL_CONFIG_TOML_VM;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.BAL_TOML_FILE;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.BAL_TOML_VM;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.CONFIG;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.KEYWORDS;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.META_CONFIG;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.SERVICE;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.TEMPLATE_NAME;
 
 
 /**
@@ -52,18 +52,18 @@ public class TomlGenerator extends AbstractFHIRTemplateGenerator {
     @Override
     public void generate(ToolContext toolContext, Map<String, Object> generatorProperties) throws CodeGenException {
         String directoryPath = getTargetDir();
-        this.getTemplateEngine().generateOutputAsFile(CdsBallerinaProjectConstants.RESOURCE_PATH_TEMPLATES
-                        + CdsBallerinaProjectConstants.RESOURCE_PATH_SEPARATOR + BAL_TOML_VM,
+        this.getTemplateEngine().generateOutputAsFile(BallerinaCDSProjectConstants.RESOURCE_PATH_TEMPLATES
+                        + BallerinaCDSProjectConstants.RESOURCE_PATH_SEPARATOR + BAL_TOML_VM,
                 createTemplateContextForToml(generatorProperties), directoryPath, BAL_TOML_FILE);
 
-        this.getTemplateEngine().generateOutputAsFile(CdsBallerinaProjectConstants.RESOURCE_PATH_TEMPLATES
-                        + CdsBallerinaProjectConstants.RESOURCE_PATH_SEPARATOR + BAL_CONFIG_TOML_VM,
+        this.getTemplateEngine().generateOutputAsFile(BallerinaCDSProjectConstants.RESOURCE_PATH_TEMPLATES
+                        + BallerinaCDSProjectConstants.RESOURCE_PATH_SEPARATOR + BAL_CONFIG_TOML_VM,
                 createTemplateContextForToml(generatorProperties), directoryPath, BAL_CONFIG_TOML_FILE);
     }
 
     private TemplateContext createTemplateContextForToml(Map<String, Object> generatorProperties) {
         TemplateContext templateContext = this.getNewTemplateContext();
-        BallerinaProjectToolConfig config = (BallerinaProjectToolConfig) generatorProperties.get(CONFIG);
+        BallerinaCDSProjectToolConfig config = (BallerinaCDSProjectToolConfig) generatorProperties.get(CONFIG);
         templateContext.setProperty(META_CONFIG, config.getMetadataConfig());
         templateContext.setProperty(TEMPLATE_NAME, config.getMetadataConfig().getNamePrefix());
         templateContext.setProperty(KEYWORDS, new ArrayList<>(config.getMetadataConfig().getKeywords()));

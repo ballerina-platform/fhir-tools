@@ -42,8 +42,8 @@ public class HealthCmdConstants {
     public static final String CDS_SUB_TOOL_DESCRIPTION = "Generates Ballerina service for provided cds hook definitions.";
     public static final String TOOLS = "tools";
     public static final String HOOKS = "hooks";
-    public static final String CDS_CONFIG_CLASS_NAME = "org.wso2.healthcare.cds.codegen.ballerina.tool.config.BallerinaProjectToolConfig";
-    public static final String CDS_TOOL_CLASS_NAME = "org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectTool";
+    public static final String CDS_CONFIG_CLASS_NAME = "org.wso2.healthcare.cds.codegen.ballerina.tool.config.BallerinaCDSProjectToolConfig";
+    public static final String CDS_TOOL_CLASS_NAME = "org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectTool";
     public static final String PROJECT_PACKAGE_ORG = "project.package.org";
     public static final String PROJECT_PACKAGE_VERSION = "project.package.version";
     public static final String PROJECT_PACKAGE_DEPENDENT_PACKAGE = "project.package.dependentPackage";
@@ -93,6 +93,8 @@ public class HealthCmdConstants {
         public static final String DEPENDENT_INCORRECT = "[ERROR] Format of the dependent package is incorrect.";
         public static final String INCLUDED_EXCLUDED_TOGETHER = "[ERROR] Both --included-profile and "
                 + "--excluded-profile cannot be used together.";
+        public static final String CDS_HOOKS_VALIDATION = "[ERROR] CDS hooks validation failed!";
+
     }
 
 }

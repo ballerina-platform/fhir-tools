@@ -113,11 +113,11 @@ public class HealthCmdUtils {
     }
 
     public static JsonObject parseTomlToJson(String path) {
-        TomlParseResult parseResult;
+        TomlParseResult parseResult = null;
         try {
             parseResult = Toml.parse(Paths.get(path));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throwLauncherException(e);
         }
 
         return tomlToJson(parseResult);

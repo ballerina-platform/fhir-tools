@@ -33,24 +33,24 @@ import org.wso2.healthcare.codegen.tool.framework.commons.model.JsonConfigType;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.CDS_SERVICES;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.CONFIG;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.DEPENDENCIES;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.DEPENDENT_PACKAGE;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.HOOKS;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.PACKAGE;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.PROJECT_PACKAGE_DEPENDENT_PACKAGE;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.PROJECT_PACKAGE_NAME_PREFIX;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.PROJECT_PACKAGE_ORG;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.PROJECT_PACKAGE_VERSION;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.CDS_SERVICES;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.CONFIG;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.DEPENDENCIES;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.DEPENDENT_PACKAGE;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.HOOKS;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.PACKAGE;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.PROJECT_PACKAGE_DEPENDENT_PACKAGE;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.PROJECT_PACKAGE_NAME_PREFIX;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.PROJECT_PACKAGE_ORG;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.PROJECT_PACKAGE_VERSION;
 
 
 /**
  * Main config class to hold all the config objects.
  */
-public class BallerinaProjectToolConfig extends AbstractToolConfig {
+public class BallerinaCDSProjectToolConfig extends AbstractToolConfig {
 
-    private static final Log LOG = LogFactory.getLog(BallerinaProjectToolConfig.class);
+    private static final Log LOG = LogFactory.getLog(BallerinaCDSProjectToolConfig.class);
     private MetadataConfig metadataConfig;
     private final List<DependencyConfig> dependencyConfigs = new ArrayList<>();
     private String dependentPackage;
@@ -75,12 +75,7 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
     }
 
     public void loadCdsHooks(JsonObject cdsHookConfig) {
-        if (cdsHookConfig.get(CDS_SERVICES) instanceof JsonObject) {
-            System.out.println(cdsHookConfig.getAsJsonObject(CDS_SERVICES));
-
-        } else if (cdsHookConfig.get(CDS_SERVICES) instanceof JsonArray) {
-            System.out.println(cdsHookConfig.getAsJsonArray(CDS_SERVICES));
-
+        if (cdsHookConfig.get(CDS_SERVICES) instanceof JsonArray) {
             cdsHookConfig.getAsJsonArray(CDS_SERVICES).forEach(a -> {
                 cdsHooks.add(new CdsHook(a.getAsJsonObject()));
             });

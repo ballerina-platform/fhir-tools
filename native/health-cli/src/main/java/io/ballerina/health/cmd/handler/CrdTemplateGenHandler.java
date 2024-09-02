@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+ * Copyright (c) 2024, WSO2 LLC. (http://www.wso2.org).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -11,7 +11,7 @@
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
+ * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -56,6 +56,7 @@ import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.HOOKS;
 import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.PROJECT_PACKAGE_NAME_PREFIX;
 import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.PROJECT_PACKAGE_ORG;
 import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.PROJECT_PACKAGE_VERSION;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.PrintStrings.CDS_HOOKS_VALIDATION;
 import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.TOOLS;
 import static io.ballerina.health.cmd.core.utils.HealthCmdUtils.exitError;
 import static io.ballerina.health.cmd.core.utils.HealthCmdUtils.parseTomlToJson;
@@ -83,7 +84,7 @@ public class CrdTemplateGenHandler implements Handler {
 
             cdsHooksJsonSchemaStream = HealthCmdUtils.getResourceFile(this.getClass(), CMD_CDS_JSON_SCHEMA_FILENAME);
         } catch (BallerinaHealthException e) {
-            throw new RuntimeException(e);
+            HealthCmdUtils.throwLauncherException(e);
         }
     }
 
@@ -102,7 +103,7 @@ public class CrdTemplateGenHandler implements Handler {
             toolExecConfigs = configJson.getAsJsonObject(CDS).getAsJsonObject(TOOLS).getAsJsonObject(HealthCmdConstants.CMD_MODE_TEMPLATE);
         } else {
             printStream.println(ErrorMessages.CONFIG_PARSE_ERROR);
-            HealthCmdUtils.exitError(true);
+            exitError(true);
         }
 
         if (toolExecConfigs != null) {
@@ -144,6 +145,9 @@ public class CrdTemplateGenHandler implements Handler {
                 Class<?> toolClazz = classLoader.loadClass(CDS_TOOL_CLASS_NAME);
                 tool = (Tool) toolClazz.getConstructor().newInstance();
                 tool.initialize(toolConfigInstance);
+
+                // Here don't have a ToolContext context object to pass
+                // and it is related FHIR implementation
                 crdTemplateGenerator = tool.execute(null);
             } catch (ClassNotFoundException e) {
                 printStream.println(ErrorMessages.TOOL_IMPL_NOT_FOUND + e.getMessage());
@@ -156,7 +160,7 @@ public class CrdTemplateGenHandler implements Handler {
                 printStream.println(e);
                 HealthCmdUtils.throwLauncherException(e);
             } catch (InvocationTargetException | NoSuchMethodException e) {
-                throw new RuntimeException(e);
+                HealthCmdUtils.throwLauncherException(e);
             }
             if (crdTemplateGenerator != null) {
                 try {
@@ -181,16 +185,16 @@ public class CrdTemplateGenHandler implements Handler {
         ObjectMapper mapper = new ObjectMapper();
         JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V4);
         JsonSchema jsonSchema = factory.getSchema(cdsHooksJsonSchemaStream);
-        JsonNode jsonNode;
+        JsonNode jsonNode = null;
         try {
             jsonNode = mapper.readTree(cdsHooksJson.toString());
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+           HealthCmdUtils.throwLauncherException(e);
         }
         Set<ValidationMessage> errors = jsonSchema.validate(jsonNode);
 
         if (!errors.isEmpty()) {
-            printStream.println("CDS hooks validation failed!");
+            printStream.println(CDS_HOOKS_VALIDATION);
         }
 
         for (ValidationMessage error : errors) {

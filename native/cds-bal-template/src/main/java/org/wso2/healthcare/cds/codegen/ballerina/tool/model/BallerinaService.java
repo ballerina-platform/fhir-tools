@@ -26,7 +26,7 @@ import java.util.Map;
  */
 public class BallerinaService {
     private String name;
-    Map<String, CdsHook> cdsHooks = new HashMap<>();
+    private Map<String, CdsHook> cdsHooks = new HashMap<>();
 
     public BallerinaService() {
     }
