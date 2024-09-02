@@ -1,100 +1,77 @@
-NAME
-        ballerina-health - Generate a Ballerina package or template for a
-        given health specification (eg.:FHIR implementation guides) files.
+        cds
+            Generate a Ballerina service from the given CDS hook definitions. This service
+            will also include basic functionalities such as validation, prefetch, etc., and
+            it will facilitate the developers to implement the required connection with the
+            external decision support system to run the CDS server. The generated Ballerina
+            service project will be written into the provided output location.
 
-SYNOPSIS
-        bal health fhir [-m | --mode] package --package-name <package-name> \
-                        <FHIR-specification-directory-path>
-                        [-m | --mode] template --dependent-package <dependent-package> \
-                        <FHIR-specification-directory-path>
-
-DESCRIPTION
-        Generate a Ballerina package or template with relevant records and types
-        from a given health specification (eg.:FHIR implementation guides) files.
-
-        The generated Ballerina sources will be written into the provided
-        output location. Make sure to add the directory path which contains
-        FHIR specification, as the last argument.
-
-        You can download FHIR specification files from the respective
-        Implementation Guide's official website. (Published list of
-        Implementation Guides can be found in http://fhir.org/guides/registry/)
-
-        The ballerina-health tool is compatible with Ballerina
-        version 2201.8.1 (Swan Lake Update 8) onwards.
-
-OPTIONS
-       -v, --version
-            Print version information.
-
-       -h, --help
-            Print the usage details of a command.
-
-COMMANDS
-        fhir
-            Refer to the FHIR specification when generating the Ballerina artifacts.
+            Supported CDS version: [2.0] https://cds-hooks.hl7.org/2.0
 
             OPTIONS
-                    -m, --mode <mode-type>
-                        Mode can be 'package' or 'template'. If the mode is set to
-                        'package', a Ballerina package will be generated including all the
-                        records and types. If the mode is set to ‘template’, tool will
-                        generate Ballerina templates for each FHIR resource definition
-                        available in the specified path. This is a MANDATORY input for fhir
-                        command.
+                    --org-name <org-name-of-the-package>
+                        This is an OPTIONAL input. Organization name of the Ballerina template to be generated.
 
-                    --package-name <name-of-package>
-                        Only applicable in ‘package’ mode. Name of the Ballerina package
-                        to be generated. This is a MANDATORY input in ‘package’ mode.
+                        Refer https://ballerina.io/learn/package-references/#the-org-field
+                        Default value: ballerinax
+
+                    --package-name <fully-qualified-name-of-package>
+                        This is an OPTIONAL input. Name of the Ballerina package to be
+                        generated. The package name can be explicitly set using this
+                        argument. Unless specified, the default name of the implementation a
+                        guide will be taken to construct the name of the package. For the
+                        template mode, this value will be added as a prefix to the template name.
+
                         Refer https://ballerina.io/learn/package-references/#the-name-field
+                        Default value: health.fhir.templates.crd
 
-                    --dependent-package <qualified-ballerina-package-name>
-                        Only applicable in ‘template’ mode. Fully qualified name of the
-                        published Ballerina package containing IG resources
-                        [eg: <org>/<package>]. This option can be used to generate
-                        templates specifically for the resources in the given IG. The
-                        package name part of this value will be added as a prefix to the
-                        template name. This is a MANDATORY input in ‘template’ mode.
+                    --package-version <version-of-the-package>
+                        This is an OPTIONAL input. The version of the Ballerina package/template to be generated.
+
+                        Refer https://semver.org/
+                        Default value: 1.0.0
+
+                    -i, --input <cds-hook-definitions-file-path>
+                        This is a MANDATORY input. Only the TOML file type is acceptable.
+                        Users need to define the CDS hook definitions in the input file.
+                        The given CDS hooks input will be used to generate the Ballerina
+                        service. This generated service can be used as a code template to
+                        start the service implementation. Generated sources contain a
+                        service definition, and other CDS-related operations like
+                        validations and utils, which are used for the template generation.
+
+                        Refer to CDS specifications for more information about the attributes: https://cds-hooks.hl7.org/2.0/#response
+
+                        EXAMPLE CDS TOOL FILE
+
+                        [[cds_services]]
+                        id = "static-patient-greeter"
+                        hook = "patient-view"
+                        title = "Static CDS Service Example"
+                        description = "An example of a CDS Service that returns a static set of cards"
+                        usageRequirements = "Note: functionality of this CDS Service is degraded without access to a FHIR Restful API as part of CDS recommendation generation."
+                        [cds_services.prefetch]
+                        patientToGreet = "Patient/{{context.patientId}}"
+
+                        [[cds_services]]
+                        id = "medication-order-dispatch"
+                        hook = "order-dispatch"
+                        title = "Start the medication dispatch"
+                        description = "An example of a CDS Service that can be used to start the dispatch process for the "
+
 
                     -o, --output <output>
                         Location of the generated Ballerina artifacts. If this
                         path is not specified, the output will be written to
                         the same directory from which the command is run.
 
-                    --org-name <org-name-of-the-package>
-                        Organization name of the Ballerina package/template to be generated.
-                        Refer https://ballerina.io/learn/package-references/#the-org-field
-
-                    --package-version <version-of-the-package>
-                        Version of the Ballerina package/template to be generated.
-                        Refer https://semver.org/
-
-                    --included-profile <profiles-to-included>
-                        Only applicable in ‘template’ mode. If only a specific profile/s
-                        needs to be generated as templates, specify the profile URL as the
-                        value of this parameter. This argument can be used more than once.
-
-                    --excluded-profile <profiles-to-excluded>
-                        Only applicable in ‘template’ mode. If only a specific profile/s
-                        needs to be skipped when generating templates, specify the
-                        profile URL as the value of this parameter. This argument
-                        can be used more than once.
-
             EXAMPLES
-                    Generate a Ballerina package for the FHIR artifacts of USCore
-                    implementation guide.
-                        $ bal health fhir -m package --package-name uscore401 \
-                        ./path_to_uscore_definitions
+                    Generate a Ballerina service for a given CDS hook definition with
+                    default package name and version.
+                        $ bal health cds -i cds-hooks.toml
 
-                    Generate a Ballerina package for the FHIR artifacts of
-                    USCore implementation guide and write the output
-                    to the given directory.
-                        $ bal health fhir -m package --package-name uscore401 \
-                        -o ./output_path ./path_to_uscore_definitions
+                    Generate a Ballerina service with a custom package name and version for a given CDS hook definition.
+                    $ bal health cds --org-name com.test --package-name cds_server --package-version 1.1.0 -i cds-hooks.toml
 
-                    Generate Ballerina templates for all the FHIR resource profiles
-                    of USCore implementation guide.
-                        $ bal health fhir -m template \
-                        --dependent-package ballerinax/health.fhir.r4.uscore501 \
-                        ./path_to_uscore_definitions
 
+                    Generate a Ballerina service and write the output using the specific path provided.
+                    $ bal health cds --org-name com.test --package-name cds_server --package-version 1.1.0 -i cds-hooks.toml -o ./output_path

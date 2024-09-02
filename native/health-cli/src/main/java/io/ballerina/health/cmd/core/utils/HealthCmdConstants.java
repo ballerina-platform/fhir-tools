@@ -65,8 +65,10 @@ public class HealthCmdConstants {
     public static final String CMD_OPTION_ORG_NAME = "--org-name";
     public static final String CMD_OPTION_ORG_NAME_DESCRIPTION = "Organization name of the Ballerina package";
     public static final String CMD_OPTION_PACKAGE_VERSION = "--package-version";
-    public static final String CMD_OPTION_PACKAGE_VERSION_DESCRIPTION = "version of the Ballerina package";
+    public static final String CMD_OPTION_PACKAGE_VERSION_DESCRIPTION = "Location of the CDS hooks definition file";
     public static final String CMD_OPTION_DEPENDENT_PACKAGE = "--dependent-package";
+    public static final String CMD_OPTION_INPUT = "--input";
+    public static final String CMD_OPTION_INPUT_SHORTER = "-i";
     public static final String CMD_OPTION_CUSTOM_ARGS_DESCRIPTION = "Custom arguments";
 
 
@@ -82,6 +84,7 @@ public class HealthCmdConstants {
         public static final String HELP_NOT_AVAILABLE = "[ERROR] Helper text is not available.";
         public static final String HELP_ERROR = "[ERROR] An Error occurred internally while fetching the Help text.";
         public static final String INVALID_NUM_OF_ARGS = "[ERROR] Invalid number of arguments received for the command.";
+        public static final String INVALID_INPUT_FILE_PATH = "[ERROR] Cannot find the input[-i] path argument.";
         public static final String INVALID_MODE = "[ERROR] Invalid mode received for tool command.";
         public static final String PKG_NAME_REQUIRED = "[ERROR] Package name [--package-name] is required for package "
                 + "generation.";

@@ -65,6 +65,9 @@ public class CdsSubCmd implements BLauncherCmd {
     @CommandLine.Option(names = {CMD_OPTION_PACKAGE_VERSION}, description = CMD_OPTION_PACKAGE_VERSION_DESCRIPTION)
     private String packageVersion;
 
+    @CommandLine.Option(names = {CMD_OPTION_INPUT, CMD_OPTION_INPUT_SHORTER}, description = CMD_OPTION_PACKAGE_VERSION_DESCRIPTION)
+    private String inputFilePath;
+
     @CommandLine.Parameters(description = CMD_OPTION_CUSTOM_ARGS_DESCRIPTION)
     private List<String> argList;
 
@@ -104,9 +107,8 @@ public class CdsSubCmd implements BLauncherCmd {
             printStream.println(HealthCmdConstants.PrintStrings.HELP_NOT_AVAILABLE);
             HealthCmdUtils.exitError(exitWhenFinish);
         }
-        if (argList == null || argList.isEmpty()) {
-            //at minimum arg count is 1 (cds hooks file path)
-            printStream.println(HealthCmdConstants.PrintStrings.INVALID_NUM_OF_ARGS);
+        if (inputFilePath == null || inputFilePath.isEmpty()) {
+            printStream.println(HealthCmdConstants.PrintStrings.INVALID_INPUT_FILE_PATH);
             printStream.println(HealthCmdConstants.PrintStrings.HELP_FOR_MORE_INFO);
             HealthCmdUtils.exitError(exitWhenFinish);
         }
@@ -156,7 +158,7 @@ public class CdsSubCmd implements BLauncherCmd {
         //resolved path from the input parameter
         Path cdsToolConfigFilePath;
         try {
-            cdsToolConfigFilePath = HealthCmdUtils.getSpecificationPath(argList.get(argList.size() - 1), executionPath.toString());
+            cdsToolConfigFilePath = HealthCmdUtils.getSpecificationPath(inputFilePath, executionPath.toString());
         } catch (BallerinaHealthException e) {
             printStream.println(HealthCmdConstants.PrintStrings.INVALID_SPEC_PATH);
             throw new BLauncherException();
