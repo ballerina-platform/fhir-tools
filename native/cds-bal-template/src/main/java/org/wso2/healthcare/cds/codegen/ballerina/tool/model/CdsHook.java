@@ -24,7 +24,13 @@ import com.google.gson.JsonObject;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.*;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.DESCRIPTION;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.HOOK;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.ID;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.PREFETCH;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.TITLE;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.USAGE_REQUIREMENTS;
+
 
 public class CdsHook {
     String id;

@@ -35,7 +35,17 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.*;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.CMD_MESSAGE_OVERRIDE_OUTPUT_DIRECTORY;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.CONFIG;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.NO;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.ONE;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.REGEX_STRING_FOR_NON_WORD_CHARACTER;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.REGEX_STRING_FOR_UNDERSCORE_AND_HYPHEN;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.SERVICE;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.UNDERSCORE;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.YES;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.ZERO;
+
 
 /**
  * Generator class to wrap all the generator classes in Ballerina project generator.

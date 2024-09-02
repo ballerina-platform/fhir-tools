@@ -20,7 +20,10 @@ package org.wso2.healthcare.cds.codegen.ballerina.tool.config;
 
 import com.google.gson.JsonObject;
 
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.*;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.NAME;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.ORG;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.VERSION;
+
 
 public class DependencyConfig {
     private final String org;

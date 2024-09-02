@@ -45,7 +45,18 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.Set;
 
-import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.*;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CDS;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CDS_CONFIG_CLASS_NAME;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CDS_TOOL_CLASS_NAME;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_CDS_JSON_SCHEMA_FILENAME;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_OPTION_ORG_NAME;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_OPTION_PACKAGE_NAME;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_OPTION_PACKAGE_VERSION;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.HOOKS;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.PROJECT_PACKAGE_NAME_PREFIX;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.PROJECT_PACKAGE_ORG;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.PROJECT_PACKAGE_VERSION;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.TOOLS;
 import static io.ballerina.health.cmd.core.utils.HealthCmdUtils.exitError;
 import static io.ballerina.health.cmd.core.utils.HealthCmdUtils.parseTomlToJson;
 

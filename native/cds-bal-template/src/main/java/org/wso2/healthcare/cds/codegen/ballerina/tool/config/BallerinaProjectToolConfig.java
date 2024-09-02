@@ -33,7 +33,17 @@ import org.wso2.healthcare.codegen.tool.framework.commons.model.JsonConfigType;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.*;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.CDS_SERVICES;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.CONFIG;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.DEPENDENCIES;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.DEPENDENT_PACKAGE;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.HOOKS;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.PACKAGE;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.PROJECT_PACKAGE_DEPENDENT_PACKAGE;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.PROJECT_PACKAGE_NAME_PREFIX;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.PROJECT_PACKAGE_ORG;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.CdsBallerinaProjectConstants.PROJECT_PACKAGE_VERSION;
+
 
 /**
  * Main config class to hold all the config objects.

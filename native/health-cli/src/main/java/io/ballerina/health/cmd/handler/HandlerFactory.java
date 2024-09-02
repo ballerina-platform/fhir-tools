@@ -23,7 +23,11 @@ import io.ballerina.health.cmd.core.utils.ErrorMessages;
 
 import java.io.PrintStream;
 
-import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.*;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_CDS_MODE_TEMPLATE;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_FHIR_MODE_CLIENT;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_FHIR_MODE_PACKAGE;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_FHIR_MODE_TEMPLATE;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.SEMICOLON;
 
 /**
  * Factory class to create handlers.

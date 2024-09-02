@@ -27,7 +27,12 @@ import io.ballerina.health.cmd.handler.Handler;
 import io.ballerina.health.cmd.handler.HandlerFactory;
 import picocli.CommandLine;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -36,7 +41,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.LogManager;
 
-import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.*;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CDS;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CDS_SUB_TOOL_DESCRIPTION;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_MODE_TEMPLATE;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_OPTION_CDS_MODE_DESCRIPTION;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_OPTION_CUSTOM_ARGS_DESCRIPTION;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_OPTION_HELP;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_OPTION_HELP_SHORTER_1;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_OPTION_HELP_SHORTER_2;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_OPTION_INPUT;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_OPTION_INPUT_SHORTER;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_OPTION_MODE;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_OPTION_MODE_SHORTER;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_OPTION_ORG_NAME;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_OPTION_ORG_NAME_DESCRIPTION;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_OPTION_OUTPUT;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_OPTION_OUTPUT_DESCRIPTION;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_OPTION_OUTPUT_SHORTER;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_OPTION_PACKAGE_NAME;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_OPTION_PACKAGE_NAME_DESCRIPTION;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_OPTION_PACKAGE_VERSION;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_OPTION_PACKAGE_VERSION_DESCRIPTION;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.USER_DIR;
+
 
 @CommandLine.Command(name = CDS, description = CDS_SUB_TOOL_DESCRIPTION)
 public class CdsSubCmd implements BLauncherCmd {
