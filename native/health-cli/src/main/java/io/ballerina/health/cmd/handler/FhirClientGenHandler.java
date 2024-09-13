@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * Handler for client generation.
  */
-public class ClientGenHandler implements Handler {
+public class FhirClientGenHandler implements Handler {
 
     @Override
     public void init(PrintStream printStream, String specificationPath) {

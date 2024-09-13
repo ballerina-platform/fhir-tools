@@ -33,6 +33,48 @@ public class TestRunner {
     private static final Path executionPath = Paths.get(System.getProperty("user.dir"));
 
     public static void main(String[] args) {
+        runTestForFhirTool();
+        runTestForCdsTool();
+    }
+
+    private static void runTestForCdsTool(){
+
+        Map<String, Object> argsMap = new HashMap<>();
+        String packageName = "health.fhir.cds";
+        String orgName = "ballerinax";
+        String packageVersion = "1.1.0";
+        argsMap.put("--package-name", packageName);
+        argsMap.put("--org-name", orgName);
+        argsMap.put("--package-version", packageVersion);
+        String mode = "template";
+        String command = "cds";
+
+        String resourcePath = Paths.get(Objects.requireNonNull(TestRunner.class.getClassLoader().getResource("io")).getPath()).getParent().getParent().toString()+ "/test-classes" + "/cds.hooks";
+        System.out.println(resourcePath);
+        File resourcesDirectory = new File(resourcePath);
+        String specPath = resourcesDirectory.getAbsolutePath();
+        Path specificationPath;
+        String outPutPath = Paths.get(Objects.requireNonNull(TestRunner.class.getClassLoader().getResource("io")).getPath()).getParent().getParent().toString() + "/test-classes";
+        try {
+            specificationPath = HealthCmdUtils.getSpecificationPath(specPath, executionPath.toString());
+        } catch (BallerinaHealthException e) {
+            System.out.println("Invalid specification path received.");
+            throw new BLauncherException();
+        }
+
+        Handler toolHandler = null;
+        try {
+            toolHandler = HandlerFactory.createHandler(command, mode, System.out, specificationPath.toString());
+        } catch (BallerinaHealthException e) {
+            System.out.println(e);
+            throw new BLauncherException();
+        }
+
+        toolHandler.setArgs(argsMap);
+        toolHandler.execute(specificationPath+File.separator+"tool-config.toml", getTargetOutputPath(outPutPath).toString());
+    }
+
+    private static void runTestForFhirTool(){
         Map<String, Object> argsMap = new HashMap<>();
         String packageName = "health.fhir.r4.uscore501";
         String orgName = "ballerinax";
@@ -44,6 +86,7 @@ public class TestRunner {
         argsMap.put("--excluded-profile", null);
         argsMap.put("--dependency", null);
         String mode = "package";
+        String command = "fhir";
 
         String resourcePath = Paths.get(Objects.requireNonNull(TestRunner.class.getClassLoader().getResource("io")).getPath()).getParent().getParent().toString() + "/test-classes" + "/profiles.USCore";
         File resourcesDirectory = new File(resourcePath);
@@ -60,7 +103,7 @@ public class TestRunner {
         }
         Handler toolHandler = null;
         try {
-            toolHandler = HandlerFactory.createHandler(mode, System.out, specificationPath.toString());
+            toolHandler = HandlerFactory.createHandler(command, mode, System.out, specificationPath.toString());
         } catch (BallerinaHealthException e) {
             System.out.println(e);
             throw new BLauncherException();

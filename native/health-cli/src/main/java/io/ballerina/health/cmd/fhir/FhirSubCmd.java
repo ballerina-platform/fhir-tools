@@ -111,7 +111,7 @@ public class FhirSubCmd implements BLauncherCmd {
         if (helpFlag) {
             Class<?> clazz = FhirSubCmd.class;
             ClassLoader classLoader = clazz.getClassLoader();
-            InputStream inputStream = classLoader.getResourceAsStream(HealthCmdConstants.CMD_HELPTEXT_FILENAME);
+            InputStream inputStream = classLoader.getResourceAsStream(HealthCmdConstants.CMD_HELP_TEXT_FILENAME);
             if (inputStream != null) {
                 try (InputStreamReader inputStreamREader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
                      BufferedReader br = new BufferedReader(inputStreamREader)) {
@@ -219,7 +219,7 @@ public class FhirSubCmd implements BLauncherCmd {
         }
         Handler toolHandler = null;
         try {
-            toolHandler = HandlerFactory.createHandler(mode, printStream, specificationPath.toString());
+            toolHandler = HandlerFactory.createHandler(toolName, mode, printStream, specificationPath.toString());
         } catch (BallerinaHealthException e) {
             printStream.println(e);
             throw new BLauncherException();

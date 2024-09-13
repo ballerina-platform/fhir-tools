@@ -41,7 +41,7 @@ import java.util.Map;
 /**
  * Handler for template generation.
  */
-public class TemplateGenHandler implements Handler {
+public class FhirTemplateGenHandler implements Handler {
 
     private String packageName;
     private String orgName;

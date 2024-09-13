@@ -1,0 +1,118 @@
+##/*
+##* Copyright (c) 2024, WSO2 LLC. (http://www.wso2.org).
+##*
+##* WSO2 LLC. licenses this file to you under the Apache License,
+##* Version 2.0 (the "License"); you may not use this file except
+##* in compliance with the License.
+##* You may obtain a copy of the License at
+##*
+##* http://www.apache.org/licenses/LICENSE-2.0
+##*
+##* Unless required by applicable law or agreed to in writing,
+##* software distributed under the License is distributed on an
+##* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+##* KIND, either express or implied. See the License for the
+##* specific language governing permissions and limitations
+##* under the License.
+##*/
+
+import ballerinax/health.fhir.cds;
+
+#set ($map = $service.getCdsHooks())
+# This method acts like an interface to route the request appropriate decision support
+# connection methods.
+#
+# + hookId - Id of the hook being invoked.
+# + cdsRequest - CdsRequest to sent to the backend.
+# + return - return CdsResponse or CdsError.
+isolated function submitForDecision(string hookId, cds:CdsRequest cdsRequest) returns cds:CdsResponse|cds:CdsError {
+    match (hookId) {
+        #foreach($mapEntry in $map.entrySet())
+        "$mapEntry.value.getId()" => {
+            return connectDecisionSystemFor$mapEntry.key#[[(]]#cdsRequest);
+        }
+        #end
+    }
+
+    string message = string `Can not find a cds service with the name: ${hookId}`;
+    int statusCode = 404;
+    cds:CdsError cdsError = cds:createCdsError(message, statusCode);
+    return cdsError;
+}
+
+# ====================================== Please do your implementations to the below methods ===========================
+
+#foreach($mapEntry in $map.entrySet())
+# Handle decision service connectivity.
+# 1. Map the received CdsRequest to the custom payload format, if needed (Optional).
+# 2. Implement the connectivity with your external decision support system.
+# 3. Send the CdsRequest to external system.
+# 4. Get the response.
+# 5. Map the received response to the CdsCards and Cds actions.
+# 6. Return the CdsResponse.
+#
+# + cdsRequest - CdsRequest to sent to the backend.
+# + return - return CdsResponse or CdsError
+isolated function connectDecisionSystemFor$mapEntry.key#[[(]]#cds:CdsRequest cdsRequest) returns cds:CdsResponse|cds:CdsError {
+    string hookId = "$mapEntry.value.getId()";
+    #if($velocityCount == 1)
+
+    // // If needed, you can implement mapCdsRequestToDecisionServiceRequest method to
+    // // transform CdsRequest to DecisionServiceRequest format
+    // // For this you can use the Ballerina data mapper: https://ballerina.io/learn/vs-code-extension/implement-the-code/data-mapper/
+    // anydata requestPayload = check mapCdsRequestToDecisionServiceRequest(cdsRequest);
+
+    // // Here you should implement the logic to connect decisiton service
+    // // Below is sample code
+    // string decisionServiceUrl = "https://www.google.com";
+    // http:Client|http:ClientError httpClient = new (decisionServiceUrl);
+    // if (httpClient is http:ClientError) {
+    //     return cds:createCdsError(httpClient.message(), 500);
+    // }
+
+    // anydata|http:ClientError response = httpClient->post("/", requestPayload.toJson());
+    // if (response is http:ClientError) {
+    //     return cds:createCdsError(response.message(), 500);
+    // }
+
+    // // map the received response to decision cards
+    // // you can implement the mapDecisionServiceResponseToCdsCards method to
+    // // transform DecisionServiceResponse to CdsCards
+    // // For this you can use the Ballerina data mapper: https://ballerina.io/learn/vs-code-extension/implement-the-code/data-mapper/
+    // cds:Card[] cards = [];
+    // cds:Card|cds:CdsError card = mapDecisionServiceResponseToCdsCards(response);
+    // if (card is cds:Card) {
+    //     cards.push(card);
+    // }
+
+    // // If needed you can implement mapDecisionServiceResponseToCdsSystemActions method to
+    // // transform DecisionServiceResponse to Cds system actions
+    // // For this you can use the Ballerina data mapper: https://ballerina.io/learn/vs-code-extension/implement-the-code/data-mapper/
+    // cds:Action[] systemActions = [];
+    // cds:Action|cds:CdsError systemAction = mapDecisionServiceResponseToCdsSystemActions(response);
+    // if (systemAction is cds:Action) {
+    //     systemActions.push(systemAction);
+    // }
+
+    // cds:CdsResponse cdsResponse = {
+    //     cards: cards,
+    //     systemActions: systemActions
+    // };
+    #else
+
+    // // Follow the same approach mentioned in the above method
+    #end
+
+    cds:CdsResponse cdsResponse = {
+        cards: [],
+        systemActions: []
+    };
+    return cdsResponse;
+}
+#end
+
+isolated function mapCdsRequestToDecisionServiceRequest(cds:CdsRequest cdsRequest) returns anydata|cds:CdsError => {};
+
+isolated function mapDecisionServiceResponseToCdsCards(anydata payload) returns cds:Card|cds:CdsError => {summary: "", indicator: "", 'source: {label: ""}};
+
+isolated function mapDecisionServiceResponseToCdsSystemActions(anydata payload) returns cds:Action|cds:CdsError => {'type: "delete", description: ""};

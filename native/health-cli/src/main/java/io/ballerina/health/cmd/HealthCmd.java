@@ -19,6 +19,7 @@
 package io.ballerina.health.cmd;
 
 import io.ballerina.cli.BLauncherCmd;
+import io.ballerina.health.cmd.cds.CdsSubCmd;
 import io.ballerina.health.cmd.core.utils.HealthCmdConstants;
 import io.ballerina.health.cmd.core.utils.HealthCmdUtils;
 import io.ballerina.health.cmd.fhir.FhirSubCmd;
@@ -38,7 +39,8 @@ import java.util.List;
         description = "Ballerina Health Artifact Generator Tool",
         subcommands = {
                 FhirSubCmd.class,
-                Hl7SubCmd.class
+                Hl7SubCmd.class,
+                CdsSubCmd.class
         }
 )
 public class HealthCmd implements BLauncherCmd {
@@ -87,7 +89,7 @@ public class HealthCmd implements BLauncherCmd {
     private void printHelpTextAsStream() {
         Class<?> clazz = FhirSubCmd.class;
         ClassLoader classLoader = clazz.getClassLoader();
-        InputStream inputStream = classLoader.getResourceAsStream(HealthCmdConstants.CMD_HELPTEXT_FILENAME);
+        InputStream inputStream = classLoader.getResourceAsStream(HealthCmdConstants.CMD_HELP_TEXT_FILENAME);
         if (inputStream != null) {
             try (InputStreamReader inputStreamREader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
                  BufferedReader br = new BufferedReader(inputStreamREader)) {

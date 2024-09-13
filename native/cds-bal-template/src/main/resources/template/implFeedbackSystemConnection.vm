@@ -1,0 +1,55 @@
+##/*
+##* Copyright (c) 2024, WSO2 LLC. (http://www.wso2.org).
+##*
+##* WSO2 LLC. licenses this file to you under the Apache License,
+##* Version 2.0 (the "License"); you may not use this file except
+##* in compliance with the License.
+##* You may obtain a copy of the License at
+##*
+##* http://www.apache.org/licenses/LICENSE-2.0
+##*
+##* Unless required by applicable law or agreed to in writing,
+##* software distributed under the License is distributed on an
+##* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+##* KIND, either express or implied. See the License for the
+##* specific language governing permissions and limitations
+##* under the License.
+##*/
+
+import ballerinax/health.fhir.cds;
+
+#set ($map = $service.getCdsHooks())
+# This method acts like an interface to route the feedback request appropriate feedback
+# connection methods.
+#
+# + hookId - id of the hook being invoked.
+# + feedback - Feedback record to be processed.
+# + return - return CdsError, if any.
+isolated function submitFeedback(string hookId, cds:Feedbacks feedback) returns cds:CdsError? {
+    match (hookId) {
+        #foreach($mapEntry in $map.entrySet())
+        "$mapEntry.value.getId()" => {
+            return connectFeedbackSystemFor$mapEntry.key#[[(]]#feedback);
+        }
+        #end
+    }
+
+    string message = string `Can not find a cds service with the name: ${hookId}`;
+    int statusCode = 404;
+    cds:CdsError cdsError = cds:createCdsError(message, statusCode);
+    return cdsError;
+}
+
+# ====================================== Please do your implementations to the below methods ===========================
+
+#foreach($mapEntry in $map.entrySet())
+# Handle feedback service connectivity.
+#
+# + feedback - Feedback record to be processed.
+# + return - return CdsError, if any.
+isolated function connectFeedbackSystemFor$mapEntry.key (cds:Feedbacks feedback) returns cds:CdsError? {
+    string hookId = "$mapEntry.value.getId()";
+    return cds:createCdsError(string `Rule repository backend not implemented/ connected yet`, 501);
+}
+
+#end

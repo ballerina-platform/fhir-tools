@@ -23,24 +23,34 @@ import io.ballerina.health.cmd.core.utils.ErrorMessages;
 
 import java.io.PrintStream;
 
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_CDS_MODE_TEMPLATE;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_FHIR_MODE_CLIENT;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_FHIR_MODE_PACKAGE;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_FHIR_MODE_TEMPLATE;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.SEMICOLON;
+
 /**
  * Factory class to create handlers.
  */
 public class HandlerFactory {
 
-    public static Handler createHandler(String command, PrintStream printStream, String specificationPath)
+    public static Handler createHandler(String subCommand, String mode, PrintStream printStream, String specificationPath)
             throws BallerinaHealthException {
-        switch (command) {
-            case "template":
-                Handler templateHandler = new TemplateGenHandler();
+        switch (subCommand + SEMICOLON + mode) {
+            case CMD_FHIR_MODE_TEMPLATE:
+                Handler templateHandler = new FhirTemplateGenHandler();
                 templateHandler.init(printStream, specificationPath);
                 return templateHandler;
-            case "client":
-                return new ClientGenHandler();
-            case "package":
-                Handler packageHandler = new PackageGenHandler();
+            case CMD_FHIR_MODE_CLIENT:
+                return new FhirClientGenHandler();
+            case CMD_FHIR_MODE_PACKAGE:
+                Handler packageHandler = new FhirPackageGenHandler();
                 packageHandler.init(printStream, specificationPath);
                 return packageHandler;
+            case CMD_CDS_MODE_TEMPLATE:
+                Handler crdTemplateGenHandler = new CrdTemplateGenHandler();
+                crdTemplateGenHandler.init(printStream, specificationPath);
+                return crdTemplateGenHandler;
             default:
                 throw new BallerinaHealthException(ErrorMessages.INVALID_MODE);
         }

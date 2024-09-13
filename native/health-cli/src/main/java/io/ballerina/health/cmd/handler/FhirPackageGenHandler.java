@@ -40,7 +40,7 @@ import java.util.Map;
 /**
  * Handler for package generation tool.
  */
-public class PackageGenHandler implements Handler {
+public class FhirPackageGenHandler implements Handler {
 
     private String packageName;
     private String orgName;

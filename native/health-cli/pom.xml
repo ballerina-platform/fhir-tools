@@ -68,6 +68,16 @@
             <artifactId>jackson-annotations</artifactId>
             <version>${version.jackson.annotations}</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${version.gson}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>json-schema-validator</artifactId>
+            <version>${version.json.schema.validator}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -181,6 +191,11 @@
                                         <artifactItem>
                                             <groupId>io.ballerina</groupId>
                                             <artifactId>fhir-to-bal-lib</artifactId>
+                                            <version>${project.version}</version>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>io.ballerina</groupId>
+                                            <artifactId>cds-bal-template</artifactId>
                                             <version>${project.version}</version>
                                         </artifactItem>
                                     </artifactItems>

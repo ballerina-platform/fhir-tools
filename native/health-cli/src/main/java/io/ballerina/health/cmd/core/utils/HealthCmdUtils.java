@@ -1,20 +1,24 @@
 package io.ballerina.health.cmd.core.utils;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import io.ballerina.cli.launcher.BLauncherException;
 import io.ballerina.health.cmd.core.exception.BallerinaHealthException;
+import net.consensys.cava.toml.Toml;
+import net.consensys.cava.toml.TomlArray;
+import net.consensys.cava.toml.TomlParseResult;
+import net.consensys.cava.toml.TomlTable;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.TemplateGenerator;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.ToolContext;
 import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenException;
 
-import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -65,26 +69,33 @@ public class HealthCmdUtils {
         throw launcherException;
     }
 
-    public static Path validateAndSetSpecificationPath(String specPathParam,String executionPath) throws BallerinaHealthException {
+    public static Path validateAndSetSpecificationPath(String specPathParam, String executionPath) throws BallerinaHealthException {
+        Path specificationPath = getSpecificationPath(specPathParam, executionPath);
+        if (!Files.isDirectory(specificationPath)) {
+            throw new BallerinaHealthException("Cannot find valid spec path pointed. Please check the path "
+                    + specPathParam + " is valid.");
+        }
+        return specificationPath;
+    }
 
-        Path specificationPath = null;
-        if (specPathParam != null) {
-            Path path = Paths.get(specPathParam);
-            if (path.isAbsolute()) {
-                specificationPath =  path;
-            } else {
-                specificationPath = Paths.get(executionPath, specPathParam);
-            }
-            if (!Files.isDirectory(specificationPath)) {
-                throw new BallerinaHealthException("Cannot find valid spec path pointed. Please check the path "
-                        + specPathParam + " is valid.");
-            }
+    public static Path getSpecificationPath(String specPathParam, String executionPath) throws BallerinaHealthException {
+        if (specPathParam == null && specPathParam.isEmpty()) {
+            throw new BallerinaHealthException("Cannot find valid spec path pointed. Please check the path "
+                    + specPathParam + " is valid.");
+        }
+
+        Path specificationPath;
+        Path path = Paths.get(specPathParam);
+        if (path.isAbsolute()) {
+            specificationPath = path;
+        } else {
+            specificationPath = Paths.get(executionPath, specPathParam);
         }
         return specificationPath;
     }
 
     public static void engageChildTemplateGenerators(TemplateGenerator templateGenerator, ToolContext context,
-                                               Map<String, Object> properties) throws CodeGenException {
+                                                     Map<String, Object> properties) throws CodeGenException {
         if (templateGenerator != null) {
             templateGenerator.generate(context, properties);
             engageChildTemplateGenerators(templateGenerator.getChildTemplateGenerator(), context, properties);
@@ -96,8 +107,33 @@ public class HealthCmdUtils {
         InputStream ioStream = classLoader.getResourceAsStream(fileName);
 
         if (ioStream == null) {
-            throw new BallerinaHealthException(HealthCmdConstants.CMD_CONFIG_FILENAME + " is not found");
+            throw new BallerinaHealthException(fileName + " is not found");
         }
         return ioStream;
+    }
+
+    public static JsonObject parseTomlToJson(String path) {
+        TomlParseResult parseResult = null;
+        try {
+            parseResult = Toml.parse(Paths.get(path));
+        } catch (IOException e) {
+            throwLauncherException(e);
+        }
+
+        return tomlToJson(parseResult);
+    }
+
+    public static JsonObject tomlToJson(TomlParseResult tomlParseResult) {
+        String josnString;
+        if (tomlParseResult instanceof TomlArray) {
+            josnString = ((TomlArray) tomlParseResult).toJson();
+
+        } else if (tomlParseResult instanceof TomlTable) {
+            josnString = ((TomlTable) tomlParseResult).toJson();
+        } else {
+            josnString = tomlParseResult.toJson();
+        }
+
+        return JsonParser.parseString(josnString).getAsJsonObject();
     }
 }

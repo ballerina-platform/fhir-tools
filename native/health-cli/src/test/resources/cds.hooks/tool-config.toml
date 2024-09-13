@@ -1,0 +1,40 @@
+# CDS definition with one prefetch template
+[[cds_services]]
+hook = "patient-view"
+title = "Static CDS Service Example"
+description = "An example of a CDS Service that returns a static set of cards"
+id = "static-patient-greeter"
+[cds_services.prefetch]
+patientToGreet = "Patient/{{context.patientId}}"
+
+# CDS definition with more than one prefetch template
+[[cds_services]]
+hook = "patient-view"
+title = "Static CDS Service Example"
+description = "An example of a CDS Service that returns a static set of cards"
+id = "static-patient-greeter2"
+[cds_services.prefetch]
+patientToGreet = "Patient/{{context.patientId}}"
+patientToGreet2 = "Patient/{{context.patientId}}"
+
+# CDS definition without prefetch
+[[cds_services]]
+hook = "order-dispatch"
+title = "Static CDS Service Example"
+description = "An example of a CDS Service that returns a static set of cards"
+id = "static-order-dispatch1"
+
+# CDS definition with an empty prefetch
+[[cds_services]]
+hook = "order-dispatch"
+title = "Static CDS Service Example"
+description = "An example of a CDS Service that returns a static set of cards"
+id = "static-order-dispatch2"
+[cds_services.prefetch]
+
+# Order select
+[[cds_services]]
+hook = "order-select"
+title = "Static CDS Service Example"
+description = "An example of a CDS Service that returns a static set of cards"
+id = "static-order-select"
