@@ -39,6 +39,10 @@ public class ToolConstants {
     public static final String CONFIG_PACKAGE_REPOSITORY = "repository";
     public static final String CONFIG_PACKAGE_REPOSITORY_TOML = "tools.config.package.repository";
     public static final String CONFIG_BASE_PACKAGE = "basePackage";
+
+    public static final String CONFIG_PARENT_PACKAGE = "parentPackage";
+
+    public static final String CONFIG_PARENT_PACKAGE_TOML = "tools.config.package.parent_package";
     public static final String CONFIG_BASE_PACKAGE_TOML = "tools.config.package.utils_package";
     public static final String CONFIG_PACKAGE_DEPENDENCY = "dependencies";
     public static final String CONFIG_PACKAGE_DEPENDENCY_TOML = "tools.config.package.dependency";
@@ -77,6 +81,7 @@ public class ToolConstants {
         MIDDLE,
         END
     }
+    public static final String FHIR_R4_DEFINITION_URL = "http://hl7.org/fhir/StructureDefinition";
 
     public static final String LICENSE_YEAR = "2023";
     public static final String DATA_TYPE_EXTENSION = "Extension";

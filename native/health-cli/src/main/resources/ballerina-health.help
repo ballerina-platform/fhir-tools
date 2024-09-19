@@ -48,6 +48,13 @@ COMMANDS
                         to be generated. This is a MANDATORY input in ‘package’ mode.
                         Refer https://ballerina.io/learn/package-references/#the-name-field
 
+                    --parent-package <name-of-parent-package>
+                        Only applicable in ‘package’ mode. Name of the "parent" Ballerina
+                        package. If some Ballerina package other than "ballerinax/health.fhir.r4"
+                        is to be used as the parent package, specify the fully qualified name
+                        of that package. This is an OPTIONAL input.
+                        Refer https://ballerina.io/learn/package-references/#the-name-field
+
                     --dependent-package <qualified-ballerina-package-name>
                         Only applicable in ‘template’ mode. Fully qualified name of the
                         published Ballerina package containing IG resources

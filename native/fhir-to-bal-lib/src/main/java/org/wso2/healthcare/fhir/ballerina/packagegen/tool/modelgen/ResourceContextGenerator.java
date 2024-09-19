@@ -18,6 +18,7 @@
 
 package org.wso2.healthcare.fhir.ballerina.packagegen.tool.modelgen;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hl7.fhir.r4.model.CanonicalType;
@@ -135,7 +136,13 @@ public class ResourceContextGenerator {
 
     private void populateElementDefinitionMap(List<ElementDefinition> elementDefinitions) {
         for (ElementDefinition elementDefinition : elementDefinitions) {
-            this.resourceTemplateContextInstance.getSnapshotElementDefinitions().put(elementDefinition.getId(), elementDefinition);
+            String id = elementDefinition.getId();
+            int colonCount = StringUtils.countMatches(id, ":");
+            if (colonCount>1) {
+                // nested slice; ignore processing
+                continue;
+            }
+            this.resourceTemplateContextInstance.getSnapshotElementDefinitions().put(id, elementDefinition);
         }
     }
 
@@ -167,6 +174,14 @@ public class ResourceContextGenerator {
             // format of <RESOURCE>.<field>[x]:<field><Datatype>.<childPath>
             // i.e : MedicationRequest.medication[x]:medicationCodeableConcept.coding
             String id = elementDefinition.getId();
+            if (id.contains(":")) {
+                if (id.substring(id.indexOf("."), id.lastIndexOf(":")).contains(":")) {
+                    //todo: rewrite the logic using regex
+
+                    // nested slice; ignore processing
+                    continue;
+                }
+            }
             if (id.contains("[x]:")) {
                 elementPath = id.replaceAll("\\w+([A-Z]?\\[x]:)", "");
                 if (elementPath.contains(":")) {
@@ -289,6 +304,13 @@ public class ResourceContextGenerator {
                 } else {
                     element.addProfile(profile.getValue(), profileType);
                 }
+                //check for prefix when non R4 profiles are available
+                if (!profile.getValue().startsWith(ToolConstants.FHIR_R4_DEFINITION_URL)) {
+                    if (!StringUtils.isEmpty(toolConfig.getPackageConfig().getParentPackage())) {
+                        String prefix = CommonUtil.getSplitTokenAt(toolConfig.getPackageConfig().getParentPackage(), "\\.", ToolConstants.TokenPosition.END);
+                        element.getProfiles().get(profile.getValue()).setPrefix(prefix);
+                    }
+                }
             }
         } else {
             element.addProfile(element.getDataType(), element.getDataType());
@@ -297,7 +319,7 @@ public class ResourceContextGenerator {
             ArrayList<String> values = new ArrayList<>();
             values.add(elementDefinition.getFixed().primitiveValue());
             element.setFixedValue(values);
-        } else if(elementDefinition.hasPattern() && !elementDefinition.getPattern().children().isEmpty()) {
+        } else if (elementDefinition.hasPattern() && !elementDefinition.getPattern().children().isEmpty()) {
             HashMap<String, Element> childElements = new HashMap<>();
             for (Property childProperty : elementDefinition.getPattern().children()) {
                 if (childProperty.hasValues()) {
@@ -428,7 +450,7 @@ public class ResourceContextGenerator {
     /**
      * Validate and create extended elements from resource elements
      *
-     * @param element            resource element to be validated
+     * @param element resource element to be validated
      */
     private void validateAndPopulateExtendedElement(Element element) {
         LOG.debug("Started: Resource Extended Element validation");
@@ -493,7 +515,7 @@ public class ResourceContextGenerator {
         }
 
         if (element.isSlice()) {
-            if(this.resourceTemplateContextInstance.getSliceElements().get(element.getPath()) != null) {
+            if (this.resourceTemplateContextInstance.getSliceElements().get(element.getPath()) != null) {
                 this.resourceTemplateContextInstance.getSliceElements().get(element.getPath()).add(element);
             } else {
                 ArrayList<Element> slices = new ArrayList<>();
