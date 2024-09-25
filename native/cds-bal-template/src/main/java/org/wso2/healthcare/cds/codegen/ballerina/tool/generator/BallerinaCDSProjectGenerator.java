@@ -18,6 +18,7 @@
 
 package org.wso2.healthcare.cds.codegen.ballerina.tool.generator;
 
+import org.apache.commons.lang.StringUtils;
 import org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants;
 import org.wso2.healthcare.cds.codegen.ballerina.tool.config.BallerinaCDSProjectToolConfig;
 import org.wso2.healthcare.cds.codegen.ballerina.tool.model.BallerinaService;
@@ -131,6 +132,6 @@ public class BallerinaCDSProjectGenerator extends AbstractFHIRTemplateGenerator 
         StringBuilder textCopy = new StringBuilder(text);
         textCopy.setCharAt(ZERO, Character.toUpperCase(firstCharOfText));
         text = textCopy.toString();
-        return text;
+        return text.replaceAll(UNDERSCORE, StringUtils.EMPTY);
     }
 }
