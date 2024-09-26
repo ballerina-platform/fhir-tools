@@ -113,6 +113,6 @@ isolated function connectDecisionSystemFor$mapEntry.key#[[(]]#cds:CdsRequest cds
 
 isolated function mapCdsRequestToDecisionServiceRequest(cds:CdsRequest cdsRequest) returns anydata|cds:CdsError => {};
 
-isolated function mapDecisionServiceResponseToCdsCards(anydata payload) returns cds:Card|cds:CdsError => {summary: "", indicator: "", 'source: {label: ""}};
+isolated function mapDecisionServiceResponseToCdsCards(anydata payload) returns cds:Card|cds:CdsError => {summary: "", indicator: cds:INFO, 'source: {label: ""}};
 
 isolated function mapDecisionServiceResponseToCdsSystemActions(anydata payload) returns cds:Action|cds:CdsError => {'type: "delete", description: ""};
