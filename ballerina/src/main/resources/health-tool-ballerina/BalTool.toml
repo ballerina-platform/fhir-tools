@@ -17,6 +17,9 @@ path = "resources/fhir-to-bal-template-${version.health.cli}.jar"
 path = "resources/fhir-to-bal-lib-${version.health.cli}.jar"
 
 [[dependency]]
+path = "resources/cds-bal-template-${version.health.cli}.jar"
+
+[[dependency]]
 path = "resources/org.hl7.fhir.r4-${hapi.version}.jar"
 
 [[dependency]]
@@ -354,3 +357,6 @@ path = "resources/snakeyaml-1.27.jar"
 
 [[dependency]]
 path = "resources/jackson-dataformat-yaml-2.12.1.jar"
+
+[[dependency]]
+path = "resources/json-schema-validator-${version.json.schema.validator}.jar"
