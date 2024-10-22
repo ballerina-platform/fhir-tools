@@ -84,7 +84,9 @@ public class HealthCmdConstants {
         public static final String HELP_NOT_AVAILABLE = "[ERROR] Helper text is not available.";
         public static final String HELP_ERROR = "[ERROR] An Error occurred internally while fetching the Help text.";
         public static final String INVALID_NUM_OF_ARGS = "[ERROR] Invalid number of arguments received for the command.";
-        public static final String INVALID_INPUT_FILE_PATH = "[ERROR] Cannot find the input[-i] path argument.";
+        public static final String NO_INPUT_FILE_PATH = "[ERROR] Cannot find the input[-i] path argument.";
+        public static final String EMPTY_INPUT_FILE_PATH = "[ERROR] The input[-i] path argument is empty.";
+        public static final String INVALID_INPUT_FILE_PATH = "[ERROR] Cannot find the file provided for the input[-i] path argument.";
         public static final String INVALID_MODE = "[ERROR] Invalid mode received for tool command.";
         public static final String PKG_NAME_REQUIRED = "[ERROR] Package name [--package-name] is required for package "
                 + "generation.";

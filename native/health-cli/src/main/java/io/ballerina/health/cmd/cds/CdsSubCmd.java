@@ -25,6 +25,7 @@ import io.ballerina.health.cmd.core.utils.HealthCmdConstants;
 import io.ballerina.health.cmd.core.utils.HealthCmdUtils;
 import io.ballerina.health.cmd.handler.Handler;
 import io.ballerina.health.cmd.handler.HandlerFactory;
+import org.apache.commons.lang.StringUtils;
 import picocli.CommandLine;
 
 import java.io.BufferedReader;
@@ -34,6 +35,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -134,7 +136,20 @@ public class CdsSubCmd implements BLauncherCmd {
             printStream.println(HealthCmdConstants.PrintStrings.HELP_NOT_AVAILABLE);
             HealthCmdUtils.exitError(exitWhenFinish);
         }
-        if (inputFilePath == null || inputFilePath.isEmpty()) {
+
+        if (inputFilePath == null) {
+            printStream.println(HealthCmdConstants.PrintStrings.NO_INPUT_FILE_PATH);
+            printStream.println(HealthCmdConstants.PrintStrings.HELP_FOR_MORE_INFO);
+            HealthCmdUtils.exitError(exitWhenFinish);
+        }
+
+        if (StringUtils.isEmpty(inputFilePath)) {
+            printStream.println(HealthCmdConstants.PrintStrings.EMPTY_INPUT_FILE_PATH);
+            printStream.println(HealthCmdConstants.PrintStrings.HELP_FOR_MORE_INFO);
+            HealthCmdUtils.exitError(exitWhenFinish);
+        }
+
+        if (!Files.exists(Path.of(inputFilePath))) {
             printStream.println(HealthCmdConstants.PrintStrings.INVALID_INPUT_FILE_PATH);
             printStream.println(HealthCmdConstants.PrintStrings.HELP_FOR_MORE_INFO);
             HealthCmdUtils.exitError(exitWhenFinish);
