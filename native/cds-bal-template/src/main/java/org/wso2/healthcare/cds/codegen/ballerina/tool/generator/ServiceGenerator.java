@@ -29,8 +29,6 @@ import java.util.Map;
 
 import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.BAL_DECISION_SYSTEM_CONNECTION_FILE;
 import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.BAL_DECISION_SYSTEM_CONNECTION_VM;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.BAL_FEEDBACK_SYSTEM_CONNECTION_FILE;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.BAL_FEEDBACK_SYSTEM_CONNECTION_VM;
 import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.BAL_INTERCEPTOR_FILE;
 import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.BAL_INTERCEPTOR_VM;
 import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.BAL_SERVICE_FILE;
@@ -73,11 +71,6 @@ public class ServiceGenerator extends AbstractFHIRTemplateGenerator {
                 templateContext,
                 directoryPath,
                 BAL_DECISION_SYSTEM_CONNECTION_FILE);
-        this.getTemplateEngine().generateOutputAsFile(
-                BallerinaCDSProjectConstants.RESOURCE_PATH_TEMPLATES + BallerinaCDSProjectConstants.RESOURCE_PATH_SEPARATOR + BAL_FEEDBACK_SYSTEM_CONNECTION_VM,
-                templateContext,
-                directoryPath,
-                BAL_FEEDBACK_SYSTEM_CONNECTION_FILE);
     }
 
     private TemplateContext createTemplateContextForBalService(Map<String, Object> generatorProperties) {

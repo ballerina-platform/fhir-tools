@@ -59,8 +59,7 @@ public class BallerinaCDSProjectConstants {
     public static final String BAL_SERVICE_FILE = "service.bal";
     public static final String BAL_INTERCEPTOR_FILE = "interceptor.bal";
     public static final String BAL_UTILS_FILE = "utils.bal";
-    public static final String BAL_DECISION_SYSTEM_CONNECTION_FILE = "implDecisionSystemConnection.bal";
-    public static final String BAL_FEEDBACK_SYSTEM_CONNECTION_FILE = "implFeedbackSystemConnection.bal";
+    public static final String BAL_DECISION_SYSTEM_CONNECTION_FILE = "decision_engine_connector.bal";
     public static final String BAL_PACKAGE_MD_FILE = "Package.md";
     public static final String BAL_GIT_IGNORE_FILE = ".gitignore";
     public static final String BAL_TOML_FILE = "Ballerina.toml";

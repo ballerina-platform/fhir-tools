@@ -75,9 +75,12 @@ public class HealthCmdConstants {
     public class PrintStrings {
 
         public static final String HELP_FOR_MORE_INFO = "[INFO] Try bal health --help for more information.";
-        public static final String TEMPLATE_GEN_SUCCESS = "[INFO] Ballerina templates generation completed " +
+        public static final String TEMPLATE_GEN_SUCCESS_MESSAGE = "[INFO] Ballerina templates generation completed " +
                 "successfully. Generated templates can be found at: ";
-        public static final String PKG_GEN_SUCCESS = "[INFO] Ballerina FHIR package generation completed successfully."
+        public static final String CDS_TEMPLATE_GEN_SUCCESS_MESSAGE = "[INFO] Ballerina CDS service template generation completed " +
+                "successfully. The generated project can be found at ";
+        public static final String PKG_GEN_SUCCESS = "[INFO] Ballerin" +
+                "a FHIR package generation completed successfully."
                 + " Generated package can be found at: ";
 
         public static final String INVALID_SPEC_PATH = "[ERROR] Invalid specification path received.";

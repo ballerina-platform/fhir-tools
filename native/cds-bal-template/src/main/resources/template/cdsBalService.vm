@@ -65,3 +65,47 @@ service http:InterceptableService / on new http:Listener(8080) {
         return postProcessing(result);
     }
 }
+
+#set ($map = $service.getCdsHooks())
+# This method acts like an interface to route the request appropriate decision support
+# connection methods.
+#
+# + hookId - Id of the hook being invoked.
+# + cdsRequest - CdsRequest to sent to the backend.
+# + return - return CdsResponse or CdsError.
+isolated function submitForDecision(string hookId, cds:CdsRequest cdsRequest) returns cds:CdsResponse|cds:CdsError {
+    match (hookId) {
+        #foreach($mapEntry in $map.entrySet())
+        "$mapEntry.value.getId()" => {
+            return connectDecisionSystemFor$mapEntry.key#[[(]]#cdsRequest, hookId);
+        }
+        #end
+    }
+
+    string message = string `Can not find a cds service with the name: ${hookId}`;
+    int statusCode = 404;
+    cds:CdsError cdsError = cds:createCdsError(message, statusCode);
+    return cdsError;
+}
+
+#set ($map = $service.getCdsHooks())
+# This method acts like an interface to route the feedback request appropriate feedback
+# connection methods.
+#
+# + hookId - id of the hook being invoked.
+# + feedback - Feedback record to be processed.
+# + return - return CdsError, if any.
+isolated function submitFeedback(string hookId, cds:Feedbacks feedback) returns cds:CdsError? {
+    match (hookId) {
+        #foreach($mapEntry in $map.entrySet())
+        "$mapEntry.value.getId()" => {
+            return connectFeedbackSystemFor$mapEntry.key#[[(]]#feedback, hookId);
+        }
+        #end
+    }
+
+    string message = string `Can not find a cds service with the name: ${hookId}`;
+    int statusCode = 404;
+    cds:CdsError cdsError = cds:createCdsError(message, statusCode);
+    return cdsError;
+}

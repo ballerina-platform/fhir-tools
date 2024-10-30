@@ -159,7 +159,7 @@ public class CdsSubCmd implements BLauncherCmd {
         mode = CMD_MODE_TEMPLATE;
 
         if (this.engageSubCommand(argList)) {
-            printStream.println(HealthCmdConstants.PrintStrings.TEMPLATE_GEN_SUCCESS + targetOutputPath);
+            printStream.println(HealthCmdConstants.PrintStrings.CDS_TEMPLATE_GEN_SUCCESS_MESSAGE + targetOutputPath + File.separator + packageName);
         } else {
             printStream.println(HealthCmdConstants.PrintStrings.INVALID_MODE);
             printStream.println(HealthCmdConstants.PrintStrings.HELP_FOR_MORE_INFO);
