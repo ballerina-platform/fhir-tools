@@ -172,7 +172,7 @@ public class FhirSubCmd implements BLauncherCmd {
         }
         if (this.engageSubCommand(argList)) {
             if (CMD_MODE_TEMPLATE.equals(mode)) {
-                printStream.println(HealthCmdConstants.PrintStrings.TEMPLATE_GEN_SUCCESS + targetOutputPath);
+                printStream.println(HealthCmdConstants.PrintStrings.TEMPLATE_GEN_SUCCESS_MESSAGE + targetOutputPath);
             } else {
                 printStream.println(HealthCmdConstants.PrintStrings.PKG_GEN_SUCCESS + targetOutputPath);
             }
