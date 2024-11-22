@@ -507,7 +507,7 @@ public class ResourceContextGenerator {
                 populateResourceSliceElementsMap(childEntry.getValue());
                 if (element.isSlice()) {
                     ElementDefinition elementDefinition = this.resourceTemplateContextInstance.getSnapshotElementDefinitions().get(childEntry.getValue().getPath());
-                    if (elementDefinition != null && "*".equals(elementDefinition.getMax()) && childEntry.getValue().getMax() != Integer.MAX_VALUE) {
+                    if (elementDefinition != null && "*".equals(elementDefinition.getBase().getMax()) && childEntry.getValue().getMax() != Integer.MAX_VALUE) {
                         childEntry.getValue().setArray(true);
                     }
                 }
@@ -541,7 +541,7 @@ public class ResourceContextGenerator {
      * @return is an element array or not
      */
     private boolean isElementArray(ElementDefinition elementDefinition) {
-        return elementDefinition.getMax().equals("*") || Integer.parseInt(elementDefinition.getMax()) > 1;
+        return elementDefinition.getBase().getMax().equals("*") || Integer.parseInt(elementDefinition.getBase().getMax()) > 1;
     }
 
     /**

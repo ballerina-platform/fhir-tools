@@ -80,15 +80,18 @@ public type $util.resolveSpecialCharacters($resourceName) record {|
 
 #foreach($element in $resourceElements)
 #set($min = 1)
-#set($max = $INT_MAX)
-#if( ($element.min >= $min ) && ($element.max == $max) )
+#set($max = 1)
+#set($separator = ",")
+## Here we should add constraint:Array only for the Array elements and min or max is 1
+#if( $element.isArray() && ($element.getMin() == $min || $element.getMax() == $max) )
     @constraint:Array {
-       minLength: $element.getMin()
-    }
-#elseif( ($element.min >= $min ) && ($element.max > 1) )
-    @constraint:Array {
-       minLength: $element.getMin(),
-       maxLength: $element.getMax()
+#if( $element.getMin() == $min )
+        minLength: $min#if( $element.getMax() == $max )$separator#end
+#end
+
+#if( $element.getMax() == $max )
+        maxLength: $max
+#end
     }
 #end
     #foreach($profileEntry in $element.getProfiles().entrySet())#if(!$dataTypes.contains($profileEntry.value.getProfileType()))#if(!$profileEntry.value.getPrefix())${importIdentifier}#else$profileEntry.value.getPrefix():#end#end$util.resolveSpecialCharacters($profileEntry.value.getProfileType())#if($element.isArray())[]#end#if($velocityCount != $element.getProfiles().size())|#end#end $util.resolveKeywordConflict($util.resolveSpecialCharacters($element.getName()))#if(!$element.isRequired())?#end;
@@ -146,15 +149,18 @@ public type $util.resolveSpecialCharacters($extendedElement.getTypeName()) recor
 
 #foreach($childElement in $extendedElement.getElements())
 #set($min = 1)
-#set($max = $INT_MAX)
-#if( ($childElement.getMin() >= $min ) && ($childElement.getMax() == $max) )
+#set($max = 1)
+#set($separator = ",")
+## Here we should add constraint:Array only for the Array elements and min or max is 1
+#if( $childElement.isArray() && ($childElement.getMin() == $min || $childElement.getMax() == $max) )
     @constraint:Array {
-       minLength: $childElement.getMin()
-    }
-#elseif( $childElement.isArray() && ($childElement.min >= $min ) && ($childElement.max >= 1) )
-    @constraint:Array {
-       minLength: $childElement.getMin(),
-       maxLength: $childElement.getMax()
+#if( $childElement.getMin() == $min )
+        minLength: $min#if( $childElement.getMax() == $max )$separator#end
+#end
+
+#if( $childElement.getMax() == $max )
+        maxLength: $max
+#end
     }
 #end
 #if($childElement.hasFixedValue())

@@ -92,7 +92,7 @@ public class DatatypeContextGenerator {
                     Element element = new Element();
                     element.setMax(GeneratorUtils.getMaxCardinality(elementDefinition.getMax()));
                     element.setMin(elementDefinition.getMin());
-                    element.setArray(!elementDefinition.getMax().equals("0") && !elementDefinition.getMax().equals("1"));
+                    element.setArray(!elementDefinition.getBase().getMax().equals("0") && !elementDefinition.getBase().getMax().equals("1"));
                     String typeCode = elementDefinition.getType().get(0).getCode();
                     if (GeneratorUtils.getInstance().shouldReplacedByBalType(typeCode)) {
                         element.setDataType(GeneratorUtils.getInstance().resolveDataType(typeCode));
