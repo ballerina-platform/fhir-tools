@@ -541,7 +541,7 @@ public class ResourceContextGenerator {
      * @return is an element array or not
      */
     private boolean isElementArray(ElementDefinition elementDefinition) {
-        return elementDefinition.getBase().getMax().equals("*") || Integer.parseInt(elementDefinition.getBase().getMax()) > 1;
+        return "*".equals(elementDefinition.getBase().getMax()) || Integer.parseInt(elementDefinition.getBase().getMax()) > 1;
     }
 
     /**
