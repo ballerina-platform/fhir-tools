@@ -86,11 +86,17 @@ public type $util.resolveSpecialCharacters($resourceName) record {|
 #if( $element.isArray() && ($element.getMin() == $min || $element.getMax() == $max) )
     @constraint:Array {
 #if( $element.getMin() == $min )
-        minLength: $min#if( $element.getMax() == $max )$separator#end
+        minLength: {
+            value: $min$separator
+            message: "Validation failed for $.$element.getPath() constraint. It should contain a minimum of one item."
+        }#if( $element.getMax() == $max )$separator#end
 #end
 
 #if( $element.getMax() == $max )
-        maxLength: $max
+        maxLength: {
+            value: $max$separator
+            message: "Validation failed for $.$element.getPath() constraint. It should contain a maximum of one item."
+        }
 #end
     }
 #end
@@ -155,11 +161,17 @@ public type $util.resolveSpecialCharacters($extendedElement.getTypeName()) recor
 #if( $childElement.isArray() && ($childElement.getMin() == $min || $childElement.getMax() == $max) )
     @constraint:Array {
 #if( $childElement.getMin() == $min )
-        minLength: $min#if( $childElement.getMax() == $max )$separator#end
+        minLength: {
+            value: $min$separator
+            message: "Validation failed for $.$childElement.getPath() constraint. It should contain a minimum of one item."
+        }#if( $childElement.getMax() == $max )$separator#end
 #end
 
 #if( $childElement.getMax() == $max )
-        maxLength: $max
+        maxLength: {
+            value: $max$separator
+            message: "Validation failed for $.$childElement.getPath() constraint. It should contain a maximum of one item."
+        }
 #end
     }
 #end
