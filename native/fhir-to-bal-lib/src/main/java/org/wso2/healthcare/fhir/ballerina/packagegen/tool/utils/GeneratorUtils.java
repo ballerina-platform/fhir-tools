@@ -108,6 +108,49 @@ public class GeneratorUtils {
             put("'type", "AddressType");
             put("use", "AddressUse");
         }});
+        put("ContactPoint", new HashMap<>() {{
+            put("system", "ContactPointSystem");
+            put("use", "ContactPointUse");
+        }});
+        put("Contributor", new HashMap<>() {{
+            put("type", "ContributorType");
+        }});
+        put("ElementBinding", new HashMap<>() {{
+            put("strength", "StrengthCode");
+        }});
+        put("ElementDiscriminator", new HashMap<>() {{
+            put("type", "ElementDiscriminatorType");
+        }});
+        put("ElementRepeat", new HashMap<>() {{
+            put("durationUnit", "Timecode");
+            put("periodUnit", "Timecode");
+            put("dayOfWeek", "Daycode");
+        }});
+        put("ElementSlicing", new HashMap<>() {{
+            put("rules", "ElementSlicingRules");
+        }});
+        put("ElementSort", new HashMap<>() {{
+            put("direction", "DirectionCode");
+        }});
+        put("ElementType", new HashMap<>() {{
+            put("aggregation", "TypeAggregation");
+            put("versioning", "TypeVersioning");
+        }});
+        put("HumanName", new HashMap<>() {{
+            put("use", "HumanNameUse");
+        }});
+        put("Identifier", new HashMap<>() {{
+            put("use", "IdentifierUse");
+        }});
+        put("Narrative", new HashMap<>() {{
+            put("status", "StatusCode");
+        }});
+        put("ParameterDefinition", new HashMap<>() {{
+            put("use", "ParameterDefinitionUse");
+        }});
+        put("Quantity", new HashMap<>() {{
+            put("comparator", "QuantityComparatorCode");
+        }});
     }};
 
     private static final GeneratorUtils instance = new GeneratorUtils();

@@ -86,7 +86,9 @@ public class DatatypeContextGenerator {
                 if (elementDefinition.getPath().contains(".")) {
                     String elementName = elementDefinition.getPath().substring(
                             elementDefinition.getPath().lastIndexOf(".") + 1);
-                    if ("id".equals(elementName) || "extension".equals(elementName)) {
+                    if ("id".equals(elementName) || "extension".equals(elementName)
+                            || elementDefinition.getPath().contains(".extension.")) {
+                        //skipping for generating datatype extensions
                         continue;
                     }
                     Element element = new Element();
@@ -135,8 +137,7 @@ public class DatatypeContextGenerator {
             if (elementDataType.equals("code") && element.hasChildElements()) {
                 extendedElement = GeneratorUtils.getInstance().populateExtendedElement(element, BallerinaDataType.Enum, elementDataType,
                         context.getName());
-                context.getExtendedElements().putIfAbsent(extendedElement.getTypeName(), extendedElement);
-                element.setName(extendedElement.getTypeName());
+                context.getExtendedElements().putIfAbsent(element.getName(), extendedElement);
                 element.setExtended(true);
             }
         }
