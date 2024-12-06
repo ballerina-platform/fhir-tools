@@ -227,6 +227,10 @@ public class ResourceContextGenerator {
                                         elementName = tempElement + CommonUtil.toCamelCase(type.getCode());
 
                                     Element childElement = populateElement(rootElementName, elementName, type, isSlice, elementDefinition);
+                                    if (ToolConstants.DATA_TYPE_EXTENSION.equals(childElement.getDataType()) &&
+                                            !elementName.equals("extension") && !elementName.equals("modifierExtension")) {
+                                        continue;
+                                    }
                                     if (rootElement.getChildElements() != null) {
                                         if (!rootElement.getChildElements().containsKey(elementName)) {
                                             rootElement.getChildElements().put(elementName, childElement);
@@ -502,6 +506,9 @@ public class ResourceContextGenerator {
 
     private void populateResourceSliceElementsMap(Element element) {
         LOG.debug("Started: Resource Slice Element Map population");
+        if (ToolConstants.DATA_TYPE_EXTENSION.equals(element.getDataType()) && element.isSlice()) {
+            return;
+        }
         if (element.hasChildElements()) {
             for (Map.Entry<String, Element> childEntry : element.getChildElements().entrySet()) {
                 populateResourceSliceElementsMap(childEntry.getValue());
