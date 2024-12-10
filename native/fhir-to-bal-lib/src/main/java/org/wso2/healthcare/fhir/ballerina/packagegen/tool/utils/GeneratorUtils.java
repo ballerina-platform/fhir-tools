@@ -491,4 +491,16 @@ public class GeneratorUtils {
     public String getNewLine() {
         return "\n";
     }
+
+
+    /**
+     * Check whether the element is a constrained array element
+     *
+     * @param element element
+     * @return true if the element is a constrained array element
+     */
+    public boolean isConstrainedArrayElement(Element element) {
+        return (element.getMin() >= 1 && element.getMax() > 1) || (element.isArray() &&
+                element.getMax() > 0 && element.getMax() < Integer.MAX_VALUE);
+    }
 }
