@@ -42,7 +42,6 @@ import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.ResourceTemplate
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.CommonUtil;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.GeneratorUtils;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -227,8 +226,8 @@ public class ResourceContextGenerator {
                                         elementName = tempElement + CommonUtil.toCamelCase(type.getCode());
 
                                     Element childElement = populateElement(rootElementName, elementName, type, isSlice, elementDefinition);
-                                    if (ToolConstants.DATA_TYPE_EXTENSION.equals(childElement.getDataType()) &&
-                                            !elementName.equals("extension") && !elementName.equals("modifierExtension")) {
+                                    if (ToolConstants.DATA_TYPE_EXTENSION.equals(childElement.getDataType()) && !elementName.equals("extension")
+                                            && !elementName.equals("modifierExtension")) {
                                         continue;
                                     }
                                     if (rootElement.getChildElements() != null) {
@@ -401,17 +400,17 @@ public class ResourceContextGenerator {
                     }
                 }
             }
-            markConstrainedElements(element);
+            checkAndAddConstraintImport(element);
             this.resourceTemplateContextInstance.getResourceElements().put(element.getName(), element);
         }
     }
 
-    private void markConstrainedElements(Element element) {
-        boolean isCardinalityConstrained = (element.getMin() >= 1) && (element.getMax() > 1);
+    private void checkAndAddConstraintImport(Element element) {
+        boolean isCardinalityConstrained = (element.getMin() >= 1 && element.getMax() > 1) || (element.isArray() &&
+                element.getMax() > 0 && element.getMax() < Integer.MAX_VALUE);
         boolean isConstraintsImportExists = this.resourceTemplateContextInstance.getResourceDependencies()
                 .stream()
                 .anyMatch(d -> d.equals(CONSTRAINTS_LIB_IMPORT));
-
         if (!isConstraintsImportExists && isCardinalityConstrained) {
             this.resourceTemplateContextInstance.getResourceDependencies().add(CONSTRAINTS_LIB_IMPORT);
         }
@@ -465,7 +464,6 @@ public class ResourceContextGenerator {
                     this.resourceTemplateContextInstance.getResourceName());
             putExtendedElementIfAbsent(element, extendedElement);
         } else if (element.isSlice() || elementDataType.equals("BackboneElement") || (element.isExtended() && element.hasChildElements())) {
-            markConstrainedElements(element);
             extendedElement = GeneratorUtils.getInstance().populateExtendedElement(element, BallerinaDataType.Record, elementDataType,
                     this.resourceTemplateContextInstance.getResourceName());
             extendedElement.setElements(element.getChildElements());
@@ -476,7 +474,7 @@ public class ResourceContextGenerator {
             if (element.hasChildElements()) {
                 HashMap<String, AnnotationElement> childElementAnnotations = new HashMap<>();
                 for (Element subElement : element.getChildElements().values()) {
-                    markConstrainedElements(subElement);
+                    checkAndAddConstraintImport(subElement);
                     AnnotationElement annotationElement = GeneratorUtils.getInstance().populateAnnotationElement(subElement);
                     childElementAnnotations.put(annotationElement.getName(), annotationElement);
                 }
@@ -514,7 +512,7 @@ public class ResourceContextGenerator {
                 populateResourceSliceElementsMap(childEntry.getValue());
                 if (element.isSlice()) {
                     ElementDefinition elementDefinition = this.resourceTemplateContextInstance.getSnapshotElementDefinitions().get(childEntry.getValue().getPath());
-                    if (elementDefinition != null && "*".equals(elementDefinition.getBase().getMax()) && childEntry.getValue().getMax() != Integer.MAX_VALUE) {
+                    if (elementDefinition != null && isElementArray(elementDefinition)) {
                         childEntry.getValue().setArray(true);
                     }
                 }
