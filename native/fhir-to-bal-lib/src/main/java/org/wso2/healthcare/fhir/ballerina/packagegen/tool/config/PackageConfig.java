@@ -26,7 +26,11 @@ import net.consensys.cava.toml.TomlTable;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.ToolConstants;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Ballerina package level config.
@@ -40,7 +44,7 @@ public class PackageConfig {
     private String repository;
     private String basePackage;
     private List<DependencyConfig> dependencyConfigList;
-    private String parentPackage;
+    private final Map<String, String> profileDependencies = new HashMap<>();
 
     public PackageConfig(JsonObject packageConfigJson) {
         this.org = packageConfigJson.getAsJsonPrimitive(ToolConstants.CONFIG_PACKAGE_ORG).getAsString();
@@ -50,7 +54,6 @@ public class PackageConfig {
         this.authors = packageConfigJson.getAsJsonArray(ToolConstants.CONFIG_PACKAGE_AUTHORS).getAsString();
         this.repository = packageConfigJson.getAsJsonPrimitive(ToolConstants.CONFIG_PACKAGE_REPOSITORY).getAsString();
         this.basePackage = packageConfigJson.getAsJsonPrimitive(ToolConstants.CONFIG_BASE_PACKAGE).getAsString();
-        this.parentPackage = packageConfigJson.getAsJsonPrimitive(ToolConstants.CONFIG_PARENT_PACKAGE).getAsString();
         populateDependencies(packageConfigJson.getAsJsonArray(ToolConstants.CONFIG_PACKAGE_DEPENDENCY).getAsJsonArray());
     }
 
@@ -62,7 +65,6 @@ public class PackageConfig {
         this.authors = packageConfigToml.getString(ToolConstants.CONFIG_PACKAGE_AUTHORS_TOML);
         this.repository = packageConfigToml.getString(ToolConstants.CONFIG_PACKAGE_REPOSITORY_TOML);
         this.basePackage = packageConfigToml.getString(ToolConstants.CONFIG_BASE_PACKAGE_TOML);
-        this.parentPackage = packageConfigToml.getString(ToolConstants.CONFIG_PARENT_PACKAGE_TOML);
         populateDependencies(packageConfigToml.getArrayOrEmpty(ToolConstants.CONFIG_PACKAGE_DEPENDENCY_TOML));
     }
 
@@ -162,11 +164,24 @@ public class PackageConfig {
         this.dependencyConfigList = dependencyConfigList;
     }
 
-    public String getParentPackage() {
-        return parentPackage;
+    public Map<String, String> getProfileDependencies() {
+        return profileDependencies;
     }
 
-    public void setParentPackage(String parentPackage) {
-        this.parentPackage = parentPackage;
+    public void setProfileDependencies(List<String> customDependencies) {
+        for (String dependency : customDependencies) {
+            // This regex will validate the profile dependency pattern <profile_url>=<Ballerina_org_name>/<Ballerina_package_name>
+            String regex = "^https?://(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}(?:/[^\\s]*)?=[a-zA-Z0-9-]+/[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)+$";
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(dependency);
+            if (matcher.matches()) {
+                String[] dependentPackageAndProfileUrl = dependency.split("=");
+                this.profileDependencies.put(dependentPackageAndProfileUrl[0], dependentPackageAndProfileUrl[1]);
+            } else {
+                throw new RuntimeException("Provided profile dependency is wrong: " + dependency + " " +
+                        "It should be in the <profile_url>=<Ballerina_org>/<Ballerina_package_name> pattern, " +
+                        "e-g: http://hl7.org/fhir/uv/=ballerinax/health.fhir.uv");
+            }
+        }
     }
 }

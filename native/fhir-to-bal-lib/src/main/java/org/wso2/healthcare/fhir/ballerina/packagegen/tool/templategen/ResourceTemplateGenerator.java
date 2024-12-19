@@ -136,17 +136,12 @@ public class ResourceTemplateGenerator extends AbstractFHIRTemplateGenerator {
         templateContext.setProperty("importIdentifier", this.resourceProperties.get("importIdentifier"));
 
         Set<String> resourceDependencies = new TreeSet<>();
-        if (!(boolean)this.resourceProperties.get("isBasePackage"))
+        if (!(boolean)this.resourceProperties.get("isBasePackage")){
             resourceDependencies.add((String) this.resourceProperties.get("basePackage"));
+        }
 
-        Optional<String> dependency = resourceTemplateContext.getResourceDependencies()
-                .stream()
-                .filter(d -> d.equals(CONSTRAINTS_LIB_IMPORT))
-                .findFirst();
-
-        dependency.ifPresent(resourceDependencies::add);
+        resourceDependencies.addAll(resourceTemplateContext.getResourceDependencies());
         templateContext.setProperty("imports", resourceDependencies);
-
         return templateContext;
     }
 }
