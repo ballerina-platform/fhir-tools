@@ -19,6 +19,7 @@
 package io.ballerina.health.cmd.handler;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.ballerina.health.cmd.core.config.HealthCmdConfig;
@@ -45,7 +46,7 @@ public class FhirPackageGenHandler implements Handler {
     private String packageName;
     private String orgName;
     private String version;
-    private String parentPackage;
+    private String[] profileDependencies;
 
     private JsonObject configJson;
     private PrintStream printStream;
@@ -71,15 +72,21 @@ public class FhirPackageGenHandler implements Handler {
         this.packageName = (String) argsMap.get("--package-name");
         this.orgName = (String) argsMap.get("--org-name");
         this.version = (String) argsMap.get("--package-version");
-        this.parentPackage = (String) argsMap.get("--parent-package");
-
+        this.profileDependencies = (String[]) argsMap.get("--profile-dependencies");
     }
 
+    /**
+     * @param specificationPath The directory which contains the profile definitions like resources, datatypes, code systems etc
+     * @param targetOutputPath  The directory which will contain the generated Ballerina package once the tool got executed successfully
+     * @return true if tool got executed successfully
+     */
     @Override
     public boolean execute(String specificationPath, String targetOutputPath) {
 
+        // Holds the default configs
         JsonElement toolExecConfigs = null;
         if (configJson != null) {
+            // Read default values from resource/tool-config.json -> fhir.tools.package
             toolExecConfigs = configJson.getAsJsonObject("fhir").getAsJsonObject("tools").getAsJsonObject(HealthCmdConstants.CMD_MODE_PACKAGE);
         } else {
             printStream.println(ErrorMessages.CONFIG_PARSE_ERROR);
@@ -90,7 +97,6 @@ public class FhirPackageGenHandler implements Handler {
             JsonObject toolExecConfig = toolExecConfigs.getAsJsonObject();
 
             //override tool level configs here
-
             Tool tool;
             TemplateGenerator mainTemplateGenerator = null;
             try {
@@ -98,12 +104,12 @@ public class FhirPackageGenHandler implements Handler {
                 String configClassName = "org.wso2.healthcare.fhir.ballerina.packagegen.tool.config." +
                         "BallerinaPackageGenToolConfig";
                 Class<?> configClazz = classLoader.loadClass(configClassName);
-                String toolClassName = "org.wso2.healthcare.fhir.ballerina.packagegen.tool.BallerinaPackageGenTool";
-                Class<?> toolClazz = classLoader.loadClass(toolClassName);
+
                 ToolConfig toolConfigInstance = (ToolConfig) configClazz.getConstructor().newInstance();
                 toolConfigInstance.setTargetDir(targetOutputPath);
                 toolConfigInstance.setToolName(HealthCmdConstants.CMD_MODE_PACKAGE);
 
+                // Feed default project configs to ToolConfig instance
                 toolConfigInstance.configure(new JsonConfigType(toolExecConfig.getAsJsonObject().getAsJsonObject("config")));
 
                 //override default configs for package-gen mode with user provided configs
@@ -119,14 +125,20 @@ public class FhirPackageGenHandler implements Handler {
                     JsonElement overrideConfig = new Gson().toJsonTree(version.toLowerCase());
                     toolConfigInstance.overrideConfig("packageConfig.version", overrideConfig);
                 }
-                if (parentPackage == null || parentPackage.isEmpty()) {
-                    parentPackage = "";
+                if (profileDependencies != null && profileDependencies.length > 0) {
+                    JsonArray dependenciesArray = new JsonArray();
+                    for (String dependency : profileDependencies) {
+                        dependenciesArray.add(dependency);
+                    }
+                    JsonElement overrideConfig = new Gson().toJsonTree(dependenciesArray);
+                    toolConfigInstance.overrideConfig("packageConfig.profile.dependencies", overrideConfig);
                 }
-                JsonElement overrideConfig = new Gson().toJsonTree(parentPackage);
-                toolConfigInstance.overrideConfig("packageConfig.parentPackage", overrideConfig);
 
+                String toolClassName = "org.wso2.healthcare.fhir.ballerina.packagegen.tool.BallerinaPackageGenTool";
+                Class<?> toolClazz = classLoader.loadClass(toolClassName);
                 tool = (Tool) toolClazz.getConstructor().newInstance();
                 tool.initialize(toolConfigInstance);
+
                 fhirToolLib.getToolImplementations().putIfAbsent(HealthCmdConstants.CMD_MODE_PACKAGE, tool);
                 mainTemplateGenerator = tool.execute(fhirToolLib.getToolContext());
             } catch (ClassNotFoundException e) {

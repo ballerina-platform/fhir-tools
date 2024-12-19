@@ -40,9 +40,7 @@ public class ToolConstants {
     public static final String CONFIG_PACKAGE_REPOSITORY_TOML = "tools.config.package.repository";
     public static final String CONFIG_BASE_PACKAGE = "basePackage";
 
-    public static final String CONFIG_PARENT_PACKAGE = "parentPackage";
 
-    public static final String CONFIG_PARENT_PACKAGE_TOML = "tools.config.package.parent_package";
     public static final String CONFIG_BASE_PACKAGE_TOML = "tools.config.package.utils_package";
     public static final String CONFIG_PACKAGE_DEPENDENCY = "dependencies";
     public static final String CONFIG_PACKAGE_DEPENDENCY_TOML = "tools.config.package.dependency";

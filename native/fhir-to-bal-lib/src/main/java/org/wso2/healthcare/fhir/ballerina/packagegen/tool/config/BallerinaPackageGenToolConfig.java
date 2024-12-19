@@ -34,6 +34,7 @@ import org.wso2.healthcare.codegen.tool.framework.commons.model.JsonConfigType;
 import org.wso2.healthcare.codegen.tool.framework.commons.model.TomlConfigType;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.ToolConstants;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -109,11 +110,18 @@ public class BallerinaPackageGenToolConfig extends AbstractToolConfig {
             case "packageConfig.org":
                 this.packageConfig.setOrg(value.getAsString());
                 break;
-            case "packageConfig.parentPackage":
-                this.packageConfig.setParentPackage(value.getAsString());
-                break;
             case "packageConfig.name.append":
                 this.packageConfig.setName(packageConfig.getName() + "." + value.getAsString());
+                break;
+            case "packageConfig.profile.dependencies":
+                List<String> dependencyList = new ArrayList<>();
+                for (JsonElement jsonElement : value.getAsJsonArray()) {
+                    String dependency = jsonElement.getAsString();
+                    if (dependency != null && !dependency.isEmpty()) {
+                        dependencyList.add(dependency);
+                    }
+                }
+                this.packageConfig.setProfileDependencies(dependencyList);
                 break;
             default:
                 LOG.warn("Invalid config path: " + jsonPath);
