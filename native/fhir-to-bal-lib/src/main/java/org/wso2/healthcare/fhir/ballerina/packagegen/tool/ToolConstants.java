@@ -73,6 +73,9 @@ public class ToolConstants {
     public static final String CONSTRAINTS_LIB_IMPORT = "ballerina/constraint";
     public static final String ELEMENT = "Element";
     public static final String RESOURCE_PATH_SEPERATOR = "/";
+    public static final String EQUAL_SIGN = "=";
+    // This regex will validate the profile dependentIg pattern <profile_url>=<Ballerina_org_name>/<Ballerina_package_name>
+    public static final String REGEX_FOR_DEPENDENT_IG_AND_PACKAGE = "^https?://(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}(?:/[^\\s]*)?=[a-zA-Z0-9-]+/[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)+$";
 
     public enum TokenPosition {
         BEGIN,

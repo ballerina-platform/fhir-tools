@@ -48,21 +48,16 @@ COMMANDS
                         to be generated. This is a MANDATORY input in ‘package’ mode.
                         Refer https://ballerina.io/learn/package-references/#the-name-field
 
-                    --profile-dependencies <profile-url>=<dependent-package-name>
-                        This option is only applicable in ‘package’ mode and can accept multiple values.
-                        Each value must be provided as a key-value pair, where:
-                            1. <profile-url> is the base URL of the dependent package.
-                            2. <dependent-package-name> is the fully qualified name of the corresponding Ballerina package.
-                            This is an optional input.
+                    --dependent-ig <base-url-of-the-IG>=<qualified-ballerina-package-name>
+                       This option is only applicable in ‘package’ mode and can accept multiple values.
+                       Each value must be provided as a key-value pair, where:
+                           1. <base-url-of-the-IG> is the base URL of the dependent IG.
+                           2. <qualified-ballerina-package-name> is the fully qualified name of the corresponding dependent Ballerina package.
+                           This is an optional input.
 
-                        For example, if your profile depends on the US Core profile, you should specify it like this:
-                        <base-url-of-dependent-package>=<full-qualified-name-of-ballerina-package>
-                        http://hl7.org/fhir/us/core/=ballerinax/health.fhir.r4.uscore501
-
-                        Note: The dependent package (e.g., ballerinax/health.fhir.r4.uscore501) must already be published.
-
-                        Ensure you follow the naming conventions for Ballerina packages. For more details, refer to the
-                        https://ballerina.io/learn/package-references/#the-name-field
+                       For example, if your profile depends on the US Core profile, you should specify it like this:
+                       <base-url-of-the-IG>=<full-qualified-name-of-ballerina-package>
+                       http://hl7.org/fhir/us/core/=ballerinax/health.fhir.r4.uscore501
 
                     --dependent-package <qualified-ballerina-package-name>
                         Only applicable in ‘template’ mode. Fully qualified name of the

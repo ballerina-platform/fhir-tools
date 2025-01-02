@@ -43,7 +43,6 @@ import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.ResourceTemplate
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.CommonUtil;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.GeneratorUtils;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -69,7 +68,7 @@ public class ResourceContextGenerator {
     private final Map<String, ResourceTemplateContext> resourceTemplateContextMap;
     private final Map<String, String> resourceNameTypeMap;
     private final Map<String, DatatypeTemplateContext> datatypeTemplateContextMap;
-    private final Set<String> profileDependencies = new HashSet<>();
+    private final Set<String> dependentIgs = new HashSet<>();
 
     public ResourceContextGenerator(BallerinaPackageGenToolConfig config, FHIRImplementationGuide ig,
                                     Map<String, DatatypeTemplateContext> datatypeTemplateContextMap) {
@@ -119,15 +118,15 @@ public class ResourceContextGenerator {
 
                     Map<String, DataTypeProfile> profiles = snapshotElement.getProfiles();
                     profiles.keySet().stream()
-                            .flatMap(key -> toolConfig.getPackageConfig().getProfileDependencies().keySet().stream()
+                            .flatMap(key -> toolConfig.getPackageConfig().getDependentIgs().keySet().stream()
                                     .filter(key::startsWith)
-                                    .map(profile -> toolConfig.getPackageConfig().getProfileDependencies().get(profile)))
+                                    .map(profile -> toolConfig.getPackageConfig().getDependentIgs().get(profile)))
                             .distinct()
-                            .forEach(profileDependencies::add);
+                            .forEach(dependentIgs::add);
                 }
 
                 Set<String> resourceDependencies = this.resourceTemplateContextInstance.getResourceDependencies();
-                resourceDependencies.addAll(profileDependencies);
+                resourceDependencies.addAll(dependentIgs);
                 this.resourceTemplateContextInstance.setResourceDependencies(resourceDependencies);
 
                 for (Element resourceElement : this.resourceTemplateContextInstance.getResourceElements().values()) {
@@ -318,11 +317,11 @@ public class ResourceContextGenerator {
                     element.addProfile(profile.getValue(), profileType);
                 }
                 //check for prefix when non R4 profiles are available
-                for (String profileUrl : toolConfig.getPackageConfig().getProfileDependencies().keySet()) {
-                    if (profile.getValue().startsWith(profileUrl)) {
-                        String s = toolConfig.getPackageConfig().getProfileDependencies().get(profileUrl);
-                        String prefix = CommonUtil.getSplitTokenAt(s, "\\.", ToolConstants.TokenPosition.END);
-                        element.getProfiles().get(profile.getValue()).setPrefix(prefix);
+                for (String dependentIgUrl : toolConfig.getPackageConfig().getDependentIgs().keySet()) {
+                    if (profile.getValue().startsWith(dependentIgUrl)) {
+                        String dependentIgPackageName = toolConfig.getPackageConfig().getDependentIgs().get(dependentIgUrl);
+                        String dependentIgPackagePrefix = CommonUtil.getSplitTokenAt(dependentIgPackageName, "\\.", ToolConstants.TokenPosition.END);
+                        element.getProfiles().get(profile.getValue()).setPrefix(dependentIgPackagePrefix);
                     }
                 }
             }

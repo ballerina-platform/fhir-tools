@@ -113,15 +113,15 @@ public class BallerinaPackageGenToolConfig extends AbstractToolConfig {
             case "packageConfig.name.append":
                 this.packageConfig.setName(packageConfig.getName() + "." + value.getAsString());
                 break;
-            case "packageConfig.profile.dependencies":
-                List<String> dependencyList = new ArrayList<>();
-                for (JsonElement jsonElement : value.getAsJsonArray()) {
-                    String dependency = jsonElement.getAsString();
-                    if (dependency != null && !dependency.isEmpty()) {
-                        dependencyList.add(dependency);
+            case "packageConfig.dependent.igs":
+                List<String> dependentIgList = new ArrayList<>();
+                for (JsonElement dependentIgJsonElement : value.getAsJsonArray()) {
+                    String dependentIg = dependentIgJsonElement.getAsString();
+                    if (dependentIg != null && !dependentIg.isEmpty()) {
+                        dependentIgList.add(dependentIg);
                     }
                 }
-                this.packageConfig.setProfileDependencies(dependencyList);
+                this.packageConfig.setDependentIgs(dependentIgList);
                 break;
             default:
                 LOG.warn("Invalid config path: " + jsonPath);

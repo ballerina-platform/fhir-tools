@@ -32,6 +32,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.wso2.healthcare.fhir.ballerina.packagegen.tool.ToolConstants.EQUAL_SIGN;
+import static org.wso2.healthcare.fhir.ballerina.packagegen.tool.ToolConstants.REGEX_FOR_DEPENDENT_IG_AND_PACKAGE;
+
 /**
  * Ballerina package level config.
  */
@@ -44,7 +47,7 @@ public class PackageConfig {
     private String repository;
     private String basePackage;
     private List<DependencyConfig> dependencyConfigList;
-    private final Map<String, String> profileDependencies = new HashMap<>();
+    private final Map<String, String> dependentIgs = new HashMap<>();
 
     public PackageConfig(JsonObject packageConfigJson) {
         this.org = packageConfigJson.getAsJsonPrimitive(ToolConstants.CONFIG_PACKAGE_ORG).getAsString();
@@ -164,21 +167,20 @@ public class PackageConfig {
         this.dependencyConfigList = dependencyConfigList;
     }
 
-    public Map<String, String> getProfileDependencies() {
-        return profileDependencies;
+    public Map<String, String> getDependentIgs() {
+        return dependentIgs;
     }
 
-    public void setProfileDependencies(List<String> customDependencies) {
-        for (String dependency : customDependencies) {
-            // This regex will validate the profile dependency pattern <profile_url>=<Ballerina_org_name>/<Ballerina_package_name>
-            String regex = "^https?://(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}(?:/[^\\s]*)?=[a-zA-Z0-9-]+/[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)+$";
-            Pattern pattern = Pattern.compile(regex);
-            Matcher matcher = pattern.matcher(dependency);
+    public void setDependentIgs(List<String> dependentIgs) {
+        for (String dependentIg : dependentIgs) {
+            // This regex will validate the profile dependentIg pattern <profile_url>=<Ballerina_org_name>/<Ballerina_package_name>
+            Pattern pattern = Pattern.compile(REGEX_FOR_DEPENDENT_IG_AND_PACKAGE);
+            Matcher matcher = pattern.matcher(dependentIg);
             if (matcher.matches()) {
-                String[] dependentPackageAndProfileUrl = dependency.split("=");
-                this.profileDependencies.put(dependentPackageAndProfileUrl[0], dependentPackageAndProfileUrl[1]);
+                String[] separatedIgUrlAndDependentPackage = dependentIg.split(EQUAL_SIGN);
+                this.dependentIgs.put(separatedIgUrlAndDependentPackage[0], separatedIgUrlAndDependentPackage[1]);
             } else {
-                throw new RuntimeException("Provided profile dependency is wrong: " + dependency + " " +
+                throw new RuntimeException("Provided profile dependentIg is wrong: " + dependentIg + " " +
                         "It should be in the <profile_url>=<Ballerina_org>/<Ballerina_package_name> pattern, " +
                         "e-g: http://hl7.org/fhir/uv/=ballerinax/health.fhir.uv");
             }

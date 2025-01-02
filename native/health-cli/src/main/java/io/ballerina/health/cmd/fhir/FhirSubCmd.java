@@ -88,8 +88,8 @@ public class FhirSubCmd implements BLauncherCmd {
     @CommandLine.Option(names = "--dependent-package", description = "Dependent package name for the templates to be generated")
     private String dependentPackage;
 
-    @CommandLine.Option(names = "--profile-dependencies", description = "Dependent package name for the templates to be generated")
-    private String[] profileDependencies;
+    @CommandLine.Option(names = "--dependent-ig", description = "Dependent IG base URL and respective fully qualified Ballerina package name")
+    private String[] dependentIgs;
 
 
     @CommandLine.Parameters(description = "Custom arguments")
@@ -212,7 +212,7 @@ public class FhirSubCmd implements BLauncherCmd {
         argsMap.put("--included-profile", includedProfiles);
         argsMap.put("--excluded-profile", excludedProfiles);
         argsMap.put("--dependent-package", dependentPackage);
-        argsMap.put("--profile-dependencies", profileDependencies);
+        argsMap.put("--dependent-ig", dependentIgs);
         getTargetOutputPath();
         //spec path is the last argument
         try {

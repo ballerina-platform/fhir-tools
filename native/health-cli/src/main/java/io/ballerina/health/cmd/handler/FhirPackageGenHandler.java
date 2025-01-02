@@ -46,7 +46,7 @@ public class FhirPackageGenHandler implements Handler {
     private String packageName;
     private String orgName;
     private String version;
-    private String[] profileDependencies;
+    private String[] dependentIgs;
 
     private JsonObject configJson;
     private PrintStream printStream;
@@ -72,7 +72,7 @@ public class FhirPackageGenHandler implements Handler {
         this.packageName = (String) argsMap.get("--package-name");
         this.orgName = (String) argsMap.get("--org-name");
         this.version = (String) argsMap.get("--package-version");
-        this.profileDependencies = (String[]) argsMap.get("--profile-dependencies");
+        this.dependentIgs = (String[]) argsMap.get("--dependent-ig");
     }
 
     /**
@@ -125,13 +125,14 @@ public class FhirPackageGenHandler implements Handler {
                     JsonElement overrideConfig = new Gson().toJsonTree(version.toLowerCase());
                     toolConfigInstance.overrideConfig("packageConfig.version", overrideConfig);
                 }
-                if (profileDependencies != null && profileDependencies.length > 0) {
-                    JsonArray dependenciesArray = new JsonArray();
-                    for (String dependency : profileDependencies) {
-                        dependenciesArray.add(dependency);
+                if (dependentIgs != null && dependentIgs.length > 0) {
+                    // Create a JSON array from the String array
+                    JsonArray dependentIgJsonArray = new JsonArray();
+                    for (String dependentIg : dependentIgs) {
+                        dependentIgJsonArray.add(dependentIg);
                     }
-                    JsonElement overrideConfig = new Gson().toJsonTree(dependenciesArray);
-                    toolConfigInstance.overrideConfig("packageConfig.profile.dependencies", overrideConfig);
+                    JsonElement overrideConfig = new Gson().toJsonTree(dependentIgJsonArray);
+                    toolConfigInstance.overrideConfig("packageConfig.dependent.igs", overrideConfig);
                 }
 
                 String toolClassName = "org.wso2.healthcare.fhir.ballerina.packagegen.tool.BallerinaPackageGenTool";
