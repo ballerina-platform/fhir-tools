@@ -20,6 +20,7 @@ package org.wso2.healthcare.fhir.ballerina.packagegen.tool.config;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import io.ballerina.cli.cmd.CommandUtil;
 import io.ballerina.projects.util.ProjectUtils;
 import net.consensys.cava.toml.TomlArray;
 import net.consensys.cava.toml.TomlTable;
@@ -31,9 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static org.wso2.healthcare.fhir.ballerina.packagegen.tool.ToolConstants.EQUAL_SIGN;
-import static org.wso2.healthcare.fhir.ballerina.packagegen.tool.ToolConstants.REGEX_FOR_DEPENDENT_IG_AND_PACKAGE;
 
 /**
  * Ballerina package level config.
@@ -174,15 +172,18 @@ public class PackageConfig {
     public void setDependentIgs(List<String> dependentIgs) {
         for (String dependentIg : dependentIgs) {
             // This regex will validate the profile dependentIg pattern <profile_url>=<Ballerina_org_name>/<Ballerina_package_name>
-            Pattern pattern = Pattern.compile(REGEX_FOR_DEPENDENT_IG_AND_PACKAGE);
+            Pattern pattern = Pattern.compile(ToolConstants.REGEX_FOR_DEPENDENT_IG_AND_PACKAGE);
             Matcher matcher = pattern.matcher(dependentIg);
             if (matcher.matches()) {
-                String[] separatedIgUrlAndDependentPackage = dependentIg.split(EQUAL_SIGN);
+                String[] separatedIgUrlAndDependentPackage = dependentIg.split(ToolConstants.EQUAL_SIGN);
                 this.dependentIgs.put(separatedIgUrlAndDependentPackage[0], separatedIgUrlAndDependentPackage[1]);
             } else {
-                throw new RuntimeException("Provided profile dependentIg is wrong: " + dependentIg + " " +
-                        "It should be in the <profile_url>=<Ballerina_org>/<Ballerina_package_name> pattern, " +
-                        "e-g: http://hl7.org/fhir/uv/=ballerinax/health.fhir.uv");
+                String errorMsg = "The provided dependent IG is incorrect: " + dependentIg + " \n" +
+                        "It should be in the <IG_base_url>=<Ballerina_org>/<Ballerina_package_name> pattern, " +
+                        "e-g: http://hl7.org/fhir/uv/=ballerinax/health.fhir.uv \n";
+
+                System.out.println(errorMsg);
+                CommandUtil.exitError(true);
             }
         }
     }
