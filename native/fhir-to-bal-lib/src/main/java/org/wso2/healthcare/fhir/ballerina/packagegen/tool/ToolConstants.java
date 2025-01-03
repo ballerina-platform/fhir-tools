@@ -40,9 +40,7 @@ public class ToolConstants {
     public static final String CONFIG_PACKAGE_REPOSITORY_TOML = "tools.config.package.repository";
     public static final String CONFIG_BASE_PACKAGE = "basePackage";
 
-    public static final String CONFIG_PARENT_PACKAGE = "parentPackage";
 
-    public static final String CONFIG_PARENT_PACKAGE_TOML = "tools.config.package.parent_package";
     public static final String CONFIG_BASE_PACKAGE_TOML = "tools.config.package.utils_package";
     public static final String CONFIG_PACKAGE_DEPENDENCY = "dependencies";
     public static final String CONFIG_PACKAGE_DEPENDENCY_TOML = "tools.config.package.dependency";
@@ -75,6 +73,9 @@ public class ToolConstants {
     public static final String CONSTRAINTS_LIB_IMPORT = "ballerina/constraint";
     public static final String ELEMENT = "Element";
     public static final String RESOURCE_PATH_SEPERATOR = "/";
+    public static final String EQUAL_SIGN = "=";
+    // This regex will validate the profile dependentIg pattern <profile_url>=<Ballerina_org_name>/<Ballerina_package_name>
+    public static final String REGEX_FOR_DEPENDENT_IG_AND_PACKAGE = "^https?://(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}(?:/[^\\s]*)?=[a-zA-Z0-9-]+/[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)+$";
 
     public enum TokenPosition {
         BEGIN,
