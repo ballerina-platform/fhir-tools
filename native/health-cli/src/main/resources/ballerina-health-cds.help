@@ -1,47 +1,46 @@
         cds
-            Generate a Ballerina service from the given CDS hook definitions. This service
-            will also include basic functionalities such as validation, prefetch, etc., and
-            it will facilitate the developers to implement the required connection with the
-            external decision support system to run the CDS server. The generated Ballerina
+
+            A Ballerina service template can be generated from CDS hook definitions. This
+            template will also include basic functionalities such as validation, prefetch, etc.,
+            and it will facilitate the developers' implementation of the required connection with
+            the external decision support system to run the CDS server. The generated Ballerina
             service project will be written into the provided output location.
 
             Supported CDS version: [2.0] https://cds-hooks.hl7.org/2.0
 
             OPTIONS
                     --org-name <org-name-of-the-package>
-                        This is an OPTIONAL input. Organization name of the Ballerina template to be generated.
+                        The organization name to be used for the generated Ballerina template.
+                        This is an OPTIONAL input.
 
                         Refer https://ballerina.io/learn/package-references/#the-org-field
                         Default value: ballerinax
 
-                    --package-name <fully-qualified-name-of-package>
-                        This is an OPTIONAL input. Name of the Ballerina package to be
-                        generated. The package name can be explicitly set using this
-                        argument. Unless specified, the default name of the implementation a
-                        guide will be taken to construct the name of the package. For the
-                        template mode, this value will be added as a prefix to the template name.
+                    --package-name <name-of-the-package>
+                        The package name to be used for the generated Ballerina template.
+                        If not specified, `health.fhir.templates.crd` will be used to construct
+                        the name of the package.
+                        This is an OPTIONAL input.
 
                         Refer https://ballerina.io/learn/package-references/#the-name-field
                         Default value: health.fhir.templates.crd
 
                     --package-version <version-of-the-package>
-                        This is an OPTIONAL input. The version of the Ballerina package/template to be generated.
+                        The version to be used for the generated Ballerina template.
+                        This is an OPTIONAL input.
 
                         Refer https://semver.org/
                         Default value: 1.0.0
 
                     -i, --input <cds-hook-definitions-file-path>
-                        This is a MANDATORY input. Only the TOML file type is acceptable.
                         Users need to define the CDS hook definitions in the input file.
-                        The given CDS hooks input will be used to generate the Ballerina
-                        service. This generated service can be used as a code template to
-                        start the service implementation. Generated sources contain a
-                        service definition, and other CDS-related operations like
-                        validations and utils, which are used for the template generation.
+                        The input file with CDS hook definitions which will be used to
+                        generate the Ballerina service.
+                        This is a MANDATORY input. Only the TOML file type is acceptable.
 
                         Refer to CDS specifications for more information about the attributes: https://cds-hooks.hl7.org/2.0/#response
 
-                        EXAMPLE CDS TOOL FILE
+                        SAMPLE CDS HOOKS DEFINITION FILE
 
                         [[cds_services]]
                         id = "static-patient-greeter"
@@ -59,19 +58,19 @@
                         description = "An example of a CDS Service that can be used to start the dispatch process for the "
 
 
-                    -o, --output <output>
-                        Location of the generated Ballerina artifacts. If this
-                        path is not specified, the output will be written to
-                        the same directory from which the command is run.
+                    -o, --output <output-location>
+                        The location of the generated Ballerina artifacts. If this path is not
+                        specified, the output will be written to the same directory from which
+                        the command is run.
+                        This is an OPTIONAL input.
 
             EXAMPLES
-                    Generate a Ballerina service for a given CDS hook definition with
-                    default package name and version.
-                        $ bal health cds -i cds-hooks.toml
+                    Generate a Ballerina service for a given CDS hook definition with default package name and version.
+                        $ bal health cds -i cds-definitions.toml
 
                     Generate a Ballerina service with a custom package name and version for a given CDS hook definition.
-                    $ bal health cds --org-name com.test --package-name cds_server --package-version 1.1.0 -i cds-hooks.toml
+                        $ bal health cds --org-name wso2 --package-name cds_server --package-version 1.1.0 -i cds-definitions.toml
 
 
                     Generate a Ballerina service and write the output using the specific path provided.
-                    $ bal health cds --org-name com.test --package-name cds_server --package-version 1.1.0 -i cds-hooks.toml -o ./output_path
+                        $ bal health cds --org-name wso2 --package-name cds_server --package-version 1.1.0 -i cds-definitions.toml -o ./output_path
