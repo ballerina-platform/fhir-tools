@@ -24,12 +24,12 @@
     <parent>
         <groupId>io.ballerina</groupId>
         <artifactId>health-tools</artifactId>
-        <version>2.2.2</version>
+        <version>2.2.3</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>cds-bal-template</artifactId>
-    <version>2.2.2</version>
+    <version>2.2.3</version>
 
     <dependencies>
         <dependency>
