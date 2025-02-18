@@ -71,8 +71,7 @@ public class ComponentYamlGenerator extends AbstractFHIRTemplateGenerator {
             templateContext.setProperty("api_display_name", generatorProperties.get("resourceType").toString() + " API");
         }
         templateContext.setProperty("api_base_path", "/" + generatorProperties.get("resourceType").toString());
-        templateContext.setProperty("api_oas_file", "oas/" + generatorProperties.get("resourceType").toString() +
-                BallerinaProjectConstants.YAML_FILE_EXTENSION);
+        templateContext.setProperty("api_oas_file", "oas/" + generatorProperties.get("resourceType").toString() + ".yaml");
         return templateContext;
     }
 }
