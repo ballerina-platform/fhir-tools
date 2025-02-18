@@ -42,7 +42,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.healthcare.tool.framework>1.2.1</version.healthcare.tool.framework>
+        <version.healthcare.tool.framework>1.2.2</version.healthcare.tool.framework>
         <version.ballerina.cli>2201.8.1</version.ballerina.cli>
         <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
@@ -101,16 +101,6 @@
             <groupId>org.apache.velocity</groupId>
             <artifactId>velocity</artifactId>
             <version>${velocity.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-models</artifactId>
-            <version>${version.swagger.core}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.swagger.parser.v3</groupId>
-            <artifactId>swagger-parser</artifactId>
-            <version>${version.swagger.parser}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

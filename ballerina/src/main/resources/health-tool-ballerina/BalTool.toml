@@ -350,13 +350,6 @@ path = "resources/swagger-models-2.1.5.jar"
 path = "resources/swagger-parser-v3-2.0.26.jar"
 
 [[dependency]]
-path = "resources/swagger-parser-v3-2.0.26.jar"
-
-[[dependency]]
-path = "resources/swagger-core-2.1.7.jar"
-
-[[dependency]]
-path = "resources/snakeyaml-1.27.jar"
 path = "resources/swagger-core-2.1.7.jar"
 
 [[dependency]]
