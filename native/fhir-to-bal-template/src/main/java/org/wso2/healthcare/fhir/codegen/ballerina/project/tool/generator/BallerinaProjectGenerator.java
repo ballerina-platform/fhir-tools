@@ -88,6 +88,12 @@ public class BallerinaProjectGenerator extends AbstractFHIRTemplateGenerator {
 
             MetaGenerator metaGenerator = new MetaGenerator(this.getTargetDir());
             metaGenerator.generate(toolContext, projectProperties);
+
+            OasGenerator oasGenerator = new OasGenerator(this.getTargetDir());
+            oasGenerator.generate(toolContext, projectProperties);
+
+            ComponentYamlGenerator componentYamlGenerator = new ComponentYamlGenerator(this.getTargetDir());
+            componentYamlGenerator.generate(toolContext, projectProperties);
         }
     }
 }

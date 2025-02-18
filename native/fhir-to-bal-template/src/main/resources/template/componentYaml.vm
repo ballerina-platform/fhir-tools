@@ -1,0 +1,12 @@
+schemaVersion: 1.1
+endpoints:
+    - name: $api_name
+      displayName: $api_display_name
+      service:
+        basePath: $api_base_path
+        port: 9090
+      type: REST
+      networkVisibilities:
+        - Project
+        - Public
+      schemaFilePath: $api_oas_file
