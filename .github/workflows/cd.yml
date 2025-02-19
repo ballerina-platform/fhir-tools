@@ -108,6 +108,7 @@ jobs:
       - name: Update version in the pom files
         if: ${{ inputs.bal_central_environment == 'PROD' }}
         id: increment_patch_version
+        working-directory: fhir-tools
         run: |
           CURRENT_VERSION=$(grep -Po -m 1 '(?<=<version>)[\d.]+' pom.xml)
           IFS='.' read -ra VERSION_PARTS <<< "$CURRENT_VERSION"
