@@ -18,6 +18,8 @@
 
 package org.wso2.healthcare.fhir.ballerina.packagegen.tool;
 
+import java.time.LocalDate;
+
 public class ToolConstants {
     public static final String CONFIG_ENABLE = "enable";
     public static final String CONFIG_PROFILE_IG = "implementationGuide";
@@ -83,8 +85,7 @@ public class ToolConstants {
         END
     }
     public static final String FHIR_R4_DEFINITION_URL = "http://hl7.org/fhir/StructureDefinition";
-
-    public static final String LICENSE_YEAR = "2023";
+    public static final String LICENSE_YEAR = String.valueOf(LocalDate.now().getYear());
     public static final String DATA_TYPE_EXTENSION = "Extension";
 
     public class PrintStrings {

@@ -30,7 +30,7 @@
             "org": "healthcare",
             "namePrefix": "health.fhir.r4.international401",
             "version": "1.0.0",
-            "distribution": "2201.8.1",
+            "distribution": "2201.10.2",
             "authors": [
               "Ballerina"
             ],
