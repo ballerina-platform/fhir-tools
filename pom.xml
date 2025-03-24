@@ -42,7 +42,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.healthcare.tool.framework>1.2.1</version.healthcare.tool.framework>
+        <version.healthcare.tool.framework>1.2.2</version.healthcare.tool.framework>
         <version.ballerina.cli>2201.8.1</version.ballerina.cli>
         <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
