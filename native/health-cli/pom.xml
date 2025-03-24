@@ -195,6 +195,11 @@
                                         </artifactItem>
                                         <artifactItem>
                                             <groupId>io.ballerina</groupId>
+                                            <artifactId>fhir-to-bal-template</artifactId>
+                                            <version>${project.version}</version>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>io.ballerina</groupId>
                                             <artifactId>cds-bal-template</artifactId>
                                             <version>${project.version}</version>
                                         </artifactItem>
