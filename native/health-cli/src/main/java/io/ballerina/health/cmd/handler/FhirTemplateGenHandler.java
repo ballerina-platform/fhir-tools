@@ -57,7 +57,7 @@ public class FhirTemplateGenHandler implements Handler {
     private FHIRTool fhirToolLib;
 
     @Override
-    public void init(PrintStream printStream, String specificationPath) {
+    public void init(PrintStream printStream, String specificationPath, String fhirVersion) {
 
         this.printStream = printStream;
         try {
@@ -67,7 +67,7 @@ public class FhirTemplateGenHandler implements Handler {
             throw new RuntimeException(e);
         }
         fhirToolLib = (FHIRTool) initializeLib(
-                HealthCmdConstants.CMD_SUB_FHIR, printStream, configJson, specificationPath);
+                HealthCmdConstants.CMD_SUB_FHIR, fhirVersion, printStream, configJson, specificationPath);
     }
 
     @Override

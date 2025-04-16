@@ -75,7 +75,7 @@ public class CrdTemplateGenHandler implements Handler {
     private PrintStream printStream;
 
     @Override
-    public void init(PrintStream printStream, String cdsToolConfigFilePath) {
+    public void init(PrintStream printStream, String cdsToolConfigFilePath, String fhirVersion) {
 
         this.printStream = printStream;
         try {

@@ -72,6 +72,7 @@ public class CdsSubCmd implements BLauncherCmd {
 
     private final PrintStream printStream;
     private final boolean exitWhenFinish;
+    private final String fhirVersion = HealthCmdConstants.CMD_FHIR_VERSION;
     private final String toolName = CDS;
     private final Path executionPath = Paths.get(System.getProperty(USER_DIR));
     private Path targetOutputPath;
@@ -208,7 +209,7 @@ public class CdsSubCmd implements BLauncherCmd {
 
         Handler toolHandler;
         try {
-            toolHandler = HandlerFactory.createHandler(toolName, mode, printStream, cdsToolConfigFilePath.toString());
+            toolHandler = HandlerFactory.createHandler(toolName, fhirVersion, mode, printStream, cdsToolConfigFilePath.toString());
         } catch (BallerinaHealthException e) {
             printStream.println(e);
             throw new BLauncherException();

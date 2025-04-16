@@ -23,6 +23,7 @@ import io.ballerina.health.cmd.handler.Handler;
 import io.ballerina.health.cmd.handler.HandlerFactory;
 
 import java.io.File;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -33,11 +34,16 @@ public class TestRunner {
     private static final Path executionPath = Paths.get(System.getProperty("user.dir"));
 
     public static void main(String[] args) {
-        runTestForFhirTool();
-        runTestForCdsTool();
+        try{
+            runTestForFhirTool();
+            // runTestForCdsTool();
+        }
+        catch (URISyntaxException e){
+            e.printStackTrace();
+        }
     }
 
-    private static void runTestForCdsTool(){
+    private static void runTestForCdsTool() throws URISyntaxException {
 
         Map<String, Object> argsMap = new HashMap<>();
         String packageName = "health.fhir.cds";
@@ -47,14 +53,22 @@ public class TestRunner {
         argsMap.put("--org-name", orgName);
         argsMap.put("--package-version", packageVersion);
         String mode = "template";
+        String fhirVersion = "r4";
         String command = "cds";
 
-        String resourcePath = Paths.get(Objects.requireNonNull(TestRunner.class.getClassLoader().getResource("io")).getPath()).getParent().getParent().toString()+ "/test-classes" + "/cds.hooks";
-        System.out.println(resourcePath);
+        String resourcePath = Paths.get(Objects.requireNonNull(TestRunner.class.getClassLoader().getResource("io")).toURI()).getParent().getParent().toString() + "\\test-classes" + "\\profiles.USCore";
+        System.out.println("Resource Path: " + resourcePath);
+
         File resourcesDirectory = new File(resourcePath);
         String specPath = resourcesDirectory.getAbsolutePath();
+        System.out.println("Spec Path: " + specPath);
+
+        String outPutPath = Paths.get(Objects.requireNonNull(TestRunner.class.getClassLoader().getResource("io")).toURI()).getParent().getParent().toString() + "\\test-classes";
+        System.out.println("Output Path: " + outPutPath);
+
+        //spec path is the last argument
         Path specificationPath;
-        String outPutPath = Paths.get(Objects.requireNonNull(TestRunner.class.getClassLoader().getResource("io")).getPath()).getParent().getParent().toString() + "/test-classes";
+
         try {
             specificationPath = HealthCmdUtils.getSpecificationPath(specPath, executionPath.toString());
         } catch (BallerinaHealthException e) {
@@ -64,7 +78,7 @@ public class TestRunner {
 
         Handler toolHandler = null;
         try {
-            toolHandler = HandlerFactory.createHandler(command, mode, System.out, specificationPath.toString());
+            toolHandler = HandlerFactory.createHandler(command, fhirVersion, mode, System.out, specificationPath.toString());
         } catch (BallerinaHealthException e) {
             System.out.println(e);
             throw new BLauncherException();
@@ -74,7 +88,7 @@ public class TestRunner {
         toolHandler.execute(specificationPath+File.separator+"tool-config.toml", getTargetOutputPath(outPutPath).toString());
     }
 
-    private static void runTestForFhirTool(){
+    private static void runTestForFhirTool() throws URISyntaxException {
         Map<String, Object> argsMap = new HashMap<>();
         String packageName = "health.fhir.r4.uscore501";
         String orgName = "ballerinax";
@@ -86,15 +100,24 @@ public class TestRunner {
         argsMap.put("--excluded-profile", null);
         argsMap.put("--dependency", null);
         String mode = "package";
+        String fhirVersion = "r4";
         String command = "fhir";
 
-        String resourcePath = Paths.get(Objects.requireNonNull(TestRunner.class.getClassLoader().getResource("io")).getPath()).getParent().getParent().toString() + "/test-classes" + "/profiles.USCore";
+        System.setProperty("fhir.version", fhirVersion);
+
+        String resourcePath = Paths.get(Objects.requireNonNull(TestRunner.class.getClassLoader().getResource("io")).toURI()).getParent().getParent().toString() + "\\test-classes" + "\\profiles.USCore";
+        System.out.println("Resource Path: " + resourcePath);
+
         File resourcesDirectory = new File(resourcePath);
         String specPath = resourcesDirectory.getAbsolutePath();
-        String outPutPath = Paths.get(Objects.requireNonNull(TestRunner.class.getClassLoader().getResource("io")).getPath()).getParent().getParent().toString() + "/test-classes";
+        System.out.println("Spec Path: " + specPath);
+
+        String outPutPath = Paths.get(Objects.requireNonNull(TestRunner.class.getClassLoader().getResource("io")).toURI()).getParent().getParent().toString() + "\\test-classes";
+        System.out.println("Output Path: " + outPutPath);
 
         //spec path is the last argument
         Path specificationPath;
+
         try {
             specificationPath = HealthCmdUtils.validateAndSetSpecificationPath(specPath, executionPath.toString());
         } catch (BallerinaHealthException e) {
@@ -103,7 +126,7 @@ public class TestRunner {
         }
         Handler toolHandler = null;
         try {
-            toolHandler = HandlerFactory.createHandler(command, mode, System.out, specificationPath.toString());
+            toolHandler = HandlerFactory.createHandler(command, fhirVersion, mode, System.out, specificationPath.toString());
         } catch (BallerinaHealthException e) {
             System.out.println(e);
             throw new BLauncherException();

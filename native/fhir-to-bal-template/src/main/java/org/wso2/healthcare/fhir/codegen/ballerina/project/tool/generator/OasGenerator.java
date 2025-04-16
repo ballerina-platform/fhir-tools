@@ -25,7 +25,7 @@ import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenExcep
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.AbstractFHIRTemplateGenerator;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.common.FHIRSpecificationData;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRImplementationGuide;
-import org.wso2.healthcare.codegen.tool.framework.fhir.core.oas.model.APIDefinition;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.r4.oas.model.R4APIDefinition;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.BallerinaProjectConstants;
 
 import java.io.BufferedWriter;
@@ -59,7 +59,7 @@ public class OasGenerator extends AbstractFHIRTemplateGenerator {
         String resourceType = (String) generatorProperties.get("resourceType");
         for (Map.Entry<String, FHIRImplementationGuide> entry :
                 ((FHIRSpecificationData) toolContext.getSpecificationData()).getFhirImplementationGuides().entrySet()) {
-            APIDefinition apiDefinition = entry.getValue().getApiDefinitions().get(resourceType);
+            R4APIDefinition apiDefinition = entry.getValue().getApiDefinitions().get(resourceType);
             if (apiDefinition != null) {
                 String oasDefYaml = Yaml.pretty(apiDefinition.getOpenAPI());
 

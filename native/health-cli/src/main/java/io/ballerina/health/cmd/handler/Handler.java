@@ -26,8 +26,10 @@ import org.wso2.healthcare.codegen.tool.framework.commons.core.AbstractTool;
 import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenException;
 import org.wso2.healthcare.codegen.tool.framework.commons.model.JsonConfigType;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.FHIRSpecParser;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.FHIRSpecParserFactory;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.FHIRTool;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.config.FHIRToolConfig;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.r4.config.R4FHIRToolConfig;
 
 import java.io.PrintStream;
 import java.util.Arrays;
@@ -44,23 +46,29 @@ public interface Handler {
      * @param printStream       PrintStream to print the output
      * @param specificationPath Path to the specification
      */
-    default AbstractTool initializeLib(String libName, PrintStream printStream, JsonObject configJson, String specificationPath) {
+    default AbstractTool initializeLib(String libName, String fhirVersion, PrintStream printStream, JsonObject configJson, String specificationPath) {
 
         if (HealthCmdConstants.CMD_SUB_FHIR.equals(libName)) {
             JsonConfigType toolConfig;
             FHIRTool fhirToolLib;
-            FHIRToolConfig fhirToolConfig = new FHIRToolConfig();
+            FHIRToolConfig fhirToolConfig = null;
+
+            if(fhirVersion.equalsIgnoreCase("r4")){
+                fhirToolConfig = new R4FHIRToolConfig();
+            }
+
             try {
                 toolConfig = new JsonConfigType(configJson);
-                fhirToolLib = new FHIRTool();
+                fhirToolLib = new FHIRTool(fhirVersion);
                 fhirToolConfig.configure(toolConfig);
 
                 fhirToolConfig.setSpecBasePath(specificationPath);
                 fhirToolLib.initialize(fhirToolConfig);
 
-                FHIRSpecParser specParser = new FHIRSpecParser();
+                FHIRSpecParser specParser = FHIRSpecParserFactory.getParser(fhirVersion);
                 specParser.parseIG(fhirToolConfig, HealthCmdConstants.CMD_DEFAULT_IG_NAME, specificationPath);
                 return fhirToolLib;
+
             } catch (CodeGenException e) {
                 printStream.println(ErrorMessages.LIB_INITIALIZING_FAILED + Arrays.toString(e.getStackTrace())
                         + e.getMessage());
@@ -76,7 +84,7 @@ public interface Handler {
         return null;
     }
 
-    void init(PrintStream printStream, String specificationPath);
+    void init(PrintStream printStream, String specificationPath, String fhirVersion);
 
     void setArgs(Map<String,Object> argsMap);
 

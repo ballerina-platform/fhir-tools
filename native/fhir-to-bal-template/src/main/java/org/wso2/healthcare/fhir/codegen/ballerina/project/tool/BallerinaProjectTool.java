@@ -135,6 +135,7 @@ public class BallerinaProjectTool extends AbstractFHIRTool {
             structureDefinitions.forEach(definition -> {
                 addResourceProfile(definition, definition.getType(), definition.getName(), definition.getUrl(), igName);
             });
+
             //adding Search parameters
             for (Map.Entry<String, FHIRSearchParamDef> parameter : entry.getValue().getSearchParameters().entrySet()) {
                 List<CodeType> baseResources = parameter.getValue().getSearchParameter().getBase();

@@ -34,6 +34,7 @@ public class HealthCmdConstants {
     public static final String CMD_CDS_HELP_TEXT_FILENAME = "ballerina-health-cds.help";
     public static final String CMD_DEFAULT_IG_NAME = "FHIR";
     public static final String CMD_DEFAULT_ORG_NAME = "healthcare";
+    public static String CMD_FHIR_VERSION = "r4";
     public static final String CMD_FHIR_MODE_TEMPLATE = "fhir:template";
     public static final String CMD_FHIR_MODE_CLIENT = "fhir:client";
     public static final String CMD_FHIR_MODE_PACKAGE = "fhir:package";

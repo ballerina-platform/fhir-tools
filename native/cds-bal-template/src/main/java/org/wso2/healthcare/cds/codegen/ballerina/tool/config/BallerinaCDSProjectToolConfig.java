@@ -33,16 +33,7 @@ import org.wso2.healthcare.codegen.tool.framework.commons.model.JsonConfigType;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.CDS_SERVICES;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.CONFIG;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.DEPENDENCIES;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.DEPENDENT_PACKAGE;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.HOOKS;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.PACKAGE;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.PROJECT_PACKAGE_DEPENDENT_PACKAGE;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.PROJECT_PACKAGE_NAME_PREFIX;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.PROJECT_PACKAGE_ORG;
-import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.PROJECT_PACKAGE_VERSION;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.*;
 
 
 /**
@@ -53,6 +44,7 @@ public class BallerinaCDSProjectToolConfig extends AbstractToolConfig {
     private static final Log LOG = LogFactory.getLog(BallerinaCDSProjectToolConfig.class);
     private MetadataConfig metadataConfig;
     private final List<DependencyConfig> dependencyConfigs = new ArrayList<>();
+    private String basePackage;
     private String dependentPackage;
     private final List<CdsHook> cdsHooks = new ArrayList<>();
 
@@ -61,9 +53,16 @@ public class BallerinaCDSProjectToolConfig extends AbstractToolConfig {
         if (Constants.JSON_CONFIG_TYPE.equals(configObj.getType())) {
             JsonObject jsonConfigObj = ((JsonConfigType) configObj).getConfigObj();
             jsonConfigObj = jsonConfigObj.getAsJsonObject(CONFIG);
+
             this.metadataConfig = new MetadataConfig(jsonConfigObj.getAsJsonObject(PACKAGE));
             populateDependencyConfigs(jsonConfigObj.
                     getAsJsonArray(DEPENDENCIES));
+
+            if(jsonConfigObj.getAsJsonPrimitive((BASE_PACKAGE)) != null){
+                this.basePackage = jsonConfigObj
+                        .getAsJsonPrimitive(BASE_PACKAGE).getAsString();
+            }
+
             if (jsonConfigObj.getAsJsonPrimitive(DEPENDENT_PACKAGE) != null) {
                 this.dependentPackage = jsonConfigObj
                         .getAsJsonPrimitive(DEPENDENT_PACKAGE).getAsString();
@@ -95,6 +94,9 @@ public class BallerinaCDSProjectToolConfig extends AbstractToolConfig {
             case PROJECT_PACKAGE_NAME_PREFIX:
                 this.metadataConfig.setNamePrefix(value.getAsString());
                 break;
+            case PROJECT_PACKAGE_BASE_PACKAGE:
+                this.basePackage = value.getAsString();
+                break;
             case PROJECT_PACKAGE_DEPENDENT_PACKAGE:
                 this.dependentPackage = value.getAsString();
                 break;
@@ -119,6 +121,10 @@ public class BallerinaCDSProjectToolConfig extends AbstractToolConfig {
 
     public List<DependencyConfig> getDependencyConfigs() {
         return dependencyConfigs;
+    }
+
+    public String getBasePackage() {
+        return basePackage;
     }
 
     public String getDependentPackage() {

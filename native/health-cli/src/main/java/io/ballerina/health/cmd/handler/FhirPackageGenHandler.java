@@ -54,7 +54,7 @@ public class FhirPackageGenHandler implements Handler {
     private FHIRTool fhirToolLib;
 
     @Override
-    public void init(PrintStream printStream, String specificationPath) {
+    public void init(PrintStream printStream, String specificationPath, String fhirVersion) {
 
         this.printStream = printStream;
         try {
@@ -63,7 +63,7 @@ public class FhirPackageGenHandler implements Handler {
         } catch (BallerinaHealthException e) {
             throw new RuntimeException(e);
         }
-        fhirToolLib = (FHIRTool) initializeLib(HealthCmdConstants.CMD_SUB_FHIR, printStream, configJson, specificationPath);
+        fhirToolLib = (FHIRTool) initializeLib(HealthCmdConstants.CMD_SUB_FHIR, fhirVersion, printStream, configJson, specificationPath);
     }
 
     @Override

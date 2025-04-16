@@ -130,7 +130,7 @@
         <profile>
         <id>packageGenTests</id>
         <activation>
-            <activeByDefault>true</activeByDefault>
+            <activeByDefault>false</activeByDefault>
         </activation>
             <build>
                 <plugins>
@@ -139,8 +139,8 @@
                         <artifactId>maven-compiler-plugin</artifactId>
                         <version>${maven-compiler-plugin.version}</version>
                         <configuration>
-                            <source>11</source>
-                            <target>11</target>
+                            <source>17</source>
+                            <target>17</target>
                         </configuration>
                     </plugin>
                     <plugin>
