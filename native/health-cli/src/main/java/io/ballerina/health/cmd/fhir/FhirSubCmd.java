@@ -52,7 +52,6 @@ public class FhirSubCmd implements BLauncherCmd {
     private final boolean exitWhenFinish;
     private final String toolName = "fhir";
     private final Path executionPath = Paths.get(System.getProperty("user.dir"));
-    private final String fhirVersion = HealthCmdConstants.CMD_FHIR_VERSION;
     private final String resourceHome;
     private Path targetOutputPath;
 
@@ -224,7 +223,7 @@ public class FhirSubCmd implements BLauncherCmd {
         }
         Handler toolHandler = null;
         try {
-            toolHandler = HandlerFactory.createHandler(toolName, fhirVersion, mode, printStream, specificationPath.toString());
+            toolHandler = HandlerFactory.createHandler(toolName, mode, printStream, specificationPath.toString());
         } catch (BallerinaHealthException e) {
             printStream.println(e);
             throw new BLauncherException();
