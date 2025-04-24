@@ -26,7 +26,7 @@ import java.util.Map;
 public class FhirClientGenHandler implements Handler {
 
     @Override
-    public void init(PrintStream printStream, String specificationPath, String fhirVersion) {
+    public void init(PrintStream printStream, String specificationPath) {
 
     }
 
