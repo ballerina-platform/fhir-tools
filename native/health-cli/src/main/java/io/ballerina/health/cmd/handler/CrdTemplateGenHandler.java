@@ -45,19 +45,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.Set;
 
-import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CDS;
-import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CDS_CONFIG_CLASS_NAME;
-import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CDS_TOOL_CLASS_NAME;
-import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_CDS_JSON_SCHEMA_FILENAME;
-import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_OPTION_ORG_NAME;
-import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_OPTION_PACKAGE_NAME;
-import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_OPTION_PACKAGE_VERSION;
-import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.HOOKS;
-import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.PROJECT_PACKAGE_NAME_PREFIX;
-import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.PROJECT_PACKAGE_ORG;
-import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.PROJECT_PACKAGE_VERSION;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.*;
 import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.PrintStrings.CDS_HOOKS_VALIDATION;
-import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.TOOLS;
 import static io.ballerina.health.cmd.core.utils.HealthCmdUtils.exitError;
 import static io.ballerina.health.cmd.core.utils.HealthCmdUtils.parseTomlToJson;
 
@@ -68,14 +57,14 @@ public class CrdTemplateGenHandler implements Handler {
 
     private String packageName;
     private String orgName;
-    private String version;
-
+    private String packageVersion;
+    private String fhirVersion;
     private JsonObject configJson;
     private InputStream cdsHooksJsonSchemaStream;
     private PrintStream printStream;
 
     @Override
-    public void init(PrintStream printStream, String cdsToolConfigFilePath, String fhirVersion) {
+    public void init(PrintStream printStream, String cdsToolConfigFilePath) {
 
         this.printStream = printStream;
         try {
@@ -92,7 +81,8 @@ public class CrdTemplateGenHandler implements Handler {
     public void setArgs(Map<String, Object> argsMap) {
         this.packageName = (String) argsMap.get(CMD_OPTION_PACKAGE_NAME);
         this.orgName = (String) argsMap.get(CMD_OPTION_ORG_NAME);
-        this.version = (String) argsMap.get(CMD_OPTION_PACKAGE_VERSION);
+        this.packageVersion = (String) argsMap.get(CMD_OPTION_PACKAGE_VERSION);
+        this.fhirVersion = (String) argsMap.get(HealthCmdConstants.CMD_OPTION_FHIR_VERSION);
     }
 
     @Override
@@ -133,13 +123,24 @@ public class CrdTemplateGenHandler implements Handler {
                     JsonElement overrideConfig = new Gson().toJsonTree(orgName.toLowerCase());
                     toolConfigInstance.overrideConfig(PROJECT_PACKAGE_ORG, overrideConfig);
                 }
-                if (version != null && !version.isEmpty()) {
-                    JsonElement overrideConfig = new Gson().toJsonTree(version.toLowerCase());
+                if (packageVersion != null && !packageVersion.isEmpty()) {
+                    JsonElement overrideConfig = new Gson().toJsonTree(packageVersion.toLowerCase());
                     toolConfigInstance.overrideConfig(PROJECT_PACKAGE_VERSION, overrideConfig);
                 }
                 if (packageName != null && !packageName.isEmpty()) {
                     JsonElement overrideConfig = new Gson().toJsonTree(packageName.toLowerCase());
                     toolConfigInstance.overrideConfig(PROJECT_PACKAGE_NAME_PREFIX, overrideConfig);
+                }
+                if(fhirVersion != null && !fhirVersion.isEmpty() && fhirVersion.equalsIgnoreCase("r5")){
+                    // Override basePackage and dependentPackage in cds-tool-config.json
+                    final String r5BasePackage = "ballerinax/health.fhir.r5";
+                    final String r5DependentPackage = "ballerinax/health.fhir.r5.cds"; // MIGHT NOT BE AVAILABLE
+
+                    JsonElement overrideConfigBase = new Gson().toJsonTree(r5BasePackage);
+                    JsonElement overrideConfigDependent = new Gson().toJsonTree(r5DependentPackage);
+
+                    toolConfigInstance.overrideConfig(PROJECT_PACKAGE_BASE_PACKAGE, overrideConfigBase);
+                    toolConfigInstance.overrideConfig(PROJECT_PACKAGE_DEPENDENT_PACKAGE, overrideConfigDependent);
                 }
 
                 Class<?> toolClazz = classLoader.loadClass(CDS_TOOL_CLASS_NAME);
@@ -152,16 +153,20 @@ public class CrdTemplateGenHandler implements Handler {
             } catch (ClassNotFoundException e) {
                 printStream.println(ErrorMessages.TOOL_IMPL_NOT_FOUND + e.getMessage());
                 HealthCmdUtils.throwLauncherException(e);
+
             } catch (InstantiationException | IllegalAccessException e) {
                 printStream.println(ErrorMessages.CONFIG_INITIALIZING_FAILED);
                 HealthCmdUtils.throwLauncherException(e);
+
             } catch (CodeGenException e) {
                 printStream.println(ErrorMessages.UNKNOWN_ERROR);
                 printStream.println(e);
                 HealthCmdUtils.throwLauncherException(e);
+
             } catch (InvocationTargetException | NoSuchMethodException e) {
                 HealthCmdUtils.throwLauncherException(e);
             }
+
             if (crdTemplateGenerator != null) {
                 try {
                     crdTemplateGenerator.generate(null, crdTemplateGenerator.getGeneratorProperties());
