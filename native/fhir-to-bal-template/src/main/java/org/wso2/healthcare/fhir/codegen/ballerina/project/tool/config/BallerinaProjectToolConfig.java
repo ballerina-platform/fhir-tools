@@ -96,6 +96,9 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
             case "project.package.version":
                 this.metadataConfig.setVersion(value.getAsString());
                 break;
+            case "project.fhir.version":
+                this.fhirVersion = value.getAsString();
+                break;
             case "project.package.namePrefix":
                 this.metadataConfig.setNamePrefix(value.getAsString());
                 break;
