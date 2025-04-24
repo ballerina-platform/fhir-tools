@@ -34,7 +34,6 @@ public class HealthCmdConstants {
     public static final String CMD_CDS_HELP_TEXT_FILENAME = "ballerina-health-cds.help";
     public static final String CMD_DEFAULT_IG_NAME = "FHIR";
     public static final String CMD_DEFAULT_ORG_NAME = "healthcare";
-    public static String CMD_FHIR_VERSION = "r4";
     public static final String CMD_FHIR_MODE_TEMPLATE = "fhir:template";
     public static final String CMD_FHIR_MODE_CLIENT = "fhir:client";
     public static final String CMD_FHIR_MODE_PACKAGE = "fhir:package";
@@ -47,6 +46,7 @@ public class HealthCmdConstants {
     public static final String CDS_TOOL_CLASS_NAME = "org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectTool";
     public static final String PROJECT_PACKAGE_ORG = "project.package.org";
     public static final String PROJECT_PACKAGE_VERSION = "project.package.version";
+    public static final String PROJECT_PACKAGE_BASE_PACKAGE = "project.package.basePackage";
     public static final String PROJECT_PACKAGE_DEPENDENT_PACKAGE = "project.package.dependentPackage";
     public static final String PROJECT_PACKAGE_NAME_PREFIX = "project.package.namePrefix";
     public static final String USER_DIR = "user.dir";
@@ -66,6 +66,7 @@ public class HealthCmdConstants {
     public static final String CMD_OPTION_ORG_NAME = "--org-name";
     public static final String CMD_OPTION_ORG_NAME_DESCRIPTION = "Organization name of the Ballerina package";
     public static final String CMD_OPTION_PACKAGE_VERSION = "--package-version";
+    public static final String CMD_OPTION_FHIR_VERSION = "--fhir-version";
     public static final String CMD_OPTION_PACKAGE_VERSION_DESCRIPTION = "Location of the CDS hooks definition file";
     public static final String CMD_OPTION_DEPENDENT_PACKAGE = "--dependent-package";
     public static final String CMD_OPTION_INPUT = "--input";
