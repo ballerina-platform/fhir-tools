@@ -18,6 +18,7 @@
 
 import io.ballerina.cli.launcher.BLauncherException;
 import io.ballerina.health.cmd.core.exception.BallerinaHealthException;
+import io.ballerina.health.cmd.core.utils.HealthCmdConstants;
 import io.ballerina.health.cmd.core.utils.HealthCmdUtils;
 import io.ballerina.health.cmd.handler.Handler;
 import io.ballerina.health.cmd.handler.HandlerFactory;
@@ -49,21 +50,22 @@ public class TestRunner {
         String packageName = "health.fhir.cds";
         String orgName = "ballerinax";
         String packageVersion = "1.1.0";
+        String fhirVersion = "r4";
         argsMap.put("--package-name", packageName);
         argsMap.put("--org-name", orgName);
         argsMap.put("--package-version", packageVersion);
+        argsMap.put("--fhir-version", fhirVersion);
         String mode = "template";
-        String fhirVersion = "r4";
         String command = "cds";
 
-        String resourcePath = Paths.get(Objects.requireNonNull(TestRunner.class.getClassLoader().getResource("io")).toURI()).getParent().getParent().toString() + "\\test-classes" + "\\profiles.USCore";
+        String resourcePath = Paths.get(Objects.requireNonNull(TestRunner.class.getClassLoader().getResource("io")).toURI()).getParent().getParent().toString() + File.separator + "test-classes" + File.separator + "cds.hooks";
         System.out.println("Resource Path: " + resourcePath);
 
         File resourcesDirectory = new File(resourcePath);
         String specPath = resourcesDirectory.getAbsolutePath();
         System.out.println("Spec Path: " + specPath);
 
-        String outPutPath = Paths.get(Objects.requireNonNull(TestRunner.class.getClassLoader().getResource("io")).toURI()).getParent().getParent().toString() + "\\test-classes";
+        String outPutPath = Paths.get(Objects.requireNonNull(TestRunner.class.getClassLoader().getResource("io")).toURI()).getParent().getParent().toString() + File.separator + "test-classes";
         System.out.println("Output Path: " + outPutPath);
 
         //spec path is the last argument
@@ -78,7 +80,7 @@ public class TestRunner {
 
         Handler toolHandler = null;
         try {
-            toolHandler = HandlerFactory.createHandler(command, fhirVersion, mode, System.out, specificationPath.toString());
+            toolHandler = HandlerFactory.createHandler(command, mode, System.out, specificationPath.toString());
         } catch (BallerinaHealthException e) {
             System.out.println(e);
             throw new BLauncherException();
@@ -93,26 +95,26 @@ public class TestRunner {
         String packageName = "health.fhir.r4.uscore501";
         String orgName = "ballerinax";
         String packageVersion = "1.1.0";
-        argsMap.put("--package-name", packageName);
+        String fhirVersion = "r4";
+        argsMap.put("--package-name", packageName); // FOR PACKAGE
+        argsMap.put("--package-version", packageVersion); // FOR PACKAGE
+        argsMap.put("--dependency", null); // FOR PACKAGE
         argsMap.put("--org-name", orgName);
-        argsMap.put("--package-version", packageVersion);
+//        argsMap.put("--dependent-package", orgName + "/" + packageName); // FOR TEMPLATE
+        argsMap.put("--fhir-version", fhirVersion);
         argsMap.put("--included-profile", null);
         argsMap.put("--excluded-profile", null);
-        argsMap.put("--dependency", null);
         String mode = "package";
-        String fhirVersion = "r4";
         String command = "fhir";
 
-        System.setProperty("fhir.version", fhirVersion);
-
-        String resourcePath = Paths.get(Objects.requireNonNull(TestRunner.class.getClassLoader().getResource("io")).toURI()).getParent().getParent().toString() + "\\test-classes" + "\\profiles.USCore";
+        String resourcePath = Paths.get(Objects.requireNonNull(TestRunner.class.getClassLoader().getResource("io")).toURI()).getParent().getParent().toString() + File.separator + "test-classes" + File.separator + "profiles.USCore";
         System.out.println("Resource Path: " + resourcePath);
 
         File resourcesDirectory = new File(resourcePath);
         String specPath = resourcesDirectory.getAbsolutePath();
         System.out.println("Spec Path: " + specPath);
 
-        String outPutPath = Paths.get(Objects.requireNonNull(TestRunner.class.getClassLoader().getResource("io")).toURI()).getParent().getParent().toString() + "\\test-classes";
+        String outPutPath = Paths.get(Objects.requireNonNull(TestRunner.class.getClassLoader().getResource("io")).toURI()).getParent().getParent().toString() + File.separator + "test-classes";
         System.out.println("Output Path: " + outPutPath);
 
         //spec path is the last argument
@@ -124,9 +126,10 @@ public class TestRunner {
             System.out.println("Invalid specification path received for FHIR tool command.");
             throw new BLauncherException();
         }
+
         Handler toolHandler = null;
         try {
-            toolHandler = HandlerFactory.createHandler(command, fhirVersion, mode, System.out, specificationPath.toString());
+            toolHandler = HandlerFactory.createHandler(command, mode, System.out, specificationPath.toString());
         } catch (BallerinaHealthException e) {
             System.out.println(e);
             throw new BLauncherException();
