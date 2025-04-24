@@ -28,22 +28,19 @@ import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_FHIR_MOD
 import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_FHIR_MODE_PACKAGE;
 import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_FHIR_MODE_TEMPLATE;
 import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.SEMICOLON;
-import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_FHIR_VERSION;
 
 /**
  * Factory class to create handlers.
  */
 public class HandlerFactory {
 
-    public static Handler createHandler(String subCommand, String fhirVersion, String mode, PrintStream printStream, String specificationPath)
+    public static Handler createHandler(String subCommand, String mode, PrintStream printStream, String specificationPath)
             throws BallerinaHealthException {
-
-        CMD_FHIR_VERSION = fhirVersion;
 
         switch (subCommand + SEMICOLON + mode) {
             case CMD_FHIR_MODE_TEMPLATE:
                 Handler templateHandler = new FhirTemplateGenHandler();
-                templateHandler.init(printStream, specificationPath, fhirVersion);
+                templateHandler.init(printStream, specificationPath);
                 return templateHandler;
 
             case CMD_FHIR_MODE_CLIENT:
@@ -51,12 +48,12 @@ public class HandlerFactory {
 
             case CMD_FHIR_MODE_PACKAGE:
                 Handler packageHandler = new FhirPackageGenHandler();
-                packageHandler.init(printStream, specificationPath, fhirVersion);
+                packageHandler.init(printStream, specificationPath);
                 return packageHandler;
 
             case CMD_CDS_MODE_TEMPLATE:
                 Handler crdTemplateGenHandler = new CrdTemplateGenHandler();
-                crdTemplateGenHandler.init(printStream, specificationPath, fhirVersion);
+                crdTemplateGenHandler.init(printStream, specificationPath);
                 return crdTemplateGenHandler;
 
             default:
