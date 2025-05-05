@@ -130,8 +130,12 @@ public class FhirPackageGenHandler implements Handler {
                     JsonElement overrideConfig = new Gson().toJsonTree(packageVersion.toLowerCase());
                     toolConfigInstance.overrideConfig("packageConfig.packageVersion", overrideConfig);
                 }
+                if(fhirVersion != null && !fhirVersion.isEmpty()){
+                    JsonElement overrideConfig = new Gson().toJsonTree(fhirVersion.toLowerCase());
+                    toolConfigInstance.overrideConfig("packageConfig.fhirVersion", overrideConfig);
+                }
                 if (fhirVersion != null && !fhirVersion.isEmpty() && !fhirVersion.equalsIgnoreCase("r5")){
-                    // Override basePackage and dependentPackage in cds-tool-config.json
+                    // Override basePackage and dependentPackage in tool-config.json
                     final String r5Repository = "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r5";
                     final String r5BasePackage = "ballerinax/health.fhir.r5";
 

@@ -21,7 +21,6 @@ package org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hl7.fhir.r4.model.ElementDefinition;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.DataTypesRegistry;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.config.BallerinaPackageGenToolConfig;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.AnnotationElement;
@@ -30,7 +29,6 @@ import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.Element;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.ExtendedElement;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.SearchParameter;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -308,32 +306,6 @@ public class GeneratorUtils {
         annotationElement.setExtended(element.isExtended());
         LOG.debug("Ended: Annotation Element population");
         return annotationElement;
-    }
-
-    /**
-     * Populates available code values for a given code element.
-     *
-     * @param elementDefinition element definition from FHIR specification
-     * @param element           element model for template context
-     */
-    public static void populateCodeValuesForCodeElements(ElementDefinition elementDefinition, Element element) {
-        if (!elementDefinition.getShort().contains("|")) {
-            return;
-        }
-        HashMap<String, Element> childElements = new HashMap<>();
-        String[] codes = elementDefinition.getShort().split(Pattern.quote("|"));
-        for (String code : codes) {
-            code = CommonUtil.validateCode(code);
-            if (!code.trim().isEmpty()) {
-                Element childElement = new Element();
-                childElement.setName(code);
-                childElement.setDataType("string");
-                childElement.setRootElementName(element.getName());
-                childElement.setValueSet(element.getValueSet());
-                childElements.put(childElement.getName(), childElement);
-            }
-        }
-        element.setChildElements(childElements);
     }
 
     /**

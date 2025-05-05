@@ -1,0 +1,132 @@
+{
+  "index-version" : 2,
+  "files" : [
+    {
+      "filename" : "ImplementationGuide-hl7.at.fhir.core.r5.json",
+      "resourceType" : "ImplementationGuide",
+      "id" : "hl7.at.fhir.core.r5",
+      "url" : "http://hl7.at/fhir/HL7ATCoreProfiles/5.0.0/ImplementationGuide/hl7.at.fhir.core.r5",
+      "version" : "2.0.0"
+    },
+    {
+      "filename" : "StructureDefinition-at-core-address.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "at-core-address",
+      "url" : "http://hl7.at/fhir/HL7ATCoreProfiles/5.0.0/StructureDefinition/at-core-address",
+      "version" : "2.0.0",
+      "kind" : "complex-type",
+      "type" : "Address",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-at-core-ext-address-additionalInformation.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "at-core-ext-address-additionalInformation",
+      "url" : "http://hl7.at/fhir/HL7ATCoreProfiles/5.0.0/StructureDefinition/at-core-ext-address-additionalInformation",
+      "version" : "2.0.0",
+      "kind" : "complex-type",
+      "type" : "Extension",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-at-core-ext-address-municipalityCode.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "at-core-ext-address-municipalityCode",
+      "url" : "http://hl7.at/fhir/HL7ATCoreProfiles/5.0.0/StructureDefinition/at-core-ext-address-municipalityCode",
+      "version" : "2.0.0",
+      "kind" : "complex-type",
+      "type" : "Extension",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-at-core-ext-gender-administrativeGenderAddition.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "at-core-ext-gender-administrativeGenderAddition",
+      "url" : "http://hl7.at/fhir/HL7ATCoreProfiles/5.0.0/StructureDefinition/at-core-ext-gender-administrativeGenderAddition",
+      "version" : "2.0.0",
+      "kind" : "complex-type",
+      "type" : "Extension",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-at-core-ext-patient-religion.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "at-core-ext-patient-religion",
+      "url" : "http://hl7.at/fhir/HL7ATCoreProfiles/5.0.0/StructureDefinition/at-core-ext-patient-religion",
+      "version" : "2.0.0",
+      "kind" : "complex-type",
+      "type" : "Extension",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-at-core-ext-valueset-systemoid.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "at-core-ext-valueset-systemoid",
+      "url" : "http://hl7.at/fhir/HL7ATCoreProfiles/5.0.0/StructureDefinition/at-core-ext-valueset-systemoid",
+      "version" : "2.0.0",
+      "kind" : "complex-type",
+      "type" : "Extension",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-at-core-extendedContactDetail.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "at-core-extendedContactDetail",
+      "url" : "http://hl7.at/fhir/HL7ATCoreProfiles/5.0.0/StructureDefinition/at-core-extendedContactDetail",
+      "version" : "2.0.0",
+      "kind" : "complex-type",
+      "type" : "ExtendedContactDetail",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-at-core-organization.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "at-core-organization",
+      "url" : "http://hl7.at/fhir/HL7ATCoreProfiles/5.0.0/StructureDefinition/at-core-organization",
+      "version" : "2.0.0",
+      "kind" : "resource",
+      "type" : "Organization",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-at-core-patient.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "at-core-patient",
+      "url" : "http://hl7.at/fhir/HL7ATCoreProfiles/5.0.0/StructureDefinition/at-core-patient",
+      "version" : "2.0.0",
+      "kind" : "resource",
+      "type" : "Patient",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-at-core-practitioner.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "at-core-practitioner",
+      "url" : "http://hl7.at/fhir/HL7ATCoreProfiles/5.0.0/StructureDefinition/at-core-practitioner",
+      "version" : "2.0.0",
+      "kind" : "resource",
+      "type" : "Practitioner",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-at-core-practitionerRole.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "at-core-practitionerRole",
+      "url" : "http://hl7.at/fhir/HL7ATCoreProfiles/5.0.0/StructureDefinition/at-core-practitionerRole",
+      "version" : "2.0.0",
+      "kind" : "resource",
+      "type" : "PractitionerRole",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-at-core-valueset.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "at-core-valueset",
+      "url" : "http://hl7.at/fhir/HL7ATCoreProfiles/5.0.0/StructureDefinition/at-core-valueset",
+      "version" : "2.0.0",
+      "kind" : "resource",
+      "type" : "ValueSet",
+      "derivation" : "constraint"
+    }
+  ]
+}

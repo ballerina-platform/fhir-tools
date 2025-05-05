@@ -1,0 +1,735 @@
+{
+  "resourceType": "ImplementationGuide",
+  "id": "hl7.at.fhir.core.r5",
+  "text": {
+    "status": "generated",
+    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: ImplementationGuide hl7.at.fhir.core.r5</b></p><a name=\"hl7.at.fhir.core.r5\"> </a><a name=\"hchl7.at.fhir.core.r5\"> </a><a name=\"hl7.at.fhir.core.r5-en-US\"> </a><h2>HL7AustriaImplementationGuide</h2><p>The official URL for this implementation guide is: </p><pre>http://hl7.at/fhir/HL7ATCoreProfiles/5.0.0/ImplementationGuide/hl7.at.fhir.core.r5</pre><div><p>An Implementation Guide for the HL7® Austria FHIR® Core Profiles.</p>\n</div></div>"
+  },
+  "url": "http://hl7.at/fhir/HL7ATCoreProfiles/5.0.0/ImplementationGuide/hl7.at.fhir.core.r5",
+  "version": "2.0.0",
+  "name": "HL7AustriaImplementationGuide",
+  "title": "HL7® Austria FHIR® Core Implementation Guide",
+  "status": "active",
+  "date": "2025-01-24T14:21:13+00:00",
+  "publisher": "HL7® Austria, TC FHIR®",
+  "contact": [
+    {
+      "name": "HL7® Austria, TC FHIR®",
+      "telecom": [
+        {
+          "system": "url",
+          "value": "https://hl7.at/technische-komitees/tc-fhir/"
+        }
+      ]
+    },
+    {
+      "name": "Technical Committee for FHIR® at HL7® Austria",
+      "telecom": [
+        {
+          "system": "email",
+          "value": "mailto:tc-fhir@hl7.at"
+        }
+      ]
+    }
+  ],
+  "description": "An Implementation Guide for the HL7® Austria FHIR® Core Profiles.",
+  "packageId": "hl7.at.fhir.core.r5",
+  "license": "CC0-1.0",
+  "fhirVersion": [
+    "5.0.0"
+  ],
+  "dependsOn": [
+    {
+      "id": "hl7tx",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/tools/StructureDefinition/implementationguide-dependency-comment",
+          "valueMarkdown": "Automatically added as a dependency - all IGs depend on HL7 Terminology"
+        }
+      ],
+      "uri": "http://terminology.hl7.org/ImplementationGuide/hl7.terminology",
+      "packageId": "hl7.terminology.r5",
+      "version": "6.1.0"
+    },
+    {
+      "id": "hl7ext",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/tools/StructureDefinition/implementationguide-dependency-comment",
+          "valueMarkdown": "Automatically added as a dependency - all IGs depend on the HL7 Extension Pack"
+        }
+      ],
+      "uri": "http://hl7.org/fhir/extensions/ImplementationGuide/hl7.fhir.uv.extensions",
+      "packageId": "hl7.fhir.uv.extensions.r5",
+      "version": "5.1.0"
+    }
+  ],
+  "definition": {
+    "extension": [
+      {
+        "url": "http://hl7.org/fhir/tools/StructureDefinition/ig-internal-dependency",
+        "valueCode": "hl7.fhir.uv.tools.r5#0.3.0"
+      }
+    ],
+    "resource": [
+      {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/tools/StructureDefinition/resource-information",
+            "valueString": "StructureDefinition:extension"
+          }
+        ],
+        "reference": {
+          "reference": "StructureDefinition/at-core-ext-address-additionalInformation"
+        },
+        "name": "Address Additional Information",
+        "description": "HL7® Austria FHIR® Core Extension for the additional information part of the Austrian address.",
+        "isExample": false
+      },
+      {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/tools/StructureDefinition/resource-information",
+            "valueString": "StructureDefinition:extension"
+          }
+        ],
+        "reference": {
+          "reference": "StructureDefinition/at-core-ext-address-municipalityCode"
+        },
+        "name": "Address Municipality Code",
+        "description": "HL7® Austria FHIR® Core Extension for the municipality code part of the Austrian address",
+        "isExample": false
+      },
+      {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/tools/StructureDefinition/resource-information",
+            "valueString": "StructureDefinition:extension"
+          }
+        ],
+        "reference": {
+          "reference": "StructureDefinition/at-core-ext-gender-administrativeGenderAddition"
+        },
+        "name": "Administrative Gender Addition",
+        "description": "HL7® Austria FHIR® Core Extension for the administrative gender of a person (Patient, Practitioner, ...). \r\nThe extension is used to add the missing codes and is applied in case the code for administrative gender itself is set to 'other'.",
+        "isExample": false
+      },
+      {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/tools/StructureDefinition/resource-information",
+            "valueString": "Organization"
+          }
+        ],
+        "reference": {
+          "reference": "Organization/HL7ATCoreOrganizationExample01"
+        },
+        "name": "HL7ATCoreOrganizationExample01",
+        "description": "Example for the usage of the HL7 AT Core Organization Profile",
+        "isExample": true,
+        "profile": [
+          "http://hl7.at/fhir/HL7ATCoreProfiles/5.0.0/StructureDefinition/at-core-organization"
+        ]
+      },
+      {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/tools/StructureDefinition/resource-information",
+            "valueString": "Organization"
+          }
+        ],
+        "reference": {
+          "reference": "Organization/HL7ATCoreOrganizationExample02-MultipleVPNR"
+        },
+        "name": "HL7ATCoreOrganizationExample02-MultipleVPNR",
+        "description": "Example for the usage of the HL7 AT Core Organization Profile with multiple VPNR identifiers",
+        "isExample": true,
+        "profile": [
+          "http://hl7.at/fhir/HL7ATCoreProfiles/5.0.0/StructureDefinition/at-core-organization"
+        ]
+      },
+      {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/tools/StructureDefinition/resource-information",
+            "valueString": "Patient"
+          }
+        ],
+        "reference": {
+          "reference": "Patient/HL7ATCorePatientExample01"
+        },
+        "name": "HL7ATCorePatientExample01",
+        "description": "Example for the usage of the HL7 AT Core Patient Profile",
+        "isExample": true,
+        "profile": [
+          "http://hl7.at/fhir/HL7ATCoreProfiles/5.0.0/StructureDefinition/at-core-patient"
+        ]
+      },
+      {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/tools/StructureDefinition/resource-information",
+            "valueString": "Patient"
+          }
+        ],
+        "reference": {
+          "reference": "Patient/HL7ATCorePatientExample02-deceasedTime"
+        },
+        "name": "HL7ATCorePatientExample02-deceasedTime",
+        "description": "Example with deceasedTime for the usage of the HL7 AT Core Patient Profile",
+        "isExample": true,
+        "profile": [
+          "http://hl7.at/fhir/HL7ATCoreProfiles/5.0.0/StructureDefinition/at-core-patient"
+        ]
+      },
+      {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/tools/StructureDefinition/resource-information",
+            "valueString": "Patient"
+          }
+        ],
+        "reference": {
+          "reference": "Patient/HL7ATCorePatientExample03-deceasedBoolean"
+        },
+        "name": "HL7ATCorePatientExample03-deceasedBoolean",
+        "description": "Example with deceasedBoolean for the usage of the HL7 AT Core Patient Profile",
+        "isExample": true,
+        "profile": [
+          "http://hl7.at/fhir/HL7ATCoreProfiles/5.0.0/StructureDefinition/at-core-patient"
+        ]
+      },
+      {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/tools/StructureDefinition/resource-information",
+            "valueString": "Patient"
+          }
+        ],
+        "reference": {
+          "reference": "Patient/HL7ATCorePatientExample04-Full"
+        },
+        "name": "HL7ATCorePatientExample04-Full",
+        "description": "Example with all elements for the usage of the HL7 AT Core Patient Profile",
+        "isExample": true,
+        "profile": [
+          "http://hl7.at/fhir/HL7ATCoreProfiles/5.0.0/StructureDefinition/at-core-patient"
+        ]
+      },
+      {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/tools/StructureDefinition/resource-information",
+            "valueString": "Patient"
+          }
+        ],
+        "reference": {
+          "reference": "Patient/HL7ATCorePatientExample05-FullElga"
+        },
+        "name": "HL7ATCorePatientExample05-FullElga",
+        "description": "Example with all ELGA header elements in the HL7 AT Core Patient Profile",
+        "isExample": true,
+        "profile": [
+          "http://hl7.at/fhir/HL7ATCoreProfiles/5.0.0/StructureDefinition/at-core-patient"
+        ]
+      },
+      {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/tools/StructureDefinition/resource-information",
+            "valueString": "Patient"
+          }
+        ],
+        "reference": {
+          "reference": "Patient/HL7ATCorePatientExample06-GenderExtension"
+        },
+        "name": "HL7ATCorePatientExample06-GenderExtension",
+        "description": "Example for the usage of the HL7 AT Core Patient Profile",
+        "isExample": true,
+        "profile": [
+          "http://hl7.at/fhir/HL7ATCoreProfiles/5.0.0/StructureDefinition/at-core-patient"
+        ]
+      },
+      {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/tools/StructureDefinition/resource-information",
+            "valueString": "Patient"
+          }
+        ],
+        "reference": {
+          "reference": "Patient/HL7ATCorePatientExample07-MunicipalityCode"
+        },
+        "name": "HL7ATCorePatientExample07-MunicipalityCode",
+        "description": "Example for the usage of the HL7 AT Core Patient Profile that includes a municipality code",
+        "isExample": true,
+        "profile": [
+          "http://hl7.at/fhir/HL7ATCoreProfiles/5.0.0/StructureDefinition/at-core-patient"
+        ]
+      },
+      {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/tools/StructureDefinition/resource-information",
+            "valueString": "Practitioner"
+          }
+        ],
+        "reference": {
+          "reference": "Practitioner/HL7ATCorePractitionerExample01"
+        },
+        "name": "HL7ATCorePractitionerExample01",
+        "description": "Example for the usage of the HL7 AT Core Practitioner Profile",
+        "isExample": true,
+        "profile": [
+          "http://hl7.at/fhir/HL7ATCoreProfiles/5.0.0/StructureDefinition/at-core-practitioner"
+        ]
+      },
+      {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/tools/StructureDefinition/resource-information",
+            "valueString": "PractitionerRole"
+          }
+        ],
+        "reference": {
+          "reference": "PractitionerRole/HL7ATCorePractitionerRoleExample01"
+        },
+        "name": "HL7ATCorePractitionerRoleExample01",
+        "description": "Example for the usage of the HL7 AT Core PractitionerRole Profile",
+        "isExample": true,
+        "profile": [
+          "http://hl7.at/fhir/HL7ATCoreProfiles/5.0.0/StructureDefinition/at-core-practitionerRole"
+        ]
+      },
+      {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/tools/StructureDefinition/resource-information",
+            "valueString": "StructureDefinition:complex-type"
+          }
+        ],
+        "reference": {
+          "reference": "StructureDefinition/at-core-address"
+        },
+        "name": "HL7® AT Core Address Profile",
+        "description": "HL7® Austria FHIR® Core Profile for address data in Austria. Note, this extension represents the common structure of address information within Austrian information systems. This extension does not restrict the documented information to Austrian adresses. Address information that does not fit into the given structure may be captured by [Address Additional Information](StructureDefinition-at-core-ext-address-additionalInformation.html).",
+        "isExample": false
+      },
+      {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/tools/StructureDefinition/resource-information",
+            "valueString": "StructureDefinition:complex-type"
+          }
+        ],
+        "reference": {
+          "reference": "StructureDefinition/at-core-extendedContactDetail"
+        },
+        "name": "HL7® AT Core ExtendedContactDetail Profile",
+        "description": "HL7® Austria FHIR® Core Profile to use the profile for address data in Austria on the datatype ExtendedContactDetail.",
+        "isExample": false
+      },
+      {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/tools/StructureDefinition/resource-information",
+            "valueString": "StructureDefinition:resource"
+          }
+        ],
+        "reference": {
+          "reference": "StructureDefinition/at-core-organization"
+        },
+        "name": "HL7® AT Core Organization Profile",
+        "description": "HL7® Austria FHIR® Core Profile for organization data in Austria.",
+        "isExample": false
+      },
+      {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/tools/StructureDefinition/resource-information",
+            "valueString": "StructureDefinition:resource"
+          }
+        ],
+        "reference": {
+          "reference": "StructureDefinition/at-core-patient"
+        },
+        "name": "HL7® AT Core Patient Profile",
+        "description": "HL7® Austria FHIR® Core Profile for patient data in Austria.\r\nThe HL7® AT Core Patient is based upon the core FHIR® Patient Resource and designed to meet the applicable patient demographic data elements in Austria. It identifies which core elements, extensions, vocabularies and value sets SHALL be present in the resource when using this profile. Note, this extension represents the common structure of Patient information within Austrian information systems.",
+        "isExample": false
+      },
+      {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/tools/StructureDefinition/resource-information",
+            "valueString": "StructureDefinition:resource"
+          }
+        ],
+        "reference": {
+          "reference": "StructureDefinition/at-core-practitioner"
+        },
+        "name": "HL7® AT Core Practitioner Profile",
+        "description": "HL7® Austria FHIR® Core Profile for practitioner data in Austria.",
+        "isExample": false
+      },
+      {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/tools/StructureDefinition/resource-information",
+            "valueString": "StructureDefinition:resource"
+          }
+        ],
+        "reference": {
+          "reference": "StructureDefinition/at-core-practitionerRole"
+        },
+        "name": "HL7® AT Core PractitionerRole Profile",
+        "description": "HL7® Austria FHIR® Core Profile for practitioner role data in Austria.",
+        "isExample": false
+      },
+      {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/tools/StructureDefinition/resource-information",
+            "valueString": "StructureDefinition:resource"
+          }
+        ],
+        "reference": {
+          "reference": "StructureDefinition/at-core-valueset"
+        },
+        "name": "HL7® AT Core ValueSet Profile",
+        "description": "HL7® Austria FHIR® Core Profile for valuesets in Austria.\r\nThe HL7® AT Core ValueSet is based upon the core FHIR® ValueSet Resource and defines the use of the OID extension.",
+        "isExample": false
+      },
+      {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/tools/StructureDefinition/resource-information",
+            "valueString": "StructureDefinition:extension"
+          }
+        ],
+        "reference": {
+          "reference": "StructureDefinition/at-core-ext-patient-religion"
+        },
+        "name": "Patient Religion",
+        "description": "HL7® Austria FHIR® Core Extension for the religion (registered in Austria) of a patient.\r\nThe extension is used to encode the religious confession of a patient (only confessions registered in Austria). Furthermore, it uses the official [HL7 AT CodeSystem](https://termpub.gesundheit.gv.at:443/TermBrowser/gui/main/main.zul?loadType=CodeSystem&loadName=HL7 AT ReligionAustria) for religion and is therefore aligned with the ELGA ValueSet, respectively.",
+        "isExample": false
+      },
+      {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/tools/StructureDefinition/resource-information",
+            "valueString": "StructureDefinition:extension"
+          }
+        ],
+        "reference": {
+          "reference": "StructureDefinition/at-core-ext-valueset-systemoid"
+        },
+        "name": "System OID",
+        "description": "HL7® Austria FHIR® Core Extension for the capturing of OID in ValueSets to reference the CodeSystem they come from.\r\nThe extension is used to document the OID of the system of a code referenced in a ValueSet, to align FHIR with the HL7 Austria CDA document guidelines.",
+        "isExample": false
+      }
+    ],
+    "page": {
+      "sourceUrl": "toc.html",
+      "name": "toc.html",
+      "title": "Table of Contents",
+      "generation": "html",
+      "page": [
+        {
+          "sourceUrl": "index.html",
+          "name": "index.html",
+          "title": "Home",
+          "generation": "markdown"
+        }
+      ]
+    },
+    "parameter": [
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/tools/CodeSystem/ig-parameters",
+          "code": "copyrightyear"
+        },
+        "value": "2020+"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/tools/CodeSystem/ig-parameters",
+          "code": "releaselabel"
+        },
+        "value": "STU2"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/tools/CodeSystem/ig-parameters",
+          "code": "show-inherited-invariants"
+        },
+        "value": "false"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/tools/CodeSystem/ig-parameters",
+          "code": "autoload-resources"
+        },
+        "value": "true"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/guide-parameter-code",
+          "code": "path-resource"
+        },
+        "value": "input/capabilities"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/guide-parameter-code",
+          "code": "path-resource"
+        },
+        "value": "input/examples"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/guide-parameter-code",
+          "code": "path-resource"
+        },
+        "value": "input/extensions"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/guide-parameter-code",
+          "code": "path-resource"
+        },
+        "value": "input/models"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/guide-parameter-code",
+          "code": "path-resource"
+        },
+        "value": "input/operations"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/guide-parameter-code",
+          "code": "path-resource"
+        },
+        "value": "input/profiles"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/guide-parameter-code",
+          "code": "path-resource"
+        },
+        "value": "input/resources"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/guide-parameter-code",
+          "code": "path-resource"
+        },
+        "value": "input/vocabulary"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/guide-parameter-code",
+          "code": "path-resource"
+        },
+        "value": "input/maps"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/guide-parameter-code",
+          "code": "path-resource"
+        },
+        "value": "input/testing"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/guide-parameter-code",
+          "code": "path-resource"
+        },
+        "value": "input/history"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/guide-parameter-code",
+          "code": "path-resource"
+        },
+        "value": "fsh-generated/resources"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/guide-parameter-code",
+          "code": "path-pages"
+        },
+        "value": "template/config"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/guide-parameter-code",
+          "code": "path-pages"
+        },
+        "value": "input/images"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/tools/CodeSystem/ig-parameters",
+          "code": "path-liquid"
+        },
+        "value": "template/liquid"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/tools/CodeSystem/ig-parameters",
+          "code": "path-liquid"
+        },
+        "value": "input/liquid"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/tools/CodeSystem/ig-parameters",
+          "code": "path-qa"
+        },
+        "value": "temp/qa"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/tools/CodeSystem/ig-parameters",
+          "code": "path-temp"
+        },
+        "value": "temp/pages"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/tools/CodeSystem/ig-parameters",
+          "code": "path-output"
+        },
+        "value": "output"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/guide-parameter-code",
+          "code": "path-tx-cache"
+        },
+        "value": "input-cache/txcache"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/tools/CodeSystem/ig-parameters",
+          "code": "path-suppressed-warnings"
+        },
+        "value": "input/ignoreWarnings.txt"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/tools/CodeSystem/ig-parameters",
+          "code": "path-history"
+        },
+        "value": "http://hl7.at/fhir/HL7ATCoreProfiles/5.0.0/history.html"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/tools/CodeSystem/ig-parameters",
+          "code": "template-html"
+        },
+        "value": "template-page.html"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/tools/CodeSystem/ig-parameters",
+          "code": "template-md"
+        },
+        "value": "template-page-md.html"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/tools/CodeSystem/ig-parameters",
+          "code": "apply-contact"
+        },
+        "value": "true"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/tools/CodeSystem/ig-parameters",
+          "code": "apply-context"
+        },
+        "value": "true"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/tools/CodeSystem/ig-parameters",
+          "code": "apply-copyright"
+        },
+        "value": "true"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/tools/CodeSystem/ig-parameters",
+          "code": "apply-jurisdiction"
+        },
+        "value": "true"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/tools/CodeSystem/ig-parameters",
+          "code": "apply-license"
+        },
+        "value": "true"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/tools/CodeSystem/ig-parameters",
+          "code": "apply-publisher"
+        },
+        "value": "true"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/tools/CodeSystem/ig-parameters",
+          "code": "apply-version"
+        },
+        "value": "true"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/tools/CodeSystem/ig-parameters",
+          "code": "apply-wg"
+        },
+        "value": "true"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/tools/CodeSystem/ig-parameters",
+          "code": "active-tables"
+        },
+        "value": "true"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/tools/CodeSystem/ig-parameters",
+          "code": "fmm-definition"
+        },
+        "value": "http://hl7.org/fhir/versions.html#maturity"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/tools/CodeSystem/ig-parameters",
+          "code": "propagate-status"
+        },
+        "value": "true"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/tools/CodeSystem/ig-parameters",
+          "code": "excludelogbinaryformat"
+        },
+        "value": "true"
+      },
+      {
+        "code": {
+          "system": "http://hl7.org/fhir/tools/CodeSystem/ig-parameters",
+          "code": "tabbed-snapshots"
+        },
+        "value": "true"
+      }
+    ]
+  }
+}

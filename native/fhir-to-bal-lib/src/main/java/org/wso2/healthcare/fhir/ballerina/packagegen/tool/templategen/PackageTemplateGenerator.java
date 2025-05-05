@@ -98,6 +98,7 @@ public class PackageTemplateGenerator extends AbstractFHIRTemplateGenerator {
             this.packageProperties.put("basePackageIdentifier", basePackageIdentifier);
             this.packageProperties.put("importIdentifier", basePackageIdentifier + ":");
         }
+
         generatePackageEssentials(toolConfig);
         LOG.debug("Ended: Package Template Generation");
     }
@@ -173,6 +174,7 @@ public class PackageTemplateGenerator extends AbstractFHIRTemplateGenerator {
         templateContext.setProperty("version", toolConfig.getPackageConfig().getVersion());
         templateContext.setProperty("distribution", toolConfig.getPackageConfig().getBallerinaDistribution());
         templateContext.setProperty("authors", toolConfig.getPackageConfig().getAuthors());
+        templateContext.setProperty("fhirVersion", toolConfig.getPackageConfig().getFhirVersion());
         templateContext.setProperty("repository", toolConfig.getPackageConfig().getRepository());
         templateContext.setProperty("igName", this.packageTemplateContext.getIgTemplateContext().getIgName());
 

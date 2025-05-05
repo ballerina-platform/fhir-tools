@@ -13,6 +13,7 @@
             "authors": [
               "Ballerina"
             ],
+            "fhirVersion": "r4",
             "repository": "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4",
             "basePackage": "ballerinax/health.fhir.r4",
             "parentPackage": "",

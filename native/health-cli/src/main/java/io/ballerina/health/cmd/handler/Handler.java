@@ -25,7 +25,7 @@ import io.ballerina.health.cmd.core.utils.HealthCmdUtils;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.AbstractTool;
 import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenException;
 import org.wso2.healthcare.codegen.tool.framework.commons.model.JsonConfigType;
-import org.wso2.healthcare.codegen.tool.framework.fhir.core.FHIRSpecParser;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.AbstractFHIRSpecParser;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.FHIRSpecParserFactory;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.FHIRTool;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.config.FHIRToolConfig;
@@ -65,7 +65,7 @@ public interface Handler {
                 fhirToolConfig.setSpecBasePath(specificationPath);
                 fhirToolLib.initialize(fhirToolConfig);
 
-                FHIRSpecParser specParser = FHIRSpecParserFactory.getParser(fhirVersion);
+                AbstractFHIRSpecParser specParser = FHIRSpecParserFactory.getParser(fhirVersion);
                 specParser.parseIG(fhirToolConfig, HealthCmdConstants.CMD_DEFAULT_IG_NAME, specificationPath);
                 return fhirToolLib;
 
