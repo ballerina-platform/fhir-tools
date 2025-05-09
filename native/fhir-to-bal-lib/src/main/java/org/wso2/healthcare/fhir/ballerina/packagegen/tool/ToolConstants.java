@@ -71,6 +71,7 @@ public class ToolConstants {
     public static final String CONFIG_BALLERINA_KEYWORD_REPLACE = "replace";
     public static final String CONFIG_BALLERINA_KEYWORD_REPLACE_TOML = "tools.config.ballerina_keyword.replace";
     public static final String TEMPLATE_PATH = "templates";
+    public static final String TEMPLATE_VERSION_PATH = "versions";
     public static final String BAL_EXTENSION = ".bal";
     public static final String TOML_EXTENSION = ".toml";
     public static final String MD_EXTENSION = ".md";
