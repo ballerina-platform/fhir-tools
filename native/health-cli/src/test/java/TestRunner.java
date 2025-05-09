@@ -18,7 +18,6 @@
 
 import io.ballerina.cli.launcher.BLauncherException;
 import io.ballerina.health.cmd.core.exception.BallerinaHealthException;
-import io.ballerina.health.cmd.core.utils.HealthCmdConstants;
 import io.ballerina.health.cmd.core.utils.HealthCmdUtils;
 import io.ballerina.health.cmd.handler.Handler;
 import io.ballerina.health.cmd.handler.HandlerFactory;
