@@ -28,7 +28,7 @@
 
     <packaging>pom</packaging>
     <modules>
-        <module>native/fhir-to-bal-template</module>
+<!--        <module>native/fhir-to-bal-template</module>-->
         <module>native/fhir-to-bal-lib</module>
         <module>native/cds-bal-template</module>
         <module>native/health-cli</module>
@@ -36,7 +36,7 @@
     </modules>
 
     <properties>
-        <hapi.version>4.2.0</hapi.version>
+        <hapi.version>6.6.0</hapi.version>
         <velocity.version>1.7</velocity.version>
         <picocli.version>4.0.1</picocli.version>
         <maven.compiler.source>17</maven.compiler.source>
