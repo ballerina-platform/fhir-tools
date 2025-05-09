@@ -113,8 +113,14 @@ public class BallerinaPackageGenToolConfig extends AbstractToolConfig {
             case "packageConfig.name.append":
                 this.packageConfig.setName(packageConfig.getName() + "." + value.getAsString());
                 break;
-            case "packageConfig.fhir.version":
+            case "packageConfig.fhirVersion":
                 this.packageConfig.setFhirVersion(value.getAsString());
+                break;
+            case "packageConfig.repository":
+                this.packageConfig.setRepository(value.getAsString());
+                break;
+            case "packageConfig.basePackage":
+                this.packageConfig.setBasePackage(value.getAsString());
                 break;
             case "packageConfig.dependent.igs":
                 List<String> dependentIgList = new ArrayList<>();

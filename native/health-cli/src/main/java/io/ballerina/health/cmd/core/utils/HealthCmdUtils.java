@@ -20,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * Utility methods for health command.
@@ -135,5 +136,57 @@ public class HealthCmdUtils {
         }
 
         return JsonParser.parseString(josnString).getAsJsonObject();
+    }
+
+    public static String getSpecFhirVersion(String specificationPath){
+        try (Stream<Path> paths = Files.walk(Paths.get(specificationPath))) {
+            return paths
+                    .filter(Files::isRegularFile)
+                    .filter(path -> path.getFileName().toString().contains("StructureDefinition"))
+                    .filter(path -> path.toString().endsWith(".json") || path.toString().endsWith(".toml"))
+                    .findFirst()
+                    .map(HealthCmdUtils::extractFhirVersion)
+                    .orElse(null);
+        }
+        catch(IOException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private static String extractFhirVersion(Path path){
+        String fhirVersion = "";
+
+        try{
+            String content = Files.readString(path);
+            if(path.toString().endsWith(".json")){
+                JsonObject json = JsonParser.parseString(content).getAsJsonObject();
+                fhirVersion = json.has("fhirVersion") ? json.get("fhirVersion").getAsString() : null;
+            }
+            else if(path.toString().endsWith(".toml")){
+                for (String line : content.split("\n")) {
+                    line = line.trim();
+                    if (line.startsWith("fhir.version")) {
+                        String[] parts = line.split("=", 2);
+                        if (parts.length == 2) {
+                            fhirVersion = parts[1].trim().replaceAll("[\"']", ""); // remove quotes
+                        }
+                    }
+                }
+            }
+
+            if(fhirVersion.startsWith("4.")){
+                fhirVersion = "r4";
+            }
+            else if(fhirVersion.startsWith("5.")){
+                fhirVersion = "r5";
+            }
+
+            return fhirVersion;
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 }

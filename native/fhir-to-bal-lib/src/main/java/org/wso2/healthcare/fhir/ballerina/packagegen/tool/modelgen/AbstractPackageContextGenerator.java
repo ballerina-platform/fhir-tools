@@ -68,7 +68,7 @@ public abstract class AbstractPackageContextGenerator {
 
     protected abstract void populateResourceTemplateContext(FHIRImplementationGuide implementationGuide);
 
-    protected abstract void populateIGTemplateContexts(String igName, FHIRImplementationGuide implementationGuide);
+    protected abstract void populateIGTemplateContexts(String igCode, FHIRImplementationGuide implementationGuide);
 
     protected abstract void populateSearchParameters(FHIRImplementationGuide implementationGuide);
 }
