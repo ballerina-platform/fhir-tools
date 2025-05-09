@@ -20,7 +20,17 @@ import java.util.List;
 import java.util.Map;
 
 public class R5DatatypeContextGenerator extends AbstractDatatypeContextGenerator {
-    private static final List<String> DEFAULT_DATA_TYPES = Arrays.asList();
+    private static final List<String> DEFAULT_DATA_TYPES = Arrays.asList(
+            "Ratio", "Period", "Range", "RatioRange", "Attachment", "Identifier", "HumanName",
+            "ContactPoint", "Address", "Quantity", "Age", "Distance", "Duration", "Count",
+            "MoneyQuantity", "SimpleQuantity", "SampledData", "Signature", "BackboneType",
+            "Timing", "Money", "Coding", "CodeableConcept", "Annotation",
+            "ContactDetail", "Contributor", "DataRequirement", "TriggerDefinition", "ExtendedContactDetail",
+            "UsageContext", "VirtualServiceDetail", "MonetaryComponent", "Expression", "Availability",
+            "ParameterDefinition", "RelatedArtifact",
+            "CodeableReference", "Meta", "Reference", "Dosage", "ElementDefinition",
+            "Extension", "Narrative", "xhtml"
+    );
 
     public R5DatatypeContextGenerator(FHIRSpecificationData fhirSpecificationData) {
         super(fhirSpecificationData);

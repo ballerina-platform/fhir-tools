@@ -137,9 +137,12 @@ public class R4PackageContextGenerator extends AbstractPackageContextGenerator {
             if (!bases.isEmpty()) {
                 searchParameter.setName(searchParamName);
                 searchParameter.setType(searchParamType);
+
                 if (searchParameter.getBase() != null)
                     bases.addAll(searchParameter.getBase());
+
                 searchParameter.setBase(bases);
+
                 if (searchParameter.getExpression() != null) {
                     String expression = searchParameter.getExpression();
                     expression = expression + " | " + fhirSearchParamDef.getSearchParameter().getExpression();
