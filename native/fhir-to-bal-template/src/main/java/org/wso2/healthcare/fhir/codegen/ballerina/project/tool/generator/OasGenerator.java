@@ -59,7 +59,7 @@ public class OasGenerator extends AbstractFHIRTemplateGenerator {
         String resourceType = (String) generatorProperties.get("resourceType");
         for (Map.Entry<String, FHIRImplementationGuide> entry :
                 ((FHIRSpecificationData) toolContext.getSpecificationData()).getFhirImplementationGuides().entrySet()) {
-            R4APIDefinition apiDefinition = entry.getValue().getApiDefinitions().get(resourceType);
+            APIDefinition apiDefinition = entry.getValue().getApiDefinitions().get(resourceType);
             if (apiDefinition != null) {
                 String oasDefYaml = Yaml.pretty(apiDefinition.getOpenAPI());
 

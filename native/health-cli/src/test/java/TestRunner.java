@@ -36,7 +36,7 @@ public class TestRunner {
     public static void main(String[] args) {
         try{
             runTestForFhirTool();
-            // runTestForCdsTool();
+            runTestForCdsTool();
         }
         catch (URISyntaxException e){
             e.printStackTrace();
@@ -91,19 +91,19 @@ public class TestRunner {
 
     private static void runTestForFhirTool() throws URISyntaxException {
         Map<String, Object> argsMap = new HashMap<>();
-        String packageName = "health.fhir.r4.uscore501";
+        String packageName = "health.fhir.r4.uscore";
         String orgName = "ballerinax";
         String packageVersion = "1.1.0";
         String fhirVersion = "r4";
-        argsMap.put("--package-name", packageName); // FOR PACKAGE
-        argsMap.put("--package-version", packageVersion); // FOR PACKAGE
-        argsMap.put("--dependency", null); // FOR PACKAGE
+//        argsMap.put("--package-name", packageName); // FOR PACKAGE
+//        argsMap.put("--package-version", packageVersion); // FOR PACKAGE
+//        argsMap.put("--dependency", null); // FOR PACKAGE
         argsMap.put("--org-name", orgName);
-//        argsMap.put("--dependent-package", orgName + "/" + packageName); // FOR TEMPLATE
+        argsMap.put("--dependent-package", orgName + "/" + packageName); // FOR TEMPLATE
         argsMap.put("--fhir-version", fhirVersion);
         argsMap.put("--included-profile", null);
         argsMap.put("--excluded-profile", null);
-        String mode = "package";
+        String mode = "template";
         String command = "fhir";
 
         String resourcePath = Paths.get(Objects.requireNonNull(TestRunner.class.getClassLoader().getResource("io")).toURI()).getParent().getParent().toString() + File.separator + "test-classes" + File.separator + "profiles.USCore";

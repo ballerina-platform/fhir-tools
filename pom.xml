@@ -28,7 +28,7 @@
 
     <packaging>pom</packaging>
     <modules>
-<!--        <module>native/fhir-to-bal-template</module>-->
+        <module>native/fhir-to-bal-template</module>
         <module>native/fhir-to-bal-lib</module>
         <module>native/cds-bal-template</module>
         <module>native/health-cli</module>

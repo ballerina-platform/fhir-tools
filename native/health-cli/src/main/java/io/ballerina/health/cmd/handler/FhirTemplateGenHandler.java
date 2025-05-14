@@ -36,6 +36,7 @@ import org.wso2.healthcare.codegen.tool.framework.fhir.core.FHIRTool;
 
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Map;
 
 /**
@@ -107,7 +108,7 @@ public class FhirTemplateGenHandler implements Handler {
                         "config.BallerinaProjectToolConfig";
                 Class<?> configClass = classLoader.loadClass(configClassName);
 
-                String toolClassName = "org.wso2.healthcare.fhir.codegen.ballerina.project.tool.BallerinaProjectTool";
+                String toolClassName = "org.wso2.healthcare.fhir.codegen.ballerina.project.tool.BallerinaProjectToolFactory";
                 Class<?> toolClass = classLoader.loadClass(toolClassName);
 
                 ToolConfig toolConfigInstance = (ToolConfig) configClass.getConstructor().newInstance();
@@ -126,9 +127,27 @@ public class FhirTemplateGenHandler implements Handler {
                     JsonElement overrideConfig = new Gson().toJsonTree(packageVersion.toLowerCase());
                     toolConfigInstance.overrideConfig("project.package.version", overrideConfig);
                 }
-                if(fhirVersion != null && !fhirVersion.isEmpty()){
+                if(fhirVersion != null && !fhirVersion.isEmpty() && !fhirVersion.equalsIgnoreCase("r4")) {
                     JsonElement overrideConfig = new Gson().toJsonTree(fhirVersion.toLowerCase());
                     toolConfigInstance.overrideConfig("project.fhir.version", overrideConfig);
+                }
+                if(fhirVersion != null && !fhirVersion.isEmpty() && fhirVersion.equalsIgnoreCase("r5")){
+                    String namePrefix = "health.fhir.r5.international500";
+                    String basePackage = "ballerinax/health.fhir.r5";
+                    String servicePackage = "ballerinax/health.fhirr5";
+                    String dependentPackage = "ballerinax/health.fhir.r5.international500";
+
+                    JsonElement overrideNamePrefix = new Gson().toJsonTree(namePrefix);
+                    toolConfigInstance.overrideConfig("project.package.namePrefix", overrideNamePrefix);
+
+                    JsonElement overrideBasePackage = new Gson().toJsonTree(basePackage);
+                    toolConfigInstance.overrideConfig("project.basePackage", overrideBasePackage);
+
+                    JsonElement overrideServicePackage = new Gson().toJsonTree(servicePackage);
+                    toolConfigInstance.overrideConfig("project.servicePackage", overrideServicePackage);
+
+                    JsonElement overrideDependentPackage = new Gson().toJsonTree(dependentPackage);
+                    toolConfigInstance.overrideConfig("project.dependentPackage", overrideDependentPackage);
                 }
                 if (dependentPackage != null) {
                     JsonElement overrideConfig = new Gson().toJsonTree(dependentPackage);
@@ -145,7 +164,10 @@ public class FhirTemplateGenHandler implements Handler {
                         )
                 );
 
-                tool = (Tool) toolClass.getConstructor().newInstance();
+                Object toolFactory = toolClass.getConstructor().newInstance();
+                Method getToolMethod = toolClass.getMethod("getBallerinaProjectTool", String.class);
+                tool = (Tool) getToolMethod.invoke(toolFactory, fhirVersion);
+
                 tool.initialize(toolConfigInstance);
                 fhirToolLib.getToolImplementations().putIfAbsent(HealthCmdConstants.CMD_MODE_PACKAGE, tool);
                 mainTemplateGenerator = tool.execute(fhirToolLib.getToolContext());

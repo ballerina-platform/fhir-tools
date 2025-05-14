@@ -130,7 +130,7 @@ public class FhirPackageGenHandler implements Handler {
                     JsonElement overrideConfig = new Gson().toJsonTree(packageVersion.toLowerCase());
                     toolConfigInstance.overrideConfig("packageConfig.packageVersion", overrideConfig);
                 }
-                if(fhirVersion != null && !fhirVersion.isEmpty()){
+                if(fhirVersion != null && !fhirVersion.isEmpty() && !fhirVersion.equalsIgnoreCase("r4")){
                     JsonElement overrideConfig = new Gson().toJsonTree(fhirVersion.toLowerCase());
                     toolConfigInstance.overrideConfig("packageConfig.fhirVersion", overrideConfig);
                 }
