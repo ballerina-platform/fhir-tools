@@ -158,8 +158,6 @@ public class R5ResourceContextGenerator extends AbstractResourceContextGenerator
             String id = elementDefinition.getId();
             if (id.contains(":")) {
                 if (id.substring(id.indexOf("."), id.lastIndexOf(":")).contains(":")) {
-                    //todo: rewrite the logic using regex
-
                     // nested slice; ignore processing
                     continue;
                 }
@@ -310,7 +308,7 @@ public class R5ResourceContextGenerator extends AbstractResourceContextGenerator
                 } else {
                     element.addProfile(profile.getValue(), profileType);
                 }
-                //check for prefix when non R4 profiles are available
+                //check for prefix when non R5 profiles are available
                 for (String dependentIgUrl : getToolConfig().getPackageConfig().getDependentIgs().keySet()) {
                     if (profile.getValue().startsWith(dependentIgUrl)) {
                         String dependentIgPackageName = getToolConfig().getPackageConfig().getDependentIgs().get(dependentIgUrl);

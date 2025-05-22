@@ -21,15 +21,15 @@ import java.util.Map;
 
 public class R5DatatypeContextGenerator extends AbstractDatatypeContextGenerator {
     private static final List<String> DEFAULT_DATA_TYPES = Arrays.asList(
-            "Ratio", "Period", "Range", "RatioRange", "Attachment", "Identifier", "HumanName",
-            "ContactPoint", "Address", "Quantity", "Age", "Distance", "Duration", "Count",
-            "MoneyQuantity", "SimpleQuantity", "SampledData", "Signature", "BackboneType",
-            "Timing", "Money", "Coding", "CodeableConcept", "Annotation",
-            "ContactDetail", "Contributor", "DataRequirement", "TriggerDefinition", "ExtendedContactDetail",
-            "UsageContext", "VirtualServiceDetail", "MonetaryComponent", "Expression", "Availability",
-            "ParameterDefinition", "RelatedArtifact",
-            "CodeableReference", "Meta", "Reference", "Dosage", "ElementDefinition",
-            "Extension", "Narrative", "xhtml"
+            "Ratio", "Period", "Range", "RatioRange", "Attachment", "Identifier",
+            "Annotation", "HumanName", "CodeableConcept", "ContactPoint", "Coding",
+            "Money", "Address", "Timing", "BackboneType", "Quantity", "SampledData", "Signature",
+            "Age", "Distance", "Duration", "Count", "MoneyQuantity", "SimpleQuantity",
+            "ContactDetail", "Contributor", "DataRequirement", "RelatedArtifact", "DataType",
+            "TriggerDefinition", "ParameterDefinition", "ExtendedContactDetail",
+            "Availability", "Expression", "UsageContext", "MonetaryComponent", "VirtualServiceDetail",
+            "CodeableReference", "Meta", "Reference", "Dosage", "xhtml",  "Narrative",
+            "Extension", "ElementDefinition"
     );
 
     public R5DatatypeContextGenerator(FHIRSpecificationData fhirSpecificationData) {
@@ -53,7 +53,6 @@ public class R5DatatypeContextGenerator extends AbstractDatatypeContextGenerator
 
             DataTypeDefinitionAnnotation annotation = new DataTypeDefinitionAnnotation();
             annotation.setName(datatypeDefn.getDefinition().getName());
-
             context.setAnnotation(annotation);
 
             for(ElementDefinition elementDefinition : datatypeDefn.getDefinition().getSnapshot().getElement()){

@@ -45,34 +45,6 @@ public abstract class AbstractResourceContextGenerator {
 
     protected abstract void populateResourceTemplateContexts(FHIRImplementationGuide ig);
 
-//    protected Element populateChildElementProperties(Property childProperty, String elementPath) {
-//        Element childElement = new Element();
-//        childElement.setName(childProperty.getName());
-//        childElement.setDataType(childProperty.getTypeCode());
-//        childElement.setArray(childProperty.isList());
-//        childElement.setMin(1);
-//        childElement.setMax(childProperty.getMaxCardinality());
-//        childElement.setDescription(childProperty.getDefinition());
-//        childElement.setPath(elementPath + "." + childProperty.getName());
-//
-//        ArrayList<String> values = new ArrayList<>();
-//        for (Base value : childProperty.getValues()) {
-//            if (!value.hasPrimitiveValue()) {
-//                HashMap<String, Element> childElements = new HashMap<>();
-//                for (Property property : value.children()) {
-//                    if (property.hasValues())
-//                        childElements.put(property.getName(), populateChildElementProperties(property, childElement.getPath()));
-//                }
-//                childElement.setChildElements(childElements);
-//            } else {
-//                values.add(value.primitiveValue());
-//            }
-//        }
-//        childElement.setFixedValue(values);
-////        markConstrainedElements(childElement);
-//        return childElement;
-//    }
-
     protected void populateResourceElementMap(Element element) {
         if (!element.isSlice()) {
             if (element.hasChildElements()) {
@@ -90,6 +62,7 @@ public abstract class AbstractResourceContextGenerator {
                     }
                 }
             }
+            // System.out.println(element.getName() + " : " + element.getDataType()); // birthdate : date
             checkAndAddConstraintImport(element);
             this.resourceTemplateContextInstance.getResourceElements().put(element.getName(), element);
         }
@@ -108,7 +81,11 @@ public abstract class AbstractResourceContextGenerator {
 
     protected void markExtendedElements(Element element) {
         if (!"Extension".equals(element.getDataType())) {
-            if (this.resourceTemplateContextInstance.getDifferentialElementIds().contains(element.getName()) || "Code".equals(element.getDataType()) || "BackboneElement".equals(element.getDataType()) || element.hasFixedValue()) {
+            if (this.resourceTemplateContextInstance.getDifferentialElementIds().contains(element.getName())
+                    || "Code".equals(element.getDataType())
+                    || "BackboneElement".equals(element.getDataType())
+                    || "BackboneType".equals(element.getDataType())
+                    || element.hasFixedValue()) {
                 element.setExtended(true);
             }
             if (element.hasChildElements()) {
@@ -149,11 +126,13 @@ public abstract class AbstractResourceContextGenerator {
         LOG.debug("Started: Resource Extended Element validation");
         ExtendedElement extendedElement;
         String elementDataType = element.getDataType();
+
         if (elementDataType.equals("code") && element.hasChildElements()) {
             extendedElement = GeneratorUtils.getInstance().populateExtendedElement(element, BallerinaDataType.Enum, elementDataType,
                     this.resourceTemplateContextInstance.getResourceName());
             putExtendedElementIfAbsent(element, extendedElement);
-        } else if (element.isSlice() || elementDataType.equals("BackboneElement") || (element.isExtended() && element.hasChildElements())) {
+        }
+        else if (element.isSlice() || elementDataType.equals("BackboneElement") || elementDataType.equals("BackboneType") || (element.isExtended() && element.hasChildElements())) {
             extendedElement = GeneratorUtils.getInstance().populateExtendedElement(element, BallerinaDataType.Record, elementDataType,
                     this.resourceTemplateContextInstance.getResourceName());
             extendedElement.setElements(element.getChildElements());
@@ -192,35 +171,6 @@ public abstract class AbstractResourceContextGenerator {
         }
     }
 
-//    protected void populateResourceSliceElementsMap(Element element) {
-//        LOG.debug("Started: Resource Slice Element Map population");
-//        if (ToolConstants.DATA_TYPE_EXTENSION.equals(element.getDataType()) && element.isSlice()) {
-//            return;
-//        }
-//        if (element.hasChildElements()) {
-//            for (Map.Entry<String, Element> childEntry : element.getChildElements().entrySet()) {
-//                populateResourceSliceElementsMap(childEntry.getValue());
-//                if (element.isSlice()) {
-//                    ElementDefinition elementDefinition = (ElementDefinition) this.resourceTemplateContextInstance.getSnapshotElementDefinitions().get(childEntry.getValue().getPath());
-//                    if (elementDefinition != null && isElementArray(elementDefinition)) {
-//                        childEntry.getValue().setArray(true);
-//                    }
-//                }
-//            }
-//        }
-//
-//        if (element.isSlice()) {
-//            if (this.resourceTemplateContextInstance.getSliceElements().get(element.getPath()) != null) {
-//                this.resourceTemplateContextInstance.getSliceElements().get(element.getPath()).add(element);
-//            } else {
-//                ArrayList<Element> slices = new ArrayList<>();
-//                slices.add(element);
-//                this.resourceTemplateContextInstance.getSliceElements().put(element.getPath(), slices);
-//            }
-//        }
-//        LOG.debug("Ended: Resource Slice Element Map population");
-//    }
-
     protected void populateResourceElementAnnotationsMap(Element element) {
         LOG.debug("Started: Resource Element Annotation Map population");
         AnnotationElement annotationElement = GeneratorUtils.getInstance().populateAnnotationElement(element);
@@ -228,16 +178,6 @@ public abstract class AbstractResourceContextGenerator {
         this.resourceTemplateContextInstance.getResourceDefinitionAnnotation().getElements().put(annotationElement.getName(), annotationElement);
         LOG.debug("Ended: Resource Element Annotation Map population");
     }
-
-//    /**
-//     * Validates whether a resource attribute is on array of elements
-//     *
-//     * @param elementDefinition Element definition DTO for specific FHIR attribute
-//     * @return is an element array or not
-//     */
-//    protected boolean isElementArray(ElementDefinition elementDefinition) {
-//        return "*".equals(elementDefinition.getBase().getMax()) || Integer.parseInt(elementDefinition.getBase().getMax()) > 1;
-//    }
 
     /**
      * Validates whether given string has codes

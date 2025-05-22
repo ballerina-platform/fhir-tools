@@ -87,8 +87,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
+                    <source>17</source>
+                    <target>17</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -212,7 +212,11 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
+                        <configuration>
+                            <mainClass>TestRunner</mainClass>
+                        </configuration>
                         <executions>
+                            <!-- R4 Test Execution -->
                             <execution>
                                 <id>generate-test-uscore</id>
                                 <phase>test</phase>
@@ -222,10 +226,16 @@
                                 <configuration>
                                     <mainClass>TestRunner</mainClass>
                                     <classpathScope>test</classpathScope>
+<!--                                    <systemProperties>-->
+<!--                                        <property>-->
+<!--                                            <key>fhirVersion</key>-->
+<!--                                            <value>r4</value>-->
+<!--                                        </property>-->
+<!--                                    </systemProperties>-->
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>copy-bal-test-file</id>
+                                <id>copy-r4-bal-test-file</id>
                                 <phase>test</phase>
                                 <goals>
                                     <goal>exec</goal>
@@ -233,13 +243,13 @@
                                 <configuration>
                                     <executable>bash</executable>
                                     <arguments>
-                                        <argument>-c</argument>
-                                        <argument>cp -r ../fhir-to-bal-lib/src/test/resources/ballerina.tests/* target/test-classes/health.fhir.r4.uscore501/tests</argument>
+                                        <argument>/c</argument>
+                                        <argument>cp -r ../fhir-to-bal-lib/src/test/resources/ballerina.tests/r4/* target/test-classes/health.fhir.r4.uscore501/tests</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>run-bal-tests</id>
+                                <id>run-r4-bal-tests</id>
                                 <phase>test</phase>
                                 <goals>
                                     <goal>exec</goal>
@@ -249,6 +259,53 @@
                                     <arguments>
                                         <argument>test</argument>
                                         <argument>target/test-classes/health.fhir.r4.uscore501/</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+
+                            <!-- R5 Test Execution -->
+                            <execution>
+                                <id>generate-test-atcore</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>java</goal>
+                                </goals>
+                                <configuration>
+                                    <mainClass>TestRunner</mainClass>
+                                    <classpathScope>test</classpathScope>
+                                    <systemProperties>
+                                        <property>
+                                            <key>fhirVersion</key>
+                                            <value>r5</value>
+                                        </property>
+                                    </systemProperties>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-r5-bal-test-file</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>bash</executable>
+                                    <arguments>
+                                        <argument>-c</argument>
+                                        <argument>cp -r ../fhir-to-bal-lib/src/test/resources/ballerina.tests/r5/* target/test-classes/health.fhir.r5.atcore/tests</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>run-r5-bal-tests</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>bal</executable>
+                                    <arguments>
+                                        <argument>test</argument>
+                                        <argument>target/test-classes/health.fhir.r5.atcore/</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
