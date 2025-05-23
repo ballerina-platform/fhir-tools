@@ -404,9 +404,9 @@ public class GeneratorUtils {
         StringBuilder uniqueIdentifier = new StringBuilder();
         String[] idTokens = id.split("-");
         for (String token : idTokens) {
-            uniqueIdentifier.append(StringUtils.capitalize(token));
+            uniqueIdentifier.append(StringUtils.capitalise(token));
         }
-        return StringUtils.capitalize(resolveSpecialCharacters(uniqueIdentifier.toString())).replaceAll("\\d", "");
+        return StringUtils.capitalise(resolveSpecialCharacters(uniqueIdentifier.toString())).replaceAll("\\d", "");
     }
 
     /**
@@ -427,7 +427,7 @@ public class GeneratorUtils {
     public String resolveMultiDataTypeFieldNames(String fieldName, String typeName) {
         if (fieldName.endsWith("[x]")) {
             return resolveKeywordConflict(fieldName.substring(0, fieldName.length() - 3) +
-                    StringUtils.capitalize(typeName));
+                    StringUtils.capitalise(typeName));
         }
         return resolveKeywordConflict(fieldName);
     }

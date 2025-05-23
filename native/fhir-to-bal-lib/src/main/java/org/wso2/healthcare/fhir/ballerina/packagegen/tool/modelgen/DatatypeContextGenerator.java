@@ -105,7 +105,7 @@ public class DatatypeContextGenerator {
                     }
                     if (elementName.endsWith("[x]") && datatypeDefn.getDefinition().getType().equals(
                             ToolConstants.DATA_TYPE_EXTENSION)) {
-                        context.setBaseDataType(StringUtils.capitalize(typeCode + ToolConstants.DATA_TYPE_EXTENSION));
+                        context.setBaseDataType(StringUtils.capitalise(typeCode + ToolConstants.DATA_TYPE_EXTENSION));
                     } else if ("code".equals(typeCode)) {
                         GeneratorUtils.populateCodeValuesForCodeElements(elementDefinition, element);
                     }
