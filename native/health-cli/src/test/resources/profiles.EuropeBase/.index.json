@@ -1,0 +1,202 @@
+{
+  "index-version" : 2,
+  "files" : [
+    {
+      "filename" : "ImplementationGuide-hl7.fhir.eu.base-r5.json",
+      "resourceType" : "ImplementationGuide",
+      "id" : "hl7.fhir.eu.base-r5",
+      "url" : "http://hl7.eu/fhir/base-r5/ImplementationGuide/hl7.fhir.eu.base-r5",
+      "version" : "0.1.0-ballot"
+    },
+    {
+      "filename" : "CodeSystem-v3-ActCode-EU.json",
+      "resourceType" : "CodeSystem",
+      "id" : "v3-ActCode-EU",
+      "url" : "http://terminology.hl7.eu/CodeSystem/v3-ActCode",
+      "version" : "0.1.0-ballot",
+      "content" : "complete"
+    },
+    {
+      "filename" : "StructureDefinition-Address-eu.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "Address-eu",
+      "url" : "http://hl7.eu/fhir/base-r5/StructureDefinition/Address-eu",
+      "version" : "0.1.0-ballot",
+      "kind" : "complex-type",
+      "type" : "Address",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-BodyStructure-eu.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "BodyStructure-eu",
+      "url" : "http://hl7.eu/fhir/base-r5/StructureDefinition/BodyStructure-eu",
+      "version" : "0.1.0-ballot",
+      "kind" : "resource",
+      "type" : "BodyStructure",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-Coverage-eu-ehic.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "Coverage-eu-ehic",
+      "url" : "http://hl7.eu/fhir/base-r5/StructureDefinition/Coverage-eu-ehic",
+      "version" : "0.1.0-ballot",
+      "kind" : "resource",
+      "type" : "Coverage",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-Patient-animal-eu.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "Patient-animal-eu",
+      "url" : "http://hl7.eu/fhir/base-r5/StructureDefinition/Patient-animal-eu",
+      "version" : "0.1.0-ballot",
+      "kind" : "resource",
+      "type" : "Patient",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-Patient-eu-ehic.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "Patient-eu-ehic",
+      "url" : "http://hl7.eu/fhir/base-r5/StructureDefinition/Patient-eu-ehic",
+      "version" : "0.1.0-ballot",
+      "kind" : "resource",
+      "type" : "Patient",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-location-eu.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "location-eu",
+      "url" : "http://hl7.eu/fhir/base-r5/StructureDefinition/location-eu",
+      "version" : "0.1.0-ballot",
+      "kind" : "resource",
+      "type" : "Location",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-organization-eu-core.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "organization-eu-core",
+      "url" : "http://hl7.eu/fhir/base-r5/StructureDefinition/organization-eu-core",
+      "version" : "0.1.0-ballot",
+      "kind" : "resource",
+      "type" : "Organization",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-organization-eu.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "organization-eu",
+      "url" : "http://hl7.eu/fhir/base-r5/StructureDefinition/organization-eu",
+      "version" : "0.1.0-ballot",
+      "kind" : "resource",
+      "type" : "Organization",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-patient-eu-core.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "patient-eu-core",
+      "url" : "http://hl7.eu/fhir/base-r5/StructureDefinition/patient-eu-core",
+      "version" : "0.1.0-ballot",
+      "kind" : "resource",
+      "type" : "Patient",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-patient-eu.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "patient-eu",
+      "url" : "http://hl7.eu/fhir/base-r5/StructureDefinition/patient-eu",
+      "version" : "0.1.0-ballot",
+      "kind" : "resource",
+      "type" : "Patient",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-practitioner-eu-core.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "practitioner-eu-core",
+      "url" : "http://hl7.eu/fhir/base-r5/StructureDefinition/practitioner-eu-core",
+      "version" : "0.1.0-ballot",
+      "kind" : "resource",
+      "type" : "Practitioner",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-practitioner-eu.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "practitioner-eu",
+      "url" : "http://hl7.eu/fhir/base-r5/StructureDefinition/practitioner-eu",
+      "version" : "0.1.0-ballot",
+      "kind" : "resource",
+      "type" : "Practitioner",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-practitionerRole-eu-core.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "practitionerRole-eu-core",
+      "url" : "http://hl7.eu/fhir/base-r5/StructureDefinition/practitionerRole-eu-core",
+      "version" : "0.1.0-ballot",
+      "kind" : "resource",
+      "type" : "PractitionerRole",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-practitionerRole-eu.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "practitionerRole-eu",
+      "url" : "http://hl7.eu/fhir/base-r5/StructureDefinition/practitionerRole-eu",
+      "version" : "0.1.0-ballot",
+      "kind" : "resource",
+      "type" : "PractitionerRole",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "ValueSet-iso-ehicCountryCode.json",
+      "resourceType" : "ValueSet",
+      "id" : "iso-ehicCountryCode",
+      "url" : "http://hl7.eu/fhir/base-r5/ValueSet/iso-ehicCountryCode",
+      "version" : "0.1.0-ballot"
+    },
+    {
+      "filename" : "ValueSet-oid-ehicPersonalId.json",
+      "resourceType" : "ValueSet",
+      "id" : "oid-ehicPersonalId",
+      "url" : "http://hl7.eu/fhir/base-r5/ValueSet/oid-ehicPersonalId",
+      "version" : "0.1.0-ballot"
+    },
+    {
+      "filename" : "ValueSet-siteLaterality-eu.json",
+      "resourceType" : "ValueSet",
+      "id" : "siteLaterality-eu",
+      "url" : "http://hl7.eu/fhir/base-r5/ValueSet/siteLaterality-eu",
+      "version" : "0.1.0-ballot"
+    },
+    {
+      "filename" : "ValueSet-siteQualifier-eu.json",
+      "resourceType" : "ValueSet",
+      "id" : "siteQualifier-eu",
+      "url" : "http://hl7.eu/fhir/base-r5/ValueSet/siteQualifier-eu",
+      "version" : "0.1.0-ballot"
+    },
+    {
+      "filename" : "ValueSet-speciesType-eu.json",
+      "resourceType" : "ValueSet",
+      "id" : "speciesType-eu",
+      "url" : "http://hl7.eu/fhir/base-r5/ValueSet/speciesType-eu",
+      "version" : "0.1.0-ballot"
+    },
+    {
+      "filename" : "ValueSet-uri-ehicPersonalId.json",
+      "resourceType" : "ValueSet",
+      "id" : "uri-ehicPersonalId",
+      "url" : "http://hl7.eu/fhir/base-r5/ValueSet/uri-ehicPersonalId",
+      "version" : "0.1.0-ballot"
+    }
+  ]
+}
