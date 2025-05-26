@@ -36,22 +36,22 @@
     </modules>
 
     <properties>
-        <hapi.version>4.2.0</hapi.version>
-        <velocity.version>1.7</velocity.version>
+        <hapi.version>6.8.1</hapi.version>
+        <velocity.version>2.3</velocity.version>
         <picocli.version>4.0.1</picocli.version>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.healthcare.tool.framework>1.2.2</version.healthcare.tool.framework>
-        <version.ballerina.cli>2201.8.1</version.ballerina.cli>
-        <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
+        <version.healthcare.tool.framework>1.2.3</version.healthcare.tool.framework>
+        <version.ballerina.cli>2201.12.3</version.ballerina.cli>
+        <maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
         <maven-jar-plugin.version>3.1.2</maven-jar-plugin.version>
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
-        <maven-exec-plugin.version>1.6.0</maven-exec-plugin.version>
-        <version.swagger.core>2.1.5</version.swagger.core>
-        <version.swagger.parser>2.0.26</version.swagger.parser>
+        <maven-exec-plugin.version>3.1.0</maven-exec-plugin.version>
+        <version.swagger.core>2.2.15</version.swagger.core>
+        <version.swagger.parser>2.1.16</version.swagger.parser>
         <version.jackson.annotations>2.12.1</version.jackson.annotations>
         <version.gson>2.11.0</version.gson>
         <version.cava-toml>0.5.0</version.cava-toml>
@@ -99,7 +99,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.velocity</groupId>
-            <artifactId>velocity</artifactId>
+            <artifactId>velocity-engine-core</artifactId>
             <version>${velocity.version}</version>
         </dependency>
         <dependency>
