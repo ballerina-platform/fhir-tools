@@ -113,6 +113,31 @@
                 <version>${maven-exec-plugin.version}</version>
                 <executions>
                     <execution>
+                        <id>generate-bal-tool-toml</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>bash</executable>
+                            <arguments>
+                                <argument>-c</argument>
+                                <argument>
+                                    echo "# Auto-generated BalTool.toml file" > ${project.build.directory}/health-tool-ballerina/BalTool.toml;
+                                    echo "" >> ${project.build.directory}/health-tool-ballerina/BalTool.toml;
+                                    echo "[tool]" >> ${project.build.directory}/health-tool-ballerina/BalTool.toml;
+                                    echo "id = \"health\"" >> ${project.build.directory}/health-tool-ballerina/BalTool.toml;
+                                    echo "" >> ${project.build.directory}/health-tool-ballerina/BalTool.toml;
+                                    for jar in ${project.build.directory}/health-tool-ballerina/resources/*.jar; do
+                                    echo "[[dependency]]" >> ${project.build.directory}/health-tool-ballerina/BalTool.toml;
+                                    echo "path = \"resources/$(basename "$jar")\"" >> ${project.build.directory}/health-tool-ballerina/BalTool.toml;
+                                    echo "" >> ${project.build.directory}/health-tool-ballerina/BalTool.toml;
+                                    done
+                                </argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>bal-run</id>
                         <phase>install</phase>
                         <goals>
