@@ -72,6 +72,7 @@ jobs:
         working-directory: fhir-tools/ballerina/target/health-tool-ballerina
         run: bal push
         env:
+          CENTRAL_VERBOSE_ENABLED: true
           BALLERINA_DEV_CENTRAL: true
           BALLERINA_CENTRAL_ACCESS_TOKEN: ${{ secrets.BALLERINA_CENTRAL_DEV_ACCESS_TOKEN }}     
 
