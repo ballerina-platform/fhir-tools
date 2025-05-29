@@ -34,9 +34,15 @@ public class TestRunner {
     private static final Path executionPath = Paths.get(System.getProperty("user.dir"));
 
     public static void main(String[] args) {
+        // System.setProperty("fhirVersion", "r4"); // Uncomment if directly running the TestRunner.java
         try{
-            runTestForFhirTool();
             runTestForCdsTool();
+            if(System.getProperty("fhirVersion").equalsIgnoreCase("r4")){
+                runTestForR4FhirTool();
+            }
+            else{
+                runTestForR5FhirTool();
+            }
         }
         catch (URISyntaxException e){
             e.printStackTrace();
@@ -89,24 +95,73 @@ public class TestRunner {
         toolHandler.execute(specificationPath+File.separator+"tool-config.toml", getTargetOutputPath(outPutPath).toString());
     }
 
-    private static void runTestForFhirTool() throws URISyntaxException {
+    private static void runTestForR4FhirTool() throws URISyntaxException {
         Map<String, Object> argsMap = new HashMap<>();
-        String packageName = "health.fhir.r4.uscore";
+        String packageName = "health.fhir.r4.uscore501";
         String orgName = "ballerinax";
         String packageVersion = "1.1.0";
         String fhirVersion = "r4";
-//        argsMap.put("--package-name", packageName); // FOR PACKAGE
-//        argsMap.put("--package-version", packageVersion); // FOR PACKAGE
-//        argsMap.put("--dependency", null); // FOR PACKAGE
+        argsMap.put("--package-name", packageName); // FOR PACKAGE
+        argsMap.put("--package-version", packageVersion); // FOR PACKAGE
+        argsMap.put("--dependency", null); // FOR PACKAGE
         argsMap.put("--org-name", orgName);
-        argsMap.put("--dependent-package", orgName + "/" + packageName); // FOR TEMPLATE
+//        argsMap.put("--dependent-package", orgName + "/" + packageName); // FOR TEMPLATE
         argsMap.put("--fhir-version", fhirVersion);
         argsMap.put("--included-profile", null);
         argsMap.put("--excluded-profile", null);
-        String mode = "template";
+        String mode = "package";
         String command = "fhir";
 
         String resourcePath = Paths.get(Objects.requireNonNull(TestRunner.class.getClassLoader().getResource("io")).toURI()).getParent().getParent().toString() + File.separator + "test-classes" + File.separator + "profiles.USCore";
+        System.out.println("Resource Path: " + resourcePath);
+
+        File resourcesDirectory = new File(resourcePath);
+        String specPath = resourcesDirectory.getAbsolutePath();
+        System.out.println("Spec Path: " + specPath);
+
+        String outPutPath = Paths.get(Objects.requireNonNull(TestRunner.class.getClassLoader().getResource("io")).toURI()).getParent().getParent().toString() + File.separator + "test-classes";
+        System.out.println("Output Path: " + outPutPath);
+
+        //spec path is the last argument
+        Path specificationPath;
+
+        try {
+            specificationPath = HealthCmdUtils.validateAndSetSpecificationPath(specPath, executionPath.toString());
+        } catch (BallerinaHealthException e) {
+            System.out.println("Invalid specification path received for FHIR tool command.");
+            throw new BLauncherException();
+        }
+
+        Handler toolHandler = null;
+        try {
+            toolHandler = HandlerFactory.createHandler(command, mode, System.out, specificationPath.toString());
+        } catch (BallerinaHealthException e) {
+            System.out.println(e);
+            throw new BLauncherException();
+        }
+
+        toolHandler.setArgs(argsMap);
+        toolHandler.execute(specificationPath.toString(), getTargetOutputPath(outPutPath).toString());
+    }
+
+    private static void runTestForR5FhirTool() throws URISyntaxException {
+        Map<String, Object> argsMap = new HashMap<>();
+        String packageName = "health.fhir.r5.europebase";
+        String orgName = "ballerinax";
+        String packageVersion = "1.1.0";
+        String fhirVersion = "r5";
+        argsMap.put("--package-name", packageName); // FOR PACKAGE
+        argsMap.put("--package-version", packageVersion); // FOR PACKAGE
+        argsMap.put("--dependency", null); // FOR PACKAGE
+        argsMap.put("--org-name", orgName);
+//        argsMap.put("--dependent-package", orgName + "/" + packageName); // FOR TEMPLATE
+        argsMap.put("--fhir-version", fhirVersion);
+        argsMap.put("--included-profile", null);
+        argsMap.put("--excluded-profile", null);
+        String mode = "package";
+        String command = "fhir";
+
+        String resourcePath = Paths.get(Objects.requireNonNull(TestRunner.class.getClassLoader().getResource("io")).toURI()).getParent().getParent().toString() + File.separator + "test-classes" + File.separator + "profiles.EuropeBase";
         System.out.println("Resource Path: " + resourcePath);
 
         File resourcesDirectory = new File(resourcePath);

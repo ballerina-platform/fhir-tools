@@ -25,11 +25,11 @@
     <parent>
         <groupId>io.ballerina</groupId>
         <artifactId>health-tools</artifactId>
-        <version>2.2.5</version>
+        <version>3.0.1</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>health-cli</artifactId>
-    <version>2.2.5</version>
+    <version>3.0.1</version>
 
     <dependencies>
         <dependency>
@@ -87,8 +87,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    <source>17</source>
-                    <target>17</target>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -104,6 +104,7 @@
                         </goals>
                         <configuration>
                             <outputDirectory>target/tool-lib</outputDirectory>
+                            <excludeArtifactIds>slf4j-api</excludeArtifactIds>
                         </configuration>
                     </execution>
                 </executions>
@@ -130,7 +131,7 @@
         <profile>
         <id>packageGenTests</id>
         <activation>
-            <activeByDefault>false</activeByDefault>
+            <activeByDefault>true</activeByDefault>
         </activation>
             <build>
                 <plugins>
@@ -139,8 +140,8 @@
                         <artifactId>maven-compiler-plugin</artifactId>
                         <version>${maven-compiler-plugin.version}</version>
                         <configuration>
-                            <source>17</source>
-                            <target>17</target>
+                            <source>11</source>
+                            <target>11</target>
                         </configuration>
                     </plugin>
                     <plugin>
@@ -212,9 +213,6 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
-                        <configuration>
-                            <mainClass>TestRunner</mainClass>
-                        </configuration>
                         <executions>
                             <!-- R4 Test Execution -->
                             <execution>
@@ -226,12 +224,12 @@
                                 <configuration>
                                     <mainClass>TestRunner</mainClass>
                                     <classpathScope>test</classpathScope>
-<!--                                    <systemProperties>-->
-<!--                                        <property>-->
-<!--                                            <key>fhirVersion</key>-->
-<!--                                            <value>r4</value>-->
-<!--                                        </property>-->
-<!--                                    </systemProperties>-->
+                                    <systemProperties>
+                                        <property>
+                                            <key>fhirVersion</key>
+                                            <value>r4</value>
+                                        </property>
+                                    </systemProperties>
                                 </configuration>
                             </execution>
                             <execution>
@@ -243,8 +241,11 @@
                                 <configuration>
                                     <executable>bash</executable>
                                     <arguments>
-                                        <argument>/c</argument>
-                                        <argument>cp -r ../fhir-to-bal-lib/src/test/resources/ballerina.tests/r4/* target/test-classes/health.fhir.r4.uscore501/tests</argument>
+                                        <argument>-c</argument>
+                                        <argument>
+                                            mkdir -p target/test-classes/health.fhir.r4.uscore501/tests &amp;&amp;
+                                            cp -r ../fhir-to-bal-lib/src/test/resources/ballerina.tests/r4/* target/test-classes/health.fhir.r4.uscore501/tests
+                                        </argument>
                                     </arguments>
                                 </configuration>
                             </execution>
@@ -265,7 +266,7 @@
 
                             <!-- R5 Test Execution -->
                             <execution>
-                                <id>generate-test-atcore</id>
+                                <id>generate-test-europebase</id>
                                 <phase>test</phase>
                                 <goals>
                                     <goal>java</goal>
@@ -291,7 +292,10 @@
                                     <executable>bash</executable>
                                     <arguments>
                                         <argument>-c</argument>
-                                        <argument>cp -r ../fhir-to-bal-lib/src/test/resources/ballerina.tests/r5/* target/test-classes/health.fhir.r5.atcore/tests</argument>
+                                        <argument>
+                                            mkdir -p target/test-classes/health.fhir.r5.europebase/tests &amp;&amp;
+                                            cp -r ../fhir-to-bal-lib/src/test/resources/ballerina.tests/r5/* target/test-classes/health.fhir.r5.europebase/tests
+                                        </argument>
                                     </arguments>
                                 </configuration>
                             </execution>
@@ -305,7 +309,7 @@
                                     <executable>bal</executable>
                                     <arguments>
                                         <argument>test</argument>
-                                        <argument>target/test-classes/health.fhir.r5.atcore/</argument>
+                                        <argument>target/test-classes/health.fhir.r5.europebase/</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
