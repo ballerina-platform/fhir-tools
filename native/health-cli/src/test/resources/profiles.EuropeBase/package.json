@@ -1,0 +1,30 @@
+{
+  "name" : "hl7.fhir.eu.base-r5",
+  "version" : "0.1.0-ballot",
+  "tools-version" : 3,
+  "type" : "IG",
+  "date" : "20250506080603",
+  "license" : "CC0-1.0",
+  "canonical" : "http://hl7.eu/fhir/base-r5",
+  "url" : "http://hl7.eu/fhir/base-r5/0.1.0-ballot",
+  "title" : "HL7 Europe Base and Core FHIR IG",
+  "description" : "This guide collects base and core profiles to be used in the European context. It also includes common artifacts, such as the profiles describing the European Health Insurance Card. (built Tue, May 6, 2025 08:06+0200+02:00)",
+  "fhirVersions" : ["5.0.0"],
+  "dependencies" : {
+    "hl7.terminology.r5" : "6.3.0",
+    "hl7.fhir.uv.extensions.r5" : "5.2.0",
+    "hl7.fhir.eu.extensions.r5" : "0.1.1-ballot"
+  },
+  "author" : "HL7 Europe",
+  "maintainers" : [
+    {
+      "name" : "HL7 Europe",
+      "url" : "http://hl7.eu"
+    }
+  ],
+  "directories" : {
+    "lib" : "package",
+    "example" : "example"
+  },
+  "jurisdiction" : "http://unstats.un.org/unsd/methods/m49/m49.htm#150"
+}
