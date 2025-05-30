@@ -1,0 +1,39 @@
+#set( $H = '#' )
+Ballerina package containing FHIR resource data models
+compliant with $igUrl implementation guide.
+
+#if(!$isBasePackage)
+    $H FHIR R5 ${igName} package
+#end
+
+$H$H Package Overview
+
+|                      |                      |
+|----------------------|----------------------|
+| FHIR version         | R5                   |
+| Implementation Guide | $igUrl               |
+
+#if($isBasePackage)
+This package includes, FHIR ${igName} Resource types.
+#end
+
+**Note:**
+**This package only supports FHIR JSON payload format only. FHIR XML payload support will be added soon.**
+
+$H$H Capabilities and features
+
+$H$H$H Supported FHIR resource types
+
+|                  |                                             |
+|------------------|---------------------------------------------|
+#foreach($profile in $profiles)
+| ${foreach.count}). $profile.getResourceName() | [[Definition]][s$foreach.count] [[Ballerina Record]][m$foreach.count] |
+#end
+
+#foreach($profile in $profiles)
+[m${foreach.count}]: https://lib.ballerina.io/$org/$packageName/$packageVersion#$profile.getResourceName()
+#end
+
+#foreach($profile in $profiles)
+[s$foreach.count]: $profile.getProfile()
+#end

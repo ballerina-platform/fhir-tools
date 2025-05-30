@@ -21,7 +21,6 @@ package org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hl7.fhir.r4.model.ElementDefinition;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.DataTypesRegistry;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.config.BallerinaPackageGenToolConfig;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.AnnotationElement;
@@ -30,7 +29,6 @@ import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.Element;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.ExtendedElement;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.SearchParameter;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -311,32 +309,6 @@ public class GeneratorUtils {
     }
 
     /**
-     * Populates available code values for a given code element.
-     *
-     * @param elementDefinition element definition from FHIR specification
-     * @param element           element model for template context
-     */
-    public static void populateCodeValuesForCodeElements(ElementDefinition elementDefinition, Element element) {
-        if (!elementDefinition.getShort().contains("|")) {
-            return;
-        }
-        HashMap<String, Element> childElements = new HashMap<>();
-        String[] codes = elementDefinition.getShort().split(Pattern.quote("|"));
-        for (String code : codes) {
-            code = CommonUtil.validateCode(code);
-            if (!code.trim().isEmpty()) {
-                Element childElement = new Element();
-                childElement.setName(code);
-                childElement.setDataType("string");
-                childElement.setRootElementName(element.getName());
-                childElement.setValueSet(element.getValueSet());
-                childElements.put(childElement.getName(), childElement);
-            }
-        }
-        element.setChildElements(childElements);
-    }
-
-    /**
      * Create extended element object
      *
      * @param element resource element
@@ -358,8 +330,19 @@ public class GeneratorUtils {
         if (element.getChildElements() != null) {
             extendedElement.setElements(element.getChildElements());
         }
-        if (!GeneratorUtils.isPrimitiveElement(baseType))
+        if (!GeneratorUtils.isPrimitiveElement(baseType)){
             extendedElement.setBaseType(baseType);
+        }
+        else if (GeneratorUtils.isPrimitiveElement(baseType) && !baseType.equals("code")){
+            // Handle the rare case of extended elements with primitive base types
+            // FHIR R5: Patient.birthDate, Patient.birthDate.id, Patient.birthDate.value etc.
+            // where Patient.birthDate = r5: date
+
+            // The base type "code" is ignored because it converts to an ENUM by default
+
+            extendedElement.setPrimitiveExtendedType(baseType);
+        }
+
         LOG.debug("Ended: Resource Extended Element population");
         return extendedElement;
     }
@@ -404,9 +387,9 @@ public class GeneratorUtils {
         StringBuilder uniqueIdentifier = new StringBuilder();
         String[] idTokens = id.split("-");
         for (String token : idTokens) {
-            uniqueIdentifier.append(StringUtils.capitalise(token));
+            uniqueIdentifier.append(StringUtils.capitalize(token));
         }
-        return StringUtils.capitalise(resolveSpecialCharacters(uniqueIdentifier.toString())).replaceAll("\\d", "");
+        return StringUtils.capitalize(resolveSpecialCharacters(uniqueIdentifier.toString())).replaceAll("\\d", "");
     }
 
     /**
@@ -427,7 +410,7 @@ public class GeneratorUtils {
     public String resolveMultiDataTypeFieldNames(String fieldName, String typeName) {
         if (fieldName.endsWith("[x]")) {
             return resolveKeywordConflict(fieldName.substring(0, fieldName.length() - 3) +
-                    StringUtils.capitalise(typeName));
+                    StringUtils.capitalize(typeName));
         }
         return resolveKeywordConflict(fieldName);
     }

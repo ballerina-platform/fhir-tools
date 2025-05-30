@@ -132,6 +132,6 @@ public class BallerinaCDSProjectGenerator extends AbstractFHIRTemplateGenerator 
         StringBuilder textCopy = new StringBuilder(text);
         textCopy.setCharAt(ZERO, Character.toUpperCase(firstCharOfText));
         text = textCopy.toString();
-        return text.replaceAll(UNDERSCORE, "");
+        return text.replaceAll(UNDERSCORE, StringUtils.EMPTY);
     }
 }

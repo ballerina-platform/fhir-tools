@@ -36,21 +36,26 @@ public class HandlerFactory {
 
     public static Handler createHandler(String subCommand, String mode, PrintStream printStream, String specificationPath)
             throws BallerinaHealthException {
+
         switch (subCommand + SEMICOLON + mode) {
             case CMD_FHIR_MODE_TEMPLATE:
                 Handler templateHandler = new FhirTemplateGenHandler();
                 templateHandler.init(printStream, specificationPath);
                 return templateHandler;
+
             case CMD_FHIR_MODE_CLIENT:
                 return new FhirClientGenHandler();
+
             case CMD_FHIR_MODE_PACKAGE:
                 Handler packageHandler = new FhirPackageGenHandler();
                 packageHandler.init(printStream, specificationPath);
                 return packageHandler;
+
             case CMD_CDS_MODE_TEMPLATE:
                 Handler crdTemplateGenHandler = new CrdTemplateGenHandler();
                 crdTemplateGenHandler.init(printStream, specificationPath);
                 return crdTemplateGenHandler;
+
             default:
                 throw new BallerinaHealthException(ErrorMessages.INVALID_MODE);
         }

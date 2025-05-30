@@ -33,7 +33,7 @@ public class HealthCmdConfig {
 
     public static JsonObject getParsedConfigFromPath(Path toolConfigPath) throws BallerinaHealthException {
         Gson gson = new Gson();
-        if (toolConfigPath != null && StringUtils.isNotEmpty(toolConfigPath.toString())) {
+        if (toolConfigPath != null && StringUtils.isNotBlank(toolConfigPath.toString())) {
             try {
                 JsonObject toolConfigObj = gson.fromJson(new FileReader(toolConfigPath.toFile()), JsonObject.class);
                 if (toolConfigObj != null) {

@@ -1,34 +1,15 @@
-/*
- * Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
- *
- * WSO2 LLC. licenses this file to you under the Apache License,
- * Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
-
 package org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model;
 
 import com.google.gson.JsonObject;
 import org.apache.commons.text.CaseUtils;
-import org.hl7.fhir.r4.model.StructureDefinition;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.config.BallerinaProjectToolConfig;
-import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.util.BallerinaProjectUtil;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
-public class FHIRProfile {
-
-    private StructureDefinition profileDef;
+public class FHIRProfile <S>{
     private String parentRef;
     private boolean isAbstract;
     private String name;
@@ -38,25 +19,14 @@ public class FHIRProfile {
     private Map<String, JsonObject> examples = new HashMap<>();
     private String igName;
     private String resourceType;
-
     private String packagePrefix;
 
-    public FHIRProfile(StructureDefinition profileDef, String url, String igName, String resourceType) {
+    public FHIRProfile(S profileDef, String url, String igName, String resourceType) {
         this.igName = igName;
         this.resourceType = resourceType;
         isAbstract = false;
-        this.profileDef = profileDef;
         this.url = url;
         this.importsList = new HashSet<>();
-        this.name = BallerinaProjectUtil.resolveSpecialCharacters(profileDef.getName());
-    }
-
-    public StructureDefinition getProfileDef() {
-        return profileDef;
-    }
-
-    public void setProfileDef(StructureDefinition profileDef) {
-        this.profileDef = profileDef;
     }
 
     public String getParentRef() {
