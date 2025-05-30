@@ -1,9 +1,10 @@
-package org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model;
+package org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.versions.r5;
 
 import com.google.gson.JsonObject;
 import org.apache.commons.text.CaseUtils;
-import org.hl7.fhir.r4.model.StructureDefinition;
+import org.hl7.fhir.r5.model.StructureDefinition;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.config.BallerinaProjectToolConfig;
+import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.FHIRProfile;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.util.BallerinaProjectUtil;
 
 import java.util.HashMap;
@@ -11,7 +12,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class FHIRProfile <S>{
+public class R5FHIRProfile extends FHIRProfile<StructureDefinition> {
+    private StructureDefinition profileDef;
     private String parentRef;
     private boolean isAbstract;
     private String name;
@@ -21,14 +23,21 @@ public class FHIRProfile <S>{
     private Map<String, JsonObject> examples = new HashMap<>();
     private String igName;
     private String resourceType;
+
     private String packagePrefix;
 
-    public FHIRProfile(S profileDef, String url, String igName, String resourceType) {
-        this.igName = igName;
-        this.resourceType = resourceType;
-        isAbstract = false;
-        this.url = url;
-        this.importsList = new HashSet<>();
+    public R5FHIRProfile(StructureDefinition profileDef, String url, String igName, String resourceType) {
+        super(profileDef, url, igName, resourceType);
+        this.profileDef = profileDef;
+        setName(BallerinaProjectUtil.resolveSpecialCharacters(profileDef.getName()));
+    }
+
+    public StructureDefinition getProfileDef() {
+        return profileDef;
+    }
+
+    public void setProfileDef(StructureDefinition profileDef) {
+        this.profileDef = profileDef;
     }
 
     public String getParentRef() {

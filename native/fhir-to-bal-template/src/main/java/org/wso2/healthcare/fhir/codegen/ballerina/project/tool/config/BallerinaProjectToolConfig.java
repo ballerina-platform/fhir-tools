@@ -59,28 +59,22 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
             JsonObject jsonConfigObj = ((JsonConfigType) configObj).getConfigObj();
             this.isEnabled = jsonConfigObj.getAsJsonPrimitive(BallerinaProjectConstants.CONFIG_ENABLE).getAsBoolean();
             this.metadataConfig = new MetadataConfig(jsonConfigObj.getAsJsonObject("package"));
-            this.fhirVersion = jsonConfigObj.
-                    getAsJsonObject("fhir").getAsJsonPrimitive("version").getAsString();
+            this.fhirVersion = jsonConfigObj.getAsJsonObject("fhir").getAsJsonPrimitive("version").getAsString();
+
             populateIgConfigs(jsonConfigObj.getAsJsonArray("includedIGs"));
-            populateOperationConfigs(jsonConfigObj.
-                    getAsJsonObject("builtIn").getAsJsonArray("operations"));
-            populateSearchParamConfigs(jsonConfigObj.
-                    getAsJsonObject("builtIn").getAsJsonArray("searchParams"));
-            populateDependencyConfigs(jsonConfigObj.
-                    getAsJsonArray("dependencies"));
-            populateInteractionConfigs(jsonConfigObj.
-                    getAsJsonObject("builtIn").getAsJsonArray("interactions"));
+            populateOperationConfigs(jsonConfigObj.getAsJsonObject("builtIn").getAsJsonArray("operations"));
+            populateSearchParamConfigs(jsonConfigObj.getAsJsonObject("builtIn").getAsJsonArray("searchParams"));
+            populateDependencyConfigs(jsonConfigObj.getAsJsonArray("dependencies"));
+            populateInteractionConfigs(jsonConfigObj.getAsJsonObject("builtIn").getAsJsonArray("interactions"));
+
             if (jsonConfigObj.getAsJsonPrimitive("basePackage") != null) {
-                this.basePackage = jsonConfigObj
-                        .getAsJsonPrimitive("basePackage").getAsString();
+                this.basePackage = jsonConfigObj.getAsJsonPrimitive("basePackage").getAsString();
             }
             if (jsonConfigObj.getAsJsonPrimitive("servicePackage") != null) {
-                this.servicePackage = jsonConfigObj
-                        .getAsJsonPrimitive("servicePackage").getAsString();
+                this.servicePackage = jsonConfigObj.getAsJsonPrimitive("servicePackage").getAsString();
             }
             if (jsonConfigObj.getAsJsonPrimitive("dependentPackage") != null) {
-                this.dependentPackage = jsonConfigObj
-                        .getAsJsonPrimitive("dependentPackage").getAsString();
+                this.dependentPackage = jsonConfigObj.getAsJsonPrimitive("dependentPackage").getAsString();
             }
         }
         //todo: add toml type config handling
@@ -96,10 +90,19 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
             case "project.package.version":
                 this.metadataConfig.setVersion(value.getAsString());
                 break;
+            case "project.fhir.version":
+                this.fhirVersion = value.getAsString();
+                break;
             case "project.package.namePrefix":
                 this.metadataConfig.setNamePrefix(value.getAsString());
                 break;
-            case "project.package.dependentPackage":
+            case "project.basePackage":
+                this.basePackage = value.getAsString();
+                break;
+            case "project.servicePackage":
+                this.servicePackage = value.getAsString();
+                break;
+            case "project.dependentPackage":
                 this.dependentPackage = value.getAsString();
                 break;
             case "project.package.igConfig":
