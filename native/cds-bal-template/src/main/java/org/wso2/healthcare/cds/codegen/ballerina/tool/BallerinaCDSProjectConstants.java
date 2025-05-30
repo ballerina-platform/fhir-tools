@@ -30,12 +30,14 @@ public class BallerinaCDSProjectConstants {
     public static final String CONFIG = "config";
     public static final String PACKAGE = "package";
     public static final String DEPENDENCIES = "dependencies";
+    public static final String BASE_PACKAGE = "basePackage";
     public static final String DEPENDENT_PACKAGE = "dependentPackage";
     public static final String HOOKS = "hooks";
     public static final String CDS_SERVICES = "cds_services";
     public static final String META_CONFIG = "metaConfig";
     public static final String PROJECT_PACKAGE_ORG = "project.package.org";
     public static final String PROJECT_PACKAGE_VERSION = "project.package.version";
+    public static final String PROJECT_PACKAGE_BASE_PACKAGE = "project.package.basePackage";
     public static final String PROJECT_PACKAGE_DEPENDENT_PACKAGE = "project.package.dependentPackage";
     public static final String PROJECT_PACKAGE_NAME_PREFIX = "project.package.namePrefix";
     public static final String CMD_MESSAGE_OVERRIDE_OUTPUT_DIRECTORY = "Generated templates already exists. Do you want to overwrite? (y/n): ";
