@@ -29,6 +29,7 @@ function testSlicings() {
     test:assertEquals(pulseOximetry.category[0], vsCat);
 }
 
+@test:Config {}
 function testFixedValues() {
 
     USCorePulseOximetryProfileCodeCodingPulseOx pulseOx = {};
