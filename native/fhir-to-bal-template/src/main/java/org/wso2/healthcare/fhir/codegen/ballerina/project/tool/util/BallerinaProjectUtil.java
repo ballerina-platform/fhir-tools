@@ -21,7 +21,6 @@ package org.wso2.healthcare.fhir.codegen.ballerina.project.tool.util;
 import org.apache.commons.text.CaseUtils;
 
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 /**

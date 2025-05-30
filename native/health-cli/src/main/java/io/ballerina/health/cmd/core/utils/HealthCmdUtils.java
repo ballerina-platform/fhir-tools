@@ -138,7 +138,7 @@ public class HealthCmdUtils {
         return JsonParser.parseString(josnString).getAsJsonObject();
     }
 
-    public static String getSpecFhirVersion(String specificationPath){
+    public static String getSpecFhirVersion(String specificationPath) {
         try (Stream<Path> paths = Files.walk(Paths.get(specificationPath))) {
             return paths
                     .filter(Files::isRegularFile)
@@ -147,23 +147,21 @@ public class HealthCmdUtils {
                     .findFirst()
                     .map(HealthCmdUtils::extractFhirVersion)
                     .orElse(null);
-        }
-        catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    private static String extractFhirVersion(Path path){
+    private static String extractFhirVersion(Path path) {
         String fhirVersion = "";
 
-        try{
+        try {
             String content = Files.readString(path);
-            if(path.toString().endsWith(".json")){
+            if (path.toString().endsWith(".json")) {
                 JsonObject json = JsonParser.parseString(content).getAsJsonObject();
                 fhirVersion = json.has("fhirVersion") ? json.get("fhirVersion").getAsString() : null;
-            }
-            else if(path.toString().endsWith(".toml")){
+            } else if (path.toString().endsWith(".toml")) {
                 for (String line : content.split("\n")) {
                     line = line.trim();
                     if (line.startsWith("fhir.version")) {
@@ -175,16 +173,14 @@ public class HealthCmdUtils {
                 }
             }
 
-            if(fhirVersion.startsWith("4.")){
+            if (fhirVersion.startsWith("4.")) {
                 fhirVersion = "r4";
-            }
-            else if(fhirVersion.startsWith("5.")){
+            } else if (fhirVersion.startsWith("5.")) {
                 fhirVersion = "r5";
             }
 
             return fhirVersion;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;

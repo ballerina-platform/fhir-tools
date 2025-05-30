@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.wso2.healthcare.fhir.ballerina.packagegen.tool.modelgen.versions.r5;
 
 import org.apache.commons.logging.Log;
@@ -17,11 +35,14 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 
+/**
+ * Generator class for FHIR R5 package related context
+ */
 public class R5PackageContextGenerator extends AbstractPackageContextGenerator {
     private static final Log LOG = LogFactory.getLog(R5PackageContextGenerator.class);
 
     public R5PackageContextGenerator(BallerinaPackageGenToolConfig config, Map<String, FHIRImplementationGuide> igEntries,
-                                     SpecificationData specificationData){
+                                     SpecificationData specificationData) {
         super(config, igEntries, specificationData);
     }
 
@@ -61,7 +82,7 @@ public class R5PackageContextGenerator extends AbstractPackageContextGenerator {
         LOG.debug("Started: Search Parameter population");
         HashMap<String, Map<String, SearchParameter>> searchParameterMap = new HashMap<>();
 
-        for(Map.Entry<String, FHIRSearchParamDef> searchParamEntry : implementationGuide.getSearchParameters().entrySet()){
+        for (Map.Entry<String, FHIRSearchParamDef> searchParamEntry : implementationGuide.getSearchParameters().entrySet()) {
             Map<String, SearchParameter> searchParameterTypeMap;
             SearchParameter searchParameter;
 
@@ -70,49 +91,45 @@ public class R5PackageContextGenerator extends AbstractPackageContextGenerator {
             String searchParamType = fhirSearchParamDef.getSearchParameter().getType().name();
             String searchParamDerivedName = searchParamName + searchParamType;
 
-            if(searchParameterMap.containsKey(searchParamName)){
+            if (searchParameterMap.containsKey(searchParamName)) {
                 searchParameterTypeMap = searchParameterMap.get(searchParamName);
 
-                if(searchParameterTypeMap.containsKey(searchParamDerivedName)){
+                if (searchParameterTypeMap.containsKey(searchParamDerivedName)) {
                     searchParameter = searchParameterTypeMap.get(searchParamDerivedName);
-                }
-                else{
+                } else {
                     searchParameter = new SearchParameter();
                 }
-            }
-            else{
+            } else {
                 searchParameterTypeMap = new HashMap<>();
                 searchParameter = new SearchParameter();
             }
 
             ArrayList<String> bases = new ArrayList<>();
-            for(String base : fhirSearchParamDef.getBaseResources()){
-                if(getPackageContext().getResourceNameTypeMap().containsValue(base)){
-                    if(!bases.contains(base)){
+            for (String base : fhirSearchParamDef.getBaseResources()) {
+                if (getPackageContext().getResourceNameTypeMap().containsValue(base)) {
+                    if (!bases.contains(base)) {
                         bases.add(base);
                     }
-                }
-                else if(base.equals("Resource")){
+                } else if (base.equals("Resource")) {
                     bases.add("Resource");
                 }
             }
 
-            if(!bases.isEmpty()){
+            if (!bases.isEmpty()) {
                 searchParameter.setName(searchParamName);
                 searchParameter.setType(searchParamType);
 
-                if(searchParameter.getBase() != null){
+                if (searchParameter.getBase() != null) {
                     bases.addAll(searchParameter.getBase());
                 }
 
                 searchParameter.setBase(bases);
 
-                if(searchParameter.getExpression() != null){
+                if (searchParameter.getExpression() != null) {
                     String expression = searchParameter.getExpression();
                     expression = expression + " | " + fhirSearchParamDef.getSearchParameter().getExpression();
                     searchParameter.setExpression(expression);
-                }
-                else{
+                } else {
                     searchParameter.setExpression(fhirSearchParamDef.getSearchParameter().getExpression());
                 }
                 searchParameterTypeMap.put(searchParamDerivedName, searchParameter);

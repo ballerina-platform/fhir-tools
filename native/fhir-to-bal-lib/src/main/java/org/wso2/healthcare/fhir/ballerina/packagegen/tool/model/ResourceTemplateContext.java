@@ -18,8 +18,6 @@
 
 package org.wso2.healthcare.fhir.ballerina.packagegen.tool.model;
 
-//import org.hl7.fhir.r4.model.ElementDefinition;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;

@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.wso2.healthcare.fhir.codegen.ballerina.project.tool.versions.r5;
 
 import org.hl7.fhir.r5.model.StructureDefinition;
@@ -14,6 +32,7 @@ import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.BallerinaSe
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.FHIRProfile;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.SearchParam;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.versions.r5.R5FHIRProfile;
+import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.versions.r5.R5SearchParam;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +40,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Main class for Ballerina Project Generator tool (FHIR R4).
+ * Main class for Ballerina Project Generator tool (FHIR R5).
  */
 public class R5BallerinaProjectTool extends AbstractBallerinaProjectTool {
 
@@ -169,6 +188,17 @@ public class R5BallerinaProjectTool extends AbstractBallerinaProjectTool {
 
     @Override
     protected SearchParam getSearchParam(Map.Entry<String, FHIRSearchParamDef> parameter, String apiName) {
-        return null;
+        SearchParameter searchParameter = (SearchParameter) parameter.getValue().getSearchParameter();
+        R5SearchParam param = new R5SearchParam(searchParameter.getName(), searchParameter.getCode());
+
+        param.setSearchParamDef(searchParameter);
+        param.setDescription(searchParameter.getDescription().replace("\"", ""));
+        param.setDocumentation(searchParameter.getUrl());
+        param.setTargetResource(apiName);
+
+        if (getBallerinaProjectToolConfig().getSearchParamConfigs().contains(param.getSearchParamDef().getCode())) {
+            param.setBuiltIn(true);
+        }
+        return param;
     }
 }

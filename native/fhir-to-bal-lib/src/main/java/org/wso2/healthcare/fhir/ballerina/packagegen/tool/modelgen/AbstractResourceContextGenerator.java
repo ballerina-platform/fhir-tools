@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.wso2.healthcare.fhir.ballerina.packagegen.tool.modelgen;
 
 import org.apache.commons.logging.Log;
@@ -23,18 +41,24 @@ import java.util.regex.Pattern;
 
 import static org.wso2.healthcare.fhir.ballerina.packagegen.tool.ToolConstants.CONSTRAINTS_LIB_IMPORT;
 
+/**
+ * Abstract class for generating resource context.
+ * This class provides methods to populate resource elements,
+ * Extended by R4ResourceContextGenerator and R5ResourceContextGenerator.
+ */
+
 public abstract class AbstractResourceContextGenerator {
     private static final Log LOG = LogFactory.getLog(AbstractResourceContextGenerator.class);
     public final Set<String> baseResources = new HashSet<>(Arrays.asList("Bundle", "OperationOutcome", "CodeSystem", "ValueSet", "DomainResource", "Resource"));
-    protected ResourceTemplateContext resourceTemplateContextInstance;
     private final BallerinaPackageGenToolConfig toolConfig;
     private final Map<String, ResourceTemplateContext> resourceTemplateContextMap;
     private final Map<String, String> resourceNameTypeMap;
     private final Map<String, DatatypeTemplateContext> datatypeTemplateContextMap;
     private final Set<String> dependentIgs = new HashSet<>();
+    protected ResourceTemplateContext resourceTemplateContextInstance;
 
     public AbstractResourceContextGenerator(BallerinaPackageGenToolConfig config, FHIRImplementationGuide ig,
-                                      Map<String, DatatypeTemplateContext> datatypeTemplateContextMap) {
+                                            Map<String, DatatypeTemplateContext> datatypeTemplateContextMap) {
         LOG.debug("Resource Context Generator Initiated");
         this.toolConfig = config;
         this.resourceTemplateContextMap = new HashMap<>();
@@ -62,7 +86,7 @@ public abstract class AbstractResourceContextGenerator {
                     }
                 }
             }
-            // System.out.println(element.getName() + " : " + element.getDataType()); // birthdate : date
+
             checkAndAddConstraintImport(element);
             this.resourceTemplateContextInstance.getResourceElements().put(element.getName(), element);
         }
@@ -131,8 +155,7 @@ public abstract class AbstractResourceContextGenerator {
             extendedElement = GeneratorUtils.getInstance().populateExtendedElement(element, BallerinaDataType.Enum, elementDataType,
                     this.resourceTemplateContextInstance.getResourceName());
             putExtendedElementIfAbsent(element, extendedElement);
-        }
-        else if (element.isSlice() || elementDataType.equals("BackboneElement") || elementDataType.equals("BackboneType") || (element.isExtended() && element.hasChildElements())) {
+        } else if (element.isSlice() || elementDataType.equals("BackboneElement") || elementDataType.equals("BackboneType") || (element.isExtended() && element.hasChildElements())) {
             extendedElement = GeneratorUtils.getInstance().populateExtendedElement(element, BallerinaDataType.Record, elementDataType,
                     this.resourceTemplateContextInstance.getResourceName());
             extendedElement.setElements(element.getChildElements());
@@ -190,23 +213,23 @@ public abstract class AbstractResourceContextGenerator {
         return codes.length > 1;
     }
 
-    public Map<String, String> getResourceNameTypeMap(){
+    public Map<String, String> getResourceNameTypeMap() {
         return resourceNameTypeMap;
     }
 
-    protected BallerinaPackageGenToolConfig getToolConfig(){
+    protected BallerinaPackageGenToolConfig getToolConfig() {
         return toolConfig;
     }
 
-    protected Set<String> getDependentIgs(){
+    protected Set<String> getDependentIgs() {
         return dependentIgs;
     }
 
-    public Map<String, ResourceTemplateContext> getResourceTemplateContextMap(){
+    public Map<String, ResourceTemplateContext> getResourceTemplateContextMap() {
         return resourceTemplateContextMap;
     }
 
-    protected Map<String, DatatypeTemplateContext> getDatatypeTemplateContextMap(){
+    protected Map<String, DatatypeTemplateContext> getDatatypeTemplateContextMap() {
         return datatypeTemplateContextMap;
     }
 }

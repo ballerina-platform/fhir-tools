@@ -2,9 +2,7 @@ package org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model;
 
 import com.google.gson.JsonObject;
 import org.apache.commons.text.CaseUtils;
-import org.hl7.fhir.r4.model.StructureDefinition;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.config.BallerinaProjectToolConfig;
-import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.util.BallerinaProjectUtil;
 
 import java.util.HashMap;
 import java.util.HashSet;

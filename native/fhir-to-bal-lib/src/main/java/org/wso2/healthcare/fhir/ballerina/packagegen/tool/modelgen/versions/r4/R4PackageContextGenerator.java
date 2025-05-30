@@ -36,7 +36,7 @@ import java.util.HashMap;
 import java.util.ArrayList;
 
 /**
- * Generator class for package related context
+ * Generator class for FHIR R4 package related context
  */
 public class R4PackageContextGenerator extends AbstractPackageContextGenerator {
 
@@ -44,7 +44,7 @@ public class R4PackageContextGenerator extends AbstractPackageContextGenerator {
 
     public R4PackageContextGenerator(BallerinaPackageGenToolConfig config, Map<String, FHIRImplementationGuide> igEntries,
                                      SpecificationData specificationData) {
-       super(config, igEntries, specificationData);
+        super(config, igEntries, specificationData);
     }
 
     @Override

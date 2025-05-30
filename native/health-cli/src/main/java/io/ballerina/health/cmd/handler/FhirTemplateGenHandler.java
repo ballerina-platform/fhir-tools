@@ -127,11 +127,11 @@ public class FhirTemplateGenHandler implements Handler {
                     JsonElement overrideConfig = new Gson().toJsonTree(packageVersion.toLowerCase());
                     toolConfigInstance.overrideConfig("project.package.version", overrideConfig);
                 }
-                if(fhirVersion != null && !fhirVersion.isEmpty() && !fhirVersion.equalsIgnoreCase("r4")) {
+                if (fhirVersion != null && !fhirVersion.isEmpty() && !fhirVersion.equalsIgnoreCase("r4")) {
                     JsonElement overrideConfig = new Gson().toJsonTree(fhirVersion.toLowerCase());
                     toolConfigInstance.overrideConfig("project.fhir.version", overrideConfig);
                 }
-                if(fhirVersion != null && !fhirVersion.isEmpty() && fhirVersion.equalsIgnoreCase("r5")){
+                if (fhirVersion != null && !fhirVersion.isEmpty() && fhirVersion.equalsIgnoreCase("r5")) {
                     String namePrefix = "health.fhir.r5.international500";
                     String basePackage = "ballerinax/health.fhir.r5";
                     String servicePackage = "ballerinax/health.fhirr5";

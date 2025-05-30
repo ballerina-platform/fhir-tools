@@ -51,7 +51,7 @@ import java.util.Comparator;
 import java.util.regex.Pattern;
 
 /**
- * Generator class for resource related context
+ * Generator class for FHIR R4 resource related context
  */
 public class R4ResourceContextGenerator extends AbstractResourceContextGenerator {
     private static final Log LOG = LogFactory.getLog(R4ResourceContextGenerator.class);
@@ -140,7 +140,7 @@ public class R4ResourceContextGenerator extends AbstractResourceContextGenerator
         for (ElementDefinition elementDefinition : elementDefinitions) {
             String id = elementDefinition.getId();
             int colonCount = StringUtils.countMatches(id, ":");
-            if (colonCount>1) {
+            if (colonCount > 1) {
                 // nested slice; ignore processing
                 continue;
             }

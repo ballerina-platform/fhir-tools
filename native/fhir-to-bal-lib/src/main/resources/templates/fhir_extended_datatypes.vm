@@ -43,6 +43,7 @@ import $import;
         path: "${elementMapEntry.value.path}"
         }#if($i < $len - 1),#end
             #set($i = $i + 1)
+
         #end
         #end
     },
@@ -77,6 +78,7 @@ public enum $elementMapEntry.value.typeName {
         #set($i = $i + 1)
     #end
 };
+
 #end
 #end
 #end

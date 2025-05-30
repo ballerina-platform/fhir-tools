@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Template context generator for FHIR datatypes to be used to generate datatypes source file.
+ * Datatype Template context generator for FHIR R4 datatypes to be used to generate datatypes source file.
  */
 public class R4DatatypeContextGenerator extends AbstractDatatypeContextGenerator {
 

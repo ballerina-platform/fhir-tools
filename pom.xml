@@ -42,7 +42,7 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.healthcare.tool.framework>1.2.3</version.healthcare.tool.framework>
+        <version.healthcare.tool.framework>2.0.0</version.healthcare.tool.framework>
         <version.ballerina.cli>2201.12.3</version.ballerina.cli>
         <maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
@@ -95,6 +95,11 @@
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-structures-r4</artifactId>
+            <version>${hapi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-structures-r5</artifactId>
             <version>${hapi.version}</version>
         </dependency>
         <dependency>

@@ -18,9 +18,6 @@
 
 package org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model;
 
-import org.hl7.fhir.r4.model.SearchParameter;
-
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,7 +26,6 @@ public class SearchParam {
     private final String name;
     private final String code;
     private String targetResource;
-    private SearchParameter searchParamDef;
     private String description;
     private String documentation;
     private boolean builtIn;
@@ -42,14 +38,6 @@ public class SearchParam {
 
     public String getName() {
         return name;
-    }
-
-    public SearchParameter getSearchParamDef() {
-        return searchParamDef;
-    }
-
-    public void setSearchParamDef(SearchParameter searchParamDef) {
-        this.searchParamDef = searchParamDef;
     }
 
     public String getDescription() {
@@ -84,17 +72,17 @@ public class SearchParam {
         this.targetResource = targetResource;
     }
 
-    private String extractDescription(String originalDescription){
+    private String extractDescription(String originalDescription) {
         List<String> descriptions;
-        if (originalDescription.contains("Multiple Resources:")){
-             descriptions =  Arrays.asList(originalDescription.split("\\r\n\\* "));
-            for (String resourceDesc:descriptions
-                 ) {
-                if (resourceDesc.contains(targetResource)){
+        if (originalDescription.contains("Multiple Resources:")) {
+            descriptions = Arrays.asList(originalDescription.split("\\r\n\\* "));
+            for (String resourceDesc : descriptions
+            ) {
+                if (resourceDesc.contains(targetResource)) {
                     return resourceDesc;
                 }
             }
-        }else{
+        } else {
             return originalDescription.replace("\n", "");
         }
         return originalDescription;

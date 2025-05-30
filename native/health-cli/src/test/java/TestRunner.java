@@ -35,16 +35,14 @@ public class TestRunner {
 
     public static void main(String[] args) {
         // System.setProperty("fhirVersion", "r4"); // Uncomment if directly running the TestRunner.java
-        try{
+        try {
             runTestForCdsTool();
-            if(System.getProperty("fhirVersion").equalsIgnoreCase("r4")){
+            if (System.getProperty("fhirVersion").equalsIgnoreCase("r4")) {
                 runTestForR4FhirTool();
-            }
-            else{
+            } else {
                 runTestForR5FhirTool();
             }
-        }
-        catch (URISyntaxException e){
+        } catch (URISyntaxException e) {
             e.printStackTrace();
         }
     }
@@ -92,9 +90,15 @@ public class TestRunner {
         }
 
         toolHandler.setArgs(argsMap);
-        toolHandler.execute(specificationPath+File.separator+"tool-config.toml", getTargetOutputPath(outPutPath).toString());
+        toolHandler.execute(specificationPath + File.separator + "tool-config.toml", getTargetOutputPath(outPutPath).toString());
     }
 
+    /**
+     * This method generates a Ballerina package for the R4 FHIR profiles.
+     * The current provided profile is USCore501
+     * If needed to generate a template comment the lines indicated as // FOR PACKAGE
+     * and uncomment the lines indicated as // FOR TEMPLATE
+     */
     private static void runTestForR4FhirTool() throws URISyntaxException {
         Map<String, Object> argsMap = new HashMap<>();
         String packageName = "health.fhir.r4.uscore501";
@@ -104,8 +108,8 @@ public class TestRunner {
         argsMap.put("--package-name", packageName); // FOR PACKAGE
         argsMap.put("--package-version", packageVersion); // FOR PACKAGE
         argsMap.put("--dependency", null); // FOR PACKAGE
+        //        argsMap.put("--dependent-package", orgName + "/" + packageName); // FOR TEMPLATE
         argsMap.put("--org-name", orgName);
-//        argsMap.put("--dependent-package", orgName + "/" + packageName); // FOR TEMPLATE
         argsMap.put("--fhir-version", fhirVersion);
         argsMap.put("--included-profile", null);
         argsMap.put("--excluded-profile", null);
@@ -144,6 +148,12 @@ public class TestRunner {
         toolHandler.execute(specificationPath.toString(), getTargetOutputPath(outPutPath).toString());
     }
 
+    /**
+     * This method generates a Ballerina package for the R5 FHIR profiles.
+     * Current provided profile is EuropeBase
+     * If needed to generate a template comment the lines indicated as // FOR PACKAGE
+     * and uncomment the lines indicated as // FOR TEMPLATE
+     */
     private static void runTestForR5FhirTool() throws URISyntaxException {
         Map<String, Object> argsMap = new HashMap<>();
         String packageName = "health.fhir.r5.europebase";
@@ -153,8 +163,8 @@ public class TestRunner {
         argsMap.put("--package-name", packageName); // FOR PACKAGE
         argsMap.put("--package-version", packageVersion); // FOR PACKAGE
         argsMap.put("--dependency", null); // FOR PACKAGE
+        //        argsMap.put("--dependent-package", orgName + "/" + packageName); // FOR TEMPLATE
         argsMap.put("--org-name", orgName);
-//        argsMap.put("--dependent-package", orgName + "/" + packageName); // FOR TEMPLATE
         argsMap.put("--fhir-version", fhirVersion);
         argsMap.put("--included-profile", null);
         argsMap.put("--excluded-profile", null);
@@ -193,7 +203,7 @@ public class TestRunner {
         toolHandler.execute(specificationPath.toString(), getTargetOutputPath(outPutPath).toString());
     }
 
-    private static Path getTargetOutputPath(String outputPath){
+    private static Path getTargetOutputPath(String outputPath) {
         Path targetOutputPath = TestRunner.executionPath;
         if (outputPath != null) {
             if (Paths.get(outputPath).isAbsolute()) {

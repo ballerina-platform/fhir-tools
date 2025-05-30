@@ -30,12 +30,9 @@ import org.wso2.healthcare.codegen.tool.framework.fhir.core.FHIRSpecParserFactor
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.FHIRTool;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.config.FHIRToolConfig;
 
-import java.io.IOException;
 import java.io.PrintStream;
-import java.nio.file.*;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.stream.Stream;
 
 /**
  * Common interface for tool handlers.
@@ -59,7 +56,7 @@ public interface Handler {
             try {
                 fhirVersion = HealthCmdUtils.getSpecFhirVersion(specificationPath);
 
-                if(fhirVersion == null){
+                if (fhirVersion == null) {
                     printStream.println(ErrorMessages.LIB_INITIALIZING_FAILED + "Unable to find FHIR version in the specification");
                     return null;
                 }
@@ -92,7 +89,7 @@ public interface Handler {
 
     void init(PrintStream printStream, String specificationPath);
 
-    void setArgs(Map<String,Object> argsMap);
+    void setArgs(Map<String, Object> argsMap);
 
     boolean execute(String specificationPath, String targetOutputPath);
 }

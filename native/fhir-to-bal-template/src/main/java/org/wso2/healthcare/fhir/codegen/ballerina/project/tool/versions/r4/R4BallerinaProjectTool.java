@@ -30,6 +30,7 @@ import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.AbstractBallerina
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.BallerinaService;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.versions.r4.R4FHIRProfile;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.SearchParam;
+import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.versions.r4.R4SearchParam;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -88,10 +89,10 @@ public class R4BallerinaProjectTool extends AbstractBallerinaProjectTool {
     @Override
     protected SearchParam getSearchParam(Map.Entry<String, FHIRSearchParamDef> parameter, String apiName) {
         SearchParameter searchParameter = (SearchParameter) parameter.getValue().getSearchParameter();
-        SearchParam param = new SearchParam(searchParameter.getName(), searchParameter.getCode());
+        R4SearchParam param = new R4SearchParam(searchParameter.getName(), searchParameter.getCode());
 
         param.setSearchParamDef(searchParameter);
-        param.setDescription(searchParameter.getDescription().replace("\"",""));
+        param.setDescription(searchParameter.getDescription().replace("\"", ""));
         param.setDocumentation(searchParameter.getUrl());
         param.setTargetResource(apiName);
 
