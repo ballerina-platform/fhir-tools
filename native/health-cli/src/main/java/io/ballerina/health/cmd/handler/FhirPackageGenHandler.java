@@ -38,6 +38,8 @@ import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.*;
+
 /**
  * Handler for package generation tool.
  */
@@ -45,7 +47,8 @@ public class FhirPackageGenHandler implements Handler {
 
     private String packageName;
     private String orgName;
-    private String version;
+    private String packageVersion;
+    private String fhirVersion;
     private String[] dependentIgs;
 
     private JsonObject configJson;
@@ -71,7 +74,8 @@ public class FhirPackageGenHandler implements Handler {
 
         this.packageName = (String) argsMap.get("--package-name");
         this.orgName = (String) argsMap.get("--org-name");
-        this.version = (String) argsMap.get("--package-version");
+        this.packageVersion = (String) argsMap.get("--package-version");
+        this.fhirVersion = (String) argsMap.get("--fhir-version");
         this.dependentIgs = (String[]) argsMap.get("--dependent-ig");
     }
 
@@ -99,6 +103,7 @@ public class FhirPackageGenHandler implements Handler {
             //override tool level configs here
             Tool tool;
             TemplateGenerator mainTemplateGenerator = null;
+
             try {
                 ClassLoader classLoader = this.getClass().getClassLoader();
                 String configClassName = "org.wso2.healthcare.fhir.ballerina.packagegen.tool.config." +
@@ -121,9 +126,24 @@ public class FhirPackageGenHandler implements Handler {
                     JsonElement overrideConfig = new Gson().toJsonTree(orgName.toLowerCase());
                     toolConfigInstance.overrideConfig("packageConfig.org", overrideConfig);
                 }
-                if (version != null && !version.isEmpty()) {
-                    JsonElement overrideConfig = new Gson().toJsonTree(version.toLowerCase());
-                    toolConfigInstance.overrideConfig("packageConfig.version", overrideConfig);
+                if (packageVersion != null && !packageVersion.isEmpty()) {
+                    JsonElement overrideConfig = new Gson().toJsonTree(packageVersion.toLowerCase());
+                    toolConfigInstance.overrideConfig("packageConfig.packageVersion", overrideConfig);
+                }
+                if (fhirVersion != null && !fhirVersion.isEmpty() && !fhirVersion.equalsIgnoreCase("r4")) {
+                    JsonElement overrideConfig = new Gson().toJsonTree(fhirVersion.toLowerCase());
+                    toolConfigInstance.overrideConfig("packageConfig.fhirVersion", overrideConfig);
+                }
+                if (fhirVersion != null && !fhirVersion.isEmpty() && fhirVersion.equalsIgnoreCase("r5")) {
+                    // Override basePackage and dependentPackage in tool-config.json
+                    final String r5Repository = "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r5";
+                    final String r5BasePackage = "ballerinax/health.fhir.r5";
+
+                    JsonElement overrideConfigRepository = new Gson().toJsonTree(r5Repository);
+                    JsonElement overrideConfigBase = new Gson().toJsonTree(r5BasePackage);
+
+                    toolConfigInstance.overrideConfig("packageConfig.repository", overrideConfigRepository);
+                    toolConfigInstance.overrideConfig("packageConfig.basePackage", overrideConfigBase);
                 }
                 if (dependentIgs != null && dependentIgs.length > 0) {
                     // Create a JSON array from the String array
