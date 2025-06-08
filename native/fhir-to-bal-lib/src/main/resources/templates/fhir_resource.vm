@@ -105,7 +105,8 @@ public type $util.resolveSpecialCharacters($resourceName) record {|
         #end
     }
 $tab#end
-    #foreach($profileEntry in $element.getProfiles().entrySet())#if(!$dataTypes.contains($profileEntry.value.getProfileType()))#if(!$profileEntry.value.getPrefix())${importIdentifier}#else$profileEntry.value.getPrefix():#end#end$util.resolveSpecialCharacters($profileEntry.value.getProfileType())#if($element.isArray()) []#end#if($velocityCount != $element.getProfiles().size())#end#end $util.resolveKeywordConflict($util.resolveSpecialCharacters($element.getName()))#if(!$element.isRequired())?#end;
+    #set($isDataTypeSet = false)
+    #foreach($profileEntry in $element.getProfiles().entrySet())#if(!$dataTypes.contains($profileEntry.value.getProfileType()))#if(!$profileEntry.value.getPrefix())${importIdentifier}#else$profileEntry.value.getPrefix():#end#end#if($element.isExtended())#foreach($key in $extendedElements.keySet())#if($key == $profileEntry.value.getProfileType() && $extendedElements.get($key).getPrimitiveExtendedType())$util.resolveSpecialCharacters($profileEntry.value.getProfileType()) | ${importIdentifier}$extendedElements.get($key).getPrimitiveExtendedType()#set($isDataTypeSet = true)#end#end#end#if(!$isDataTypeSet)$util.resolveSpecialCharacters($profileEntry.value.getProfileType())#end#if($element.isArray()) []#end#if($velocityCount != $element.getProfiles().size())#end#end $util.resolveKeywordConflict($util.resolveSpecialCharacters($element.getName()))#if(!$element.isRequired())?#end;
     #end
     ${importIdentifier}Element ...;
 |};

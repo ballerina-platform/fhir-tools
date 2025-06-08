@@ -330,8 +330,19 @@ public class GeneratorUtils {
         if (element.getChildElements() != null) {
             extendedElement.setElements(element.getChildElements());
         }
-        if (!GeneratorUtils.isPrimitiveElement(baseType))
+        if (!GeneratorUtils.isPrimitiveElement(baseType)){
             extendedElement.setBaseType(baseType);
+        }
+        else if (GeneratorUtils.isPrimitiveElement(baseType) && !baseType.equals("code")){
+            // Handle the rare case of extended elements with primitive base types
+            // FHIR R5: Patient.birthDate, Patient.birthDate.id, Patient.birthDate.value etc.
+            // where Patient.birthDate = r5: date
+
+            // The base type "code" is ignored because it converts to an ENUM by default
+
+            extendedElement.setPrimitiveExtendedType(baseType);
+        }
+
         LOG.debug("Ended: Resource Extended Element population");
         return extendedElement;
     }

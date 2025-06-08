@@ -3263,6 +3263,37 @@
         "id": "Patient.birthDate",
         "path": "Patient.birthDate",
         "min": 1
+      },
+      {
+        "id": "Patient.birthDate.extension",
+        "path": "Patient.birthDate.extension",
+        "slicing": {
+          "discriminator": [
+            {
+              "type": "value",
+              "path": "url"
+            }
+          ],
+          "ordered": false,
+          "rules": "open"
+        }
+      },
+      {
+        "id": "Patient.birthDate.extension:dob-absent-reason",
+        "path": "Patient.birthDate.extension",
+        "sliceName": "dob-absent-reason",
+        "short": "Reason for not providing the Date of Birth.",
+        "definition": "Reason for not providing the Date of Birth.",
+        "min": 0,
+        "max": "1",
+        "type": [
+          {
+            "code": "Extension",
+            "profile": [
+              "http://hl7.org/fhir/StructureDefinition/data-absent-reason"
+            ]
+          }
+        ]
       }
     ]
   }
