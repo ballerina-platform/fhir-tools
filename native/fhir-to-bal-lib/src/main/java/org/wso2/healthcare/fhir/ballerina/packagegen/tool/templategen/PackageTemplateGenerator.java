@@ -98,6 +98,7 @@ public class PackageTemplateGenerator extends AbstractFHIRTemplateGenerator {
             this.packageProperties.put("basePackageIdentifier", basePackageIdentifier);
             this.packageProperties.put("importIdentifier", basePackageIdentifier + ":");
         }
+
         generatePackageEssentials(toolConfig);
         LOG.debug("Ended: Package Template Generation");
     }
@@ -133,15 +134,32 @@ public class PackageTemplateGenerator extends AbstractFHIRTemplateGenerator {
         LOG.debug("Started: Package Essentials Generation");
         try {
             String packagePath = (String) this.packageProperties.get("packagePath");
-            String filePath = CommonUtil.generateFilePath(packagePath, "Ballerina"
-                    + ToolConstants.TOML_EXTENSION, "");
-            this.getTemplateEngine().generateOutputAsFile(ToolConstants.TEMPLATE_PATH + ToolConstants.RESOURCE_PATH_SEPERATOR + "ballerina_toml.vm",
-                    this.createTemplateContextForBallerinaToml(toolConfig), "", filePath);
+            String filePath = CommonUtil.generateFilePath(packagePath, "Ballerina" + ToolConstants.TOML_EXTENSION, "");
 
-            filePath = CommonUtil.generateFilePath(packagePath, "Package"
-                    + ToolConstants.MD_EXTENSION, "");
-            this.getTemplateEngine().generateOutputAsFile(ToolConstants.TEMPLATE_PATH + ToolConstants.RESOURCE_PATH_SEPERATOR + "package.vm",
-                    this.createTemplateContextForPackageMD(toolConfig), "", filePath);
+            if(toolConfig.getPackageConfig().getFhirVersion().equals("r4")){
+                this.getTemplateEngine().generateOutputAsFile(
+                        ToolConstants.TEMPLATE_PATH + ToolConstants.RESOURCE_PATH_SEPERATOR + ToolConstants.TEMPLATE_VERSION_PATH + ToolConstants.RESOURCE_PATH_SEPERATOR + "r4" + ToolConstants.RESOURCE_PATH_SEPERATOR + "r4_ballerina_toml.vm",
+                        this.createTemplateContextForBallerinaToml(toolConfig), "", filePath);
+            }
+            else if (toolConfig.getPackageConfig().getFhirVersion().equals("r5")) {
+                this.getTemplateEngine().generateOutputAsFile(
+                        ToolConstants.TEMPLATE_PATH + ToolConstants.RESOURCE_PATH_SEPERATOR + ToolConstants.TEMPLATE_VERSION_PATH + ToolConstants.RESOURCE_PATH_SEPERATOR + "r5" + ToolConstants.RESOURCE_PATH_SEPERATOR + "r5_ballerina_toml.vm",
+                        this.createTemplateContextForBallerinaToml(toolConfig), "", filePath);
+            }
+
+            filePath = CommonUtil.generateFilePath(packagePath, "Package" + ToolConstants.MD_EXTENSION, "");
+            if(toolConfig.getPackageConfig().getFhirVersion().equals("r4")){
+                this.getTemplateEngine().generateOutputAsFile(
+                        ToolConstants.TEMPLATE_PATH + ToolConstants.RESOURCE_PATH_SEPERATOR + ToolConstants.TEMPLATE_VERSION_PATH + ToolConstants.RESOURCE_PATH_SEPERATOR + "r4" + ToolConstants.RESOURCE_PATH_SEPERATOR + "r4_package.vm",
+                        this.createTemplateContextForPackageMD(toolConfig), "", filePath);
+
+            }
+            else if (toolConfig.getPackageConfig().getFhirVersion().equals("r5")) {
+                this.getTemplateEngine().generateOutputAsFile(
+                        ToolConstants.TEMPLATE_PATH + ToolConstants.RESOURCE_PATH_SEPERATOR + ToolConstants.TEMPLATE_VERSION_PATH + ToolConstants.RESOURCE_PATH_SEPERATOR + "r5" + ToolConstants.RESOURCE_PATH_SEPERATOR + "r5_package.vm",
+                        this.createTemplateContextForPackageMD(toolConfig), "", filePath);
+
+            }
 
             filePath = CommonUtil.generateFilePath(packagePath, "initializer"
                     + ToolConstants.BAL_EXTENSION, "");
@@ -173,6 +191,7 @@ public class PackageTemplateGenerator extends AbstractFHIRTemplateGenerator {
         templateContext.setProperty("version", toolConfig.getPackageConfig().getVersion());
         templateContext.setProperty("distribution", toolConfig.getPackageConfig().getBallerinaDistribution());
         templateContext.setProperty("authors", toolConfig.getPackageConfig().getAuthors());
+        templateContext.setProperty("fhirVersion", toolConfig.getPackageConfig().getFhirVersion());
         templateContext.setProperty("repository", toolConfig.getPackageConfig().getRepository());
         templateContext.setProperty("igName", this.packageTemplateContext.getIgTemplateContext().getIgName());
 

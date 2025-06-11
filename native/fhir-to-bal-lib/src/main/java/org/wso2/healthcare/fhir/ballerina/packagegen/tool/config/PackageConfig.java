@@ -42,6 +42,7 @@ public class PackageConfig {
     private String version;
     private String ballerinaDistribution;
     private String authors;
+    private String fhirVersion;
     private String repository;
     private String basePackage;
     private List<DependencyConfig> dependencyConfigList;
@@ -53,6 +54,7 @@ public class PackageConfig {
         this.version = packageConfigJson.getAsJsonPrimitive(ToolConstants.CONFIG_PACKAGE_VERSION).getAsString();
         this.ballerinaDistribution = packageConfigJson.getAsJsonPrimitive(ToolConstants.CONFIG_PACKAGE_DISTRIBUTION).getAsString();
         this.authors = packageConfigJson.getAsJsonArray(ToolConstants.CONFIG_PACKAGE_AUTHORS).getAsString();
+        this.fhirVersion = packageConfigJson.getAsJsonPrimitive(ToolConstants.CONFIG_PACKAGE_FHIR_VERSION).getAsString();
         this.repository = packageConfigJson.getAsJsonPrimitive(ToolConstants.CONFIG_PACKAGE_REPOSITORY).getAsString();
         this.basePackage = packageConfigJson.getAsJsonPrimitive(ToolConstants.CONFIG_BASE_PACKAGE).getAsString();
         populateDependencies(packageConfigJson.getAsJsonArray(ToolConstants.CONFIG_PACKAGE_DEPENDENCY).getAsJsonArray());
@@ -64,6 +66,7 @@ public class PackageConfig {
         this.version = packageConfigToml.getString(ToolConstants.CONFIG_PACKAGE_VERSION_TOML);
         this.ballerinaDistribution = packageConfigToml.getString(ToolConstants.CONFIG_PACKAGE_DISTRIBUTION_TOML);
         this.authors = packageConfigToml.getString(ToolConstants.CONFIG_PACKAGE_AUTHORS_TOML);
+        this.fhirVersion = packageConfigToml.getString(ToolConstants.CONFIG_PACKAGE_FHIR_VERSION_TOML);
         this.repository = packageConfigToml.getString(ToolConstants.CONFIG_PACKAGE_REPOSITORY_TOML);
         this.basePackage = packageConfigToml.getString(ToolConstants.CONFIG_BASE_PACKAGE_TOML);
         populateDependencies(packageConfigToml.getArrayOrEmpty(ToolConstants.CONFIG_PACKAGE_DEPENDENCY_TOML));
@@ -104,6 +107,10 @@ public class PackageConfig {
 
     public String getAuthors() {
         return authors;
+    }
+
+    public String getFhirVersion() {
+        return fhirVersion;
     }
 
     public String getRepository() {
@@ -147,6 +154,10 @@ public class PackageConfig {
 
     public void setBallerinaDistribution(String ballerinaDistribution) {
         this.ballerinaDistribution = ballerinaDistribution;
+    }
+
+    public void setFhirVersion(String fhirVersion) {
+        this.fhirVersion = fhirVersion;
     }
 
     public void setBasePackage(String basePackage) {

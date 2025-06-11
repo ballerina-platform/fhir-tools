@@ -1,0 +1,28 @@
+[package]
+org = "${org}"
+name = "${packageName}"
+version = "${version}"
+distribution = "${distribution}"
+authors = ["${authors}"]
+keywords = ["Healthcare", "FHIR", "R5", "${igName}"]
+#if($isBasePackage)
+export = [
+"${packageName}",
+"${packageName}.parser",
+"${packageName}.terminology",
+"${packageName}.validator"
+]
+#else
+export = ["${packageName}"]
+#end
+
+#foreach($dependency in $dependencies)
+[[dependency]]
+org = "$dependency.getOrg()"
+name = "$dependency.getName()"
+version = "$dependency.getVersion()"
+    #if($dependency.getRepository())
+    repository = "$dependency.getRepository()"
+    #else
+    #end
+#end

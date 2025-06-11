@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+ * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -15,86 +15,82 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.healthcare.fhir.ballerina.packagegen.tool.modelgen;
+
+package org.wso2.healthcare.fhir.ballerina.packagegen.tool.modelgen.versions.r5;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.hl7.fhir.r4.model.ElementDefinition;
+import org.hl7.fhir.r5.model.ElementDefinition;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.common.FHIRSpecificationData;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRDataTypeDef;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.versions.r5.model.FHIRR5DataTypeDef;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.ToolConstants;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.AnnotationElement;
-import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.BallerinaDataType;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.DataTypeDefinitionAnnotation;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.DatatypeTemplateContext;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.Element;
-import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.ExtendedElement;
+import org.wso2.healthcare.fhir.ballerina.packagegen.tool.modelgen.AbstractDatatypeContextGenerator;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.CommonUtil;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.GeneratorUtils;
+import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.versions.r5.R5GeneratorUtils;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Template context generator for FHIR datatypes to be used to generate datatypes source file.
+ * Datatype Template context generator for FHIR R5 datatypes to be used to generate datatypes source file.
  */
-public class DatatypeContextGenerator {
-
-    private static final Log LOG = LogFactory.getLog(DatatypeContextGenerator.class);
-    private final Map<String, FHIRDataTypeDef> datatypeDefnMap;
-    private final Map<String, DatatypeTemplateContext> dataTypeTemplateContextMap;
-    private static final List<String> DEFAULT_DATA_TYPES = Arrays.asList("Ratio", "Period", "Range", "Attachment",
-            "Identifier", "Annotation", "HumanName", "CodeableConcept", "ContactPoint", "Coding", "Money", "Address",
-            "Timing", "BackboneElement", "Quantity", "SampledData", "Signature", "Age", "Distance", "Duration", "Count",
-            "MoneyQuantity", "SimpleQuantity", "ContactDetail", "Contributor", "DataRequirement", "RelatedArtifact",
-            "Element", "UsageContext", "ParameterDefinition", "Expression", "TriggerDefinition", "Reference", "Meta",
-            "Dosage", "xhtml", "ElementDefinition", "Extension", "Narrative", "ProdCharacteristic", "Population", "SubstanceAmount"
+public class R5DatatypeContextGenerator extends AbstractDatatypeContextGenerator {
+    private static final List<String> DEFAULT_DATA_TYPES = Arrays.asList(
+            "Ratio", "Period", "Range", "RatioRange", "Attachment", "Identifier",
+            "Annotation", "HumanName", "CodeableConcept", "ContactPoint", "Coding",
+            "Money", "Address", "Timing", "BackboneType", "Quantity", "SampledData", "Signature",
+            "Age", "Distance", "Duration", "Count", "MoneyQuantity", "SimpleQuantity",
+            "ContactDetail", "Contributor", "DataRequirement", "RelatedArtifact", "DataType",
+            "TriggerDefinition", "ParameterDefinition", "ExtendedContactDetail",
+            "Availability", "Expression", "UsageContext", "MonetaryComponent", "VirtualServiceDetail",
+            "CodeableReference", "Meta", "Reference", "Dosage", "xhtml", "Narrative",
+            "Extension", "ElementDefinition"
     );
 
-    public DatatypeContextGenerator(FHIRSpecificationData fhirSpecificationData) {
-        this.datatypeDefnMap = fhirSpecificationData.getDataTypes();
-        this.dataTypeTemplateContextMap = new HashMap<>();
-        populateDatatypeContext();
+    public R5DatatypeContextGenerator(FHIRSpecificationData fhirSpecificationData) {
+        super(fhirSpecificationData);
     }
 
-    public Map<String, FHIRDataTypeDef> getDatatypeDefnMap() {
-        return datatypeDefnMap;
-    }
+    @Override
+    protected void populateDatatypeContext() {
+        for (Map.Entry<String, FHIRDataTypeDef> dataTypeDefnEntry : getDataTypeDefnMap().entrySet()) {
+            FHIRR5DataTypeDef datatypeDefn = (FHIRR5DataTypeDef) dataTypeDefnEntry.getValue();
 
-    public Map<String, DatatypeTemplateContext> getDataTypeTemplateContextMap() {
-        return dataTypeTemplateContextMap;
-    }
-
-    private void populateDatatypeContext() {
-        for (Map.Entry<String, FHIRDataTypeDef> datatypeDefnEntry : datatypeDefnMap.entrySet()) {
-            FHIRDataTypeDef datatypeDefn = datatypeDefnEntry.getValue();
-            if (DEFAULT_DATA_TYPES.contains(datatypeDefn.getDefinition().getName())
-                    || "Extension".equals(datatypeDefn.getDefinition().getType())) {
+            if (DEFAULT_DATA_TYPES.contains(datatypeDefn.getDefinition().getName()) ||
+                    "Extension".equals(datatypeDefn.getDefinition().getType())) {
                 continue;
             }
+
             DatatypeTemplateContext context = new DatatypeTemplateContext();
             String typeName = CommonUtil.getSplitTokenAt(datatypeDefn.getDefinition().getUrl(), "/", ToolConstants.TokenPosition.END);
             context.setName(GeneratorUtils.getInstance().getUniqueIdentifierFromId(typeName));
             context.setBaseDataType(datatypeDefn.getDefinition().getType());
+
             DataTypeDefinitionAnnotation annotation = new DataTypeDefinitionAnnotation();
             annotation.setName(datatypeDefn.getDefinition().getName());
             context.setAnnotation(annotation);
+
             for (ElementDefinition elementDefinition : datatypeDefn.getDefinition().getSnapshot().getElement()) {
                 if (elementDefinition.getPath().contains(".")) {
-                    String elementName = elementDefinition.getPath().substring(
-                            elementDefinition.getPath().lastIndexOf(".") + 1);
+                    String elementName = elementDefinition.getPath().substring(elementDefinition.getPath().lastIndexOf(".") + 1);
+
                     if ("id".equals(elementName) || "extension".equals(elementName)
                             || elementDefinition.getPath().contains(".extension.")) {
                         //skipping for generating datatype extensions
                         continue;
                     }
+
                     Element element = new Element();
                     element.setMax(GeneratorUtils.getMaxCardinality(elementDefinition.getMax()));
                     element.setMin(elementDefinition.getMin());
                     element.setArray(!"0".equals(elementDefinition.getBase().getMax()) && !"1".equals(elementDefinition.getBase().getMax()));
+
                     String typeCode = elementDefinition.getType().get(0).getCode();
                     if (GeneratorUtils.getInstance().shouldReplacedByBalType(typeCode)) {
                         element.setDataType(GeneratorUtils.getInstance().resolveDataType(typeCode));
@@ -103,44 +99,28 @@ public class DatatypeContextGenerator {
                     } else {
                         element.setDataType(typeCode);
                     }
+
                     if (elementName.endsWith("[x]") && datatypeDefn.getDefinition().getType().equals(
                             ToolConstants.DATA_TYPE_EXTENSION)) {
-                        context.setBaseDataType(StringUtils.capitalise(typeCode + ToolConstants.DATA_TYPE_EXTENSION));
+                        context.setBaseDataType(StringUtils.capitalize(typeCode + ToolConstants.DATA_TYPE_EXTENSION));
                     } else if ("code".equals(typeCode)) {
-                        GeneratorUtils.populateCodeValuesForCodeElements(elementDefinition, element);
+                        R5GeneratorUtils.populateCodeValuesForCodeElements(elementDefinition, element);
                     }
+
                     element.setName(GeneratorUtils.getInstance().resolveMultiDataTypeFieldNames(elementName, typeCode));
                     element.setDescription(CommonUtil.parseMultilineString(elementDefinition.getDefinition()));
                     element.setPath(elementDefinition.getPath());
+
                     //populate extended elements
                     populateExtendedElementsMap(element, context);
+
                     //populate annotations
                     AnnotationElement annotationElement = GeneratorUtils.getInstance().populateAnnotationElement(element);
                     annotation.addElement(annotationElement);
                     context.addElement(element);
                 }
             }
-            dataTypeTemplateContextMap.putIfAbsent(datatypeDefn.getDefinition().getUrl(), context);
+            datatypeTemplateContextMap().putIfAbsent(datatypeDefn.getDefinition().getUrl(), context);
         }
-    }
-
-    private void populateExtendedElementsMap(Element element, DatatypeTemplateContext context) {
-        LOG.debug("Started: Resource Extended Element Map population");
-        if (!element.getDataType().equals("Extension")) {
-            if (element.hasChildElements()) {
-                for (Map.Entry<String, Element> childEntry : element.getChildElements().entrySet()) {
-                    populateExtendedElementsMap(childEntry.getValue(), context);
-                }
-            }
-            ExtendedElement extendedElement;
-            String elementDataType = element.getDataType();
-            if (elementDataType.equals("code") && element.hasChildElements()) {
-                extendedElement = GeneratorUtils.getInstance().populateExtendedElement(element, BallerinaDataType.Enum, elementDataType,
-                        context.getName());
-                context.getExtendedElements().putIfAbsent(element.getName(), extendedElement);
-                element.setExtended(true);
-            }
-        }
-        LOG.debug("Ended: Resource Extended Element Map population");
     }
 }
