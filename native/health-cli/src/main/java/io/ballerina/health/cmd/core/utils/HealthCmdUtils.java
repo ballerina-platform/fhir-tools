@@ -138,7 +138,7 @@ public class HealthCmdUtils {
         return JsonParser.parseString(josnString).getAsJsonObject();
     }
 
-    public static String getSpecFhirVersion(String specificationPath) {
+    public static String getSpecFhirVersion(String specificationPath) throws IOException {
         try (Stream<Path> paths = Files.walk(Paths.get(specificationPath))) {
             return paths
                     .filter(Files::isRegularFile)
@@ -147,9 +147,6 @@ public class HealthCmdUtils {
                     .findFirst()
                     .map(HealthCmdUtils::extractFhirVersion)
                     .orElse(null);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
         }
     }
 
@@ -167,7 +164,8 @@ public class HealthCmdUtils {
                     if (line.startsWith("fhir.version")) {
                         String[] parts = line.split("=", 2);
                         if (parts.length == 2) {
-                            fhirVersion = parts[1].trim().replaceAll("[\"']", ""); // remove quotes
+                            // remove quotes
+                            fhirVersion = parts[1].trim().replaceAll("[\"']", "");
                         }
                     }
                 }
@@ -180,8 +178,8 @@ public class HealthCmdUtils {
             }
 
             return fhirVersion;
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+//            System.err.println("Error reading FHIR version from file: " + e.getMessage());
         }
         return null;
     }

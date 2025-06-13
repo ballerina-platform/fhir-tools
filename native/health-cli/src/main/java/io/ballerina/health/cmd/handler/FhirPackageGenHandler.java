@@ -136,8 +136,17 @@ public class FhirPackageGenHandler implements Handler {
                 }
                 if (fhirVersion != null && !fhirVersion.isEmpty() && fhirVersion.equalsIgnoreCase("r5")) {
                     // Override basePackage and dependentPackage in tool-config.json
-                    final String r5Repository = "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r5";
-                    final String r5BasePackage = "ballerinax/health.fhir.r5";
+                    final String r5Repository = toolExecConfig.getAsJsonObject("config").
+                            getAsJsonObject("packageConfigs").
+                            getAsJsonObject("versionConfigs").
+                            getAsJsonObject("r5").
+                            getAsJsonPrimitive("repository").getAsString();
+
+                    final String r5BasePackage = toolExecConfig.getAsJsonObject("config").
+                            getAsJsonObject("packageConfigs").
+                            getAsJsonObject("versionConfigs").
+                            getAsJsonObject("r5").
+                            getAsJsonPrimitive("basePackage").getAsString();
 
                     JsonElement overrideConfigRepository = new Gson().toJsonTree(r5Repository);
                     JsonElement overrideConfigBase = new Gson().toJsonTree(r5BasePackage);

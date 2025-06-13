@@ -107,10 +107,10 @@ public abstract class AbstractBallerinaProjectTool extends AbstractFHIRTool {
             String igName = entry.getKey();
             FHIRImplementationGuide ig = ((FHIRSpecificationData) toolContext.getSpecificationData()).
                     getFhirImplementationGuides().get(igName);
-            String packageName = getBallerinaProjectToolConfig().getMetadataConfig().getNamePrefix();
+            String packageName = getBallerinaProjectToolConfig().getVersionConfig().getNamePrefix();
             if (entry.getValue().isEnable() && ig != null) {
                 String igPackage = getBallerinaProjectToolConfig().getMetadataConfig().getOrg() + "/" +
-                        getBallerinaProjectToolConfig().getMetadataConfig().getNamePrefix();
+                        getBallerinaProjectToolConfig().getVersionConfig().getNamePrefix();
                 igMap.put(packageName, ig);
 
                 if (!packageName.equals(igName)) {
@@ -139,17 +139,17 @@ public abstract class AbstractBallerinaProjectTool extends AbstractFHIRTool {
             fhirInternationalImportStatement = BallerinaProjectConstants.INTERNATIONAL_PACKAGE_IMPORT_SUFFIX_R5;
         }
 
-        if (getBallerinaProjectToolConfig().getBasePackage() != null && !getBallerinaProjectToolConfig().getBasePackage().isEmpty()) {
-            fhirBaseImportStatement = getBallerinaProjectToolConfig().getBasePackage();
+        if (getBallerinaProjectToolConfig().getVersionConfig().getBasePackage() != null && !getBallerinaProjectToolConfig().getVersionConfig().getBasePackage().isEmpty()) {
+            fhirBaseImportStatement = getBallerinaProjectToolConfig().getVersionConfig().getBasePackage();
         }
 
-        if (getBallerinaProjectToolConfig().getServicePackage() != null && !getBallerinaProjectToolConfig().getServicePackage().isEmpty()) {
-            fhirServiceImportStatement = getBallerinaProjectToolConfig().getServicePackage();
+        if (getBallerinaProjectToolConfig().getVersionConfig().getServicePackage() != null && !getBallerinaProjectToolConfig().getVersionConfig().getServicePackage().isEmpty()) {
+            fhirServiceImportStatement = getBallerinaProjectToolConfig().getVersionConfig().getServicePackage();
         }
 
-        if (getBallerinaProjectToolConfig().getDependentPackage() != null &&
-                !getBallerinaProjectToolConfig().getDependentPackage().isEmpty()) {
-            fhirInternationalImportStatement = getBallerinaProjectToolConfig().getDependentPackage();
+        if (getBallerinaProjectToolConfig().getVersionConfig().getDependentPackage() != null &&
+                !getBallerinaProjectToolConfig().getVersionConfig().getDependentPackage().isEmpty()) {
+            fhirInternationalImportStatement = getBallerinaProjectToolConfig().getVersionConfig().getDependentPackage();
         }
         dependenciesMap.put("basePackage", fhirBaseImportStatement.toLowerCase());
         dependenciesMap.put("servicePackage", fhirServiceImportStatement.toLowerCase());

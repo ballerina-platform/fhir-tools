@@ -40,12 +40,18 @@ public class ToolConstants {
     public static final String CONFIG_PACKAGE_AUTHORS_TOML = "tools.config.package.authors";
     public static final String CONFIG_PACKAGE_FHIR_VERSION = "fhirVersion";
     public static final String CONFIG_PACKAGE_FHIR_VERSION_TOML = "tools.config.packageConfig.fhirVersion";
+
+    public static final String CONFIG_VERSION_CONFIGS = "versionConfigs";
     public static final String CONFIG_PACKAGE_REPOSITORY = "repository";
-    public static final String CONFIG_PACKAGE_REPOSITORY_TOML = "tools.config.package.repository";
     public static final String CONFIG_BASE_PACKAGE = "basePackage";
 
+    ///  to-do: check the breakability of elements like above when initiating the tool from
+    /// a tool-config.toml file
+    public static final String CONFIG_R4_PACKAGE_REPOSITORY_TOML = "tools.config.package.version_configs.r4.repository";
+    public static final String CONFIG_R5_PACKAGE_REPOSITORY_TOML = "tools.config.package.version_configs.r5.repository";
+    public static final String CONFIG_R4_BASE_PACKAGE_TOML = "tools.config.package.base_package";
+    public static final String CONFIG_R5_BASE_PACKAGE_TOML = "tools.config.package.version_configs.r5.base_package";
 
-    public static final String CONFIG_BASE_PACKAGE_TOML = "tools.config.package.utils_package";
     public static final String CONFIG_PACKAGE_DEPENDENCY = "dependencies";
     public static final String CONFIG_PACKAGE_DEPENDENCY_TOML = "tools.config.package.dependency";
     public static final String CONFIG_PACKAGE_DEPENDENCY_ORG = "org";
