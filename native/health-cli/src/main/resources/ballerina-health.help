@@ -91,11 +91,25 @@ COMMANDS
                         profile URL as the value of this parameter. This argument
                         can be used more than once.
 
+
+                    --fhir-version <fhir-version-to-be-used-when-generating-the-package/template>
+                        FHIR version to be used when generating the package/template.
+                        If not specified, the tool will use the default FHIR version 'r4'.
+                        Note that the FHIR version of the IG, should be same as the FHIR version
+                        specified here.
+
             EXAMPLES
                     Generate a Ballerina package for the FHIR artifacts of USCore
                     implementation guide.
+                    NOTE: FHIR version parameter is option for FHIR r4 packages.
                         $ bal health fhir -m package --package-name uscore401 \
                         ./path_to_uscore_definitions
+
+                    Generate a Ballerina package for the FHIR artifacts of EuropeBase
+                    implementation guide with FHIR version r5.
+                        $ bal health fhir -m package --package-name europebase \
+                          --fhir-version r5 \
+                        ./path_to_europebase_definitions
 
                     Generate a Ballerina package for the FHIR artifacts of
                     USCore implementation guide and write the output
@@ -103,9 +117,21 @@ COMMANDS
                         $ bal health fhir -m package --package-name uscore401 \
                         -o ./output_path ./path_to_uscore_definitions
 
+                    Generate a Ballerina package for the FHIR artifacts of
+                    EuropeBase implementation guide with FHIR version r5 and
+                    write the output to the given directory.
+                        $ bal health fhir -m package --package-name europebase \
+                          --fhir-version r5 -o ./output_path \
+                        ./path_to_europebase_definitions
+
                     Generate Ballerina templates for all the FHIR resource profiles
                     of USCore implementation guide.
                         $ bal health fhir -m template \
                         --dependent-package ballerinax/health.fhir.r4.uscore501 \
                         ./path_to_uscore_definitions
 
+                    Generate Ballerina templates for all the FHIR resource profiles
+                    of EuropeBase implementation guide with FHIR version r5.
+                        $ bal health fhir -m template \
+                        --dependent-package ballerinax/health.fhir.r5.europebase \
+                        --fhir-version r5 ./path_to_europebase_definitions

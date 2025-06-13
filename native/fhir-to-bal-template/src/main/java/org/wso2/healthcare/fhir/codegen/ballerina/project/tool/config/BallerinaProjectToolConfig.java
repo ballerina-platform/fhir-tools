@@ -44,14 +44,12 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
     private boolean isEnabled;
     private MetadataConfig metadataConfig;
     private String fhirVersion;
+    private final Map<String, VersionConfig> versionConfigs = new HashMap<>();
     private final Map<String, IncludedIGConfig> includedIGConfigs = new HashMap<>();
     private final List<OperationConfig> operationConfig = new ArrayList<>();
     private final List<DependencyConfig> dependencyConfigs = new ArrayList<>();
     private final List<String> searchParamConfigs = new ArrayList<>();
     private final List<InteractionConfig> interactionConfigs = new ArrayList<>();
-    private String basePackage;
-    private String servicePackage;
-    private String dependentPackage;
 
     @Override
     public void configure(ConfigType<?> configObj) throws CodeGenException {
@@ -59,36 +57,20 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
             JsonObject jsonConfigObj = ((JsonConfigType) configObj).getConfigObj();
             this.isEnabled = jsonConfigObj.getAsJsonPrimitive(BallerinaProjectConstants.CONFIG_ENABLE).getAsBoolean();
             this.metadataConfig = new MetadataConfig(jsonConfigObj.getAsJsonObject("package"));
-            this.fhirVersion = jsonConfigObj.
-                    getAsJsonObject("fhir").getAsJsonPrimitive("version").getAsString();
+            this.fhirVersion = jsonConfigObj.getAsJsonObject("fhir").getAsJsonPrimitive("default_version").getAsString();
+
+            populateVersionConfig(jsonConfigObj.getAsJsonObject("fhir").getAsJsonArray("versionConfigs"));
             populateIgConfigs(jsonConfigObj.getAsJsonArray("includedIGs"));
-            populateOperationConfigs(jsonConfigObj.
-                    getAsJsonObject("builtIn").getAsJsonArray("operations"));
-            populateSearchParamConfigs(jsonConfigObj.
-                    getAsJsonObject("builtIn").getAsJsonArray("searchParams"));
-            populateDependencyConfigs(jsonConfigObj.
-                    getAsJsonArray("dependencies"));
-            populateInteractionConfigs(jsonConfigObj.
-                    getAsJsonObject("builtIn").getAsJsonArray("interactions"));
-            if (jsonConfigObj.getAsJsonPrimitive("basePackage") != null) {
-                this.basePackage = jsonConfigObj
-                        .getAsJsonPrimitive("basePackage").getAsString();
-            }
-            if (jsonConfigObj.getAsJsonPrimitive("servicePackage") != null) {
-                this.servicePackage = jsonConfigObj
-                        .getAsJsonPrimitive("servicePackage").getAsString();
-            }
-            if (jsonConfigObj.getAsJsonPrimitive("dependentPackage") != null) {
-                this.dependentPackage = jsonConfigObj
-                        .getAsJsonPrimitive("dependentPackage").getAsString();
-            }
+            populateOperationConfigs(jsonConfigObj.getAsJsonObject("builtIn").getAsJsonArray("operations"));
+            populateSearchParamConfigs(jsonConfigObj.getAsJsonObject("builtIn").getAsJsonArray("searchParams"));
+            populateDependencyConfigs(jsonConfigObj.getAsJsonArray("dependencies"));
+            populateInteractionConfigs(jsonConfigObj.getAsJsonObject("builtIn").getAsJsonArray("interactions"));
         }
         //todo: add toml type config handling
     }
 
     @Override
     public void overrideConfig(String jsonPath, JsonElement value) {
-
         switch (jsonPath) {
             case "project.package.org":
                 this.metadataConfig.setOrg(value.getAsString());
@@ -96,11 +78,14 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
             case "project.package.version":
                 this.metadataConfig.setVersion(value.getAsString());
                 break;
+            case "project.fhir.default_version":
+                this.fhirVersion = value.getAsString();
+                break;
             case "project.package.namePrefix":
-                this.metadataConfig.setNamePrefix(value.getAsString());
+                this.versionConfigs.get(fhirVersion).setNamePrefix(value.getAsString());
                 break;
             case "project.package.dependentPackage":
-                this.dependentPackage = value.getAsString();
+                this.versionConfigs.get(fhirVersion).setDependentPackage(value.getAsString());
                 break;
             case "project.package.igConfig":
                 this.includedIGConfigs.put(
@@ -109,6 +94,17 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
                 break;
             default:
                 LOG.warn("Invalid config path: " + jsonPath);
+        }
+    }
+
+    private void populateVersionConfig(JsonArray versionArray) {
+        if(versionArray != null){
+            for (int i=0; i<versionArray.size(); i++){
+                this.versionConfigs.putIfAbsent(
+                    versionArray.get(i).getAsJsonObject().getAsJsonPrimitive("fhirVersion").getAsString(),
+                    new VersionConfig(versionArray.get(i).getAsJsonObject())
+                );
+            }
         }
     }
 
@@ -186,14 +182,7 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
         return isEnabled;
     }
 
-    public String getBasePackage() {
-        return basePackage;
-    }
-
-    public String getServicePackage() {
-        return servicePackage;
-    }
-    public String getDependentPackage() {
-        return dependentPackage;
+    public VersionConfig getVersionConfig() {
+        return versionConfigs.get(this.fhirVersion);
     }
 }
