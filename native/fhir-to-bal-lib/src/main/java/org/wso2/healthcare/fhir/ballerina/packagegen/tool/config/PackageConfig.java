@@ -55,8 +55,17 @@ public class PackageConfig {
         this.ballerinaDistribution = packageConfigJson.getAsJsonPrimitive(ToolConstants.CONFIG_PACKAGE_DISTRIBUTION).getAsString();
         this.authors = packageConfigJson.getAsJsonArray(ToolConstants.CONFIG_PACKAGE_AUTHORS).getAsString();
         this.fhirVersion = packageConfigJson.getAsJsonPrimitive(ToolConstants.CONFIG_PACKAGE_FHIR_VERSION).getAsString();
-        this.repository = packageConfigJson.getAsJsonPrimitive(ToolConstants.CONFIG_PACKAGE_REPOSITORY).getAsString();
-        this.basePackage = packageConfigJson.getAsJsonPrimitive(ToolConstants.CONFIG_BASE_PACKAGE).getAsString();
+
+        this.repository = packageConfigJson.
+                getAsJsonObject(ToolConstants.CONFIG_VERSION_CONFIGS).
+                getAsJsonObject(this.fhirVersion).
+                getAsJsonPrimitive(ToolConstants.CONFIG_PACKAGE_REPOSITORY).getAsString();
+
+        this.basePackage = packageConfigJson.
+                getAsJsonObject(ToolConstants.CONFIG_VERSION_CONFIGS).
+                getAsJsonObject(this.fhirVersion).
+                getAsJsonPrimitive(ToolConstants.CONFIG_BASE_PACKAGE).getAsString();
+
         populateDependencies(packageConfigJson.getAsJsonArray(ToolConstants.CONFIG_PACKAGE_DEPENDENCY).getAsJsonArray());
     }
 
@@ -67,8 +76,17 @@ public class PackageConfig {
         this.ballerinaDistribution = packageConfigToml.getString(ToolConstants.CONFIG_PACKAGE_DISTRIBUTION_TOML);
         this.authors = packageConfigToml.getString(ToolConstants.CONFIG_PACKAGE_AUTHORS_TOML);
         this.fhirVersion = packageConfigToml.getString(ToolConstants.CONFIG_PACKAGE_FHIR_VERSION_TOML);
-        this.repository = packageConfigToml.getString(ToolConstants.CONFIG_PACKAGE_REPOSITORY_TOML);
-        this.basePackage = packageConfigToml.getString(ToolConstants.CONFIG_BASE_PACKAGE_TOML);
+
+        ///  NOTE: Check for the breakability of elements like the json config like above
+        ///  when initiating the tool from a tool-config.toml file
+        if (this.fhirVersion.equalsIgnoreCase("r4")) {
+            this.repository = packageConfigToml.getString(ToolConstants.CONFIG_R4_PACKAGE_REPOSITORY_TOML);
+            this.basePackage = packageConfigToml.getString(ToolConstants.CONFIG_R4_BASE_PACKAGE_TOML);
+        } else if (this.fhirVersion.equalsIgnoreCase("r5")) {
+            this.repository = packageConfigToml.getString(ToolConstants.CONFIG_R5_PACKAGE_REPOSITORY_TOML);
+            this.basePackage = packageConfigToml.getString(ToolConstants.CONFIG_R5_BASE_PACKAGE_TOML);
+        }
+
         populateDependencies(packageConfigToml.getArrayOrEmpty(ToolConstants.CONFIG_PACKAGE_DEPENDENCY_TOML));
     }
 

@@ -70,6 +70,7 @@ public class FhirTemplateGenHandler implements Handler {
         }
         fhirToolLib = (FHIRTool) initializeLib(
                 HealthCmdConstants.CMD_SUB_FHIR, printStream, configJson, specificationPath);
+        fhirVersion = fhirToolLib.getFhirVersion();
     }
 
     @Override
@@ -78,7 +79,6 @@ public class FhirTemplateGenHandler implements Handler {
         this.packageName = (String) argsMap.get("--package-name");
         this.orgName = (String) argsMap.get("--org-name");
         this.packageVersion = (String) argsMap.get("--package-version");
-        this.fhirVersion = (String) argsMap.get("--fhir-version");
         this.dependentPackage = (String) argsMap.get("--dependent-package");
         this.includedProfiles = (String[]) argsMap.get("--included-profile");
         this.excludedProfiles = (String[]) argsMap.get("--excluded-profile");
@@ -129,25 +129,7 @@ public class FhirTemplateGenHandler implements Handler {
                 }
                 if (fhirVersion != null && !fhirVersion.isEmpty() && !fhirVersion.equalsIgnoreCase("r4")) {
                     JsonElement overrideConfig = new Gson().toJsonTree(fhirVersion.toLowerCase());
-                    toolConfigInstance.overrideConfig("project.fhir.version", overrideConfig);
-                }
-                if (fhirVersion != null && !fhirVersion.isEmpty() && fhirVersion.equalsIgnoreCase("r5")) {
-                    String namePrefix = "health.fhir.r5.international500";
-                    String basePackage = "ballerinax/health.fhir.r5";
-                    String servicePackage = "ballerinax/health.fhirr5";
-                    String dependentPackage = "ballerinax/health.fhir.r5.international500";
-
-                    JsonElement overrideNamePrefix = new Gson().toJsonTree(namePrefix);
-                    toolConfigInstance.overrideConfig("project.package.namePrefix", overrideNamePrefix);
-
-                    JsonElement overrideBasePackage = new Gson().toJsonTree(basePackage);
-                    toolConfigInstance.overrideConfig("project.basePackage", overrideBasePackage);
-
-                    JsonElement overrideServicePackage = new Gson().toJsonTree(servicePackage);
-                    toolConfigInstance.overrideConfig("project.servicePackage", overrideServicePackage);
-
-                    JsonElement overrideDependentPackage = new Gson().toJsonTree(dependentPackage);
-                    toolConfigInstance.overrideConfig("project.dependentPackage", overrideDependentPackage);
+                    toolConfigInstance.overrideConfig("project.fhir.default_version", overrideConfig);
                 }
                 if (dependentPackage != null) {
                     JsonElement overrideConfig = new Gson().toJsonTree(dependentPackage);

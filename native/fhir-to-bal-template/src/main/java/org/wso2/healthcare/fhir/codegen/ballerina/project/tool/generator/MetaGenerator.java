@@ -83,7 +83,7 @@ public class MetaGenerator extends AbstractFHIRTemplateGenerator {
         templateContext.setProperty("metaConfig", config.getMetadataConfig());
         templateContext.setProperty("service", service);
         templateContext.setProperty("apiName", generatorProperties.get("resourceType") + "API");
-        templateContext.setProperty("templateName", config.getMetadataConfig().getNamePrefix() + "." +
+        templateContext.setProperty("templateName", config.getVersionConfig().getNamePrefix() + "." +
                 generatorProperties.get("resourceType").toString().toLowerCase());
 
         Map<String, String> dependencies = (HashMap<String, String>) generatorProperties.get("dependencies");

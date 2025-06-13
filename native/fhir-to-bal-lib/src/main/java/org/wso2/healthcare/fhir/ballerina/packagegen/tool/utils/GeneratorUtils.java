@@ -90,6 +90,9 @@ public class GeneratorUtils {
         put("check", "'check");
         put("field", "'field");
         put("map", "'map");
+        put("any", "'any");
+        put("const", "'const");
+        put("object", "'object");
     }};
 
     private final HashMap<String, HashMap<String, String>> VALUESET_DATA_TYPES = new HashMap<>() {{
@@ -377,6 +380,10 @@ public class GeneratorUtils {
         }
 
         String sanitizedIdentifier = resolveSpecialCharacters(suggestedIdentifier.toString());
+
+        // System.out.println(sanitizedIdentifier);
+        // Output: IngredientSubstance, IngredientSubstanceStrength, IngredientSubstanceStrengthReferenceStrength
+
         DataTypesRegistry.getInstance().addDataType(sanitizedIdentifier);
         LOG.debug("Ended: Extended Element Identifier generation");
         return sanitizedIdentifier;
@@ -449,6 +456,18 @@ public class GeneratorUtils {
 
     public String mapToValueSetDatatype(String baseType, String fieldName, String assignedType) {
         if (VALUESET_DATA_TYPES.containsKey(baseType) && VALUESET_DATA_TYPES.get(baseType).containsKey(fieldName)) {
+
+            /// This code is to handle the case where a child type is already generated,
+            /// and a parent type should not override it.
+            /// e.g: AddressEuUse should not be overridden by r5:AddressUse
+            ///  NOTE: Removing the Address, ContactPoint, etc. fields from VALUESET_DATA_TYPES
+            ///  would be the ideal solution. But the reason why those were included in the first
+            ///  place should be investigated.
+            String assigningType = VALUESET_DATA_TYPES.get(baseType).get(fieldName);
+
+            if(!assigningType.equalsIgnoreCase(assignedType)){
+                return assignedType;
+            }
             return VALUESET_DATA_TYPES.get(baseType).get(fieldName);
         }
         return assignedType;

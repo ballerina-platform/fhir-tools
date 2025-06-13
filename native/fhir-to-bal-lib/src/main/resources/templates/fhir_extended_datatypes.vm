@@ -34,13 +34,13 @@ import $import;
         #foreach ($elementMapEntry in $elementEntries)
         #if($elementMapEntry)
         "${elementMapEntry.value.name}": {
-        name: "${elementMapEntry.value.name}",
-        dataType: ${elementMapEntry.value.getDataTypeWithImportPrefix()},
-        min: ${elementMapEntry.value.min},
-        max: ${elementMapEntry.value.max},
-        isArray: ${elementMapEntry.value.isArray()},
-        description: "${elementMapEntry.value.description}",
-        path: "${elementMapEntry.value.path}"
+            name: "${elementMapEntry.value.name}",
+            dataType: ${elementMapEntry.value.getDataTypeWithImportPrefix()},
+            min: ${elementMapEntry.value.min},
+            max: ${elementMapEntry.value.max},
+            isArray: ${elementMapEntry.value.isArray()},
+            description: "${elementMapEntry.value.description}",
+            path: "${elementMapEntry.value.path}"
         }#if($i < $len - 1),#end
             #set($i = $i + 1)
 
@@ -56,10 +56,12 @@ public type ${mapEntry.value.name} record {|
 #if($util.isTypeInclusion($mapEntry.value.baseDataType))
     *$util.getTypeWithImport($mapEntry.value.baseDataType);
 #end
+
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
     string id?;
     ${util.getBasePackageIdentifier()}Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
+
 #foreach ($elementMapEntry in ${mapEntry.value.elements.entrySet()})
 #if($elementMapEntry && $elementMapEntry.value.max != 0)
     ${util.getTypeWithImport($util.mapToValueSetDatatype($mapEntry.value.baseDataType, $elementMapEntry.value.name, $elementMapEntry.value.dataType))}#if($elementMapEntry.value.isArray())[]#end ${elementMapEntry.value.name}#if(!$elementMapEntry.value.isRequired())?#end;

@@ -27,7 +27,6 @@ import java.util.List;
 public class MetadataConfig {
 
     private String org;
-    private String namePrefix;
     private String version;
     private String distribution;
     private final List<String> authors = new ArrayList<>();
@@ -36,7 +35,6 @@ public class MetadataConfig {
     public MetadataConfig(JsonObject packageConfig) {
         //todo: add null checks
         this.org = packageConfig.getAsJsonPrimitive("org").getAsString();
-        this.namePrefix = packageConfig.getAsJsonPrimitive("namePrefix").getAsString();
         this.version = packageConfig.getAsJsonPrimitive("version").getAsString();
         this.distribution = packageConfig.getAsJsonPrimitive("distribution").getAsString();
         for (JsonElement authorElem : packageConfig.getAsJsonArray("authors").getAsJsonArray()) {
@@ -53,10 +51,6 @@ public class MetadataConfig {
 
     public String getOrg() {
         return org;
-    }
-
-    public String getNamePrefix() {
-        return namePrefix;
     }
 
     public String getVersion() {
@@ -86,10 +80,6 @@ public class MetadataConfig {
             normalizedOrg = normalizedOrg.substring(0, normalizedOrg.length() - 1);
         }
         this.org = normalizedOrg;
-    }
-
-    public void setNamePrefix(String namePrefix) {
-        this.namePrefix = namePrefix;
     }
 
     public void setVersion(String version) {

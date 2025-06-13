@@ -71,7 +71,6 @@ public class R4DatatypeContextGenerator extends AbstractDatatypeContextGenerator
 
             DataTypeDefinitionAnnotation annotation = new DataTypeDefinitionAnnotation();
             annotation.setName(datatypeDefn.getDefinition().getName());
-
             context.setAnnotation(annotation);
 
             for (ElementDefinition elementDefinition : datatypeDefn.getDefinition().getSnapshot().getElement()) {

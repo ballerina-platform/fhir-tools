@@ -46,8 +46,8 @@ public class R5DatatypeContextGenerator extends AbstractDatatypeContextGenerator
             "Annotation", "HumanName", "CodeableConcept", "ContactPoint", "Coding",
             "Money", "Address", "Timing", "BackboneType", "Quantity", "SampledData", "Signature",
             "Age", "Distance", "Duration", "Count", "MoneyQuantity", "SimpleQuantity",
-            "ContactDetail", "Contributor", "DataRequirement", "RelatedArtifact", "DataType",
-            "TriggerDefinition", "ParameterDefinition", "ExtendedContactDetail",
+            "ContactDetail", "Contributor", "DataRequirement", "RelatedArtifact", "PrimitiveType",
+            "DataType", "TriggerDefinition", "ParameterDefinition", "ExtendedContactDetail",
             "Availability", "Expression", "UsageContext", "MonetaryComponent", "VirtualServiceDetail",
             "CodeableReference", "Meta", "Reference", "Dosage", "xhtml", "Narrative",
             "Extension", "ElementDefinition"

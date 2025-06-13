@@ -19,6 +19,7 @@ import java.lang.management.RuntimeMXBean;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -138,18 +139,49 @@ public class HealthCmdUtils {
         return JsonParser.parseString(josnString).getAsJsonObject();
     }
 
-    public static String getSpecFhirVersion(String specificationPath) {
+    public static String getSpecFhirVersion(String specificationPath) throws IOException {
         try (Stream<Path> paths = Files.walk(Paths.get(specificationPath))) {
-            return paths
+            List<Path> jsonFiles = paths
                     .filter(Files::isRegularFile)
-                    .filter(path -> path.getFileName().toString().contains("StructureDefinition"))
-                    .filter(path -> path.toString().endsWith(".json") || path.toString().endsWith(".toml"))
+                    .filter(path -> path.toString().endsWith(".json"))
+                    .toList();
+
+            Path implGuide = jsonFiles.stream()
+                    .filter(path -> path.getFileName().toString().startsWith("ImplementationGuide"))
+                    .filter(path -> {
+                        try{
+                            String content = Files.readString(path);
+                            JsonObject json = JsonParser.parseString(content).getAsJsonObject();
+                            return json.has("resourceType") &&
+                                    json.get("resourceType").getAsString().equals("ImplementationGuide") &&
+                                    json.has("fhirVersion");
+                        }
+                        catch (Exception e){
+                            return false;
+                        }
+                    })
                     .findFirst()
-                    .map(HealthCmdUtils::extractFhirVersion)
                     .orElse(null);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+
+            Path structureDefinition = jsonFiles.stream()
+                    .filter(path -> path.getFileName().toString().startsWith("StructureDefinition"))
+                    .filter(path -> {
+                        try{
+                            String content = Files.readString(path);
+                            JsonObject json = JsonParser.parseString(content).getAsJsonObject();
+                            return json.has("resourceType") &&
+                                    json.get("resourceType").getAsString().equals("StructureDefinition") &&
+                                    json.has("fhirVersion");
+                        }
+                        catch (Exception e){
+                            return false;
+                        }
+                    })
+                    .findFirst()
+                    .orElse(null);
+
+            Path target = implGuide != null ? implGuide : structureDefinition;
+            return target != null ? HealthCmdUtils.extractFhirVersion(target) : null;
         }
     }
 
@@ -161,16 +193,6 @@ public class HealthCmdUtils {
             if (path.toString().endsWith(".json")) {
                 JsonObject json = JsonParser.parseString(content).getAsJsonObject();
                 fhirVersion = json.has("fhirVersion") ? json.get("fhirVersion").getAsString() : null;
-            } else if (path.toString().endsWith(".toml")) {
-                for (String line : content.split("\n")) {
-                    line = line.trim();
-                    if (line.startsWith("fhir.version")) {
-                        String[] parts = line.split("=", 2);
-                        if (parts.length == 2) {
-                            fhirVersion = parts[1].trim().replaceAll("[\"']", ""); // remove quotes
-                        }
-                    }
-                }
             }
 
             if (fhirVersion.startsWith("4.")) {
@@ -180,8 +202,10 @@ public class HealthCmdUtils {
             }
 
             return fhirVersion;
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (NullPointerException e) {
+            System.err.println("FHIR version not found in the file: " + e.getMessage());
+        } catch (IOException e) {
+            System.err.println("Error reading FHIR version from file: " + e.getMessage());
         }
         return null;
     }

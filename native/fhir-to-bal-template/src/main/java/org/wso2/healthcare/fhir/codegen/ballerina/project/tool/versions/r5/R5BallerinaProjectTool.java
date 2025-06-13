@@ -165,7 +165,7 @@ public class R5BallerinaProjectTool extends AbstractBallerinaProjectTool {
             } else {
                 //check for profiles
                 if (!getServiceMap().get(resourceType).getProfiles().contains(profile)) {
-                    FHIRProfile fhirProfile = new FHIRProfile(structureDefinition, url, igName, resourceType);
+                    R5FHIRProfile fhirProfile = new R5FHIRProfile(structureDefinition, url, igName, resourceType);
                     fhirProfile.addImport(getBallerinaProjectToolConfig().getIncludedIGConfigs().get(igName).getImportStatement());
                     fhirProfile.setFhirVersion(getBallerinaProjectToolConfig().getFhirVersion());
                     fhirProfile.setPackagePrefix(getBallerinaProjectToolConfig());
@@ -175,7 +175,7 @@ public class R5BallerinaProjectTool extends AbstractBallerinaProjectTool {
             }
         } else {
             BallerinaService ballerinaService = new BallerinaService(resourceType, getBallerinaProjectToolConfig().getFhirVersion());
-            FHIRProfile fhirProfile = new FHIRProfile(structureDefinition, url, igName, resourceType);
+            R5FHIRProfile fhirProfile = new R5FHIRProfile(structureDefinition, url, igName, resourceType);
             fhirProfile.addImport(getBallerinaProjectToolConfig().getIncludedIGConfigs().get(igName).getImportStatement());
             fhirProfile.setFhirVersion(getBallerinaProjectToolConfig().getFhirVersion());
             fhirProfile.setPackagePrefix(getBallerinaProjectToolConfig());

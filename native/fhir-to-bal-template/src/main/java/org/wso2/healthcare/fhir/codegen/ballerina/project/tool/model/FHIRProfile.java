@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class FHIRProfile <S>{
+public class FHIRProfile<StructureDefinition> {
     private String parentRef;
     private boolean isAbstract;
     private String name;
@@ -21,7 +21,7 @@ public class FHIRProfile <S>{
     private String resourceType;
     private String packagePrefix;
 
-    public FHIRProfile(S profileDef, String url, String igName, String resourceType) {
+    public FHIRProfile(StructureDefinition profileDef, String url, String igName, String resourceType) {
         this.igName = igName;
         this.resourceType = resourceType;
         isAbstract = false;
@@ -52,7 +52,8 @@ public class FHIRProfile <S>{
     public void setName(String name) {
         this.name = name;
     }
-    public String getNamePrefix(){
+
+    public String getNamePrefix() {
         return CaseUtils.toCamelCase(igName, true, '_') + CaseUtils.toCamelCase(resourceType, true, '_');
     }
 
@@ -80,11 +81,11 @@ public class FHIRProfile <S>{
         this.importsList.add(importItem);
     }
 
-    public void addExample(String interaction, JsonObject example){
-        examples.put(interaction,example);
+    public void addExample(String interaction, JsonObject example) {
+        examples.put(interaction, example);
     }
 
-    public Map<String,JsonObject> getExamples(){
+    public Map<String, JsonObject> getExamples() {
         return examples;
     }
 
@@ -101,7 +102,7 @@ public class FHIRProfile <S>{
     }
 
     public void setPackagePrefix(BallerinaProjectToolConfig config) {
-        String igPackage = config.getDependentPackage();
+        String igPackage = config.getVersionConfig().getDependentPackage();
         if (igPackage.contains("/")) {
             String pkgNameWithoutOrg = igPackage.split("/")[1];
             this.packagePrefix = pkgNameWithoutOrg.substring(pkgNameWithoutOrg.lastIndexOf(".") + 1);

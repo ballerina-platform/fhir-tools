@@ -207,22 +207,27 @@ public class R5ResourceContextGenerator extends AbstractResourceContextGenerator
                 String rootElementName;
                 String elementName;
                 String resourceName = elementPathTokens[0];
+
                 elementPath = elementPath.substring(resourceName.length() + 1);
 
                 if (elementPath.split("\\.").length > 1) {
                     Map<String, Element> elementMap = snapshotElementMap;
+
                     while (elementPath.split("\\.").length > 1) {
                         elementPathTokens = elementPath.split("\\.");
                         rootElementName = elementPathTokens[0];
+
                         if (rootElementName.contains("[x]"))
                             rootElementName = rootElementName.replace("[x]", elementDefinition.getBase().getPath().split("\\.")[0]);
 
                         if (elementPathTokens.length == 2) {
                             elementName = elementPathTokens[1];
+
                             if (elementMap.containsKey(rootElementName)) {
                                 Element rootElement = elementMap.get(rootElementName);
                                 List<ElementDefinition.TypeRefComponent> types = elementDefinition.getType();
                                 String tempElement = elementName.split(Pattern.quote("[x]"))[0];
+
                                 for (ElementDefinition.TypeRefComponent type : elementDefinition.getType()) {
                                     if (types.size() > 1 || elementName.contains("[x]"))
                                         elementName = tempElement + CommonUtil.toCamelCase(type.getCode());
@@ -244,9 +249,13 @@ public class R5ResourceContextGenerator extends AbstractResourceContextGenerator
                                 }
                             }
                         }
-                        if (elementPath.contains("[x]"))
-                            elementPath = elementPath.replace("[x]", elementDefinition.getBase().getPath().split("\\.")[0]);
-                        elementPath = elementPath.substring(rootElementName.length() + 1);
+
+                        if (elementPath.contains("[x]")) {
+                            elementPath = elementPath.replace("[x]", "");
+                        } else {
+                            elementPath = elementPath.substring(rootElementName.length() + 1);
+                        }
+
                         if (elementMap.containsKey(rootElementName) && elementMap.get(rootElementName).hasChildElements())
                             elementMap = elementMap.get(rootElementName).getChildElements();
                     }
@@ -356,7 +365,15 @@ public class R5ResourceContextGenerator extends AbstractResourceContextGenerator
             element.setChildElements(childElements);
         }
 
-        element.setMin(elementDefinition.getMin());
+        // This filter makes sure that elements with multiple possible datatypes are not marked as
+        // required. Since we can't specify "either-or" for datatypes, all such elements are
+        // treated as optional.
+        if (elementDefinition.getPath().endsWith("[x]")) {
+            element.setMin(0);
+        } else {
+            element.setMin(elementDefinition.getMin());
+        }
+
         element.setMax(GeneratorUtils.getMaxCardinality(elementDefinition.getMax()));
         element.setArray(isElementArray(elementDefinition));
         element.setIsSlice(isSlice);
@@ -398,7 +415,7 @@ public class R5ResourceContextGenerator extends AbstractResourceContextGenerator
         childElement.setArray(childProperty.isList());
         childElement.setMin(1);
         childElement.setMax(childProperty.getMaxCardinality());
-        childElement.setDescription(childProperty.getDefinition());
+        childElement.setDescription(CommonUtil.parseMultilineString(childProperty.getDefinition()));
         childElement.setPath(elementPath + "." + childProperty.getName());
 
         ArrayList<String> values = new ArrayList<>();

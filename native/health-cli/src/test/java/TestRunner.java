@@ -104,13 +104,11 @@ public class TestRunner {
         String packageName = "health.fhir.r4.uscore501";
         String orgName = "ballerinax";
         String packageVersion = "1.1.0";
-        String fhirVersion = "r4";
         argsMap.put("--package-name", packageName); // FOR PACKAGE
         argsMap.put("--package-version", packageVersion); // FOR PACKAGE
         argsMap.put("--dependency", null); // FOR PACKAGE
         //        argsMap.put("--dependent-package", orgName + "/" + packageName); // FOR TEMPLATE
         argsMap.put("--org-name", orgName);
-        argsMap.put("--fhir-version", fhirVersion);
         argsMap.put("--included-profile", null);
         argsMap.put("--excluded-profile", null);
         String mode = "package";
@@ -159,13 +157,11 @@ public class TestRunner {
         String packageName = "health.fhir.r5.europebase";
         String orgName = "ballerinax";
         String packageVersion = "1.1.0";
-        String fhirVersion = "r5";
         argsMap.put("--package-name", packageName); // FOR PACKAGE
         argsMap.put("--package-version", packageVersion); // FOR PACKAGE
         argsMap.put("--dependency", null); // FOR PACKAGE
         //        argsMap.put("--dependent-package", orgName + "/" + packageName); // FOR TEMPLATE
         argsMap.put("--org-name", orgName);
-        argsMap.put("--fhir-version", fhirVersion);
         argsMap.put("--included-profile", null);
         argsMap.put("--excluded-profile", null);
         String mode = "package";

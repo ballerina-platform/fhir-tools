@@ -245,9 +245,13 @@ public class R4ResourceContextGenerator extends AbstractResourceContextGenerator
                                 }
                             }
                         }
-                        if (elementPath.contains("[x]"))
-                            elementPath = elementPath.replace("[x]", elementDefinition.getBase().getPath().split("\\.")[0]);
-                        elementPath = elementPath.substring(rootElementName.length() + 1);
+                        if (elementPath.contains("[x]")){
+                            elementPath = elementPath.replace("[x]", "");
+                        }
+                        else{
+                            elementPath = elementPath.substring(rootElementName.length() + 1);
+                        }
+
                         if (elementMap.containsKey(rootElementName) && elementMap.get(rootElementName).hasChildElements())
                             elementMap = elementMap.get(rootElementName).getChildElements();
                     }
@@ -337,7 +341,15 @@ public class R4ResourceContextGenerator extends AbstractResourceContextGenerator
             element.setChildElements(childElements);
         }
 
-        element.setMin(elementDefinition.getMin());
+        // This filter makes sure that elements with multiple possible datatypes are not marked as
+        // required. Since we can't specify "either-or" for datatypes, all such elements are
+        // treated as optional.
+        if (elementDefinition.getPath().endsWith("[x]")) {
+            element.setMin(0);
+        } else {
+            element.setMin(elementDefinition.getMin());
+        }
+
         element.setMax(GeneratorUtils.getMaxCardinality(elementDefinition.getMax()));
         element.setArray(isElementArray(elementDefinition));
         element.setIsSlice(isSlice);
@@ -366,7 +378,7 @@ public class R4ResourceContextGenerator extends AbstractResourceContextGenerator
         childElement.setArray(childProperty.isList());
         childElement.setMin(1);
         childElement.setMax(childProperty.getMaxCardinality());
-        childElement.setDescription(childProperty.getDefinition());
+        childElement.setDescription(CommonUtil.parseMultilineString(childProperty.getDefinition()));
         childElement.setPath(elementPath + "." + childProperty.getName());
 
         ArrayList<String> values = new ArrayList<>();
