@@ -32,6 +32,7 @@ import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRSearchPara
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.config.BallerinaProjectToolConfig;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.config.IncludedIGConfig;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.generator.BallerinaProjectGenerator;
+import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.AggregatedService;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.BallerinaService;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.FHIRProfile;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.SearchParam;
@@ -49,6 +50,7 @@ import java.util.Map;
 public class BallerinaProjectTool extends AbstractFHIRTool {
     private final Map<String, FHIRImplementationGuide> igMap = new HashMap<>();
     private final Map<String, BallerinaService> serviceMap = new HashMap<>();
+    private final Map<String, AggregatedService> aggregatedServiceMap = new HashMap<>();
     private final Map<String, String> dependenciesMap = new HashMap<>();
 
     private final List<String> EXCLUDED_FHIR_APIS = new ArrayList<>(Arrays.asList("Bundle",
@@ -71,12 +73,18 @@ public class BallerinaProjectTool extends AbstractFHIRTool {
                 throw new CodeGenException("No services found to generate");
             }
 
+            // Handle aggregated API generation if enabled
+            if (ballerinaProjectToolConfig.isEnableAggregatedApi()) {
+                populateAggregatedServices();
+            }
+
             String targetRoot = ballerinaProjectToolConfig.getTargetDir();
             String targetDirectory = targetRoot + File.separator;
             BallerinaProjectGenerator balProjectGenerator = new BallerinaProjectGenerator(targetDirectory);
             Map<String, Object> generatorProperties = new HashMap<>();
             generatorProperties.put("config", ballerinaProjectToolConfig);
             generatorProperties.put("serviceMap", serviceMap);
+            generatorProperties.put("aggregatedServiceMap", aggregatedServiceMap);
             generatorProperties.put("dependenciesMap", dependenciesMap);
             balProjectGenerator.setGeneratorProperties(generatorProperties);
             return balProjectGenerator;
@@ -257,6 +265,35 @@ public class BallerinaProjectTool extends AbstractFHIRTool {
             ballerinaService.addProfile(url);
             ballerinaService.addIg(igName);
             serviceMap.put(structureDefinition.getType(), ballerinaService);
+        }
+    }
+
+    /**
+     * Populate aggregated services based on configured API groups.
+     */
+    private void populateAggregatedServices() {
+        List<String> apiGroups = ballerinaProjectToolConfig.getAggregatedApis();
+        
+        if (apiGroups.isEmpty()) {
+            // If no specific groups are configured, create one aggregated service with all APIs
+            AggregatedService aggregatedService = new AggregatedService("AggregatedFHIRService", 
+                    ballerinaProjectToolConfig.getFhirVersion());
+            
+            for (Map.Entry<String, BallerinaService> entry : serviceMap.entrySet()) {
+                aggregatedService.addService(entry.getKey(), entry.getValue());
+            }
+            
+            aggregatedServiceMap.put("aggregated", aggregatedService);
+        } else {
+            AggregatedService aggregatedService = new AggregatedService("AggregatedFHIRService",
+                    ballerinaProjectToolConfig.getFhirVersion());
+            // Create aggregated services based on configured groups
+            for (String apiName : apiGroups) {
+                if (serviceMap.containsKey(apiName)) {
+                    aggregatedService.addService(apiName, serviceMap.get(apiName));
+                }
+                aggregatedServiceMap.put("aggregated", aggregatedService);
+            }
         }
     }
 
