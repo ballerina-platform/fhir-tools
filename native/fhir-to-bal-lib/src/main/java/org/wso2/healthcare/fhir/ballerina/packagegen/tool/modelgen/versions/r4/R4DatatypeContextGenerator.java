@@ -30,10 +30,8 @@ import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.Element;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.modelgen.AbstractDatatypeContextGenerator;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.CommonUtil;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.GeneratorUtils;
-import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.versions.r4.R4GeneratorUtils;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -101,7 +99,7 @@ public class R4DatatypeContextGenerator extends AbstractDatatypeContextGenerator
                             ToolConstants.DATA_TYPE_EXTENSION)) {
                         context.setBaseDataType(StringUtils.capitalize(typeCode + ToolConstants.DATA_TYPE_EXTENSION));
                     } else if ("code".equals(typeCode)) {
-                        R4GeneratorUtils.populateCodeValuesForCodeElements(elementDefinition, element);
+                        GeneratorUtils.populateCodeValuesForCodeElements(elementDefinition.getShort(), element);
                     }
 
                     element.setName(GeneratorUtils.getInstance().resolveMultiDataTypeFieldNames(elementName, typeCode));

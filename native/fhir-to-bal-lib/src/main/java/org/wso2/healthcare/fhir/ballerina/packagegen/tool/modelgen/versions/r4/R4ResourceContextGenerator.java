@@ -40,7 +40,6 @@ import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.ResourceTemplate
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.modelgen.AbstractResourceContextGenerator;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.CommonUtil;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.GeneratorUtils;
-import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.versions.r4.R4GeneratorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -364,7 +363,7 @@ public class R4ResourceContextGenerator extends AbstractResourceContextGenerator
          Refer Issue: https://github.com/wso2-enterprise/open-healthcare/issues/928
          */
         if (element.getDataType().equals("code")) {
-            R4GeneratorUtils.populateCodeValuesForCodeElements(elementDefinition, element);
+            GeneratorUtils.populateCodeValuesForCodeElements(elementDefinition.getShort(), element);
         }
 //        markConstrainedElements(element);
         LOG.debug("Ended: Resource Element population");

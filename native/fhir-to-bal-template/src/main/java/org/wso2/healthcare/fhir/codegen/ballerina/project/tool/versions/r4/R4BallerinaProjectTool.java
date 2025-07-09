@@ -18,6 +18,8 @@
 
 package org.wso2.healthcare.fhir.codegen.ballerina.project.tool.versions.r4;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.SearchParameter;
 import org.hl7.fhir.r4.model.StructureDefinition;
@@ -31,6 +33,7 @@ import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.BallerinaSe
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.versions.r4.R4FHIRProfile;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.SearchParam;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.versions.r4.R4SearchParam;
+import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.versions.r5.R5BallerinaProjectTool;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,6 +44,9 @@ import java.util.Map;
  * Main class for Ballerina Project Generator tool (FHIR R4).
  */
 public class R4BallerinaProjectTool extends AbstractBallerinaProjectTool {
+
+    private static final Log LOG = LogFactory.getLog(R4BallerinaProjectTool.class);
+
     /**
      * Populate Ballerina Service model according to configured IGs and Profiles.
      */
@@ -114,13 +120,13 @@ public class R4BallerinaProjectTool extends AbstractBallerinaProjectTool {
                     structureDefinitions.add((StructureDefinition) resourceDefMap.get(profile).getDefinition());
                 } else {
                     // invalid url
-                    System.out.println(BallerinaProjectConstants.PrintStrings.INVALID_PROFILE + profile);
+                    LOG.debug(BallerinaProjectConstants.PrintStrings.INVALID_PROFILE + profile);
                 }
             }
             if (structureDefinitions.isEmpty()) {
                 // nothing included
                 // generate template for all the profiles
-                System.out.println(BallerinaProjectConstants.PrintStrings.TEMPLATES_FOR_ALL_PROFILES);
+                LOG.info(BallerinaProjectConstants.PrintStrings.TEMPLATES_FOR_ALL_PROFILES);
                 resourceDefMap.forEach((k, resourceDef) -> {
                     structureDefinitions.add((StructureDefinition) resourceDef.getDefinition());
                 });
@@ -134,20 +140,20 @@ public class R4BallerinaProjectTool extends AbstractBallerinaProjectTool {
                     resourceDefMapCopy.remove(profile);
                 } else {
                     // invalid url
-                    System.out.println(BallerinaProjectConstants.PrintStrings.INVALID_PROFILE + profile);
+                    LOG.debug(BallerinaProjectConstants.PrintStrings.INVALID_PROFILE + profile);
                 }
             }
             resourceDefMapCopy.forEach((k, resourceDef) -> {
                 structureDefinitions.add((StructureDefinition) resourceDef.getDefinition());
             });
             if (resourceDefMap.size() == resourceDefMapCopy.size()) {
-                System.out.println(BallerinaProjectConstants.PrintStrings.TEMPLATES_FOR_ALL_PROFILES);
+                LOG.info(BallerinaProjectConstants.PrintStrings.TEMPLATES_FOR_ALL_PROFILES);
             }
             return structureDefinitions;
         }
         // nothing included or excluded
         // generate templates for all the profiles
-        System.out.println(BallerinaProjectConstants.PrintStrings.TEMPLATES_FOR_ALL_PROFILES);
+        LOG.info(BallerinaProjectConstants.PrintStrings.TEMPLATES_FOR_ALL_PROFILES);
         resourceDefMap.forEach((k, v) -> {
             structureDefinitions.add((StructureDefinition) v.getDefinition());
         });

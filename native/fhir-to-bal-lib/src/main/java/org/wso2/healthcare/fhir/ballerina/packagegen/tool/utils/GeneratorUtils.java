@@ -381,9 +381,6 @@ public class GeneratorUtils {
 
         String sanitizedIdentifier = resolveSpecialCharacters(suggestedIdentifier.toString());
 
-        // System.out.println(sanitizedIdentifier);
-        // Output: IngredientSubstance, IngredientSubstanceStrength, IngredientSubstanceStrengthReferenceStrength
-
         DataTypesRegistry.getInstance().addDataType(sanitizedIdentifier);
         LOG.debug("Ended: Extended Element Identifier generation");
         return sanitizedIdentifier;
@@ -504,5 +501,31 @@ public class GeneratorUtils {
     public boolean isConstrainedArrayElement(Element element) {
         return (element.getMin() >= 1 && element.getMax() > 1) || (element.isArray() &&
                 element.getMax() > 0 && element.getMax() < Integer.MAX_VALUE);
+    }
+
+    /**
+     * Populates available code values for a given code element.
+     *
+     * @param shortField        short text from the element definition of FHIR specification
+     * @param element           element model for template context
+     */
+    public static void populateCodeValuesForCodeElements(String shortField, Element element) {
+        if (!shortField.contains("|")) {
+            return;
+        }
+        HashMap<String, Element> childElements = new HashMap<>();
+        String[] codes = shortField.split(Pattern.quote("|"));
+        for (String code : codes) {
+            code = CommonUtil.validateCode(code);
+            if (!code.trim().isEmpty()) {
+                Element childElement = new Element();
+                childElement.setName(code);
+                childElement.setDataType("string");
+                childElement.setRootElementName(element.getName());
+                childElement.setValueSet(element.getValueSet());
+                childElements.put(childElement.getName(), childElement);
+            }
+        }
+        element.setChildElements(childElements);
     }
 }

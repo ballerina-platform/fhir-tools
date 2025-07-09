@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+ * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -21,8 +21,6 @@ package org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.versions.r
 import org.hl7.fhir.r4.model.StructureDefinition;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.FHIRProfile;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.util.BallerinaProjectUtil;
-
-import java.util.*;
 
 public class R4FHIRProfile extends FHIRProfile<StructureDefinition> {
     private StructureDefinition profileDef;
