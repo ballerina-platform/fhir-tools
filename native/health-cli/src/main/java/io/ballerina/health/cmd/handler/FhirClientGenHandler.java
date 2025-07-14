@@ -20,6 +20,7 @@ package io.ballerina.health.cmd.handler;
 
 import java.io.PrintStream;
 import java.util.Map;
+
 /**
  * Handler for client generation.
  */

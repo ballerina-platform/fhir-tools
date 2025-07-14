@@ -13,10 +13,19 @@
             "authors": [
               "Ballerina"
             ],
-            "repository": "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4",
-            "basePackage": "ballerinax/health.fhir.r4",
+            "fhirVersion": "r4",
             "parentPackage": "",
-            "dependencies": []
+            "dependencies": [],
+            "versionConfigs": {
+              "r4": {
+                "repository": "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4",
+                "basePackage": "ballerinax/health.fhir.r4"
+              },
+              "r5": {
+                "repository": "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r5",
+                "basePackage": "ballerinax/health.fhir.r5"
+              }
+            }
           },
           "dataTypeMappings": [],
           "ballerinaKeywords": []
@@ -28,7 +37,6 @@
           "enable": true,
           "package": {
             "org": "healthcare",
-            "namePrefix": "health.fhir.r4.international401",
             "version": "1.0.0",
             "distribution": "2201.12.3",
             "authors": [
@@ -40,11 +48,24 @@
             ]
           },
           "fhir": {
-            "version": "r4"
+            "default_version": "r4",
+            "versionConfigs": [
+              {
+                "fhirVersion": "r4",
+                "namePrefix": "health.fhir.r4.international401",
+                "basePackage": "ballerinax/health.fhir.r4",
+                "servicePackage": "ballerinax/health.fhirr4",
+                "dependentPackage": "ballerinax/health.fhir.r4.international401"
+              },
+              {
+                "fhirVersion": "r5",
+                "namePrefix": "health.fhir.r5.international500",
+                "basePackage": "ballerinax/health.fhir.r5",
+                "servicePackage": "ballerinax/health.fhirr5",
+                "dependentPackage": "ballerinax/health.fhir.r5.international500"
+              }
+            ]
           },
-          "basePackage": "ballerinax/health.fhir.r4",
-          "servicePackage": "ballerinax/health.fhirr4",
-          "dependentPackage": "ballerinax/health.fhir.r4.international401",
           "dependencies": [],
           "enableAggregatedApi": false,
           "aggregatedApis": [

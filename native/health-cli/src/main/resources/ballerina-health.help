@@ -118,4 +118,3 @@ COMMANDS
                         $ bal health fhir -m template \
                         --dependent-package ballerinax/health.fhir.r4.uscore501 \
                         ./path_to_uscore_definitions
-

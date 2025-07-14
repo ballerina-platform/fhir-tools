@@ -25,7 +25,6 @@ import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.BallerinaProjectC
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.config.BallerinaProjectToolConfig;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.AggregatedService;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.BallerinaService;
-import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.generator.AggregatedServiceGenerator;
 
 import java.io.Console;
 import java.nio.file.Files;

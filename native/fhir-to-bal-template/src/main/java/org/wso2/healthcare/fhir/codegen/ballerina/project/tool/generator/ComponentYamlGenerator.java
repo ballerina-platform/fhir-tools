@@ -32,6 +32,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Generator for component.yaml file for Choreo components.
@@ -48,14 +49,17 @@ public class ComponentYamlGenerator extends AbstractFHIRTemplateGenerator {
     public void generate(ToolContext toolContext, Map<String, Object> generatorProperties) throws CodeGenException {
         String directoryPath = generatorProperties.get("projectAPIPath") + File.separator + ".choreo" + File.separator;
         File fileDir = new File(directoryPath);
+
         if (!fileDir.exists()) {
             if (!fileDir.mkdirs()) {
                 LOG.error("Failed to create directories: " + fileDir);
                 return;
             }
         }
-        this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
-                        File.separator +"componentYaml.vm", createTemplateContext(generatorProperties), directoryPath,
+        // FILE.Seperator is not useful as for Windows it is \ but the VelocityEngine
+        // uses / as the file separator.
+        this.getTemplateEngine().generateOutputAsFile( BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
+                        "/componentYaml.vm", createTemplateContext(generatorProperties), directoryPath,
                 "component.yaml");
     }
 
