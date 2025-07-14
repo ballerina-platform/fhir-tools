@@ -91,6 +91,12 @@ public class FhirSubCmd implements BLauncherCmd {
     @CommandLine.Option(names = "--dependent-ig", description = "Dependent IG base URL and respective fully qualified Ballerina package name")
     private String[] dependentIgs;
 
+    @CommandLine.Option(names = "--aggregate", description = "Enable aggregated API mode to generate a single service with multiple FHIR resources")
+    private boolean aggregate;
+
+    @CommandLine.Option(names = "--resources", description = "Comma-separated list of FHIR resources to include. If not specified, all available resources will be included")
+    private String resources;
+
 
     @CommandLine.Parameters(description = "Custom arguments")
     private List<String> argList;
@@ -213,6 +219,8 @@ public class FhirSubCmd implements BLauncherCmd {
         argsMap.put("--excluded-profile", excludedProfiles);
         argsMap.put("--dependent-package", dependentPackage);
         argsMap.put("--dependent-ig", dependentIgs);
+        argsMap.put("--aggregate", aggregate);
+        argsMap.put("--resources", resources);
         getTargetOutputPath();
         //spec path is the last argument
         try {

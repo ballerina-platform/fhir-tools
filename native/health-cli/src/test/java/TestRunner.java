@@ -82,6 +82,7 @@ public class TestRunner {
         argsMap.put("--package-name", packageName);
         argsMap.put("--org-name", orgName);
         argsMap.put("--package-version", packageVersion);
+        argsMap.put("--dependent-package", "ballerinax/health.fhir.r4.uscore501");
         argsMap.put("--included-profile", null);
         argsMap.put("--excluded-profile", null);
         argsMap.put("--dependency", null);

@@ -53,8 +53,12 @@ public class TomlGenerator extends AbstractFHIRTemplateGenerator {
         BallerinaProjectToolConfig config = (BallerinaProjectToolConfig) generatorProperties.get("config");
         templateContext.setProperty("metaConfig", config.getMetadataConfig());
         templateContext.setProperty("resourceType", generatorProperties.get("resourceType") + "API");
-        templateContext.setProperty("templateName", config.getMetadataConfig().getNamePrefix() + "." +
-                generatorProperties.get("resourceType").toString().toLowerCase());
+        if (generatorProperties.containsKey("resourceType")) {
+            templateContext.setProperty("templateName", config.getMetadataConfig().getNamePrefix() + "." +
+                    generatorProperties.get("resourceType").toString().toLowerCase());
+        } else {
+            templateContext.setProperty("templateName", "FHIRServerTemplate");
+        }
         templateContext.setProperty("keywords", this.generateKeywords(config,
                 (BallerinaService) generatorProperties.get("service")));
         templateContext.setProperty("basePackageImportIdentifier", generatorProperties.get(
@@ -66,9 +70,11 @@ public class TomlGenerator extends AbstractFHIRTemplateGenerator {
 
     private List<String> generateKeywords(BallerinaProjectToolConfig config, BallerinaService service){
         List<String> keywords = new ArrayList<>(config.getMetadataConfig().getKeywords());
-        keywords.add(service.getName());
         keywords.add(config.getFhirVersion());
-        keywords.addAll(service.getIgs());
+        if (service != null) {
+            keywords.add(service.getName());
+            keywords.addAll(service.getIgs());
+        }
         return keywords;
     }
 }

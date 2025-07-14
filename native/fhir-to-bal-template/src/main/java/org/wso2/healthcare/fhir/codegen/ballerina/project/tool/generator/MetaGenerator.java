@@ -25,6 +25,7 @@ import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenExcep
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.AbstractFHIRTemplateGenerator;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.BallerinaProjectConstants;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.config.BallerinaProjectToolConfig;
+import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.AggregatedService;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.BallerinaService;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.FHIRProfile;
 
@@ -46,9 +47,21 @@ public class MetaGenerator extends AbstractFHIRTemplateGenerator {
         this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
                 BallerinaProjectConstants.RESOURCE_PATH_SEPERATOR + "gitignore.vm", createTemplateContextForMeta(generatorProperties), directoryPath,
                 ".gitignore");
-        this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
-                BallerinaProjectConstants.RESOURCE_PATH_SEPERATOR + "apiConfig.vm", createTemplateContextForMeta(generatorProperties), directoryPath,
-                "api_config.bal");
+        if (generatorProperties.containsKey("aggregatedService")) {
+            AggregatedService aggregatedService = (AggregatedService) generatorProperties.get("aggregatedService");
+            for (BallerinaService service : aggregatedService.getServices().values()) {
+                generatorProperties.put("service", service);
+                generatorProperties.put("resourceType", service.getName());
+                generatorProperties.put("isAggregated", true);
+                this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
+                        BallerinaProjectConstants.RESOURCE_PATH_SEPERATOR + "apiConfig.vm", createTemplateContextForMeta(generatorProperties), directoryPath,
+                        service.getName().toLowerCase() + "_api_config.bal");
+            }
+        } else {
+            this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
+                            BallerinaProjectConstants.RESOURCE_PATH_SEPERATOR + "apiConfig.vm", createTemplateContextForMeta(generatorProperties), directoryPath,
+                    "api_config.bal");
+        }
     }
 
     private TemplateContext createTemplateContextForMeta(Map<String, Object> generatorProperties) {
@@ -60,10 +73,29 @@ public class MetaGenerator extends AbstractFHIRTemplateGenerator {
         List<String> profileURLs = new ArrayList<>();
         String sampleIG = "international";
 
-        for (FHIRProfile profile : service.getProfileList()) {
-            profileURLs.add(profile.getUrl());
-            igURLs.add(profile.getUrl().split("/StructureDefinition")[0]);
-            sampleIG = profile.getIgName();
+        if (generatorProperties.containsKey("aggregatedService")) {
+            String fhirVersion = "";
+            String serviceName = "";
+            // If the aggregated service is present, we will extract the profile URLs from it.
+            AggregatedService aggregatedService = (AggregatedService) generatorProperties.get("aggregatedService");
+            for (BallerinaService ballerinaService : aggregatedService.getServices().values()) {
+                for (FHIRProfile profile : ballerinaService.getProfileList()) {
+                    profileURLs.add(profile.getUrl());
+                    igURLs.add(profile.getUrl().split("/StructureDefinition")[0]);
+                    sampleIG = profile.getIgName();
+                }
+                fhirVersion = ballerinaService.getFhirVersion();
+            }
+            if (service == null) {
+                service = new BallerinaService(serviceName, fhirVersion);
+            }
+            templateContext.setProperty("isAggregated", generatorProperties.get("isAggregated"));
+        } else {
+            for (FHIRProfile profile : service.getProfileList()) {
+                profileURLs.add(profile.getUrl());
+                igURLs.add(profile.getUrl().split("/StructureDefinition")[0]);
+                sampleIG = profile.getIgName();
+            }
         }
         templateContext.setProperty("igURLs", igURLs);
         templateContext.setProperty("sampleIGCamelCase", CaseUtils.toCamelCase(sampleIG, true,'-'));
@@ -73,8 +105,10 @@ public class MetaGenerator extends AbstractFHIRTemplateGenerator {
         templateContext.setProperty("metaConfig", config.getMetadataConfig());
         templateContext.setProperty("service", service);
         templateContext.setProperty("apiName", generatorProperties.get("resourceType") + "API");
-        templateContext.setProperty("templateName", config.getMetadataConfig().getNamePrefix() + "." +
-                generatorProperties.get("resourceType").toString().toLowerCase());
+        if (generatorProperties.containsKey("resourceType")) {
+            templateContext.setProperty("templateName", config.getMetadataConfig().getNamePrefix() + "." +
+                    generatorProperties.get("resourceType").toString().toLowerCase());
+        }
 
         Map<String, String> dependencies = (HashMap<String, String>) generatorProperties.get("dependencies");
         templateContext.setProperty("basePackage", dependencies.get("basePackage"));

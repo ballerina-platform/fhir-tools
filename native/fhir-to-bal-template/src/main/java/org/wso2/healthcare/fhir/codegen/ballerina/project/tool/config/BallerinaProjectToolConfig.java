@@ -52,6 +52,12 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
     private String basePackage;
     private String servicePackage;
     private String dependentPackage;
+    private boolean enableAggregatedApi;
+    private List<String> aggregatedApis;
+
+    public BallerinaProjectToolConfig() {
+        this.aggregatedApis = new ArrayList<>();
+    }
 
     @Override
     public void configure(ConfigType<?> configObj) throws CodeGenException {
@@ -82,6 +88,13 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
                 this.dependentPackage = jsonConfigObj
                         .getAsJsonPrimitive("dependentPackage").getAsString();
             }
+            if (jsonConfigObj.getAsJsonPrimitive("enableAggregatedApi") != null) {
+                this.enableAggregatedApi = jsonConfigObj
+                        .getAsJsonPrimitive("enableAggregatedApi").getAsBoolean();
+            }
+            if (jsonConfigObj.getAsJsonArray("aggregatedApis") != null) {
+                populateAggregatedApis(jsonConfigObj.getAsJsonArray("aggregatedApis"));
+            }
         }
         //todo: add toml type config handling
     }
@@ -106,6 +119,18 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
                 this.includedIGConfigs.put(
                         value.getAsJsonObject().getAsJsonPrimitive("implementationGuide").getAsString(),
                         new IncludedIGConfig(value.getAsJsonObject()));
+                break;
+            case "project.enableAggregatedApi":
+                this.enableAggregatedApi = value.getAsBoolean();
+                break;
+            case "project.aggregatedApis":
+                this.aggregatedApis.clear();
+                if (value.isJsonArray()) {
+                    JsonArray resourcesArray = value.getAsJsonArray();
+                    for (int i = 0; i < resourcesArray.size(); i++) {
+                        this.aggregatedApis.add(resourcesArray.get(i).getAsString());
+                    }
+                }
                 break;
             default:
                 LOG.warn("Invalid config path: " + jsonPath);
@@ -147,6 +172,12 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
             if (igArray.get(i).getAsJsonObject().getAsJsonPrimitive("enable").getAsBoolean()) {
                 interactionConfigs.add(new InteractionConfig(igArray.get(i).getAsJsonObject()));
             }
+        }
+    }
+
+    private void populateAggregatedApis(JsonArray groupsArray) {
+        for (int i = 0; i < groupsArray.size(); i++) {
+            aggregatedApis.add(groupsArray.get(i).getAsJsonPrimitive().getAsString());
         }
     }
 
@@ -195,5 +226,13 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
     }
     public String getDependentPackage() {
         return dependentPackage;
+    }
+
+    public boolean isEnableAggregatedApi() {
+        return enableAggregatedApi;
+    }
+
+    public List<String> getAggregatedApis() {
+        return aggregatedApis;
     }
 }

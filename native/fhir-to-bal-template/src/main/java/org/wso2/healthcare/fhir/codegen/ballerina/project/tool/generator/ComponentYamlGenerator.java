@@ -25,8 +25,12 @@ import org.wso2.healthcare.codegen.tool.framework.commons.core.ToolContext;
 import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenException;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.AbstractFHIRTemplateGenerator;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.BallerinaProjectConstants;
+import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.AggregatedService;
+import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.BallerinaService;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -57,6 +61,58 @@ public class ComponentYamlGenerator extends AbstractFHIRTemplateGenerator {
 
     private TemplateContext createTemplateContext(Map<String, Object> generatorProperties) {
         TemplateContext templateContext = this.getNewTemplateContext();
+        
+        // Check if this is an aggregated service case
+        if (generatorProperties.containsKey("aggregatedService")) {
+            // Handle aggregated service with multiple endpoints
+            AggregatedService aggregatedService = (AggregatedService) generatorProperties.get("aggregatedService");
+            List<Map<String, String>> endpoints = new ArrayList<>();
+            
+            int portCounter = 9090;
+            for (BallerinaService service : aggregatedService.getServices().values()) {
+                Map<String, String> endpoint = createEndpointForService(service, generatorProperties, portCounter);
+                endpoints.add(endpoint);
+                portCounter++;
+            }
+            
+            templateContext.setProperty("endpoints", endpoints);
+        } else {
+            // Handle single service case (existing logic)
+            List<Map<String, String>> endpoints = new ArrayList<>();
+            Map<String, String> endpoint = createEndpointForSingleService(generatorProperties);
+            endpoints.add(endpoint);
+            templateContext.setProperty("endpoints", endpoints);
+        }
+        
+        return templateContext;
+    }
+    
+    private Map<String, String> createEndpointForService(BallerinaService service, Map<String, Object> generatorProperties, int port) {
+        Map<String, String> endpoint = new java.util.HashMap<>();
+        
+        if (generatorProperties.containsKey("dependentPackageImportIdentifier")) {
+            String apiName = generatorProperties.get("dependentPackageImportIdentifier").toString().toLowerCase() +
+                    "-" +
+                    service.getName().toLowerCase() +
+                    "-api";
+            String displayName = generatorProperties.get("dependentPackageImportIdentifier").toString() + " " +
+                    service.getName() + " API";
+            endpoint.put("api_name", apiName);
+            endpoint.put("api_display_name", displayName);
+        } else {
+            endpoint.put("api_name", service.getName().toLowerCase() + "-api");
+            endpoint.put("api_display_name", service.getName() + " API");
+        }
+        endpoint.put("api_base_path", "/fhir/" + service.getFhirVersion() + "/" +service.getName());
+        endpoint.put("api_oas_file", "oas/" + service.getName() + ".yaml");
+        endpoint.put("api_port", String.valueOf(port));
+        
+        return endpoint;
+    }
+    
+    private Map<String, String> createEndpointForSingleService(Map<String, Object> generatorProperties) {
+        Map<String, String> endpoint = new java.util.HashMap<>();
+        
         if (generatorProperties.containsKey("dependentPackageImportIdentifier")) {
             String apiName = generatorProperties.get("dependentPackageImportIdentifier").toString().toLowerCase() +
                     "-" +
@@ -64,14 +120,16 @@ public class ComponentYamlGenerator extends AbstractFHIRTemplateGenerator {
                     "-api";
             String displayName = generatorProperties.get("dependentPackageImportIdentifier").toString() + " " +
                     generatorProperties.get("resourceType").toString() + " API";
-            templateContext.setProperty("api_name", apiName);
-            templateContext.setProperty("api_display_name", displayName);
+            endpoint.put("api_name", apiName);
+            endpoint.put("api_display_name", displayName);
         } else {
-            templateContext.setProperty("api_name", generatorProperties.get("resourceType").toString().toLowerCase() + "-api");
-            templateContext.setProperty("api_display_name", generatorProperties.get("resourceType").toString() + " API");
+            endpoint.put("api_name", generatorProperties.get("resourceType").toString().toLowerCase() + "-api");
+            endpoint.put("api_display_name", generatorProperties.get("resourceType").toString() + " API");
         }
-        templateContext.setProperty("api_base_path", "/" + generatorProperties.get("resourceType").toString());
-        templateContext.setProperty("api_oas_file", "oas/" + generatorProperties.get("resourceType").toString() + ".yaml");
-        return templateContext;
+        endpoint.put("api_base_path", "/" + generatorProperties.get("resourceType").toString());
+        endpoint.put("api_oas_file", "oas/" + generatorProperties.get("resourceType").toString() + ".yaml");
+        endpoint.put("api_port", "9090");
+        
+        return endpoint;
     }
 }

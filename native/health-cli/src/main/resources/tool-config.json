@@ -46,6 +46,9 @@
           "servicePackage": "ballerinax/health.fhirr4",
           "dependentPackage": "ballerinax/health.fhir.r4.international401",
           "dependencies": [],
+          "enableAggregatedApi": false,
+          "aggregatedApis": [
+          ],
           "builtIn": {
             "operations": [
             ],

@@ -5,7 +5,7 @@
 # FHIR $service.getName() API Template
 
 ## Overview
-This Ballerina-based template implementation provides a RESTful FHIR API for managing `${service.getName()}` resources, adhering to the FHIR R4 specification. The API is designed to support CRUD operations International FHIR R4 ${service.getName()} FHIR API.
+This Ballerina-based template implementation provides a RESTful FHIR API for managing #if($service.getName().isEmpty()) FHIR #else $service.getName() #end resources, adhering to the FHIR R4 specification. The API is designed to support CRUD operations FHIR R4 #if($service.getName().isEmpty()) FHIR APIs #else $service.getName() FHIR API #end.
 
 | Module/Element       | Version |
 | -------------------- | ------- |
@@ -20,11 +20,6 @@ This Ballerina-based template implementation provides a RESTful FHIR API for man
 - [VSCode](https://code.visualstudio.com/download) as the IDE and install the required vscode plugins
     - Ballerina (https://marketplace.visualstudio.com/items?itemName=WSO2.ballerina)
     - Ballerina Integrator (https://marketplace.visualstudio.com/items?itemName=WSO2.ballerina-integrator)
-
-### Pull the Template from Central
-```sh
-bal new -t $metaConfig.getOrg()/$templateName $apiName
-```
 
 ### Run the Template
 Run the Ballerina project created by the service template by executing:
@@ -41,60 +36,60 @@ Now, the service will be invoked and return an `OperationOutcome`, until the cod
 
 ## API Endpoints
 
-### Retrieve a ${service.getName()} by ID
+### Retrieve a #if($service.getName().isEmpty()) Resource #else $service.getName() #end by ID
 ```http
-GET /fhir/r4/${service.getName()}/{id}
+GET /fhir/r4/#if($service.getName().isEmpty()){resource_type}#else$service.getName()#end/{id}
 ```
 - **Response:** Returns a `${service.getName()}` resource or an `OperationOutcome` if not found.
 
-### Retrieve a Specific Version of a ${service.getName()} Resource
+### Retrieve a Specific Version of a #if($service.getName().isEmpty())#else$service.getName()#end Resource
 ```http
-GET /fhir/r4/${service.getName()}/{id}/_history/{vid}
+GET /fhir/r4/#if($service.getName().isEmpty()){resource_type}#else$service.getName()#end/{id}/_history/{vid}
 ```
 - **Response:** Returns a specific historical version of a `${service.getName()}` resource.
 
-### Search for ${service.getName()}s
+### Search for #if($service.getName().isEmpty())Resource#else$service.getName()#ends
 ```http
-GET /fhir/r4/${service.getName()}
+GET /fhir/r4/#if($service.getName().isEmpty()){resource_type}#else$service.getName()#end
 ```
 - **Response:** Returns a `Bundle` containing matching `$service.getName()` resources.
 
 ### Create a ${service.getName()} Resource
 ```http
-POST /fhir/r4/${service.getName()}
+POST /fhir/r4/#if($service.getName().isEmpty()){resource_type}#else$service.getName()#end
 ```
 - **Request Body:** `${service.getName()}` resource.
 - **Response:** Returns the created `${service.getName()}` resource.
 
 ### Update a ${service.getName()} Resource
 ```http
-PUT /fhir/r4/${service.getName()}/{id}
+PUT /fhir/r4/#if($service.getName().isEmpty()){resource_type}#else$service.getName()#end/{id}
 ```
 - **Request Body:** Updated `${service.getName()}` resource.
 - **Response:** Returns the updated `${service.getName()}` resource.
 
 ### Patch a ${service.getName()} Resource
 ```http
-PATCH /fhir/r4/${service.getName()}/{id}
+PATCH /fhir/r4/#if($service.getName().isEmpty()){resource_type}#else$service.getName()#end/{id}
 ```
 - **Request Body:** JSON Patch object.
 - **Response:** Returns the updated `${service.getName()}` resource.
 
 ### Delete a ${service.getName()} Resource
 ```http
-DELETE /fhir/r4/${service.getName()}/{id}
+DELETE /fhir/r4/#if($service.getName().isEmpty()){resource_type}#else$service.getName()#end/{id}
 ```
 - **Response:** Returns an `OperationOutcome` indicating success or failure.
 
-### Retrieve Update History for a ${service.getName()}
+### Retrieve Update History for a #if($service.getName().isEmpty())Resource#else$service.getName()#end
 ```http
-GET /fhir/r4/${service.getName()}/{id}/_history
+GET /fhir/r4/#if($service.getName().isEmpty()){resource_type}#else$service.getName()#end/{id}/_history
 ```
 - **Response:** Returns a `Bundle` of historical versions of the `${service.getName()}` resource.
 
-### Retrieve Update History for All ${service.getName()}s
+### Retrieve Update History for All #if($service.getName().isEmpty())Resource#else$service.getName()#ends
 ```http
-GET /fhir/r4/${service.getName()}/_history
+GET /fhir/r4/#if($service.getName().isEmpty()){resource_type}#else$service.getName()#end/_history
 ```
 - **Response:** Returns a `Bundle` of historical versions of all `${service.getName()}` resources.
 
@@ -144,7 +139,7 @@ Following are the steps to add a custom operation to the FHIR API template:
   ```
   2. Add the context related to the custom operation in the service.bal file. Following is an example of how to add a custom operation:
   ```typescript
-    isolated resource function post fhir/r4/${service.getName()}/\$custom\-operation(r4:FHIRContext fhirContext, ${service.getName()} procedure) returns r4:OperationOutcome|r4:FHIRError {
+    isolated resource function post fhir/r4/#if($service.getName().isEmpty()){resource_type}#else$service.getName()#end/\$custom\-operation(r4:FHIRContext fhirContext, #if($service.getName().isEmpty()){resource_type}#else$service.getName()#end procedure) returns r4:OperationOutcome|r4:FHIRError {
         return r4:createFHIRError("Not implemented", r4:ERROR, r4:INFORMATIONAL, httpStatusCode = http:STATUS_NOT_IMPLEMENTED);
     }
   ```
@@ -153,11 +148,11 @@ Following are the steps to add a custom operation to the FHIR API template:
 Additionally, If you want to have a custom profile or a combination of profiles served from this same API template, you can add them to this FHIR API template. To add a custom profile, follow the steps below:
 
 - Add the profile type to the aggregated resource type.
-  - **Example:** `public type ${service.getName()} r4:${service.getName()}|<Other_${service.getName()}_Profile>;`
+  - **Example:** `public type #if($service.getName().isEmpty()){resource_type}#else$service.getName()#end r4:#if($service.getName().isEmpty()){resource_type}#else$service.getName()#end|<Other_${service.getName()}_Profile>;`
 - Add the new profile URL in `api_config.bal` file. You need to add it as a string inside the `profiles` array.
   - **Example:**
     ```ballerina
-    profiles: ["http://hl7.org/fhir/StructureDefinition/${service.getName()}", "new_profile_url"]
+    profiles: ["http://hl7.org/fhir/StructureDefinition/#if($service.getName().isEmpty()){resource_type}#else$service.getName()#end", "new_profile_url"]
     ```
 
 ## License

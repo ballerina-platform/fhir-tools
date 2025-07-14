@@ -1,12 +1,14 @@
 schemaVersion: 1.1
 endpoints:
-    - name: $api_name
-      displayName: $api_display_name
+#foreach($endpoint in $endpoints)
+    - name: $endpoint.api_name
+      displayName: $endpoint.api_display_name
       service:
-        basePath: $api_base_path
-        port: 9090
+        basePath: $endpoint.api_base_path
+        port: $endpoint.api_port
       type: REST
       networkVisibilities:
         - Project
         - Public
-      schemaFilePath: $api_oas_file
+      schemaFilePath: $endpoint.api_oas_file
+#end
