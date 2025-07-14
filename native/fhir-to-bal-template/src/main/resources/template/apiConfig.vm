@@ -21,7 +21,7 @@
 
 import $basePackage;
 
-final $basePackageImportIdentifier:ResourceAPIConfig apiConfig = {
+final $basePackageImportIdentifier:ResourceAPIConfig #if($isAggregated) ${service.getName().toLowerCase()}ApiConfig#else apiConfig#end = {
     resourceType: "$service.getName()",
     profiles: [
     #**##foreach($profile in $service.getProfiles())

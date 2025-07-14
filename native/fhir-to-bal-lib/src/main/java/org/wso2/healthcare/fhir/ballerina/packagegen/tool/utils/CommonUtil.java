@@ -130,7 +130,8 @@ public class CommonUtil {
     public static String validateCode(String code) {
         String newCode = code.trim().split(Pattern.quote(" "))[0];
         return newCode.replaceAll(" *\\(.+?\\)", "")
-                .replace("+", "");
+                .replace("+", "")
+                .replace("*", "");
     }
 
     /**

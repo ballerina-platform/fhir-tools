@@ -91,6 +91,16 @@ COMMANDS
                         profile URL as the value of this parameter. This argument
                         can be used more than once.
 
+                    --aggregate
+                        Only applicable in ‘template’ mode. Enable aggregated API mode to generate
+                        a single service with multiple FHIR resources instead of individual
+                        services for each resource.
+
+                    --resources <resource1,resource2,...>
+                        Only applicable in ‘template’ mode when --aggregate is used. Comma-separated
+                        list of FHIR resources to include in the aggregated service. If not specified,
+                        all available resources will be included. Example: Patient,Observation,Encounter
+
             EXAMPLES
                     Generate a Ballerina package for the FHIR artifacts of USCore
                     implementation guide.

@@ -50,6 +50,12 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
     private final List<DependencyConfig> dependencyConfigs = new ArrayList<>();
     private final List<String> searchParamConfigs = new ArrayList<>();
     private final List<InteractionConfig> interactionConfigs = new ArrayList<>();
+    private boolean enableAggregatedApi;
+    private List<String> aggregatedApis;
+
+    public BallerinaProjectToolConfig() {
+        this.aggregatedApis = new ArrayList<>();
+    }
 
     @Override
     public void configure(ConfigType<?> configObj) throws CodeGenException {
@@ -61,10 +67,21 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
 
             populateVersionConfig(jsonConfigObj.getAsJsonObject("fhir").getAsJsonArray("versionConfigs"));
             populateIgConfigs(jsonConfigObj.getAsJsonArray("includedIGs"));
-            populateOperationConfigs(jsonConfigObj.getAsJsonObject("builtIn").getAsJsonArray("operations"));
-            populateSearchParamConfigs(jsonConfigObj.getAsJsonObject("builtIn").getAsJsonArray("searchParams"));
-            populateDependencyConfigs(jsonConfigObj.getAsJsonArray("dependencies"));
-            populateInteractionConfigs(jsonConfigObj.getAsJsonObject("builtIn").getAsJsonArray("interactions"));
+            populateOperationConfigs(jsonConfigObj.
+                    getAsJsonObject("builtIn").getAsJsonArray("operations"));
+            populateSearchParamConfigs(jsonConfigObj.
+                    getAsJsonObject("builtIn").getAsJsonArray("searchParams"));
+            populateDependencyConfigs(jsonConfigObj.
+                    getAsJsonArray("dependencies"));
+            populateInteractionConfigs(jsonConfigObj.
+                    getAsJsonObject("builtIn").getAsJsonArray("interactions"));
+            if (jsonConfigObj.getAsJsonPrimitive("enableAggregatedApi") != null) {
+                this.enableAggregatedApi = jsonConfigObj
+                        .getAsJsonPrimitive("enableAggregatedApi").getAsBoolean();
+            }
+            if (jsonConfigObj.getAsJsonArray("aggregatedApis") != null) {
+                populateAggregatedApis(jsonConfigObj.getAsJsonArray("aggregatedApis"));
+            }
         }
         //todo: add toml type config handling
     }
@@ -91,6 +108,18 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
                 this.includedIGConfigs.put(
                         value.getAsJsonObject().getAsJsonPrimitive("implementationGuide").getAsString(),
                         new IncludedIGConfig(value.getAsJsonObject()));
+                break;
+            case "project.enableAggregatedApi":
+                this.enableAggregatedApi = value.getAsBoolean();
+                break;
+            case "project.aggregatedApis":
+                this.aggregatedApis.clear();
+                if (value.isJsonArray()) {
+                    JsonArray resourcesArray = value.getAsJsonArray();
+                    for (int i = 0; i < resourcesArray.size(); i++) {
+                        this.aggregatedApis.add(resourcesArray.get(i).getAsString());
+                    }
+                }
                 break;
             default:
                 LOG.warn("Invalid config path: " + jsonPath);
@@ -146,6 +175,12 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
         }
     }
 
+    private void populateAggregatedApis(JsonArray groupsArray) {
+        for (int i = 0; i < groupsArray.size(); i++) {
+            aggregatedApis.add(groupsArray.get(i).getAsJsonPrimitive().getAsString());
+        }
+    }
+
     public MetadataConfig getMetadataConfig() {
         return metadataConfig;
     }
@@ -184,5 +219,13 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
 
     public VersionConfig getVersionConfig() {
         return versionConfigs.get(this.fhirVersion);
+    }
+
+    public boolean isEnableAggregatedApi() {
+        return enableAggregatedApi;
+    }
+
+    public List<String> getAggregatedApis() {
+        return aggregatedApis;
     }
 }

@@ -67,6 +67,9 @@
             ]
           },
           "dependencies": [],
+          "enableAggregatedApi": false,
+          "aggregatedApis": [
+          ],
           "builtIn": {
             "operations": [
             ],

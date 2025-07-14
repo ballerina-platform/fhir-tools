@@ -52,6 +52,8 @@ public class FhirTemplateGenHandler implements Handler {
 
     private String[] includedProfiles;
     private String[] excludedProfiles;
+    private boolean aggregate;
+    private String resources;
 
     private JsonObject configJson;
     private PrintStream printStream;
@@ -82,6 +84,8 @@ public class FhirTemplateGenHandler implements Handler {
         this.dependentPackage = (String) argsMap.get("--dependent-package");
         this.includedProfiles = (String[]) argsMap.get("--included-profile");
         this.excludedProfiles = (String[]) argsMap.get("--excluded-profile");
+        this.aggregate = (Boolean) argsMap.get("--aggregate");
+        this.resources = (String) argsMap.get("--resources");
     }
 
     @Override
@@ -145,6 +149,22 @@ public class FhirTemplateGenHandler implements Handler {
                                 excludedProfiles
                         )
                 );
+
+                // Configure aggregated API settings
+                if (aggregate) {
+                    JsonElement aggregateConfig = new Gson().toJsonTree(true);
+                    toolConfigInstance.overrideConfig("project.enableAggregatedApi", aggregateConfig);
+
+                    if (resources != null && !resources.trim().isEmpty()) {
+                        // Parse comma-separated resources and create JSON array
+                        String[] resourceArray = resources.split(",");
+                        JsonArray resourcesArray = new JsonArray();
+                        for (String resource : resourceArray) {
+                            resourcesArray.add(resource.trim());
+                        }
+                        toolConfigInstance.overrideConfig("project.aggregatedApis", resourcesArray);
+                    }
+                }
 
                 Object toolFactory = toolClass.getConstructor().newInstance();
                 Method getToolMethod = toolClass.getMethod("getBallerinaProjectTool", String.class);
