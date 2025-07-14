@@ -5,7 +5,7 @@
 # FHIR $service.getName() API Template
 
 ## Overview
-This Ballerina-based template implementation provides a RESTful FHIR API for managing `${service.getName()}` resources, adhering to the FHIR R5 specification. The API is designed to support CRUD operations International FHIR R5 ${service.getName()} FHIR API.
+This Ballerina-based template implementation provides a RESTful FHIR API for managing #if($service.getName().isEmpty()) FHIR #else $service.getName() #end resources, adhering to the FHIR R5 specification. The API is designed to support CRUD operations FHIR R5 #if($service.getName().isEmpty()) FHIR APIs #else $service.getName() FHIR API #end.
 
 | Module/Element       | Version |
 | -------------------- | ------- |
@@ -18,13 +18,8 @@ This Ballerina-based template implementation provides a RESTful FHIR API for man
 ## Prerequisites
 - [Ballerina](https://ballerina.io/downloads/) (2201.10.2 or later)
 - [VSCode](https://code.visualstudio.com/download) as the IDE and install the required vscode plugins
-    - Ballerina (https://marketplace.visualstudio.com/items?itemName=WSO2.ballerina)
-    - Ballerina Integrator (https://marketplace.visualstudio.com/items?itemName=WSO2.ballerina-integrator)
-
-### Pull the Template from Central
-```sh
-bal new -t $metaConfig.getOrg()/$templateName $apiName
-```
+- Ballerina (https://marketplace.visualstudio.com/items?itemName=WSO2.ballerina)
+- Ballerina Integrator (https://marketplace.visualstudio.com/items?itemName=WSO2.ballerina-integrator)
 
 ### Run the Template
 Run the Ballerina project created by the service template by executing:
@@ -41,60 +36,60 @@ Now, the service will be invoked and return an `OperationOutcome`, until the cod
 
 ## API Endpoints
 
-### Retrieve a ${service.getName()} by ID
+### Retrieve a #if($service.getName().isEmpty()) Resource #else $service.getName() #end by ID
 ```http
-GET /fhir/r5/${service.getName()}/{id}
+GET /fhir/r5/#if($service.getName().isEmpty()){resource_type}#else$service.getName()#end/{id}
 ```
 - **Response:** Returns a `${service.getName()}` resource or an `OperationOutcome` if not found.
 
-### Retrieve a Specific Version of a ${service.getName()} Resource
+### Retrieve a Specific Version of a #if($service.getName().isEmpty())#else$service.getName()#end Resource
 ```http
-GET /fhir/r5/${service.getName()}/{id}/_history/{vid}
+GET /fhir/r5/#if($service.getName().isEmpty()){resource_type}#else$service.getName()#end/{id}/_history/{vid}
 ```
 - **Response:** Returns a specific historical version of a `${service.getName()}` resource.
 
-### Search for ${service.getName()}s
+### Search for #if($service.getName().isEmpty())Resource#else$service.getName()#ends
 ```http
-GET /fhir/r5/${service.getName()}
+GET /fhir/r5/#if($service.getName().isEmpty()){resource_type}#else$service.getName()#end
 ```
 - **Response:** Returns a `Bundle` containing matching `$service.getName()` resources.
 
 ### Create a ${service.getName()} Resource
 ```http
-POST /fhir/r5/${service.getName()}
+POST /fhir/r5/#if($service.getName().isEmpty()){resource_type}#else$service.getName()#end
 ```
 - **Request Body:** `${service.getName()}` resource.
 - **Response:** Returns the created `${service.getName()}` resource.
 
 ### Update a ${service.getName()} Resource
 ```http
-PUT /fhir/r5/${service.getName()}/{id}
+PUT /fhir/r5/#if($service.getName().isEmpty()){resource_type}#else$service.getName()#end/{id}
 ```
 - **Request Body:** Updated `${service.getName()}` resource.
 - **Response:** Returns the updated `${service.getName()}` resource.
 
 ### Patch a ${service.getName()} Resource
 ```http
-PATCH /fhir/r5/${service.getName()}/{id}
+PATCH /fhir/r5/#if($service.getName().isEmpty()){resource_type}#else$service.getName()#end/{id}
 ```
 - **Request Body:** JSON Patch object.
 - **Response:** Returns the updated `${service.getName()}` resource.
 
 ### Delete a ${service.getName()} Resource
 ```http
-DELETE /fhir/r5/${service.getName()}/{id}
+DELETE /fhir/r5/#if($service.getName().isEmpty()){resource_type}#else$service.getName()#end/{id}
 ```
 - **Response:** Returns an `OperationOutcome` indicating success or failure.
 
-### Retrieve Update History for a ${service.getName()}
+### Retrieve Update History for a #if($service.getName().isEmpty())Resource#else$service.getName()#end
 ```http
-GET /fhir/r5/${service.getName()}/{id}/_history
+GET /fhir/r5/#if($service.getName().isEmpty()){resource_type}#else$service.getName()#end/{id}/_history
 ```
 - **Response:** Returns a `Bundle` of historical versions of the `${service.getName()}` resource.
 
-### Retrieve Update History for All ${service.getName()}s
+### Retrieve Update History for All #if($service.getName().isEmpty())Resource#else$service.getName()#ends
 ```http
-GET /fhir/r5/${service.getName()}/_history
+GET /fhir/r5/#if($service.getName().isEmpty()){resource_type}#else$service.getName()#end/_history
 ```
 - **Response:** Returns a `Bundle` of historical versions of all `${service.getName()}` resources.
 
@@ -111,18 +106,18 @@ Modify `apiConfig` in the `fhirr5:Listener` initialization if needed to adjust s
 The `apiConfig` object is used to configure the FHIR API. By default, it consists of the search parameters for the FHIR API defined for the Implementation Guide. If there are custom search parameters, they can be defined in the `apiConfig` object. Following is an example of how to add a custom search parameter:
 
 ```json
-        searchParameters: [
-          ....
-          {
-              name: "custom-search-parameter", // Custom search parameter name
-              active: true // Whether the search parameter is active
-              information: { // Optional information about the search parameter
-                  description: "Custom search parameter description",
-                  builtin: false,
-              }
-          }
-        ]
-  ```
+searchParameters: [
+....
+{
+name: "custom-search-parameter", // Custom search parameter name
+active: true // Whether the search parameter is active
+information: { // Optional information about the search parameter
+description: "Custom search parameter description",
+builtin: false,
+}
+}
+]
+```
 
 #### Adding a Custom Operation
 
@@ -130,36 +125,36 @@ Following are the steps to add a custom operation to the FHIR API template:
 
 1. The `apiConfig` object is used to configure the FHIR API. By default, it consists of the operations for the FHIR API defined for the Implementation Guide. If there are custom operations, they can be defined in the `apiConfig` object. Following is an example of how to add a custom operation:
 ```json
-        operations: [
-          ....
-          {
-              name: "custom-operation", // Custom operation name
-              active: true // Whether the operation is active
-              information: { // Optional information about the operation
-                  description: "Custom operation description",
-                  builtin: false,
-              }
-          }
-        ]
-  ```
-  2. Add the context related to the custom operation in the service.bal file. Following is an example of how to add a custom operation:
-  ```typescript
-    isolated resource function post fhir/r5/${service.getName()}/\$custom\-operation(r5:FHIRContext fhirContext, ${service.getName()} procedure) returns r5:OperationOutcome|r5:FHIRError {
-        return r5:createFHIRError("Not implemented", r5:ERROR, r5:INFORMATIONAL, httpStatusCode = http:STATUS_NOT_IMPLEMENTED);
-    }
-  ```
+operations: [
+....
+{
+name: "custom-operation", // Custom operation name
+active: true // Whether the operation is active
+information: { // Optional information about the operation
+description: "Custom operation description",
+builtin: false,
+}
+}
+]
+```
+2. Add the context related to the custom operation in the service.bal file. Following is an example of how to add a custom operation:
+```typescript
+isolated resource function post fhir/r5/#if($service.getName().isEmpty()){resource_type}#else$service.getName()#end/\$custom\-operation(r5:FHIRContext fhirContext, #if($service.getName().isEmpty()){resource_type}#else$service.getName()#end procedure) returns r5:OperationOutcome|r5:FHIRError {
+return r5:createFHIRError("Not implemented", r5:ERROR, r5:INFORMATIONAL, httpStatusCode = http:STATUS_NOT_IMPLEMENTED);
+}
+```
 
 #### Adding a Custom Profile/Combination of Profiles
 Additionally, If you want to have a custom profile or a combination of profiles served from this same API template, you can add them to this FHIR API template. To add a custom profile, follow the steps below:
 
 - Add the profile type to the aggregated resource type.
-  - **Example:** `public type ${service.getName()} r5:${service.getName()}|<Other_${service.getName()}_Profile>;`
-- Add the new profile URL in `api_config.bal` file. You need to add it as a string inside the `profiles` array.
-  - **Example:**
+- **Example:** `public type #if($service.getName().isEmpty()){resource_type}#else$service.getName()#end r5:#if($service.getName().isEmpty()){resource_type}#else$service.getName()#end|<Other_${service.getName()}_Profile>;`
+    - Add the new profile URL in `api_config.bal` file. You need to add it as a string inside the `profiles` array.
+    - **Example:**
     ```ballerina
-    profiles: ["http://hl7.org/fhir/StructureDefinition/${service.getName()}", "new_profile_url"]
+    profiles: ["http://hl7.org/fhir/StructureDefinition/#if($service.getName().isEmpty()){resource_type}#else$service.getName()#end", "new_profile_url"]
     ```
 
-## License
-This project is subject to the [WSO2 Software License](../LICENCE).
+    ## License
+    This project is subject to the [WSO2 Software License](../LICENCE).
 

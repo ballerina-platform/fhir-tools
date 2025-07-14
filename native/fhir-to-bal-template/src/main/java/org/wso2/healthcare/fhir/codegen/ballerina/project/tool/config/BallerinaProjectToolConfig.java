@@ -201,10 +201,6 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
         return includedIGConfigs;
     }
 
-    public List<DependencyConfig> getDependencyConfigs() {
-        return dependencyConfigs;
-    }
-
     public List<String> getSearchParamConfigs() {
         return searchParamConfigs;
     }
