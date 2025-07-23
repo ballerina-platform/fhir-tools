@@ -57,7 +57,7 @@ public const RESOURCE_NAME_${util.resolveSpecialCharacters($resourceName.toUpper
     #foreach($element in ${annotationElements})
         "${element.getName()}" : {
             name: "${element.getName()}",
-            dataType: #if(!$dataTypes.contains($element.getDataType()))${importIdentifier}$util.resolveSpecialCharacters($element.getDataType())#else$util.resolveSpecialCharacters($element.getDataType())#end,
+            dataType: #if(!$dataTypes.contains($element.getDataType()))#if($util.isReferredFromInternational($element.getContentReference()))${internationalImportIdentifier}$element.getDataType()#else${importIdentifier}$util.resolveSpecialCharacters($element.getDataType())#end#else$util.resolveSpecialCharacters($element.getDataType())#end,
             min: ${element.getMin()},
             max: ${element.getMax()},
             isArray: ${element.isArray()},
@@ -94,10 +94,9 @@ public type $util.resolveSpecialCharacters($resourceName) record {|
         minLength: {
             value: $min$separator
             message: "Validation failed for $.$element.getPath() constraint. This field must be an array containing at least one item."
-        }#if( $element.getMax() > 0 )$separator#end
+        }#if( $element.getMax() > 0 && $element.getMax() != $INT_MAX)$separator#end
         #end
-
-        #if( $element.getMax() > 0 )
+        #if( $element.getMax() > 0 && $element.getMax() != $INT_MAX)
         maxLength: {
             value: $max$separator
             message: "Validation failed for $.$element.getPath() constraint. This field must be an array containing at most one item."
@@ -106,7 +105,7 @@ public type $util.resolveSpecialCharacters($resourceName) record {|
     }
 $tab#end
     #set($isDataTypeSet = false)
-    #foreach($profileEntry in $element.getProfiles().entrySet())#if(!$dataTypes.contains($profileEntry.value.getProfileType()))#if(!$profileEntry.value.getPrefix())${importIdentifier}#else$profileEntry.value.getPrefix():#end#end#if($element.isExtended())#foreach($key in $extendedElements.keySet())#if($key == $profileEntry.value.getProfileType() && $extendedElements.get($key).getPrimitiveExtendedType())$util.resolveSpecialCharacters($profileEntry.value.getProfileType()) | ${importIdentifier}$extendedElements.get($key).getPrimitiveExtendedType()#set($isDataTypeSet = true)#end#end#end#if(!$isDataTypeSet)$util.resolveSpecialCharacters($profileEntry.value.getProfileType())#end#if($element.isArray()) []#end#if($foreach.count != $element.getProfiles().size())|#end#end $util.resolveKeywordConflict($util.resolveSpecialCharacters($element.getName()))#if(!$element.isRequired())?#end;
+        #foreach($profileEntry in $element.getProfiles().entrySet())#if(!$dataTypes.contains($profileEntry.value.getProfileType()))#if(!$profileEntry.value.getPrefix())#if($util.isReferredFromInternational($element.getContentReference()))${internationalImportIdentifier}#else${importIdentifier}#end#else$profileEntry.value.getPrefix():#end#end#if($element.isExtended())#foreach($key in $extendedElements.keySet())#if($key == $profileEntry.value.getProfileType() && $extendedElements.get($key).getPrimitiveExtendedType())$util.resolveSpecialCharacters($profileEntry.value.getProfileType()) | ${importIdentifier}$extendedElements.get($key).getPrimitiveExtendedType()#set($isDataTypeSet = true)#end#end#end#if(!$isDataTypeSet)$util.resolveSpecialCharacters($profileEntry.value.getProfileType())#end#if($element.isArray()) []#end#if($foreach.count != $element.getProfiles().size())|#end#end $util.resolveKeywordConflict($util.resolveSpecialCharacters($element.getName()))#if(!$element.isRequired())?#end;
     #end
     ${importIdentifier}Element ...;
 |};
@@ -135,7 +134,7 @@ $tab#end
         #foreach($annotationElement in $extendedElement.getAnnotation().getElements())
         "${annotationElement.getName()}": {
             name: "${annotationElement.getName()}",
-            dataType: #if(!$dataTypes.contains($annotationElement.getDataType()))${importIdentifier}$util.resolveSpecialCharacters($annotationElement.getDataType())#else$util.resolveSpecialCharacters($annotationElement.getDataType())#end,
+            dataType: #if(!$dataTypes.contains($annotationElement.getDataType()))#if($util.isReferredFromInternational($annotationElement.getContentReference()))${internationalImportIdentifier}$annotationElement.getDataType()#else${importIdentifier}$util.resolveSpecialCharacters($annotationElement.getDataType())#end#else$util.resolveSpecialCharacters($annotationElement.getDataType())#end,
             min: $annotationElement.getMin(),
             max: $annotationElement.getMax(),
             isArray: $annotationElement.isArray(),
@@ -173,10 +172,9 @@ public type $util.resolveSpecialCharacters($extendedElement.getTypeName()) recor
         minLength: {
             value: $min$separator
             message: "Validation failed for $.$childElement.getPath() constraint. This field must be an array containing at least one item."
-        }#if( $childElement.getMax() > 0 )$separator#end
+        }#if( $childElement.getMax() > 0 && $element.getMax() != $INT_MAX)$separator#end
         #end
-
-        #if( $childElement.getMax() > 0)
+        #if( $childElement.getMax() > 0 && $element.getMax() != $INT_MAX)
         maxLength: {
             value: $max$separator
             message: "Validation failed for $.$childElement.getPath() constraint. This field must be an array containing at most one item."
@@ -185,9 +183,9 @@ public type $util.resolveSpecialCharacters($extendedElement.getTypeName()) recor
     }
 $tab#end
     #if($childElement.hasFixedValue())
-        #if(!$dataTypes.contains($childElement.getDataType()))${importIdentifier}#end$util.resolveSpecialCharacters($childElement.getDataType())#if($childElement.isArray()) []#end $util.resolveSpecialCharacters($util.resolveKeywordConflict($childElement.getName()))#if(!$childElement.isRequired())?#end = #if($childElement.isArray()) [#end#foreach($value in $childElement.getFixedValue())$util.getTypedValue($value, $childElement.getDataType())#if($foreach.count != $childElement.getFixedValue().size()),#end#end#if($childElement.isArray())]#end;
+        #if(!$dataTypes.contains($childElement.getDataType()))#if($util.isReferredFromInternational($childElement.getContentReference()))${internationalImportIdentifier}#else${importIdentifier}#end#end$util.resolveSpecialCharacters($childElement.getDataType())#if($childElement.isArray()) []#end $util.resolveSpecialCharacters($util.resolveKeywordConflict($childElement.getName()))#if(!$childElement.isRequired())?#end = #if($childElement.isArray()) [#end#foreach($value in $childElement.getFixedValue())$util.getTypedValue($value, $childElement.getDataType())#if($foreach.count != $childElement.getFixedValue().size()),#end#end#if($childElement.isArray())]#end;
     #else
-        #if(!$dataTypes.contains($childElement.getDataType()))${importIdentifier}#end$util.resolveSpecialCharacters($childElement.getDataType())#if($childElement.isArray()) []#end $util.resolveSpecialCharacters($util.resolveKeywordConflict($childElement.getName()))#if(!$childElement.isRequired())?#end;
+        #if(!$dataTypes.contains($childElement.getDataType()))#if($util.isReferredFromInternational($childElement.getContentReference()))${internationalImportIdentifier}#else${importIdentifier}#end#end$util.resolveSpecialCharacters($childElement.getDataType())#if($childElement.isArray()) []#end $util.resolveSpecialCharacters($util.resolveKeywordConflict($childElement.getName()))#if(!$childElement.isRequired())?#end;
     #end
 #end
 |};
