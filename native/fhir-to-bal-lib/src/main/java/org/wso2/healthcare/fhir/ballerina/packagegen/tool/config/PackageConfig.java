@@ -45,6 +45,7 @@ public class PackageConfig {
     private String fhirVersion;
     private String repository;
     private String basePackage;
+    private String internationalPackage;
     private List<DependencyConfig> dependencyConfigList;
     private final Map<String, String> dependentIgs = new HashMap<>();
 
@@ -66,6 +67,11 @@ public class PackageConfig {
                 getAsJsonObject(this.fhirVersion).
                 getAsJsonPrimitive(ToolConstants.CONFIG_BASE_PACKAGE).getAsString();
 
+        this.internationalPackage = packageConfigJson.
+                getAsJsonObject(ToolConstants.CONFIG_VERSION_CONFIGS).
+                getAsJsonObject(this.fhirVersion).
+                getAsJsonPrimitive(ToolConstants.CONFIG_INTERNATIONAL_PACKAGE).getAsString();
+
         populateDependencies(packageConfigJson.getAsJsonArray(ToolConstants.CONFIG_PACKAGE_DEPENDENCY).getAsJsonArray());
     }
 
@@ -82,9 +88,11 @@ public class PackageConfig {
         if (this.fhirVersion.equalsIgnoreCase("r4")) {
             this.repository = packageConfigToml.getString(ToolConstants.CONFIG_R4_PACKAGE_REPOSITORY_TOML);
             this.basePackage = packageConfigToml.getString(ToolConstants.CONFIG_R4_BASE_PACKAGE_TOML);
+            this.internationalPackage = packageConfigToml.getString(ToolConstants.CONFIG_R4_INTERNATIONAL_PACKAGE_TOML);
         } else if (this.fhirVersion.equalsIgnoreCase("r5")) {
             this.repository = packageConfigToml.getString(ToolConstants.CONFIG_R5_PACKAGE_REPOSITORY_TOML);
             this.basePackage = packageConfigToml.getString(ToolConstants.CONFIG_R5_BASE_PACKAGE_TOML);
+            this.internationalPackage = packageConfigToml.getString(ToolConstants.CONFIG_R5_INTERNATIONAL_PACKAGE_TOML);
         }
 
         populateDependencies(packageConfigToml.getArrayOrEmpty(ToolConstants.CONFIG_PACKAGE_DEPENDENCY_TOML));
@@ -139,6 +147,10 @@ public class PackageConfig {
         return basePackage;
     }
 
+    public String getInternationalPackage() {
+        return internationalPackage;
+    }
+
     public List<DependencyConfig> getDependencyConfigList() {
         return dependencyConfigList;
     }
@@ -180,6 +192,10 @@ public class PackageConfig {
 
     public void setBasePackage(String basePackage) {
         this.basePackage = basePackage;
+    }
+
+    public void setInternationalPackage(String internationalPackage) {
+        this.internationalPackage = internationalPackage;
     }
 
     public void setAuthors(String authors) {

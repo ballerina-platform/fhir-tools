@@ -44,6 +44,7 @@ public class ToolConstants {
     public static final String CONFIG_VERSION_CONFIGS = "versionConfigs";
     public static final String CONFIG_PACKAGE_REPOSITORY = "repository";
     public static final String CONFIG_BASE_PACKAGE = "basePackage";
+    public static final String CONFIG_INTERNATIONAL_PACKAGE = "internationalPackage";
 
     ///  to-do: check the breakability of elements like above when initiating the tool from
     /// a tool-config.toml file
@@ -51,6 +52,8 @@ public class ToolConstants {
     public static final String CONFIG_R5_PACKAGE_REPOSITORY_TOML = "tools.config.package.version_configs.r5.repository";
     public static final String CONFIG_R4_BASE_PACKAGE_TOML = "tools.config.package.base_package";
     public static final String CONFIG_R5_BASE_PACKAGE_TOML = "tools.config.package.version_configs.r5.base_package";
+    public static final String CONFIG_R4_INTERNATIONAL_PACKAGE_TOML = "tools.config.package.version_configs.r4.international_package";
+    public static final String CONFIG_R5_INTERNATIONAL_PACKAGE_TOML = "tools.config.package.version_configs.r5.international_package";
 
     public static final String CONFIG_PACKAGE_DEPENDENCY = "dependencies";
     public static final String CONFIG_PACKAGE_DEPENDENCY_TOML = "tools.config.package.dependency";

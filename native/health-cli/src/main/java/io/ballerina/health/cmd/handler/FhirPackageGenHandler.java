@@ -38,8 +38,6 @@ import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
-import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.*;
-
 /**
  * Handler for package generation tool.
  */
@@ -141,14 +139,17 @@ public class FhirPackageGenHandler implements Handler {
                             getAsJsonObject("versionConfigs").
                             getAsJsonObject(fhirVersion);
 
-                    final String r5Repository = jsonPath.getAsJsonPrimitive("repository").getAsString();
-                    final String r5BasePackage = jsonPath.getAsJsonPrimitive("basePackage").getAsString();
+                    final String repository = jsonPath.getAsJsonPrimitive("repository").getAsString();
+                    final String basePackage = jsonPath.getAsJsonPrimitive("basePackage").getAsString();
+                    final String internationalPackage = jsonPath.getAsJsonPrimitive("internationalPackage").getAsString();
 
-                    JsonElement overrideConfigRepository = new Gson().toJsonTree(r5Repository);
-                    JsonElement overrideConfigBase = new Gson().toJsonTree(r5BasePackage);
+                    JsonElement overrideConfigRepository = new Gson().toJsonTree(repository);
+                    JsonElement overrideConfigBase = new Gson().toJsonTree(basePackage);
+                    JsonElement overrideConfigInternational = new Gson().toJsonTree(internationalPackage);
 
                     toolConfigInstance.overrideConfig("packageConfig.repository", overrideConfigRepository);
                     toolConfigInstance.overrideConfig("packageConfig.basePackage", overrideConfigBase);
+                    toolConfigInstance.overrideConfig("packageConfig.internationalPackage", overrideConfigInternational);
                 }
                 if (dependentIgs != null && dependentIgs.length > 0) {
                     // Create a JSON array from the String array
