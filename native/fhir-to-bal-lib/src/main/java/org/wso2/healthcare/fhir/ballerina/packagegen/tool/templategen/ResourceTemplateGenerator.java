@@ -72,6 +72,15 @@ public class ResourceTemplateGenerator extends AbstractFHIRTemplateGenerator {
             this.resourceProperties.put("importIdentifier", basePackageIdentifier + ":");
         }
 
+        if (this.packageTemplateContext.getInternationalPackageName() != null) {
+            this.resourceProperties.put("isInternationalPackage", false);
+            String internationalPackage = this.packageTemplateContext.getInternationalPackageName();
+            String internationalPackageIdentifier = internationalPackage.substring(internationalPackage.lastIndexOf(".") + 1);
+            this.resourceProperties.put("internationalPackage", internationalPackage);
+            this.resourceProperties.put("internationalPackageIdentifier", internationalPackageIdentifier);
+            this.resourceProperties.put("internationalImportIdentifier", internationalPackageIdentifier + ":");
+        }
+
         this.resourceTemplateContexts = new ArrayList<>(this.packageTemplateContext.getResourceTemplateContextMap().values());
         generateFHIRResources();
         LOG.debug("Ended: Resource Templates Generation");
@@ -131,6 +140,10 @@ public class ResourceTemplateGenerator extends AbstractFHIRTemplateGenerator {
         templateContext.setProperty("isBasePackage", this.resourceProperties.get("isBasePackage"));
         templateContext.setProperty("basePackageIdentifier", this.resourceProperties.get("basePackageIdentifier"));
         templateContext.setProperty("importIdentifier", this.resourceProperties.get("importIdentifier"));
+
+        templateContext.setProperty("isInternationalPackage", this.resourceProperties.get("isInternationalPackage"));
+        templateContext.setProperty("internationalPackageIdentifier", this.resourceProperties.get("internationalPackageIdentifier"));
+        templateContext.setProperty("internationalImportIdentifier", this.resourceProperties.get("internationalImportIdentifier"));
 
         Set<String> resourceDependencies = new TreeSet<>();
         if (!(boolean) this.resourceProperties.get("isBasePackage")) {

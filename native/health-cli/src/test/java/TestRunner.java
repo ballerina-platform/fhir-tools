@@ -107,7 +107,9 @@ public class TestRunner {
         argsMap.put("--package-name", packageName); // FOR PACKAGE
         argsMap.put("--package-version", packageVersion); // FOR PACKAGE
         argsMap.put("--dependency", null); // FOR PACKAGE
-        //        argsMap.put("--dependent-package", orgName + "/" + packageName); // FOR TEMPLATE
+        // argsMap.put("--dependent-package", orgName + "/" + packageName); // FOR TEMPLATE
+        // argsMap.put("--aggregate", true); // FOR TEMPLATE
+        // argsMap.put("--resources", "Patient,Observation,Condition"); // FOR TEMPLATE
         argsMap.put("--org-name", orgName);
         argsMap.put("--included-profile", null);
         argsMap.put("--excluded-profile", null);
@@ -160,7 +162,9 @@ public class TestRunner {
         argsMap.put("--package-name", packageName); // FOR PACKAGE
         argsMap.put("--package-version", packageVersion); // FOR PACKAGE
         argsMap.put("--dependency", null); // FOR PACKAGE
-        //        argsMap.put("--dependent-package", orgName + "/" + packageName); // FOR TEMPLATE
+        // argsMap.put("--dependent-package", orgName + "/" + packageName); // FOR TEMPLATE
+        // argsMap.put("--aggregate", false); // FOR TEMPLATE
+        // argsMap.put("--resources", "Patient,Practitioner"); // FOR TEMPLATE
         argsMap.put("--org-name", orgName);
         argsMap.put("--included-profile", null);
         argsMap.put("--excluded-profile", null);

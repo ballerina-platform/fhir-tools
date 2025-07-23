@@ -88,6 +88,7 @@ public abstract class AbstractResourceContextGenerator {
             }
 
             checkAndAddConstraintImport(element);
+            checkAndAddInternationalImport(element);
             this.resourceTemplateContextInstance.getResourceElements().put(element.getName(), element);
         }
     }
@@ -100,6 +101,33 @@ public abstract class AbstractResourceContextGenerator {
                 .anyMatch(d -> d.equals(CONSTRAINTS_LIB_IMPORT));
         if (!isConstraintsImportExists && isCardinalityConstrained) {
             this.resourceTemplateContextInstance.getResourceDependencies().add(CONSTRAINTS_LIB_IMPORT);
+        }
+    }
+
+    /**
+     * Check if the element or its child elements are imported from international packages.
+     * If so, add the international package to the resource dependencies.
+     *
+     * @param element The element to check for international imports.
+     */
+    protected void checkAndAddInternationalImport(Element element){
+        boolean isImportedFromInternational = false;
+        if (element.getContentReference() != null && GeneratorUtils.isReferredFromInternational(element.getContentReference())){
+            isImportedFromInternational = true;
+        } else if (element.hasChildElements()){
+            for (Element childElement : element.getChildElements().values()) {
+                if (childElement.getContentReference() != null && GeneratorUtils.isReferredFromInternational(childElement.getContentReference())) {
+                    isImportedFromInternational = true;
+                    break;
+                }
+            }
+        }
+        boolean isInternationalImportExists = this.resourceTemplateContextInstance.getResourceDependencies()
+                .stream()
+                .anyMatch(d -> d.equals(this.toolConfig.getPackageConfig().getInternationalPackage()));
+
+        if(isImportedFromInternational && !isInternationalImportExists){
+            this.resourceTemplateContextInstance.getResourceDependencies().add(this.toolConfig.getPackageConfig().getInternationalPackage());
         }
     }
 
@@ -160,25 +188,29 @@ public abstract class AbstractResourceContextGenerator {
                     this.resourceTemplateContextInstance.getResourceName());
             extendedElement.setElements(element.getChildElements());
 
-            DataTypeDefinitionAnnotation annotation = new DataTypeDefinitionAnnotation();
-            annotation.setName(extendedElement.getTypeName());
+            // Only creates annotation if the element does not have a content reference.
+            // Because the type of referred elements is set to BackboneElement temporarily.
+            if(element.getContentReference() == null){
+                DataTypeDefinitionAnnotation annotation = new DataTypeDefinitionAnnotation();
+                annotation.setName(extendedElement.getTypeName());
 
-            if (element.hasChildElements()) {
-                HashMap<String, AnnotationElement> childElementAnnotations = new HashMap<>();
-                for (Element subElement : element.getChildElements().values()) {
-                    checkAndAddConstraintImport(subElement);
-                    AnnotationElement annotationElement = GeneratorUtils.getInstance().populateAnnotationElement(subElement);
-                    childElementAnnotations.put(annotationElement.getName(), annotationElement);
+                if (element.hasChildElements()) {
+                    HashMap<String, AnnotationElement> childElementAnnotations = new HashMap<>();
+                    for (Element subElement : element.getChildElements().values()) {
+                        checkAndAddConstraintImport(subElement);
+                        AnnotationElement annotationElement = GeneratorUtils.getInstance().populateAnnotationElement(subElement);
+                        childElementAnnotations.put(annotationElement.getName(), annotationElement);
+                    }
+                    annotation.setElements(childElementAnnotations);
                 }
-                annotation.setElements(childElementAnnotations);
-            }
-            extendedElement.setAnnotation(annotation);
-            if (!element.isSlice() && this.resourceTemplateContextInstance.getSliceElements().containsKey(element.getPath())) {
-                for (Element slice : this.resourceTemplateContextInstance.getSliceElements().get(element.getPath())) {
-                    slice.setDataType(extendedElement.getTypeName());
+                extendedElement.setAnnotation(annotation);
+                if (!element.isSlice() && this.resourceTemplateContextInstance.getSliceElements().containsKey(element.getPath())) {
+                    for (Element slice : this.resourceTemplateContextInstance.getSliceElements().get(element.getPath())) {
+                        slice.setDataType(extendedElement.getTypeName());
+                    }
                 }
+                putExtendedElementIfAbsent(element, extendedElement);
             }
-            putExtendedElementIfAbsent(element, extendedElement);
         }
         LOG.debug("Ended: Resource Extended Element validation");
     }
