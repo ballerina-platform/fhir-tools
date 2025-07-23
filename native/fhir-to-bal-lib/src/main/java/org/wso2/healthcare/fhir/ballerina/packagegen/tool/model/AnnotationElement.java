@@ -34,6 +34,7 @@ public class AnnotationElement {
     private String valueSet;
     private boolean mustSupport;
     private boolean isExtended;
+    private String contentReference;
 
     public String getName() {
         return name;
@@ -120,5 +121,13 @@ public class AnnotationElement {
 
     public void setExtended(boolean extended) {
         isExtended = extended;
+    }
+
+    public String getContentReference() {
+        return contentReference;
+    }
+
+    public void setContentReference(String contentReference) {
+        this.contentReference = contentReference;
     }
 }

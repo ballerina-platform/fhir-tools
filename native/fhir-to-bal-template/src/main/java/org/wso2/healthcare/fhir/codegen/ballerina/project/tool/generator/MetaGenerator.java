@@ -40,10 +40,20 @@ public class MetaGenerator extends AbstractFHIRTemplateGenerator {
 
     @Override
     public void generate(ToolContext toolContext, Map<String, Object> generatorProperties) throws CodeGenException {
+        BallerinaProjectToolConfig toolConfig = (BallerinaProjectToolConfig) generatorProperties.get("config");
         String directoryPath = generatorProperties.get("projectAPIPath") + File.separator;
-        this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
-                BallerinaProjectConstants.RESOURCE_PATH_SEPERATOR + "moduleMd.vm", createTemplateContextForMeta(generatorProperties), directoryPath,
-                "Module.md");
+
+        if(toolConfig.getFhirVersion().equalsIgnoreCase("r5")){
+            this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
+                            BallerinaProjectConstants.RESOURCE_PATH_SEPERATOR + "r5ModuleMd.vm", createTemplateContextForMeta(generatorProperties), directoryPath,
+                    "Module.md");
+        }
+        else{
+            this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
+                            BallerinaProjectConstants.RESOURCE_PATH_SEPERATOR + "r4ModuleMd.vm", createTemplateContextForMeta(generatorProperties), directoryPath,
+                    "Module.md");
+        }
+
         this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
                 BallerinaProjectConstants.RESOURCE_PATH_SEPERATOR + "gitignore.vm", createTemplateContextForMeta(generatorProperties), directoryPath,
                 ".gitignore");
@@ -106,7 +116,7 @@ public class MetaGenerator extends AbstractFHIRTemplateGenerator {
         templateContext.setProperty("service", service);
         templateContext.setProperty("apiName", generatorProperties.get("resourceType") + "API");
         if (generatorProperties.containsKey("resourceType")) {
-            templateContext.setProperty("templateName", config.getMetadataConfig().getNamePrefix() + "." +
+            templateContext.setProperty("templateName", config.getVersionConfig().getNamePrefix() + "." +
                     generatorProperties.get("resourceType").toString().toLowerCase());
         }
 

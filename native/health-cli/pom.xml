@@ -140,8 +140,8 @@
                         <artifactId>maven-compiler-plugin</artifactId>
                         <version>${maven-compiler-plugin.version}</version>
                         <configuration>
-                            <source>11</source>
-                            <target>11</target>
+                            <source>21</source>
+                            <target>21</target>
                         </configuration>
                     </plugin>
                     <plugin>
@@ -214,6 +214,7 @@
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
                         <executions>
+                            <!-- R4 Test Execution -->
                             <execution>
                                 <id>generate-test-uscore</id>
                                 <phase>test</phase>
@@ -223,10 +224,16 @@
                                 <configuration>
                                     <mainClass>TestRunner</mainClass>
                                     <classpathScope>test</classpathScope>
+                                    <systemProperties>
+                                        <property>
+                                            <key>fhirVersion</key>
+                                            <value>r4</value>
+                                        </property>
+                                    </systemProperties>
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>copy-bal-test-file</id>
+                                <id>copy-r4-bal-test-file</id>
                                 <phase>test</phase>
                                 <goals>
                                     <goal>exec</goal>
@@ -235,12 +242,15 @@
                                     <executable>bash</executable>
                                     <arguments>
                                         <argument>-c</argument>
-                                        <argument>cp -r ../fhir-to-bal-lib/src/test/resources/ballerina.tests/* target/test-classes/health.fhir.r4.uscore501/tests</argument>
+                                        <argument>
+                                            mkdir -p target/test-classes/health.fhir.r4.uscore501/tests &amp;&amp;
+                                            cp -r ../fhir-to-bal-lib/src/test/resources/ballerina.tests/r4/* target/test-classes/health.fhir.r4.uscore501/tests
+                                        </argument>
                                     </arguments>
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>run-bal-tests</id>
+                                <id>run-r4-bal-tests</id>
                                 <phase>test</phase>
                                 <goals>
                                     <goal>exec</goal>
@@ -250,6 +260,56 @@
                                     <arguments>
                                         <argument>test</argument>
                                         <argument>target/test-classes/health.fhir.r4.uscore501/</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+
+                            <!-- R5 Test Execution -->
+                            <execution>
+                                <id>generate-test-europebase</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>java</goal>
+                                </goals>
+                                <configuration>
+                                    <mainClass>TestRunner</mainClass>
+                                    <classpathScope>test</classpathScope>
+                                    <systemProperties>
+                                        <property>
+                                            <key>fhirVersion</key>
+                                            <value>r5</value>
+                                        </property>
+                                    </systemProperties>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-r5-bal-test-file</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>bash</executable>
+                                    <arguments>
+                                        <argument>-c</argument>
+                                        <argument>
+                                            mkdir -p target/test-classes/health.fhir.r5.europebase/tests &amp;&amp;
+                                            cp -r ../fhir-to-bal-lib/src/test/resources/ballerina.tests/r5/* target/test-classes/health.fhir.r5.europebase/tests
+                                        </argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>run-r5-bal-tests</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>bal</executable>
+                                    <arguments>
+                                        <argument>test</argument>
+                                        <argument>target/test-classes/health.fhir.r5.europebase/</argument>
                                     </arguments>
                                 </configuration>
                             </execution>

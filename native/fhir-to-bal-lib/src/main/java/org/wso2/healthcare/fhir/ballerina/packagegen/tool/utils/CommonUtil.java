@@ -105,6 +105,7 @@ public class CommonUtil {
         if (str != null) {
             String description = str.replaceAll("\\s{2,}", " ");
             description = description.replace("\n", " ").replace("\r", " ");
+            description = description.replace("\\", "\\\\");
             return description.replace("\"", "'");
         }
         return "";
