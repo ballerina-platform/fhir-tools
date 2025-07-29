@@ -36,6 +36,7 @@ import org.wso2.healthcare.codegen.tool.framework.fhir.core.FHIRTool;
 
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Map;
 
 /**
@@ -45,7 +46,8 @@ public class FhirTemplateGenHandler implements Handler {
 
     private String packageName;
     private String orgName;
-    private String version;
+    private String packageVersion;
+    private String fhirVersion;
     private String dependentPackage;
 
     private String[] includedProfiles;
@@ -70,6 +72,7 @@ public class FhirTemplateGenHandler implements Handler {
         }
         fhirToolLib = (FHIRTool) initializeLib(
                 HealthCmdConstants.CMD_SUB_FHIR, printStream, configJson, specificationPath);
+        fhirVersion = fhirToolLib.getFhirVersion();
     }
 
     @Override
@@ -77,7 +80,7 @@ public class FhirTemplateGenHandler implements Handler {
 
         this.packageName = (String) argsMap.get("--package-name");
         this.orgName = (String) argsMap.get("--org-name");
-        this.version = (String) argsMap.get("--package-version");
+        this.packageVersion = (String) argsMap.get("--package-version");
         this.dependentPackage = (String) argsMap.get("--dependent-package");
         this.includedProfiles = (String[]) argsMap.get("--included-profile");
         this.excludedProfiles = (String[]) argsMap.get("--excluded-profile");
@@ -100,17 +103,19 @@ public class FhirTemplateGenHandler implements Handler {
             JsonObject toolExecConfig = toolExecConfigs.getAsJsonObject();
 
             //override tool level configs here
-
             Tool tool;
             TemplateGenerator mainTemplateGenerator = null;
+
             try {
                 ClassLoader classLoader = this.getClass().getClassLoader();
                 String configClassName = "org.wso2.healthcare.fhir.codegen.ballerina.project.tool." +
                         "config.BallerinaProjectToolConfig";
-                Class<?> configClazz = classLoader.loadClass(configClassName);
-                String toolClassName = "org.wso2.healthcare.fhir.codegen.ballerina.project.tool.BallerinaProjectTool";
-                Class<?> toolClazz = classLoader.loadClass(toolClassName);
-                ToolConfig toolConfigInstance = (ToolConfig) configClazz.getConstructor().newInstance();
+                Class<?> configClass = classLoader.loadClass(configClassName);
+
+                String toolClassName = "org.wso2.healthcare.fhir.codegen.ballerina.project.tool.BallerinaProjectToolFactory";
+                Class<?> toolClass = classLoader.loadClass(toolClassName);
+
+                ToolConfig toolConfigInstance = (ToolConfig) configClass.getConstructor().newInstance();
                 toolConfigInstance.setTargetDir(targetOutputPath);
                 toolConfigInstance.setToolName(HealthCmdConstants.CMD_MODE_TEMPLATE);
 
@@ -122,9 +127,13 @@ public class FhirTemplateGenHandler implements Handler {
                     JsonElement overrideConfig = new Gson().toJsonTree(orgName.toLowerCase());
                     toolConfigInstance.overrideConfig("project.package.org", overrideConfig);
                 }
-                if (version != null && !version.isEmpty()) {
-                    JsonElement overrideConfig = new Gson().toJsonTree(version.toLowerCase());
+                if (packageVersion != null && !packageVersion.isEmpty()) {
+                    JsonElement overrideConfig = new Gson().toJsonTree(packageVersion.toLowerCase());
                     toolConfigInstance.overrideConfig("project.package.version", overrideConfig);
+                }
+                if (fhirVersion != null && !fhirVersion.isEmpty() && !fhirVersion.equalsIgnoreCase("r4")) {
+                    JsonElement overrideConfig = new Gson().toJsonTree(fhirVersion.toLowerCase());
+                    toolConfigInstance.overrideConfig("project.fhir.default_version", overrideConfig);
                 }
                 if (dependentPackage != null) {
                     JsonElement overrideConfig = new Gson().toJsonTree(dependentPackage);
@@ -145,7 +154,7 @@ public class FhirTemplateGenHandler implements Handler {
                 if (aggregate) {
                     JsonElement aggregateConfig = new Gson().toJsonTree(true);
                     toolConfigInstance.overrideConfig("project.enableAggregatedApi", aggregateConfig);
-                    
+
                     if (resources != null && !resources.trim().isEmpty()) {
                         // Parse comma-separated resources and create JSON array
                         String[] resourceArray = resources.split(",");
@@ -157,20 +166,27 @@ public class FhirTemplateGenHandler implements Handler {
                     }
                 }
 
-                tool = (Tool) toolClazz.getConstructor().newInstance();
+                Object toolFactory = toolClass.getConstructor().newInstance();
+                Method getToolMethod = toolClass.getMethod("getBallerinaProjectTool", String.class);
+                tool = (Tool) getToolMethod.invoke(toolFactory, fhirVersion);
+
                 tool.initialize(toolConfigInstance);
                 fhirToolLib.getToolImplementations().putIfAbsent(HealthCmdConstants.CMD_MODE_PACKAGE, tool);
                 mainTemplateGenerator = tool.execute(fhirToolLib.getToolContext());
+
             } catch (ClassNotFoundException e) {
                 printStream.println(ErrorMessages.TOOL_IMPL_NOT_FOUND + e.getMessage());
                 HealthCmdUtils.throwLauncherException(e);
+
             } catch (InstantiationException | IllegalAccessException e) {
                 printStream.println(ErrorMessages.CONFIG_INITIALIZING_FAILED);
                 HealthCmdUtils.throwLauncherException(e);
+
             } catch (CodeGenException e) {
                 printStream.println(ErrorMessages.UNKNOWN_ERROR);
                 printStream.println(e);
                 HealthCmdUtils.throwLauncherException(e);
+
             } catch (InvocationTargetException | NoSuchMethodException e) {
                 throw new RuntimeException(e);
             }

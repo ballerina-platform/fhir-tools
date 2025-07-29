@@ -30,7 +30,12 @@ import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.BallerinaSe
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.FHIRProfile;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 
 public class MetaGenerator extends AbstractFHIRTemplateGenerator {
 
@@ -40,10 +45,20 @@ public class MetaGenerator extends AbstractFHIRTemplateGenerator {
 
     @Override
     public void generate(ToolContext toolContext, Map<String, Object> generatorProperties) throws CodeGenException {
+        BallerinaProjectToolConfig toolConfig = (BallerinaProjectToolConfig) generatorProperties.get("config");
         String directoryPath = generatorProperties.get("projectAPIPath") + File.separator;
-        this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
-                BallerinaProjectConstants.RESOURCE_PATH_SEPERATOR + "moduleMd.vm", createTemplateContextForMeta(generatorProperties), directoryPath,
-                "Module.md");
+
+        if(toolConfig.getFhirVersion().equalsIgnoreCase("r5")){
+            this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
+                            BallerinaProjectConstants.RESOURCE_PATH_SEPERATOR + "r5ModuleMd.vm", createTemplateContextForMeta(generatorProperties), directoryPath,
+                    "Module.md");
+        }
+        else{
+            this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
+                            BallerinaProjectConstants.RESOURCE_PATH_SEPERATOR + "r4ModuleMd.vm", createTemplateContextForMeta(generatorProperties), directoryPath,
+                    "Module.md");
+        }
+
         this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
                 BallerinaProjectConstants.RESOURCE_PATH_SEPERATOR + "gitignore.vm", createTemplateContextForMeta(generatorProperties), directoryPath,
                 ".gitignore");
@@ -106,7 +121,7 @@ public class MetaGenerator extends AbstractFHIRTemplateGenerator {
         templateContext.setProperty("service", service);
         templateContext.setProperty("apiName", generatorProperties.get("resourceType") + "API");
         if (generatorProperties.containsKey("resourceType")) {
-            templateContext.setProperty("templateName", config.getMetadataConfig().getNamePrefix() + "." +
+            templateContext.setProperty("templateName", config.getVersionConfig().getNamePrefix() + "." +
                     generatorProperties.get("resourceType").toString().toLowerCase());
         }
 

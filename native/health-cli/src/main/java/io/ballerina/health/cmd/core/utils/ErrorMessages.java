@@ -42,6 +42,9 @@ public class ErrorMessages {
     public static final String ARG_VALIDATION_FAILED = "Argument validation failed. Please check the arguments and " +
             "try again";
 
+    public static final String FHIR_VERSION_READ_ERROR = "Error while reading the FHIR version from the specification. " +
+            "Please check the specification and try again";
+
     private ErrorMessages() {
         throw new AssertionError();
     }

@@ -31,6 +31,10 @@ public class ExtendedElement {
     private DataTypeDefinitionAnnotation annotation;
     private HashMap<String, Element> elements;
 
+    // Store datatype of extended elements extended from a primitive type
+    // e.g: FHIR R5 EuropeBase --> patient.birthDate
+    private String primitiveExtendedType;
+
     public String getTypeName() {
         return typeName;
     }
@@ -90,5 +94,13 @@ public class ExtendedElement {
             }
         }
         return false;
+    }
+
+    public String getPrimitiveExtendedType() {
+        return primitiveExtendedType;
+    }
+
+    public void setPrimitiveExtendedType(String primitiveExtendedType) {
+        this.primitiveExtendedType = primitiveExtendedType;
     }
 }

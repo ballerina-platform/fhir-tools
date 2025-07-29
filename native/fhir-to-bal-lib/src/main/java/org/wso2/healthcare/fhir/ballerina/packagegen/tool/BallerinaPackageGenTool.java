@@ -22,12 +22,13 @@ import org.wso2.healthcare.codegen.tool.framework.commons.config.ToolConfig;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.TemplateGenerator;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.ToolContext;
 import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenException;
-import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRDataTypeDef;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.config.BallerinaPackageGenToolConfig;
-import org.wso2.healthcare.fhir.ballerina.packagegen.tool.modelgen.PackageContextGenerator;
+import org.wso2.healthcare.fhir.ballerina.packagegen.tool.modelgen.PackageContextGeneratorFactory;
+import org.wso2.healthcare.fhir.ballerina.packagegen.tool.modelgen.AbstractPackageContextGenerator;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.templategen.PackageTemplateGenerator;
-import org.wso2.healthcare.codegen.tool.framework.fhir.core.common.FHIRSpecificationData;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.AbstractFHIRTool;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.common.FHIRSpecificationData;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRDataTypeDef;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.model.FHIRImplementationGuide;
 
 import java.util.HashMap;
@@ -37,7 +38,6 @@ import java.util.Map;
  * Ballerina FHIR Package Generator Tool.
  */
 public class BallerinaPackageGenTool extends AbstractFHIRTool {
-
     private final Map<String, FHIRImplementationGuide> enabledIgs = new HashMap<>();
     private BallerinaPackageGenToolConfig packageGenToolConfig;
 
@@ -62,7 +62,8 @@ public class BallerinaPackageGenTool extends AbstractFHIRTool {
         if (packageGenToolConfig.isEnabled()) {
             String targetRoot = packageGenToolConfig.getTargetDir();
             Map<String, FHIRDataTypeDef> dataTypes = ((FHIRSpecificationData) toolContext.getSpecificationData()).getDataTypes();
-            PackageContextGenerator packageContextGenerator = new PackageContextGenerator(
+            AbstractPackageContextGenerator packageContextGenerator = PackageContextGeneratorFactory.getPackageContextGenerator(
+                    packageGenToolConfig.getPackageConfig().getFhirVersion(),
                     packageGenToolConfig,
                     enabledIgs, toolContext.getSpecificationData());
 

@@ -38,12 +38,20 @@ public class ToolConstants {
     public static final String CONFIG_PACKAGE_DISTRIBUTION_TOML = "tools.config.package.ballerina_distribution";
     public static final String CONFIG_PACKAGE_AUTHORS = "authors";
     public static final String CONFIG_PACKAGE_AUTHORS_TOML = "tools.config.package.authors";
+    public static final String CONFIG_PACKAGE_FHIR_VERSION = "fhirVersion";
+    public static final String CONFIG_PACKAGE_FHIR_VERSION_TOML = "tools.config.packageConfig.fhirVersion";
+
+    public static final String CONFIG_VERSION_CONFIGS = "versionConfigs";
     public static final String CONFIG_PACKAGE_REPOSITORY = "repository";
-    public static final String CONFIG_PACKAGE_REPOSITORY_TOML = "tools.config.package.repository";
     public static final String CONFIG_BASE_PACKAGE = "basePackage";
 
+    ///  to-do: check the breakability of elements like above when initiating the tool from
+    /// a tool-config.toml file
+    public static final String CONFIG_R4_PACKAGE_REPOSITORY_TOML = "tools.config.package.version_configs.r4.repository";
+    public static final String CONFIG_R5_PACKAGE_REPOSITORY_TOML = "tools.config.package.version_configs.r5.repository";
+    public static final String CONFIG_R4_BASE_PACKAGE_TOML = "tools.config.package.base_package";
+    public static final String CONFIG_R5_BASE_PACKAGE_TOML = "tools.config.package.version_configs.r5.base_package";
 
-    public static final String CONFIG_BASE_PACKAGE_TOML = "tools.config.package.utils_package";
     public static final String CONFIG_PACKAGE_DEPENDENCY = "dependencies";
     public static final String CONFIG_PACKAGE_DEPENDENCY_TOML = "tools.config.package.dependency";
     public static final String CONFIG_PACKAGE_DEPENDENCY_ORG = "org";
@@ -69,6 +77,7 @@ public class ToolConstants {
     public static final String CONFIG_BALLERINA_KEYWORD_REPLACE = "replace";
     public static final String CONFIG_BALLERINA_KEYWORD_REPLACE_TOML = "tools.config.ballerina_keyword.replace";
     public static final String TEMPLATE_PATH = "templates";
+    public static final String TEMPLATE_VERSION_PATH = "versions";
     public static final String BAL_EXTENSION = ".bal";
     public static final String TOML_EXTENSION = ".toml";
     public static final String MD_EXTENSION = ".md";
@@ -84,7 +93,8 @@ public class ToolConstants {
         MIDDLE,
         END
     }
-    public static final String FHIR_R4_DEFINITION_URL = "http://hl7.org/fhir/StructureDefinition";
+    public static final String FHIR_R4_DEFINITION_URL = "https://hl7.org/fhir/R4/structuredefinition.html";
+    public static final String FHIR_R5_DEFINITION_URL = "https://hl7.org/fhir/R5/structuredefinition.html";
     public static final String LICENSE_YEAR = String.valueOf(LocalDate.now().getYear());
     public static final String DATA_TYPE_EXTENSION = "Extension";
 

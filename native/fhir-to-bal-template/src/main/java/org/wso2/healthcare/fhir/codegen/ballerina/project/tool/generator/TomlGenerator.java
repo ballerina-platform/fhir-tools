@@ -54,7 +54,7 @@ public class TomlGenerator extends AbstractFHIRTemplateGenerator {
         templateContext.setProperty("metaConfig", config.getMetadataConfig());
         templateContext.setProperty("resourceType", generatorProperties.get("resourceType") + "API");
         if (generatorProperties.containsKey("resourceType")) {
-            templateContext.setProperty("templateName", config.getMetadataConfig().getNamePrefix() + "." +
+            templateContext.setProperty("templateName", config.getVersionConfig().getNamePrefix() + "." +
                     generatorProperties.get("resourceType").toString().toLowerCase());
         } else {
             templateContext.setProperty("templateName", "FHIRServerTemplate");
