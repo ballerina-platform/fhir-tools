@@ -105,8 +105,8 @@ public class ResourceTemplateGenerator extends AbstractFHIRTemplateGenerator {
                         + ToolConstants.BAL_EXTENSION, "");
 
                 this.getTemplateEngine().generateOutputAsFile(ToolConstants.TEMPLATE_PATH +
-                                ToolConstants.RESOURCE_PATH_SEPERATOR + "fhir_resource.vm", this.createTemplateContextForResourceSkeletons(
-                                        resourceTemplateContext, this.packageTemplateContext), "", filePath);
+                        ToolConstants.RESOURCE_PATH_SEPERATOR + "fhir_resource.vm", this.createTemplateContextForResourceSkeletons(
+                        resourceTemplateContext, this.packageTemplateContext), "", filePath);
             }
         } catch (CodeGenException e) {
             throw new CodeGenException("Error occurred while generating template artifacts for fhir resource", e);

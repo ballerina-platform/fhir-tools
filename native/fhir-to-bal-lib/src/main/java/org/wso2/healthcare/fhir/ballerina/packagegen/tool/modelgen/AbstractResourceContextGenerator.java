@@ -110,11 +110,11 @@ public abstract class AbstractResourceContextGenerator {
      *
      * @param element The element to check for international imports.
      */
-    protected void checkAndAddInternationalImport(Element element){
+    protected void checkAndAddInternationalImport(Element element) {
         boolean isImportedFromInternational = false;
-        if (element.getContentReference() != null && GeneratorUtils.isReferredFromInternational(element.getContentReference())){
+        if (element.getContentReference() != null && GeneratorUtils.isReferredFromInternational(element.getContentReference())) {
             isImportedFromInternational = true;
-        } else if (element.hasChildElements()){
+        } else if (element.hasChildElements()) {
             for (Element childElement : element.getChildElements().values()) {
                 if (childElement.getContentReference() != null && GeneratorUtils.isReferredFromInternational(childElement.getContentReference())) {
                     isImportedFromInternational = true;
@@ -126,7 +126,7 @@ public abstract class AbstractResourceContextGenerator {
                 .stream()
                 .anyMatch(d -> d.equals(this.toolConfig.getPackageConfig().getInternationalPackage()));
 
-        if(isImportedFromInternational && !isInternationalImportExists){
+        if (isImportedFromInternational && !isInternationalImportExists) {
             this.resourceTemplateContextInstance.getResourceDependencies().add(this.toolConfig.getPackageConfig().getInternationalPackage());
         }
     }
@@ -190,7 +190,7 @@ public abstract class AbstractResourceContextGenerator {
 
             // Only creates annotation if the element does not have a content reference.
             // Because the type of referred elements is set to BackboneElement temporarily.
-            if(element.getContentReference() == null){
+            if (element.getContentReference() == null) {
                 DataTypeDefinitionAnnotation annotation = new DataTypeDefinitionAnnotation();
                 annotation.setName(extendedElement.getTypeName());
 

@@ -342,10 +342,9 @@ public class GeneratorUtils {
         if (element.getChildElements() != null) {
             extendedElement.setElements(element.getChildElements());
         }
-        if (!GeneratorUtils.isPrimitiveElement(baseType)){
+        if (!GeneratorUtils.isPrimitiveElement(baseType)) {
             extendedElement.setBaseType(baseType);
-        }
-        else if (GeneratorUtils.isPrimitiveElement(baseType) && !baseType.equals("code")){
+        } else if (GeneratorUtils.isPrimitiveElement(baseType) && !baseType.equals("code")) {
             // Handle the rare case of extended elements with primitive base types
             // FHIR R5: Patient.birthDate, Patient.birthDate.id, Patient.birthDate.value etc.
             // where Patient.birthDate = r5: date
@@ -471,7 +470,7 @@ public class GeneratorUtils {
             ///  place should be investigated.
             String assigningType = VALUESET_DATA_TYPES.get(baseType).get(fieldName);
 
-            if(!assigningType.equalsIgnoreCase(assignedType)){
+            if (!assigningType.equalsIgnoreCase(assignedType)) {
                 return assignedType;
             }
             return VALUESET_DATA_TYPES.get(baseType).get(fieldName);
@@ -515,8 +514,8 @@ public class GeneratorUtils {
     /**
      * Populates available code values for a given code element.
      *
-     * @param shortField        short text from the element definition of FHIR specification
-     * @param element           element model for template context
+     * @param shortField short text from the element definition of FHIR specification
+     * @param element    element model for template context
      */
     public static void populateCodeValuesForCodeElements(String shortField, Element element) {
         if (!shortField.contains("|")) {
@@ -540,13 +539,14 @@ public class GeneratorUtils {
 
     /**
      * Check if an element is referred from an international specification.
+     *
      * @param contentReference The contentReference field of an Element.
-     * NOTE: These elements do not have a TypeRefComponent
-     * */
+     *                         NOTE: These elements do not have a TypeRefComponent
+     */
     public static boolean isReferredFromInternational(String contentReference) {
         // Refers a resource from international specification
         // e.g.: http://hl7.org/fhir/StructureDefinition/Parameters#Parameters.parameter
-        if (contentReference != null){
+        if (contentReference != null) {
             return contentReference.startsWith("http://hl7.org/fhir/StructureDefinition/");
         }
         return false;
@@ -556,16 +556,16 @@ public class GeneratorUtils {
      * Get the referring element name from the content reference.
      * This method handles both international and local references.
      *
-     * @param contentReference The content reference string.
+     * @param contentReference            The content reference string.
      * @param isReferredFromInternational Whether the reference is from an international specification.
-     * @param typeNamePrefix The prefix to be added to the referring element name.
+     * @param typeNamePrefix              The prefix to be added to the referring element name.
      * @return The formatted referring element name.
      */
     public static String getReferringElementName(String contentReference, boolean isReferredFromInternational, String typeNamePrefix) {
         String referringElementName = contentReference.split("#")[1];
-        String [] subElements = referringElementName.split("\\.");
+        String[] subElements = referringElementName.split("\\.");
 
-        if(isReferredFromInternational){
+        if (isReferredFromInternational) {
             // If the content reference is from international --> remove the prefix
             // e.g.: http://hl7.org/fhir/StructureDefinition/Parameters#Parameters.parameter --> international401:Parameters.parameter
             // Assumes that international resources don't have special characters (e.g.: ':') in the URL
@@ -576,7 +576,7 @@ public class GeneratorUtils {
             }
             referringElementName = newElementName.toString();
         } else {
-            if (referringElementName.contains(":") || StringUtils.countMatches(referringElementName, ".") > 1){
+            if (referringElementName.contains(":") || StringUtils.countMatches(referringElementName, ".") > 1) {
                 // If the content reference is like #Provenance.agent:ProvenanceTransmitter --> USCoreProvenanceAgentProvenanceTransmitter
                 // or #ExplanationOfBenefit.item.reviewOutcome --> ExplanationOfBenefitItemReviewOutcome
                 // referred by the Element with path ExplanationOfBenefit.addItem.detail.subDetail.reviewOutcome
@@ -587,7 +587,7 @@ public class GeneratorUtils {
                     newElementName.append(CommonUtil.toCamelCase(subElement));
                 }
                 referringElementName = newElementName.toString();
-                if(referringElementName.startsWith(subElements[0])){
+                if (referringElementName.startsWith(subElements[0])) {
                     referringElementName = referringElementName.substring(subElements[0].length());
                 }
                 referringElementName = typeNamePrefix + referringElementName;

@@ -55,6 +55,7 @@ public class Element {
     public void setDataType(String dataType) {
         this.dataType = dataType;
     }
+
     public Map<String, DataTypeProfile> getProfiles() {
         return profiles;
     }
