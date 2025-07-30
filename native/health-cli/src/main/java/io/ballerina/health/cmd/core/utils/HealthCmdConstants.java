@@ -66,7 +66,6 @@ public class HealthCmdConstants {
     public static final String CMD_OPTION_ORG_NAME = "--org-name";
     public static final String CMD_OPTION_ORG_NAME_DESCRIPTION = "Organization name of the Ballerina package";
     public static final String CMD_OPTION_PACKAGE_VERSION = "--package-version";
-    public static final String CMD_OPTION_FHIR_VERSION = "--fhir-version";
     public static final String CMD_OPTION_PACKAGE_VERSION_DESCRIPTION = "Location of the CDS hooks definition file";
     public static final String CMD_OPTION_DEPENDENT_PACKAGE = "--dependent-package";
     public static final String CMD_OPTION_INPUT = "--input";

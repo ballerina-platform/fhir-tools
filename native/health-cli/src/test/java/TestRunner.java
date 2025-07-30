@@ -53,11 +53,9 @@ public class TestRunner {
         String packageName = "health.fhir.cds";
         String orgName = "ballerinax";
         String packageVersion = "1.1.0";
-        String fhirVersion = "r4";
         argsMap.put("--package-name", packageName);
         argsMap.put("--org-name", orgName);
         argsMap.put("--package-version", packageVersion);
-        argsMap.put("--fhir-version", fhirVersion);
         String mode = "template";
         String command = "cds";
 
