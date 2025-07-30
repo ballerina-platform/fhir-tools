@@ -122,6 +122,9 @@ public class BallerinaPackageGenToolConfig extends AbstractToolConfig {
             case "packageConfig.basePackage":
                 this.packageConfig.setBasePackage(value.getAsString());
                 break;
+            case "packageConfig.internationalPackage":
+                this.packageConfig.setInternationalPackage(value.getAsString());
+                break;
             case "packageConfig.dependent.igs":
                 List<String> dependentIgList = new ArrayList<>();
                 for (JsonElement dependentIgJsonElement : value.getAsJsonArray()) {

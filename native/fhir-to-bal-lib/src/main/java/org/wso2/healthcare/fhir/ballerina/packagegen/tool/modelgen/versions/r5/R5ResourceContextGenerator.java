@@ -165,11 +165,13 @@ public class R5ResourceContextGenerator extends AbstractResourceContextGenerator
         String elementPath;
         String[] elementPathTokens;
         HashMap<String, Element> snapshotElementMap = new HashMap<>();
-
         boolean isSlice;
+        boolean isReferredElement;
         String sliceNamePattern;
+
         for (ElementDefinition elementDefinition : elementDefinitions) {
             isSlice = false;
+            isReferredElement = false;
             elementPath = elementDefinition.getPath();
 
             // Adding logic to handle multi datatype element definitions in the
@@ -200,6 +202,24 @@ public class R5ResourceContextGenerator extends AbstractResourceContextGenerator
                     isSlice = true;
                 }
             }
+
+            if (elementDefinition.hasContentReference()) {
+                isReferredElement = true;
+                String contentReference = elementDefinition.getContentReference();
+
+                String referringElementId = contentReference.split("#")[1];
+                List<ElementDefinition.TypeRefComponent> referringElementTypes = elementDefinitions.stream()
+                        .filter(elemDef -> elemDef.getId().equals(referringElementId))
+                        .findFirst()
+                        .map(ElementDefinition::getType)
+                        .orElse(new ArrayList<>());
+
+                ///  Sets the datatype to be that of the referred element temporarily
+                ///  as without the ElementDefinition.TypeRefComponent, the element path
+                ///  parsing is ignored.
+                elementDefinition.setType(referringElementTypes);
+            }
+
             elementPathTokens = elementPath.split("\\.");
 
             if (elementPathTokens.length > 1) {
@@ -231,7 +251,7 @@ public class R5ResourceContextGenerator extends AbstractResourceContextGenerator
                                     if (types.size() > 1 || elementName.contains("[x]"))
                                         elementName = tempElement + CommonUtil.toCamelCase(type.getCode());
 
-                                    Element childElement = populateElement(rootElementName, elementName, type, isSlice, elementDefinition);
+                                    Element childElement = populateElement(rootElementName, elementName, type, isSlice, isReferredElement, elementDefinition);
                                     if (ToolConstants.DATA_TYPE_EXTENSION.equals(childElement.getDataType()) && !elementName.equals("extension")
                                             && !elementName.equals("modifierExtension")) {
                                         continue;
@@ -264,7 +284,7 @@ public class R5ResourceContextGenerator extends AbstractResourceContextGenerator
                     for (ElementDefinition.TypeRefComponent type : elementDefinition.getType()) {
                         if (types.size() > 1 || elementPath.contains("[x]"))
                             elementPath = tempElement + CommonUtil.toCamelCase(type.getCode());
-                        Element element = populateElement(resourceName, elementPath, type, isSlice, elementDefinition);
+                        Element element = populateElement(resourceName, elementPath, type, isSlice, isReferredElement, elementDefinition);
                         snapshotElementMap.put(elementPath, element);
                     }
                 }
@@ -312,15 +332,26 @@ public class R5ResourceContextGenerator extends AbstractResourceContextGenerator
      * @param elementDefinition element definition DTO
      * @return created element object
      */
-    private Element populateElement(String rootName, String name, ElementDefinition.TypeRefComponent type, boolean isSlice, ElementDefinition elementDefinition) {
+    private Element populateElement(String rootName, String name, ElementDefinition.TypeRefComponent type, boolean isSlice, boolean isReferredElement, ElementDefinition elementDefinition) {
         LOG.debug("Started: Resource Element population");
 
         Element element = new Element();
         element.setName(GeneratorUtils.getInstance().resolveSpecialCharacters(name));
         element.setRootElementName(rootName);
 
+        // Check if the element is a referred element.
+        // Has to type specified but a contentReference field.
+        if (isReferredElement) {
+            element.setContentReference(elementDefinition.getContentReference());
+        }
+
         if (ToolConstants.ELEMENT.equals(type.getCode())) {
             element.setDataType(ToolConstants.ELEMENT + CommonUtil.toCamelCase(name));
+        } else if (isReferredElement && GeneratorUtils.isReferredFromInternational(element.getContentReference())) {
+            // Referred an element from international500
+
+            String dataType = GeneratorUtils.getReferringElementName(element.getContentReference(), true, "");
+            element.setDataType(GeneratorUtils.getInstance().resolveSpecialCharacters(dataType));
         } else {
             element.setDataType(GeneratorUtils.getInstance().resolveDataType(getToolConfig(), type.getCode()));
         }

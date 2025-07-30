@@ -3236,6 +3236,338 @@
             "map": "n/a"
           }
         ]
+      },
+      {
+        "id": "Patient.communication",
+        "path": "Patient.communication",
+        "short": "A language which may be used to communicate with the patient about his or her health",
+        "definition": "A language which may be used to communicate with the patient about his or her health.",
+        "comment": "If no language is specified, this *implies* that the default local language is spoken.  If you need to convey proficiency for multiple modes, then you need multiple Patient.Communication associations.   For animals, language is not a relevant field, and should be absent from the instance. If the Patient does not speak the default local language, then the Interpreter Required Standard can be used to explicitly declare that an interpreter is required.",
+        "requirements": "If a patient does not speak the local language, interpreters may be required, so languages spoken and proficiency are important things to keep track of both for patient and other persons of interest.",
+        "min": 0,
+        "max": "*",
+        "base": {
+          "path": "Patient.communication",
+          "min": 0,
+          "max": "*"
+        },
+        "type": [
+          {
+            "code": "BackboneElement"
+          }
+        ],
+        "constraint": [
+          {
+            "key": "ele-1",
+            "severity": "error",
+            "human": "All FHIR elements must have a @value or children",
+            "expression": "hasValue() or (children().count() > id.count())",
+            "source": "http://hl7.org/fhir/StructureDefinition/Element"
+          }
+        ],
+        "mustSupport": false,
+        "isModifier": false,
+        "isSummary": false,
+        "mapping": [
+          {
+            "identity": "rim",
+            "map": "LanguageCommunication"
+          },
+          {
+            "identity": "interface",
+            "map": "ParticipantLiving.communication"
+          },
+          {
+            "identity": "cda",
+            "map": "patient.languageCommunication"
+          }
+        ]
+      },
+      {
+        "id": "Patient.communication.id",
+        "path": "Patient.communication.id",
+        "representation": [
+          "xmlAttr"
+        ],
+        "short": "Unique id for inter-element referencing",
+        "definition": "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+        "min": 0,
+        "max": "1",
+        "base": {
+          "path": "Element.id",
+          "min": 0,
+          "max": "1"
+        },
+        "type": [
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/structuredefinition-fhir-type",
+                "valueUrl": "string"
+              }
+            ],
+            "code": "http://hl7.org/fhirpath/System.String"
+          }
+        ],
+        "condition": [
+          "ele-1"
+        ],
+        "isModifier": false,
+        "isSummary": false,
+        "mapping": [
+          {
+            "identity": "rim",
+            "map": "n/a"
+          }
+        ]
+      },
+      {
+        "id": "Patient.communication.extension",
+        "path": "Patient.communication.extension",
+        "short": "Additional content defined by implementations",
+        "definition": "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and managable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+        "comment": "There can be no stigma associated with the use of extensions by any application, project, or standard - regardless of the institution or jurisdiction that uses or defines the extensions.  The use of extensions is what allows the FHIR specification to retain a core level of simplicity for everyone.",
+        "alias": [
+          "extensions",
+          "user content"
+        ],
+        "min": 0,
+        "max": "*",
+        "base": {
+          "path": "Element.extension",
+          "min": 0,
+          "max": "*"
+        },
+        "type": [
+          {
+            "code": "Extension"
+          }
+        ],
+        "constraint": [
+          {
+            "key": "ele-1",
+            "severity": "error",
+            "human": "All FHIR elements must have a @value or children",
+            "expression": "hasValue() or (children().count() > id.count())",
+            "source": "http://hl7.org/fhir/StructureDefinition/Element"
+          },
+          {
+            "key": "ext-1",
+            "severity": "error",
+            "human": "Must have either extensions or value[x], not both",
+            "expression": "extension.exists() != value.exists()",
+            "source": "http://hl7.org/fhir/StructureDefinition/Extension"
+          }
+        ],
+        "isModifier": false,
+        "isSummary": false,
+        "mapping": [
+          {
+            "identity": "rim",
+            "map": "n/a"
+          }
+        ]
+      },
+      {
+        "id": "Patient.communication.modifierExtension",
+        "path": "Patient.communication.modifierExtension",
+        "short": "Extensions that cannot be ignored even if unrecognized",
+        "definition": "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and managable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions.\n\nModifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+        "comment": "There can be no stigma associated with the use of extensions by any application, project, or standard - regardless of the institution or jurisdiction that uses or defines the extensions.  The use of extensions is what allows the FHIR specification to retain a core level of simplicity for everyone.",
+        "requirements": "Modifier extensions allow for extensions that *cannot* be safely ignored to be clearly distinguished from the vast majority of extensions which can be safely ignored.  This promotes interoperability by eliminating the need for implementers to prohibit the presence of extensions. For further information, see the [definition of modifier extensions](extensibility.html#modifierExtension).",
+        "alias": [
+          "extensions",
+          "user content",
+          "modifiers"
+        ],
+        "min": 0,
+        "max": "*",
+        "base": {
+          "path": "BackboneElement.modifierExtension",
+          "min": 0,
+          "max": "*"
+        },
+        "type": [
+          {
+            "code": "Extension"
+          }
+        ],
+        "constraint": [
+          {
+            "key": "ele-1",
+            "severity": "error",
+            "human": "All FHIR elements must have a @value or children",
+            "expression": "hasValue() or (children().count() > id.count())",
+            "source": "http://hl7.org/fhir/StructureDefinition/Element"
+          },
+          {
+            "key": "ext-1",
+            "severity": "error",
+            "human": "Must have either extensions or value[x], not both",
+            "expression": "extension.exists() != value.exists()",
+            "source": "http://hl7.org/fhir/StructureDefinition/Extension"
+          }
+        ],
+        "isModifier": true,
+        "isModifierReason": "Modifier extensions are expected to modify the meaning or interpretation of the element that contains them",
+        "isSummary": true,
+        "mapping": [
+          {
+            "identity": "rim",
+            "map": "N/A"
+          }
+        ]
+      },
+      {
+        "id": "Patient.communication.language",
+        "path": "Patient.communication.language",
+        "short": "The language which can be used to communicate with the patient about his or her health",
+        "definition": "The ISO-639-1 alpha 2 code in lower case for the language, optionally followed by a hyphen and the ISO-3166-1 alpha 2 code for the region in upper case; e.g. \"en\" for English, or \"en-US\" for American English versus \"en-AU\" for Australian English.",
+        "comment": "The structure aa-BB with this exact casing is one the most widely used notations for locale. However not all systems actually code this but instead have it as free text. Hence CodeableConcept instead of code as the data type.",
+        "requirements": "Most systems in multilingual countries will want to convey language. Not all systems actually need the regional dialect.",
+        "min": 1,
+        "max": "1",
+        "base": {
+          "path": "Patient.communication.language",
+          "min": 1,
+          "max": "1"
+        },
+        "type": [
+          {
+            "code": "CodeableConcept"
+          }
+        ],
+        "constraint": [
+          {
+            "key": "ele-1",
+            "severity": "error",
+            "human": "All FHIR elements must have a @value or children",
+            "expression": "hasValue() or (children().count() > id.count())",
+            "source": "http://hl7.org/fhir/StructureDefinition/Element"
+          }
+        ],
+        "mustSupport": false,
+        "isModifier": false,
+        "isSummary": false,
+        "binding": {
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/elementdefinition-bindingName",
+              "valueString": "Language"
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/elementdefinition-isCommonBinding",
+              "valueBoolean": true
+            }
+          ],
+          "strength": "required",
+          "description": "IETF language tag for a human language",
+          "valueSet": "http://hl7.org/fhir/ValueSet/all-languages|5.0.0",
+          "additional": [
+            {
+              "purpose": "starter",
+              "valueSet": "http://hl7.org/fhir/ValueSet/languages"
+            }
+          ]
+        },
+        "mapping": [
+          {
+            "identity": "v2",
+            "map": "PID-15, LAN-2"
+          },
+          {
+            "identity": "rim",
+            "map": "player[classCode=PSN|ANM and determinerCode=INSTANCE]/languageCommunication/code"
+          },
+          {
+            "identity": "cda",
+            "map": ".languageCode"
+          }
+        ]
+      },
+      {
+        "id": "Patient.communication.preferred",
+        "path": "Patient.communication.preferred",
+        "short": "Language preference indicator",
+        "definition": "Indicates whether or not the patient prefers this language (over other languages he masters up a certain level).",
+        "comment": "This language is specifically identified for communicating healthcare information.",
+        "requirements": "People that master multiple languages up to certain level may prefer one or more, i.e. feel more confident in communicating in a particular language making other languages sort of a fall back method.",
+        "min": 0,
+        "max": "1",
+        "base": {
+          "path": "Patient.communication.preferred",
+          "min": 0,
+          "max": "1"
+        },
+        "type": [
+          {
+            "code": "boolean"
+          }
+        ],
+        "constraint": [
+          {
+            "key": "ele-1",
+            "severity": "error",
+            "human": "All FHIR elements must have a @value or children",
+            "expression": "hasValue() or (children().count() > id.count())",
+            "source": "http://hl7.org/fhir/StructureDefinition/Element"
+          }
+        ],
+        "mustSupport": false,
+        "isModifier": false,
+        "isSummary": false,
+        "mapping": [
+          {
+            "identity": "v2",
+            "map": "PID-15"
+          },
+          {
+            "identity": "rim",
+            "map": "preferenceInd"
+          },
+          {
+            "identity": "cda",
+            "map": ".preferenceInd"
+          }
+        ]
+      },
+      {
+        "id": "Patient.communication.link",
+        "path": "Patient.communication.link",
+        "short": "Link to a Patient or RelatedPerson resource that concerns the same actual individual",
+        "definition": "Link to a Patient or RelatedPerson resource that concerns the same actual individual.",
+        "comment": "There is no assumption that linked patient records have mutual links.",
+        "requirements": "There are multiple use cases:   \n\n* Duplicate patient records due to the clerical errors associated with the difficulties of identifying humans consistently, and \n* Distribution of patient information across multiple servers.",
+        "min": 0,
+        "max": "*",
+        "base": {
+          "path": "Patient.communication.link",
+          "min": 0,
+          "max": "*"
+        },
+        "contentReference": "#Patient.link",
+        "constraint": [
+          {
+            "key": "ele-1",
+            "severity": "error",
+            "human": "All FHIR elements must have a @value or children",
+            "expression": "hasValue() or (children().count() > id.count())",
+            "xpath": "@value|f:*|h:div",
+            "source": "http://hl7.org/fhir/StructureDefinition/Element"
+          }
+        ],
+        "isModifier": false,
+        "isSummary": false,
+        "mapping": [
+          {
+            "identity": "v2",
+            "map": "OBX.7"
+          },
+          {
+            "identity": "rim",
+            "map": "outboundRelationship[typeCode=REFV]/target[classCode=OBS, moodCode=EVN]"
+          }
+        ]
       }
     ]
   },
@@ -3292,6 +3624,123 @@
             "profile": [
               "http://hl7.org/fhir/StructureDefinition/data-absent-reason"
             ]
+          }
+        ]
+      },
+      {
+        "id": "Patient.communication",
+        "path": "Patient.communication",
+        "short": "A language which may be used to communicate with the patient about his or her health",
+        "definition": "A language which may be used to communicate with the patient about his or her health.",
+        "comment": "If no language is specified, this *implies* that the default local language is spoken.  If you need to convey proficiency for multiple modes, then you need multiple Patient.Communication associations.   For animals, language is not a relevant field, and should be absent from the instance. If the Patient does not speak the default local language, then the Interpreter Required Standard can be used to explicitly declare that an interpreter is required.",
+        "requirements": "If a patient does not speak the local language, interpreters may be required, so languages spoken and proficiency are important things to keep track of both for patient and other persons of interest.",
+        "min": 0,
+        "max": "*",
+        "type": [
+          {
+            "code": "BackboneElement"
+          }
+        ],
+        "mustSupport": false,
+        "isModifier": false,
+        "isSummary": false,
+        "mapping": [
+          {
+            "identity": "rim",
+            "map": "LanguageCommunication"
+          },
+          {
+            "identity": "interface",
+            "map": "ParticipantLiving.communication"
+          },
+          {
+            "identity": "cda",
+            "map": "patient.languageCommunication"
+          }
+        ]
+      },
+      {
+        "id": "Patient.communication.language",
+        "path": "Patient.communication.language",
+        "short": "The language which can be used to communicate with the patient about his or her health",
+        "definition": "The ISO-639-1 alpha 2 code in lower case for the language, optionally followed by a hyphen and the ISO-3166-1 alpha 2 code for the region in upper case; e.g. \"en\" for English, or \"en-US\" for American English versus \"en-AU\" for Australian English.",
+        "comment": "The structure aa-BB with this exact casing is one the most widely used notations for locale. However not all systems actually code this but instead have it as free text. Hence CodeableConcept instead of code as the data type.",
+        "requirements": "Most systems in multilingual countries will want to convey language. Not all systems actually need the regional dialect.",
+        "min": 1,
+        "max": "1",
+        "type": [
+          {
+            "code": "CodeableConcept"
+          }
+        ],
+        "mustSupport": false,
+        "isModifier": false,
+        "isSummary": false,
+        "binding": {
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/elementdefinition-bindingName",
+              "valueString": "Language"
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/elementdefinition-isCommonBinding",
+              "valueBoolean": true
+            }
+          ],
+          "strength": "required",
+          "description": "IETF language tag for a human language",
+          "valueSet": "http://hl7.org/fhir/ValueSet/all-languages|5.0.0",
+          "additional": [
+            {
+              "purpose": "starter",
+              "valueSet": "http://hl7.org/fhir/ValueSet/languages"
+            }
+          ]
+        },
+        "mapping": [
+          {
+            "identity": "v2",
+            "map": "PID-15, LAN-2"
+          },
+          {
+            "identity": "rim",
+            "map": "player[classCode=PSN|ANM and determinerCode=INSTANCE]/languageCommunication/code"
+          },
+          {
+            "identity": "cda",
+            "map": ".languageCode"
+          }
+        ]
+      },
+      {
+        "id": "Patient.communication.preferred",
+        "path": "Patient.communication.preferred",
+        "short": "Language preference indicator",
+        "definition": "Indicates whether or not the patient prefers this language (over other languages he masters up a certain level).",
+        "comment": "This language is specifically identified for communicating healthcare information.",
+        "requirements": "People that master multiple languages up to certain level may prefer one or more, i.e. feel more confident in communicating in a particular language making other languages sort of a fall back method.",
+        "min": 0,
+        "max": "1",
+        "type": [
+          {
+            "code": "boolean"
+          }
+        ],
+        "mustSupport": false,
+        "isModifier": false,
+        "isSummary": false,
+        "mapping": [
+          {
+            "identity": "v2",
+            "map": "PID-15"
+          },
+          {
+            "identity": "rim",
+            "map": "preferenceInd"
+          },
+          {
+            "identity": "cda",
+            "map": ".preferenceInd"
           }
         ]
       }

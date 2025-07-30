@@ -28,6 +28,7 @@ import java.util.Set;
 public class PackageTemplateContext {
     private IGTemplateContext igTemplateContext;
     private String basePackageName;
+    private String internationalPackageName;
     private Map<String, ResourceTemplateContext> resourceTemplateContextMap;
     private Map<String, DatatypeTemplateContext> datatypeTemplateContextMap;
     private Map<String, String> resourceNameTypeMap;
@@ -49,6 +50,14 @@ public class PackageTemplateContext {
 
     public void setBasePackageName(String basePackageName) {
         this.basePackageName = basePackageName;
+    }
+
+    public String getInternationalPackageName() {
+        return internationalPackageName;
+    }
+
+    public void setInternationalPackageName(String internationalPackageName) {
+        this.internationalPackageName = internationalPackageName;
     }
 
     public Map<String, ResourceTemplateContext> getResourceTemplateContextMap() {

@@ -19,11 +19,13 @@
             "versionConfigs": {
               "r4": {
                 "repository": "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4",
-                "basePackage": "ballerinax/health.fhir.r4"
+                "basePackage": "ballerinax/health.fhir.r4",
+                "internationalPackage": "ballerinax/health.fhir.r4.international401"
               },
               "r5": {
                 "repository": "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r5",
-                "basePackage": "ballerinax/health.fhir.r5"
+                "basePackage": "ballerinax/health.fhir.r5",
+                "internationalPackage": "ballerinax/health.fhir.r5.international500"
               }
             }
           },

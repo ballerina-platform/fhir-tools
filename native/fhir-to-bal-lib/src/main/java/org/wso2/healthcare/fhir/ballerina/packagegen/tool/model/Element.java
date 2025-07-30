@@ -45,6 +45,9 @@ public class Element {
     private String summary;
     private String requirement;
 
+    // Saves the content reference element is available.
+    private String contentReference;
+
     public String getDataType() {
         return dataType;
     }
@@ -52,6 +55,7 @@ public class Element {
     public void setDataType(String dataType) {
         this.dataType = dataType;
     }
+
     public Map<String, DataTypeProfile> getProfiles() {
         return profiles;
     }
@@ -200,4 +204,11 @@ public class Element {
         this.requirement = requirement;
     }
 
+    public void setContentReference(String contentReference) {
+        this.contentReference = contentReference;
+    }
+
+    public String getContentReference() {
+        return contentReference;
+    }
 }

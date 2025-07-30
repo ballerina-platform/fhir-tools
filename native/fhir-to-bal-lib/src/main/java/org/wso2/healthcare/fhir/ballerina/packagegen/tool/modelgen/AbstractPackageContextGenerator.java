@@ -65,6 +65,10 @@ public abstract class AbstractPackageContextGenerator {
                 this.packageContext.setBasePackageName(toolConfig.getPackageConfig().getBasePackage());
             }
 
+            if (toolConfig.getPackageConfig().getInternationalPackage() != null) {
+                this.packageContext.setInternationalPackageName(toolConfig.getPackageConfig().getInternationalPackage());
+            }
+
             Map<String, String> dependencyMap = new HashMap<>();
             for (DependencyConfig dependencyConfig : toolConfig.getPackageConfig().getDependencyConfigList()) {
                 dependencyMap.put(dependencyConfig.getName(), dependencyConfig.getOrg() + "/" + dependencyConfig.getName());
