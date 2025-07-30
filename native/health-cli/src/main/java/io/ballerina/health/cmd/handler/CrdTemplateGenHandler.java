@@ -58,7 +58,6 @@ public class CrdTemplateGenHandler implements Handler {
     private String packageName;
     private String orgName;
     private String packageVersion;
-    private String fhirVersion;
     private JsonObject configJson;
     private InputStream cdsHooksJsonSchemaStream;
     private PrintStream printStream;
@@ -82,7 +81,6 @@ public class CrdTemplateGenHandler implements Handler {
         this.packageName = (String) argsMap.get(CMD_OPTION_PACKAGE_NAME);
         this.orgName = (String) argsMap.get(CMD_OPTION_ORG_NAME);
         this.packageVersion = (String) argsMap.get(CMD_OPTION_PACKAGE_VERSION);
-        this.fhirVersion = (String) argsMap.get(HealthCmdConstants.CMD_OPTION_FHIR_VERSION);
     }
 
     @Override
@@ -130,17 +128,6 @@ public class CrdTemplateGenHandler implements Handler {
                 if (packageName != null && !packageName.isEmpty()) {
                     JsonElement overrideConfig = new Gson().toJsonTree(packageName.toLowerCase());
                     toolConfigInstance.overrideConfig(PROJECT_PACKAGE_NAME_PREFIX, overrideConfig);
-                }
-                if (fhirVersion != null && !fhirVersion.isEmpty() && fhirVersion.equalsIgnoreCase("r5")) {
-                    // Override basePackage and dependentPackage in cds-tool-config.json
-                    final String r5BasePackage = "ballerinax/health.fhir.r5";
-                    final String r5DependentPackage = "ballerinax/health.fhir.r5.cds"; // MIGHT NOT BE AVAILABLE
-
-                    JsonElement overrideConfigBase = new Gson().toJsonTree(r5BasePackage);
-                    JsonElement overrideConfigDependent = new Gson().toJsonTree(r5DependentPackage);
-
-                    toolConfigInstance.overrideConfig(PROJECT_PACKAGE_BASE_PACKAGE, overrideConfigBase);
-                    toolConfigInstance.overrideConfig(PROJECT_PACKAGE_DEPENDENT_PACKAGE, overrideConfigDependent);
                 }
 
                 Class<?> toolClazz = classLoader.loadClass(CDS_TOOL_CLASS_NAME);
