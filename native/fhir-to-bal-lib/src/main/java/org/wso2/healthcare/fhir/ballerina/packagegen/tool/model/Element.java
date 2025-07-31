@@ -48,6 +48,9 @@ public class Element {
     // Saves the content reference element is available.
     private String contentReference;
 
+    ///  Todo: Stores the resource extension properties. Verify again.
+    private Map<String, String> elementProperties = new HashMap<>();
+
     public String getDataType() {
         return dataType;
     }
@@ -210,5 +213,13 @@ public class Element {
 
     public String getContentReference() {
         return contentReference;
+    }
+
+    public void setElementProperties(Map<String, String> elementProperties) {
+        this.elementProperties = elementProperties;
+    }
+
+    public Map<String, String> getElementProperties() {
+        return elementProperties;
     }
 }
