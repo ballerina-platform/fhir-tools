@@ -460,19 +460,23 @@ public class GeneratorUtils {
      */
 
     public String mapToValueSetDatatype(String baseType, String fieldName, String assignedType) {
+//        if (VALUESET_DATA_TYPES.containsKey(baseType) && VALUESET_DATA_TYPES.get(baseType).containsKey(fieldName)) {
+//
+//            /// This code is to handle the case where a child type is already generated,
+//            /// and a parent type should not override it.
+//            /// e.g: AddressEuUse should not be overridden by r5:AddressUse
+//            ///  NOTE: Removing the Address, ContactPoint, etc. fields from VALUESET_DATA_TYPES
+//            ///  would be the ideal solution. But the reason why those were included in the first
+//            ///  place should be investigated.
+//            String assigningType = VALUESET_DATA_TYPES.get(baseType).get(fieldName);
+//
+//            if (!assigningType.equalsIgnoreCase(assignedType)) {
+//                return assignedType;
+//            }
+//            return VALUESET_DATA_TYPES.get(baseType).get(fieldName);
+//        }
+//        return assignedType;
         if (VALUESET_DATA_TYPES.containsKey(baseType) && VALUESET_DATA_TYPES.get(baseType).containsKey(fieldName)) {
-
-            /// This code is to handle the case where a child type is already generated,
-            /// and a parent type should not override it.
-            /// e.g: AddressEuUse should not be overridden by r5:AddressUse
-            ///  NOTE: Removing the Address, ContactPoint, etc. fields from VALUESET_DATA_TYPES
-            ///  would be the ideal solution. But the reason why those were included in the first
-            ///  place should be investigated.
-            String assigningType = VALUESET_DATA_TYPES.get(baseType).get(fieldName);
-
-            if (!assigningType.equalsIgnoreCase(assignedType)) {
-                return assignedType;
-            }
             return VALUESET_DATA_TYPES.get(baseType).get(fieldName);
         }
         return assignedType;
@@ -520,6 +524,9 @@ public class GeneratorUtils {
     public static void populateCodeValuesForCodeElements(String shortField, Element element) {
         if (!shortField.contains("|")) {
             return;
+        }
+        if (shortField.contains(":")) {
+            shortField = shortField.split(":")[1];
         }
         HashMap<String, Element> childElements = new HashMap<>();
         String[] codes = shortField.split(Pattern.quote("|"));
