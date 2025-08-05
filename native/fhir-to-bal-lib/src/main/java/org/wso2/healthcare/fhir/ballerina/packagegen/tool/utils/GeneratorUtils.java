@@ -460,23 +460,18 @@ public class GeneratorUtils {
      */
 
     public String mapToValueSetDatatype(String baseType, String fieldName, String assignedType) {
-//        if (VALUESET_DATA_TYPES.containsKey(baseType) && VALUESET_DATA_TYPES.get(baseType).containsKey(fieldName)) {
-//
-//            /// This code is to handle the case where a child type is already generated,
-//            /// and a parent type should not override it.
-//            /// e.g: AddressEuUse should not be overridden by r5:AddressUse
-//            ///  NOTE: Removing the Address, ContactPoint, etc. fields from VALUESET_DATA_TYPES
-//            ///  would be the ideal solution. But the reason why those were included in the first
-//            ///  place should be investigated.
-//            String assigningType = VALUESET_DATA_TYPES.get(baseType).get(fieldName);
-//
-//            if (!assigningType.equalsIgnoreCase(assignedType)) {
-//                return assignedType;
-//            }
-//            return VALUESET_DATA_TYPES.get(baseType).get(fieldName);
-//        }
-//        return assignedType;
         if (VALUESET_DATA_TYPES.containsKey(baseType) && VALUESET_DATA_TYPES.get(baseType).containsKey(fieldName)) {
+            /// This code is to handle the case where a child type is already generated,
+            /// and a parent type should not override it.
+            /// e.g: AddressEuUse should not be overridden by r5:AddressUse
+            ///  NOTE: Removing the Address, ContactPoint, etc. fields from VALUESET_DATA_TYPES
+            ///  would be the ideal solution. But the reason why those were included in the first
+            ///  place should be investigated.
+            String assigningType = VALUESET_DATA_TYPES.get(baseType).get(fieldName);
+
+            if (!assigningType.equalsIgnoreCase(assignedType)) {
+                return assignedType;
+            }
             return VALUESET_DATA_TYPES.get(baseType).get(fieldName);
         }
         return assignedType;
@@ -525,9 +520,9 @@ public class GeneratorUtils {
         if (!shortField.contains("|")) {
             return;
         }
-        if (shortField.contains(":")) {
-            shortField = shortField.split(":")[1];
-        }
+
+        shortField = sanitizeShortField(shortField);
+
         HashMap<String, Element> childElements = new HashMap<>();
         String[] codes = shortField.split(Pattern.quote("|"));
         for (String code : codes) {
@@ -542,6 +537,20 @@ public class GeneratorUtils {
             }
         }
         element.setChildElements(childElements);
+    }
+
+    /**
+     * Sanitize short fields to be in the format FIELD_NAME_1 | FIELD_NAME_2 | FIELD_NAME_3
+     *
+     * @param shortField The short field string to sanitize.
+     */
+    public static String sanitizeShortField(String shortField) {
+        /// USCore700 Patient Definition has a short field like
+        /// "short": "𝗔𝗗𝗗𝗜𝗧𝗜𝗢𝗡𝗔𝗟 𝗨𝗦𝗖𝗗𝗜: usual | official | temp | nickname | anonymous | old | maiden"
+        if (shortField.contains(":")) {
+            shortField = shortField.split(":")[1];
+        }
+        return shortField;
     }
 
     /**
