@@ -97,7 +97,7 @@ public class OasGenerator extends AbstractFHIRTemplateGenerator {
                 }
             }
 
-            retrieveFieldValues();
+            retrieveFieldValues(openApiDef);
             OpenAPI newOpenApiDef = OpenApiDef.createNewOpenAPIDef();
             writeToYamlFile(directoryPath, Yaml.pretty(newOpenApiDef), "oas-definition");
         }
@@ -105,8 +105,11 @@ public class OasGenerator extends AbstractFHIRTemplateGenerator {
 
     /**
      * Retrieves field values from all aggregated resources and sets them in the OpenApiDef instance.
+     *
+     * @param openApiDef The OpenApiDef instance to populate with field values.
+     *
      */
-    private static void retrieveFieldValues() {
+    private static void retrieveFieldValues(OpenApiDef openApiDef) {
         // Retrieve field values from all resources in aggregated resources
         for (APIDefinition apiDefinition : aggregatedResourceApiDefinitions.values()) {
             openApiDef.setInfoFields(apiDefinition.getOpenAPI().getInfo());
