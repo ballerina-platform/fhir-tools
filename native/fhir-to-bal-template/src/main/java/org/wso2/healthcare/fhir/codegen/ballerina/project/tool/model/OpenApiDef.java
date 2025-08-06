@@ -9,6 +9,7 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.tags.Tag;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.oas.OASGenUtils;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.oas.model.APIDefinition;
 
 import java.util.Map;
 import java.util.Set;
@@ -17,6 +18,10 @@ import java.util.HashSet;
 
 import static org.wso2.healthcare.codegen.tool.framework.fhir.core.oas.APIDefinitionConstants.OAS_EXTENSION_OH_FHIR_PROFILE;
 import static org.wso2.healthcare.codegen.tool.framework.fhir.core.oas.APIDefinitionConstants.OAS_EXTENSION_OH_FHIR_RESOURCE_TYPE;
+
+/**
+ * Used to create a new single OpenAPI definition based on the aggregated resources.
+ */
 
 public class OpenApiDef {
     private static OpenAPI openAPI;
@@ -65,6 +70,23 @@ public class OpenApiDef {
 
     public void setComponents(Components components) {
         OpenApiDef.components = components;
+    }
+
+    /**
+     * Retrieves field values from all aggregated resources and sets them in the OpenApiDef instance.
+     *
+     * @param aggregatedResourceApiDefinitions Map of API definitions for aggregated resources.
+     */
+    public void retrieveFieldValues(Map<String, APIDefinition> aggregatedResourceApiDefinitions) {
+        // Retrieve field values from all resources in aggregated resources
+        for (APIDefinition apiDefinition : aggregatedResourceApiDefinitions.values()) {
+            setInfoFields(apiDefinition.getOpenAPI().getInfo());
+            getResourceTypes().add(apiDefinition.getResourceType());
+            getSupportedProfiles().addAll(apiDefinition.getSupportedProfiles());
+            getTags().addAll(apiDefinition.getOpenAPI().getTags());
+            getPathsMap().put(apiDefinition.getOpenAPI().getInfo().getTitle(), apiDefinition.getOpenAPI().getPaths());
+            setComponents(apiDefinition.getOpenAPI().getComponents());
+        }
     }
 
     /**

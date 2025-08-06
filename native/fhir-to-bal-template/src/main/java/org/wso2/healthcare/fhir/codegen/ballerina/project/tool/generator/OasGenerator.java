@@ -48,14 +48,12 @@ public class OasGenerator extends AbstractFHIRTemplateGenerator {
 
     // Variables to store API definitions for all resources specified in aggregated mode.
     private static Map<String, APIDefinition> aggregatedResourceApiDefinitions;
-    private static OpenApiDef openApiDef;
 
     public OasGenerator(String targetDir) throws CodeGenException {
         super(targetDir);
 
         // Initialize variables for aggregated mode.
         aggregatedResourceApiDefinitions = new HashMap<>();
-        openApiDef = OpenApiDef.getInstance();
     }
 
     @Override
@@ -97,24 +95,13 @@ public class OasGenerator extends AbstractFHIRTemplateGenerator {
                 }
             }
 
-            retrieveFieldValues();
-            OpenAPI newOpenApiDef = OpenApiDef.createNewOpenAPIDef();
-            writeToYamlFile(directoryPath, Yaml.pretty(newOpenApiDef), "oas-definition");
-        }
-    }
-
-    /**
-     * Retrieves field values from all aggregated resources and sets them in the OpenApiDef instance.
-     */
-    private static void retrieveFieldValues() {
-        // Retrieve field values from all resources in aggregated resources
-        for (APIDefinition apiDefinition : aggregatedResourceApiDefinitions.values()) {
-            openApiDef.setInfoFields(apiDefinition.getOpenAPI().getInfo());
-            openApiDef.getResourceTypes().add(apiDefinition.getResourceType());
-            openApiDef.getSupportedProfiles().addAll(apiDefinition.getSupportedProfiles());
-            openApiDef.getTags().addAll(apiDefinition.getOpenAPI().getTags());
-            openApiDef.getPathsMap().put(apiDefinition.getOpenAPI().getInfo().getTitle(), apiDefinition.getOpenAPI().getPaths());
-            openApiDef.setComponents(apiDefinition.getOpenAPI().getComponents());
+            try {
+                OpenApiDef.getInstance().retrieveFieldValues(aggregatedResourceApiDefinitions);
+                OpenAPI newOpenApiDef = OpenApiDef.createNewOpenAPIDef();
+                writeToYamlFile(directoryPath, Yaml.pretty(newOpenApiDef), "oas-definition");
+            } catch (NullPointerException e) {
+                throw new CodeGenException("Error occurred while generating open-api-def in aggregated mode: " + e.getMessage(),e);
+            }
         }
     }
 
@@ -125,12 +112,12 @@ public class OasGenerator extends AbstractFHIRTemplateGenerator {
      * @param oasDefYaml    The OAS definition in YAML format.
      * @param filename      The name of the file to write.
      */
-    private static void writeToYamlFile(String directoryPath, String oasDefYaml, String filename) {
+    private static void writeToYamlFile(String directoryPath, String oasDefYaml, String filename) throws CodeGenException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(directoryPath + File.separator +
                 filename + BallerinaProjectConstants.YAML_FILE_EXTENSION))) {
             writer.write(oasDefYaml);
         } catch (IOException e) {
-            LOG.error("Error occurred while writing OAS Def to file.", e);
+            throw new CodeGenException("Error occurred while writing to YAML file: " + e.getMessage(), e);
         }
     }
 }
