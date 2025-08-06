@@ -38,8 +38,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.HashSet;
 import java.util.regex.Pattern;
-import java.util.List;
-import java.util.ArrayList;
 
 import static org.wso2.healthcare.fhir.ballerina.packagegen.tool.ToolConstants.CONSTRAINTS_LIB_IMPORT;
 
@@ -150,43 +148,6 @@ public abstract class AbstractResourceContextGenerator {
                     }
                 }
             }
-        } else if (element.getPath().split("\\.").length == 2 &&
-                element.getPath().split("\\.")[element.getPath().split("\\.").length - 1].equals("extension")) {
-
-            /// Todo: Verify the conditions with other IGs. Tested for USCore700
-
-            HashMap<String, Element> childElements = new HashMap<>();
-            element.setDataType("BackboneElement");
-            element.setDescription("Slice of an Extended Element");
-
-            Element id = new Element();
-            id.setName("id");
-            id.setDataType("string");
-            id.setDescription(element.getDescription());
-            id.setPath(element.getPath() + ".id");
-
-            Element uri = new Element();
-            List<String> fixedValue = new ArrayList<>();
-            fixedValue.add(element.getElementProperties().get("fixedValueUrl"));
-            uri.setName("url");
-            uri.setDataType("uri");
-            uri.setFixedValue(fixedValue);
-            uri.setDescription(element.getDescription());
-            uri.setPath(element.getPath() + ".url");
-
-            if (element.getElementProperties().containsKey("complexExtension")) {
-                Element extension = new Element();
-                extension.setName("extension");
-                extension.setDataType("Extension");
-                extension.setArray(true);
-                extension.setDescription(element.getDescription());
-                extension.setPath(element.getPath() + ".extension");
-                childElements.put(extension.getName(), extension);
-            }
-
-            childElements.put(id.getName(), id);
-            childElements.put(uri.getName(), uri);
-            element.setChildElements(childElements);
         }
     }
 

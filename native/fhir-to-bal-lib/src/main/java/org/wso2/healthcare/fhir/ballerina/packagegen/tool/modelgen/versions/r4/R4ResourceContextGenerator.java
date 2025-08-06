@@ -323,16 +323,6 @@ public class R4ResourceContextGenerator extends AbstractResourceContextGenerator
             element.setContentReference(elementDefinition.getContentReference());
         }
 
-        /// Todo: Catch extensions which are slices. Verify
-        if ("Extension".equals(type.getCode()) && elementDefinition.getSliceName() != null && !elementDefinition.getSliceName().isEmpty()){
-            if (elementDefinition.hasExtension()){
-                element.getElementProperties().put("complexExtension", elementDefinition.getExtension().getFirst().getUrl());
-            }
-            if(!type.getProfile().isEmpty()){
-                element.getElementProperties().put("fixedValueUrl", type.getProfile().getFirst().getValue());
-            }
-        }
-
         if (ToolConstants.ELEMENT.equals(type.getCode())) {
             element.setDataType(ToolConstants.ELEMENT + CommonUtil.toCamelCase(name));
         } else if (isReferredElement && GeneratorUtils.isReferredFromInternational(element.getContentReference())) {
@@ -442,11 +432,9 @@ public class R4ResourceContextGenerator extends AbstractResourceContextGenerator
 
     private void populateResourceSliceElementsMap(Element element) {
         LOG.debug("Started: Resource Slice Element Map population");
-        /// Todo: Removed to get the extended element slices in the documentation
-        /// Tested for USCore. Effect on other profiles need to be verified
-        // if (ToolConstants.DATA_TYPE_EXTENSION.equals(element.getDataType()) && element.isSlice()) {
-        //    return;
-        // }
+        if (ToolConstants.DATA_TYPE_EXTENSION.equals(element.getDataType()) && element.isSlice()) {
+            return;
+        }
         if (element.hasChildElements()) {
             for (Map.Entry<String, Element> childEntry : element.getChildElements().entrySet()) {
                 populateResourceSliceElementsMap(childEntry.getValue());
