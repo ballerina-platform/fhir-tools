@@ -606,7 +606,7 @@ public class GeneratorUtils {
                 if (referringElementName.startsWith(subElements[0])) {
                     referringElementName = referringElementName.substring(subElements[0].length());
                 }
-                referringElementName = typeNamePrefix + referringElementName;
+                referringElementName = CommonUtil.toCamelCase(typeNamePrefix) + referringElementName;
             } else {
                 // If the content reference is a local reference with same path used in multiple resources
                 // Observation.referenceRange --> USCorePediatricBMIforAgeObservationProfileReferenceRange or
@@ -614,7 +614,7 @@ public class GeneratorUtils {
                 // Observation.referenceRange --> USCoreSmokingStatusProfileReferenceRange etc.
 
                 referringElementName = CommonUtil.toCamelCase(subElements[subElements.length - 1]);
-                referringElementName = typeNamePrefix + referringElementName;
+                referringElementName = CommonUtil.toCamelCase(typeNamePrefix) + referringElementName;
             }
         }
         return referringElementName;
