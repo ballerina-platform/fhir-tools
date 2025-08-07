@@ -9,6 +9,7 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.tags.Tag;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.oas.OASGenUtils;
+import org.wso2.healthcare.codegen.tool.framework.fhir.core.oas.model.APIDefinition;
 
 import java.util.Map;
 import java.util.Set;
@@ -65,6 +66,23 @@ public class OpenApiDef {
 
     public void setComponents(Components components) {
         OpenApiDef.components = components;
+    }
+
+    /**
+     * Retrieves field values from all aggregated resources and sets them in the OpenApiDef instance.
+     *
+     * @param openApiDef The OpenApiDef instance to populate with field values.
+     */
+    public static void retrieveFieldValues(OpenApiDef openApiDef, Map<String, APIDefinition> aggregatedResourceApiDefinitions) {
+        // Retrieve field values from all resources in aggregated resources
+        for (APIDefinition apiDefinition : aggregatedResourceApiDefinitions.values()) {
+            openApiDef.setInfoFields(apiDefinition.getOpenAPI().getInfo());
+            openApiDef.getResourceTypes().add(apiDefinition.getResourceType());
+            openApiDef.getSupportedProfiles().addAll(apiDefinition.getSupportedProfiles());
+            openApiDef.getTags().addAll(apiDefinition.getOpenAPI().getTags());
+            openApiDef.getPathsMap().put(apiDefinition.getOpenAPI().getInfo().getTitle(), apiDefinition.getOpenAPI().getPaths());
+            openApiDef.setComponents(apiDefinition.getOpenAPI().getComponents());
+        }
     }
 
     /**
