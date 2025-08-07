@@ -164,15 +164,9 @@ public abstract class AbstractBallerinaProjectTool extends AbstractFHIRTool {
     }
 
     protected void populateDependenciesMap() {
-        String fhirVersion = getBallerinaProjectToolConfig().getFhirVersion();
-
-        String fhirBaseImportStatement = BallerinaProjectConstants.BASE_PACKAGE_IMPORT_SUFFIX + fhirVersion;
-        String fhirServiceImportStatement = BallerinaProjectConstants.SERVICE_PACKAGE_IMPORT_SUFFIX + fhirVersion;
-        String fhirInternationalImportStatement = BallerinaProjectConstants.INTERNATIONAL_PACKAGE_IMPORT_SUFFIX_R4;
-
-        if (fhirVersion.equalsIgnoreCase("r5")) {
-            fhirInternationalImportStatement = BallerinaProjectConstants.INTERNATIONAL_PACKAGE_IMPORT_SUFFIX_R5;
-        }
+        String fhirBaseImportStatement = "";
+        String fhirServiceImportStatement = "";
+        String fhirInternationalImportStatement = "";
 
         if (getBallerinaProjectToolConfig().getVersionConfig().getBasePackage() != null && !getBallerinaProjectToolConfig().getVersionConfig().getBasePackage().isEmpty()) {
             fhirBaseImportStatement = getBallerinaProjectToolConfig().getVersionConfig().getBasePackage();

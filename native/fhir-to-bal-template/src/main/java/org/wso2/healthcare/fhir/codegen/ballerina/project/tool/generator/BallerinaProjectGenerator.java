@@ -31,6 +31,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 
 /**
  * Generator class to wrap all the generator classes in Ballerina project generator.
@@ -128,13 +130,17 @@ public class BallerinaProjectGenerator extends AbstractFHIRTemplateGenerator {
                 metaGenerator.generate(toolContext, projectProperties);
 
                 // Generate OAS files for each service
+                Set<String> resourceTypes = new HashSet<>();
+                Set<BallerinaService> services = new HashSet<>();
                 for (BallerinaService service : entry.getValue().getServices().values()) {
-                    projectProperties.put("service", service);
-                    projectProperties.put("resourceType", service.getName());
-                    OasGenerator oasGenerator = new OasGenerator(this.getTargetDir());
-                    oasGenerator.generate(toolContext, projectProperties);
+                    services.add(service);
+                    resourceTypes.add(service.getName());
                 }
-                
+                projectProperties.put("resourceTypes", resourceTypes);
+                projectProperties.put("services", services);
+                OasGenerator oasGenerator = new OasGenerator(this.getTargetDir());
+                oasGenerator.generate(toolContext, projectProperties);
+
                 // Generate component.yaml with all endpoints (called only once)
                 ComponentYamlGenerator componentYamlGenerator = new ComponentYamlGenerator(this.getTargetDir());
                 componentYamlGenerator.generate(toolContext, projectProperties);
