@@ -60,8 +60,9 @@ public class R4DatatypeContextGenerator extends AbstractDatatypeContextGenerator
             if (DEFAULT_DATA_TYPES.contains(datatypeDefn.getDefinition().getName())
                     || "Extension".equals(datatypeDefn.getDefinition().getType())) {
                 continue;
-            } else if (datatypeDefn.getDefinition().getStatus().toString().equalsIgnoreCase("draft") &&
-                    datatypeDefn.getDefinition().getName().split(" ").length > 0) {
+            } else if ("draft".equalsIgnoreCase(datatypeDefn.getDefinition().getStatus().toString()) &&
+                    (datatypeDefn.getDefinition().getName().contains(" ") &&
+                            datatypeDefn.getDefinition().getName().split(" ").length > 0)) {
                 continue;
             }
 
