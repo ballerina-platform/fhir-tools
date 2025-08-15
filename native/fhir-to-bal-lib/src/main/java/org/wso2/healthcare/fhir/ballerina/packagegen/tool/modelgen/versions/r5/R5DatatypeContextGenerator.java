@@ -65,7 +65,8 @@ public class R5DatatypeContextGenerator extends AbstractDatatypeContextGenerator
                     "Extension".equals(datatypeDefn.getDefinition().getType())) {
                 continue;
             } else if (datatypeDefn.getDefinition().getStatus().toString().equalsIgnoreCase("draft") &&
-                    datatypeDefn.getDefinition().getName().split(" ").length > 0) {
+                        (datatypeDefn.getDefinition().getName().contains(" ") &&
+                        datatypeDefn.getDefinition().getName().split(" ").length > 0)) {
                 continue;
             }
 
