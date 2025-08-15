@@ -518,7 +518,11 @@ public class GeneratorUtils {
      */
     public static void populateCodeValuesForCodeElements(String shortField, Element element) {
         if (!shortField.contains("|")) {
-            return;
+            /// If the short field has only one value, it should also be converted to an ENUM.
+            /// Ignores the short fields with a general description.
+            if (shortField.contains(" ") && shortField.split(" ").length > 0) {
+                return;
+            }
         }
 
         shortField = sanitizeShortField(shortField);

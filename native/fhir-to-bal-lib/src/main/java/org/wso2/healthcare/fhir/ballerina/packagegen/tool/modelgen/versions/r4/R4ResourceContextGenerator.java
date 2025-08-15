@@ -324,11 +324,11 @@ public class R4ResourceContextGenerator extends AbstractResourceContextGenerator
         }
 
         /// Todo: Catch extensions which are slices. Verify
-        if ("Extension".equals(type.getCode()) && elementDefinition.getSliceName() != null && !elementDefinition.getSliceName().isEmpty()){
-            if (elementDefinition.hasExtension()){
+        if ("Extension".equals(type.getCode()) && elementDefinition.getSliceName() != null && !elementDefinition.getSliceName().isEmpty()) {
+            if (elementDefinition.hasExtension()) {
                 element.getElementProperties().put("complexExtension", elementDefinition.getExtension().getFirst().getUrl());
             }
-            if(!type.getProfile().isEmpty()){
+            if (!type.getProfile().isEmpty()) {
                 element.getElementProperties().put("fixedValueUrl", type.getProfile().getFirst().getValue());
             }
         }
