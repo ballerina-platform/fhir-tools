@@ -461,7 +461,6 @@ public class GeneratorUtils {
 
     public String mapToValueSetDatatype(String baseType, String fieldName, String assignedType) {
         if (VALUESET_DATA_TYPES.containsKey(baseType) && VALUESET_DATA_TYPES.get(baseType).containsKey(fieldName)) {
-
             /// This code is to handle the case where a child type is already generated,
             /// and a parent type should not override it.
             /// e.g: AddressEuUse should not be overridden by r5:AddressUse
@@ -519,8 +518,15 @@ public class GeneratorUtils {
      */
     public static void populateCodeValuesForCodeElements(String shortField, Element element) {
         if (!shortField.contains("|")) {
-            return;
+            /// If the short field has only one value, it should also be converted to an ENUM.
+            /// Ignores the short fields with a general description.
+            if (shortField.contains(" ") && shortField.split(" ").length > 0) {
+                return;
+            }
         }
+
+        shortField = sanitizeShortField(shortField);
+
         HashMap<String, Element> childElements = new HashMap<>();
         String[] codes = shortField.split(Pattern.quote("|"));
         for (String code : codes) {
@@ -535,6 +541,20 @@ public class GeneratorUtils {
             }
         }
         element.setChildElements(childElements);
+    }
+
+    /**
+     * Sanitize short fields to be in the format FIELD_NAME_1 | FIELD_NAME_2 | FIELD_NAME_3
+     *
+     * @param shortField The short field string to sanitize.
+     */
+    public static String sanitizeShortField(String shortField) {
+        /// USCore700 Patient Definition has a short field like
+        /// "short": "𝗔𝗗𝗗𝗜𝗧𝗜𝗢𝗡𝗔𝗟 𝗨𝗦𝗖𝗗𝗜: usual | official | temp | nickname | anonymous | old | maiden"
+        if (shortField.contains(":")) {
+            shortField = shortField.split(":")[1];
+        }
+        return shortField;
     }
 
     /**
@@ -590,7 +610,7 @@ public class GeneratorUtils {
                 if (referringElementName.startsWith(subElements[0])) {
                     referringElementName = referringElementName.substring(subElements[0].length());
                 }
-                referringElementName = typeNamePrefix + referringElementName;
+                referringElementName = CommonUtil.toCamelCase(typeNamePrefix) + referringElementName;
             } else {
                 // If the content reference is a local reference with same path used in multiple resources
                 // Observation.referenceRange --> USCorePediatricBMIforAgeObservationProfileReferenceRange or
@@ -598,7 +618,7 @@ public class GeneratorUtils {
                 // Observation.referenceRange --> USCoreSmokingStatusProfileReferenceRange etc.
 
                 referringElementName = CommonUtil.toCamelCase(subElements[subElements.length - 1]);
-                referringElementName = typeNamePrefix + referringElementName;
+                referringElementName = CommonUtil.toCamelCase(typeNamePrefix) + referringElementName;
             }
         }
         return referringElementName;

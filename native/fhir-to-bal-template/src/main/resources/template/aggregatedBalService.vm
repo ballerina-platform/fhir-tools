@@ -31,7 +31,6 @@ import $import.toLowerCase();
 #set($service = $entry.getValue())
 #set($resourceType = $entry.getKey())
 public type $resourceType #**##foreach($profile in $service.getProfileList())$profile.getPackagePrefix():$profile.getName()#if($foreach.hasNext)|#end#end;
-
 #end
 
 # initialize source system endpoints here
@@ -39,13 +38,12 @@ public type $resourceType #**##foreach($profile in $service.getProfileList())$pr
 #foreach($entry in $aggregatedService.getServices().entrySet())
 #set($service = $entry.getValue())
 #set($resourceType = $entry.getKey())
-#set($port = 9090 + $foreach.index)
 
 // ######################################################################################################################
 // # $resourceType API                                                                                                          #
 // ###################################################################################################################### 
 
-service /fhir/$service.getFhirVersion()/$resourceType on new $servicePackageImportIdentifier:Listener($port, ${resourceType.toLowerCase()}ApiConfig) {
+service /fhir/$service.getFhirVersion()/$resourceType on new $servicePackageImportIdentifier:Listener(config = ${resourceType.toLowerCase()}ApiConfig) {
 
     // Read the current state of single resource based on its id.
     isolated resource function get [string id]($basePackageImportIdentifier:FHIRContext fhirContext) returns $resourceType|$basePackageImportIdentifier:OperationOutcome|$basePackageImportIdentifier:FHIRError {
