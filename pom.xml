@@ -24,7 +24,7 @@
 
     <groupId>io.ballerina</groupId>
     <artifactId>health-tools</artifactId>
-    <version>3.0.1</version>
+    <version>3.1.0</version>
 
     <packaging>pom</packaging>
     <modules>
