@@ -125,15 +125,16 @@ jobs:
           sed -i "0,/<version>${CURRENT_VERSION}<\/version>/s//<version>${NEW_VERSION}<\/version>/" native/health-cli/pom.xml
       - name: Commit changes and make a PR
         if: ${{ inputs.bal_central_environment == 'PROD' }}
+        working-directory: fhir-tools
         run: |
           # Commit changes
           git config --global user.name ${{ secrets.BALLERINA_BOT_USERNAME }}
           git config --global user.email ${{ secrets.BALLERINA_BOT_EMAIL }}
-          git add fhir-tools/pom.xml
-          git add fhir-tools/ballerina/pom.xml
-          git add fhir-tools/native/fhir-to-bal-lib/pom.xml
-          git add fhir-tools/native/fhir-to-bal-template/pom.xml
-          git add fhir-tools/native/health-cli/pom.xml   
+          git add pom.xml
+          git add ballerina/pom.xml
+          git add native/fhir-to-bal-lib/pom.xml
+          git add native/fhir-to-bal-template/pom.xml
+          git add native/health-cli/pom.xml   
           git commit -m "[Release Health Tool ${{ steps.increment_patch_version.outputs.CURRENT_VERSION }}] Prepare for next dev cycle"
           git push origin ${{ steps.publish_release.outputs.BRANCH_NAME }}
           
@@ -153,5 +154,5 @@ jobs:
             "https://api.github.com/repos/${{ github.repository }}/pulls")
           # Extract the pull request URL from the response
           PR_URL=$(echo "$RESPONSE" | jq -r '.html_url')
-
+          
           echo "Pull Request created: $PR_URL"
