@@ -117,13 +117,12 @@ jobs:
           NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.$PATCH_VERSION"
           echo "NEW_VERSION=${NEW_VERSION}" >> $GITHUB_OUTPUT
           echo "CURRENT_VERSION=${CURRENT_VERSION}" >> $GITHUB_OUTPUT
-          #Bump the versions in each pom file
-          sed -i "0,/<version>${CURRENT_VERSION}<\/version>/s//<version>${NEW_VERSION}<\/version>/" fhir-tools/pom.xml
-          sed -i "0,/<version>${CURRENT_VERSION}<\/version>/s//<version>${NEW_VERSION}<\/version>/" fhir-tools/ballerina/pom.xml
-          sed -i "0,/<version>${CURRENT_VERSION}<\/version>/s//<version>${NEW_VERSION}<\/version>/" fhir-tools/native/fhir-to-bal-lib/pom.xml
-          sed -i "0,/<version>${CURRENT_VERSION}<\/version>/s//<version>${NEW_VERSION}<\/version>/" fhir-tools/native/fhir-to-bal-template/pom.xml
-          sed -i "0,/<version>${CURRENT_VERSION}<\/version>/s//<version>${NEW_VERSION}<\/version>/" fhir-tools/native/health-cli/pom.xml
-
+          
+          sed -i "0,/<version>${CURRENT_VERSION}<\/version>/s//<version>${NEW_VERSION}<\/version>/" pom.xml
+          sed -i "0,/<version>${CURRENT_VERSION}<\/version>/s//<version>${NEW_VERSION}<\/version>/" ballerina/pom.xml
+          sed -i "0,/<version>${CURRENT_VERSION}<\/version>/s//<version>${NEW_VERSION}<\/version>/" native/fhir-to-bal-lib/pom.xml
+          sed -i "0,/<version>${CURRENT_VERSION}<\/version>/s//<version>${NEW_VERSION}<\/version>/" native/fhir-to-bal-template/pom.xml
+          sed -i "0,/<version>${CURRENT_VERSION}<\/version>/s//<version>${NEW_VERSION}<\/version>/" native/health-cli/pom.xml
       - name: Commit changes and make a PR
         if: ${{ inputs.bal_central_environment == 'PROD' }}
         run: |
