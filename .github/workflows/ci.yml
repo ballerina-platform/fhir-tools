@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: wso2/open-healthcare-codegen-tool-framework
-          ref: v2.1.0
+          ref: v2.1.1
           path: './open-healthcare-codegen-tool-framework'
 
       - name: Setup Maven
