@@ -123,6 +123,8 @@ jobs:
           sed -i "0,/<version>${CURRENT_VERSION}<\/version>/s//<version>${NEW_VERSION}<\/version>/" native/fhir-to-bal-lib/pom.xml
           sed -i "0,/<version>${CURRENT_VERSION}<\/version>/s//<version>${NEW_VERSION}<\/version>/" native/fhir-to-bal-template/pom.xml
           sed -i "0,/<version>${CURRENT_VERSION}<\/version>/s//<version>${NEW_VERSION}<\/version>/" native/health-cli/pom.xml
+          sed -i "0,/<version>${CURRENT_VERSION}<\/version>/s//<version>${NEW_VERSION}<\/version>/" native/cds-bal-template/pom.xml
+          sed -i "0,/<version>${CURRENT_VERSION}<\/version>/s//<version>${NEW_VERSION}<\/version>/" native/health-tool-ballerina/pom.xml
       - name: Commit changes and make a PR
         if: ${{ inputs.bal_central_environment == 'PROD' }}
         working-directory: fhir-tools
