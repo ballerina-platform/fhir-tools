@@ -18,7 +18,6 @@
 
 package org.wso2.healthcare.fhir.ballerina.packagegen.tool.model;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -31,6 +30,7 @@ public class PackageTemplateContext {
     private String internationalPackageName;
     private Map<String, ResourceTemplateContext> resourceTemplateContextMap;
     private Map<String, DatatypeTemplateContext> datatypeTemplateContextMap;
+    private ExtensionTemplateContext extensionTemplateContext;
     private Map<String, String> resourceNameTypeMap;
     private Set<String> dataTypesRegistry;
     private Map<String, String> dependenciesMap;
@@ -78,6 +78,14 @@ public class PackageTemplateContext {
 
     public void addDatatypeTemplateContext(String datatypeName, DatatypeTemplateContext context) {
         this.datatypeTemplateContextMap.putIfAbsent(datatypeName, context);
+    }
+
+    public ExtensionTemplateContext getExtensionTemplateContext() {
+        return extensionTemplateContext;
+    }
+
+    public void setExtensionTemplateContext(ExtensionTemplateContext extensionTemplateContext) {
+        this.extensionTemplateContext = extensionTemplateContext;
     }
 
     public Map<String, String> getResourceNameTypeMap() {

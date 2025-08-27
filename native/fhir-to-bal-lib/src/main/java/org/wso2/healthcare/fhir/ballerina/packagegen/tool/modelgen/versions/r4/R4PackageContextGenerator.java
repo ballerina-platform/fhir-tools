@@ -21,6 +21,7 @@ package org.wso2.healthcare.fhir.ballerina.packagegen.tool.modelgen.versions.r4;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.SpecificationData;
+import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.ExtensionTemplateContext;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.SearchParameter;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.common.FHIRSpecificationData;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.versions.r4.model.FHIRR4SearchParamDef;
@@ -47,12 +48,25 @@ public class R4PackageContextGenerator extends AbstractPackageContextGenerator {
         super(config, igEntries, specificationData);
     }
 
+    /***
+     * Initiate datatype template context generator
+     *
+     * @param specificationData specification data
+     */
     @Override
     protected void populateDatatypeTemplateContext(FHIRSpecificationData specificationData) {
         LOG.debug("Started: Datatype Template Context population");
         R4DatatypeContextGenerator r4DatatypeContextGenerator = new R4DatatypeContextGenerator(specificationData);
-        getPackageContext().setDatatypeTemplateContextMap(r4DatatypeContextGenerator.getDataTypeTemplateContextMap());
+        getPackageContext().setDatatypeTemplateContextMap(r4DatatypeContextGenerator.getDatatypeTemplateContextMap());
         LOG.debug("Ended: Datatype Template Context population");
+    }
+
+    @Override
+    protected void populateExtensionTemplateContext(FHIRSpecificationData specificationData) {
+        LOG.debug("Started: Extension Template Context population");
+        R4ExtensionContextGenerator r4ExtensionContextGenerator = new R4ExtensionContextGenerator(specificationData);
+        getPackageContext().setExtensionTemplateContext(r4ExtensionContextGenerator.getExtensionTemplateContext());
+        LOG.debug("Ended: Extension Template Context population");
     }
 
     /**

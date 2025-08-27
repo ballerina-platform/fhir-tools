@@ -76,6 +76,7 @@ public class BallerinaPackageGenTool extends AbstractFHIRTool {
             }
             properties.put("packageContext", packageContextGenerator.getPackageContext());
             properties.put("datatypeContext", packageContextGenerator.getPackageContext().getDatatypeTemplateContextMap());
+            properties.put("extensionContext", packageContextGenerator.getPackageContext().getExtensionTemplateContext());
             packageTemplateGenerator.setGeneratorProperties(properties);
             return packageTemplateGenerator;
         }

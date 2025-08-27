@@ -23,8 +23,10 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.TemplateContext;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.ToolContext;
 import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenException;
+import org.wso2.healthcare.fhir.ballerina.packagegen.tool.DataTypesRegistry;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.ToolConstants;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.config.BallerinaPackageGenToolConfig;
+import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.ExtensionTemplateContext;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.DataTypeProfile;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.Element;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.PackageTemplateContext;
@@ -34,7 +36,14 @@ import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.GeneratorUtils;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.AbstractFHIRTemplateGenerator;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.Iterator;
+import java.util.HashSet;
 
 /**
  * Generator class for resource related template context
@@ -44,6 +53,7 @@ public class ResourceTemplateGenerator extends AbstractFHIRTemplateGenerator {
     private static final Log LOG = LogFactory.getLog(ResourceTemplateGenerator.class);
     private final Map<String, Object> resourceProperties = new HashMap<>();
     private PackageTemplateContext packageTemplateContext;
+    private ExtensionTemplateContext extensionTemplateContext;
     private List<ResourceTemplateContext> resourceTemplateContexts;
 
     public ResourceTemplateGenerator(String targetDir) throws CodeGenException {
@@ -55,6 +65,7 @@ public class ResourceTemplateGenerator extends AbstractFHIRTemplateGenerator {
     public void generate(ToolContext toolContext, Map<String, Object> generatorProperties) throws CodeGenException {
         LOG.debug("Started: Resource Templates Generation");
         this.packageTemplateContext = (PackageTemplateContext) generatorProperties.get("packageContext");
+        this.extensionTemplateContext = (ExtensionTemplateContext) generatorProperties.get("extensionContext");
         BallerinaPackageGenToolConfig toolConfig = (BallerinaPackageGenToolConfig) generatorProperties.get("toolConfig");
 
         String packagePath = this.getTargetDir() + File.separator + toolConfig.getPackageConfig().getName();
@@ -97,6 +108,9 @@ public class ResourceTemplateGenerator extends AbstractFHIRTemplateGenerator {
                 if (resourceTemplateContext.getResourceType().equals("Bundle"))
                     continue;
 
+                Map<String, Set<String>> resourceExtensionsMap = getExtensionContext(resourceTemplateContext);
+                resourceTemplateContext.setResourceExtensions(resourceExtensionsMap);
+
                 String filePath = CommonUtil.generateFilePath(packagePath, "resource_"
                         + CommonUtil.camelToSnake(resourceTemplateContext.getResourceDefinitionAnnotation().getName())
                         + ToolConstants.BAL_EXTENSION, "");
@@ -133,6 +147,7 @@ public class ResourceTemplateGenerator extends AbstractFHIRTemplateGenerator {
         templateContext.setProperty("extendedElements", resourceTemplateContext.getExtendedElements());
         templateContext.setProperty("INT_MAX", Integer.MAX_VALUE);
         templateContext.setProperty("dataTypes", packageContext.getDataTypesRegistry());
+        templateContext.setProperty("resourceExtensions", resourceTemplateContext.getResourceExtensions());
 
         templateContext.setProperty("isBasePackage", this.resourceProperties.get("isBasePackage"));
         templateContext.setProperty("basePackageIdentifier", this.resourceProperties.get("basePackageIdentifier"));
@@ -181,5 +196,33 @@ public class ResourceTemplateGenerator extends AbstractFHIRTemplateGenerator {
 
         templateContext.setProperty("imports", resourceDependencies);
         return templateContext;
+    }
+
+    private Map<String, Set<String>> getExtensionContext(ResourceTemplateContext resourceTemplateContext) {
+        Map<String, Set<String>> igExtensions = extensionTemplateContext.getExtensionResources();
+
+        Map<String, Set<String>> resourceExtensionsMap = new HashMap<>();
+        Set<String> resourceExtensions = new TreeSet<>();
+        String resourceExtensionsPackName = resourceTemplateContext.getResourceName() + "Extensions";
+
+        for (Map.Entry<String, Set<String>> extensionResourceEntry : igExtensions.entrySet()) {
+            if (extensionResourceEntry.getValue().contains(resourceTemplateContext.getResourceType())) {
+                String extensionName = extensionResourceEntry.getKey();
+                resourceExtensions.add("Extension");
+                resourceExtensions.add(extensionName);
+            }
+        }
+
+        if (!resourceExtensions.isEmpty()) {
+            resourceExtensionsMap.put(resourceExtensionsPackName, resourceExtensions);
+
+            // todo: Uncommenting these lines will bind the extensions to resources.
+            // DataTypesRegistry.getInstance().addDataType(resourceExtensionsPackName);
+            // resourceTemplateContext.getResourceDefinitionAnnotation().getElements().get("extension").setDataType(resourceExtensionsPackName);
+            // resourceTemplateContext.getResourceElements().get("extension").setDataType(resourceExtensionsPackName);
+            // resourceTemplateContext.getResourceElements().get("extension").getProfiles().get("Extension").setProfileType(resourceExtensionsPackName);
+        }
+
+        return resourceExtensionsMap;
     }
 }

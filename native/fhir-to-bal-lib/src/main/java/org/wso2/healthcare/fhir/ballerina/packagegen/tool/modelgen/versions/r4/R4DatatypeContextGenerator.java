@@ -124,7 +124,7 @@ public class R4DatatypeContextGenerator extends AbstractDatatypeContextGenerator
                     context.addElement(element);
                 }
             }
-            datatypeTemplateContextMap().putIfAbsent(datatypeDefn.getDefinition().getUrl(), context);
+            getDatatypeTemplateContextMap().putIfAbsent(datatypeDefn.getDefinition().getUrl(), context);
         }
     }
 }

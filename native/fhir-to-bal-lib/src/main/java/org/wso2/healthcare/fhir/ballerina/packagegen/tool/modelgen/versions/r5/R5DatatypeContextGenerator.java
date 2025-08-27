@@ -128,7 +128,7 @@ public class R5DatatypeContextGenerator extends AbstractDatatypeContextGenerator
                     context.addElement(element);
                 }
             }
-            datatypeTemplateContextMap().putIfAbsent(datatypeDefn.getDefinition().getUrl(), context);
+            getDatatypeTemplateContextMap().putIfAbsent(datatypeDefn.getDefinition().getUrl(), context);
         }
     }
 }

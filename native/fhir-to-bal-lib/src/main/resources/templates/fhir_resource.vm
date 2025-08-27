@@ -28,6 +28,12 @@ import $import.toString();
 public const string PROFILE_BASE_${util.resolveSpecialCharacters($resourceName.toUpperCase())} = "${profile}";
 public const RESOURCE_NAME_${util.resolveSpecialCharacters($resourceName.toUpperCase())} = "${resourceType}";
 
+#foreach($resourceExtension in $resourceExtensions.entrySet())
+#set($i=0)
+#set($length = $resourceExtension.getValue().size())
+public type $resourceExtension.getKey() (#foreach($extension in $resourceExtension.getValue())#if(!$dataTypes.contains($extension))${importIdentifier}#end$extension #set($i=$i+1)#if($i<$length)| #end#end);
+#end
+
 # FHIR $resourceName resource record.
 #
 # + resourceType - The type of the resource describes

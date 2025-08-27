@@ -55,12 +55,15 @@ public class PackageTemplateGenerator extends AbstractFHIRTemplateGenerator {
     public PackageTemplateGenerator(String targetDir) throws CodeGenException {
         super(targetDir);
         LOG.debug("Package Template Generator Initiated");
-        ResourceTemplateGenerator resourceTemplateGenerator =
-                new ResourceTemplateGenerator(targetDir);
+        ResourceTemplateGenerator resourceTemplateGenerator = new ResourceTemplateGenerator(targetDir);
         this.setChildTemplateGenerator(resourceTemplateGenerator);
-        DatatypeTemplateGenerator datatypeTemplateGenerator =
-                new DatatypeTemplateGenerator(targetDir);
+
+        DatatypeTemplateGenerator datatypeTemplateGenerator = new DatatypeTemplateGenerator(targetDir);
         resourceTemplateGenerator.setChildTemplateGenerator(datatypeTemplateGenerator);
+
+        ExtensionTemplateGenerator extensionTemplateGenerator = new ExtensionTemplateGenerator(targetDir);
+        datatypeTemplateGenerator.setChildTemplateGenerator(extensionTemplateGenerator);
+
         LOG.debug("Package Template Generator Ended");
     }
 
@@ -136,25 +139,23 @@ public class PackageTemplateGenerator extends AbstractFHIRTemplateGenerator {
             String packagePath = (String) this.packageProperties.get("packagePath");
             String filePath = CommonUtil.generateFilePath(packagePath, "Ballerina" + ToolConstants.TOML_EXTENSION, "");
 
-            if(toolConfig.getPackageConfig().getFhirVersion().equals("r4")){
+            if (toolConfig.getPackageConfig().getFhirVersion().equals("r4")) {
                 this.getTemplateEngine().generateOutputAsFile(
                         ToolConstants.TEMPLATE_PATH + ToolConstants.RESOURCE_PATH_SEPERATOR + ToolConstants.TEMPLATE_VERSION_PATH + ToolConstants.RESOURCE_PATH_SEPERATOR + "r4" + ToolConstants.RESOURCE_PATH_SEPERATOR + "r4_ballerina_toml.vm",
                         this.createTemplateContextForBallerinaToml(toolConfig), "", filePath);
-            }
-            else if (toolConfig.getPackageConfig().getFhirVersion().equals("r5")) {
+            } else if (toolConfig.getPackageConfig().getFhirVersion().equals("r5")) {
                 this.getTemplateEngine().generateOutputAsFile(
                         ToolConstants.TEMPLATE_PATH + ToolConstants.RESOURCE_PATH_SEPERATOR + ToolConstants.TEMPLATE_VERSION_PATH + ToolConstants.RESOURCE_PATH_SEPERATOR + "r5" + ToolConstants.RESOURCE_PATH_SEPERATOR + "r5_ballerina_toml.vm",
                         this.createTemplateContextForBallerinaToml(toolConfig), "", filePath);
             }
 
             filePath = CommonUtil.generateFilePath(packagePath, "Package" + ToolConstants.MD_EXTENSION, "");
-            if(toolConfig.getPackageConfig().getFhirVersion().equals("r4")){
+            if (toolConfig.getPackageConfig().getFhirVersion().equals("r4")) {
                 this.getTemplateEngine().generateOutputAsFile(
                         ToolConstants.TEMPLATE_PATH + ToolConstants.RESOURCE_PATH_SEPERATOR + ToolConstants.TEMPLATE_VERSION_PATH + ToolConstants.RESOURCE_PATH_SEPERATOR + "r4" + ToolConstants.RESOURCE_PATH_SEPERATOR + "r4_package.vm",
                         this.createTemplateContextForPackageMD(toolConfig), "", filePath);
 
-            }
-            else if (toolConfig.getPackageConfig().getFhirVersion().equals("r5")) {
+            } else if (toolConfig.getPackageConfig().getFhirVersion().equals("r5")) {
                 this.getTemplateEngine().generateOutputAsFile(
                         ToolConstants.TEMPLATE_PATH + ToolConstants.RESOURCE_PATH_SEPERATOR + ToolConstants.TEMPLATE_VERSION_PATH + ToolConstants.RESOURCE_PATH_SEPERATOR + "r5" + ToolConstants.RESOURCE_PATH_SEPERATOR + "r5_package.vm",
                         this.createTemplateContextForPackageMD(toolConfig), "", filePath);
