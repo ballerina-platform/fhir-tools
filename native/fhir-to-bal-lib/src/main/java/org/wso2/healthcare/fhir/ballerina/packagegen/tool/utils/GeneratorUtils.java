@@ -327,6 +327,7 @@ public class GeneratorUtils {
 
         if (element.getContentReference() != null && !isReferredFromInternational(element.getContentReference())) {
             // Avoid creation of a new identifiers for referred elements
+            // todo: revise generation of CDSHooksRequestOrchestrationActionAction and CDSHooksServicePlanDefinitionActionAction in international500
             extendedElementTypeName = getReferringElementName(element.getContentReference(), false, typeNamePrefix);
         } else {
             extendedElementTypeName = generateExtendedElementIdentifier(element, typeNamePrefix);
@@ -352,6 +353,7 @@ public class GeneratorUtils {
             // The base type "code" is ignored because it converts to an ENUM by default
 
             extendedElement.setPrimitiveExtendedType(baseType);
+            element.setDataType(baseType);
         }
 
         LOG.debug("Ended: Resource Extended Element population");
@@ -622,5 +624,38 @@ public class GeneratorUtils {
             }
         }
         return referringElementName;
+    }
+
+    /**
+     * Recursively checks if an element or any of its child elements refer to an international specification.
+     *
+     * @param element The element to check.
+     * @return true if the element or any of its child elements refer to an international specification,
+     * false otherwise.
+     */
+    public static boolean checkForInternationalImports(Element element) {
+        if (element == null) {
+            return false;
+        }
+
+        // Check current element's content reference
+        if (element.getContentReference() != null &&
+                GeneratorUtils.isReferredFromInternational(element.getContentReference())) {
+            return true;
+        }
+
+        // Base case - no child elements
+        if (!element.hasChildElements()) {
+            return false;
+        }
+
+        // Recursively check all child elements
+        for (Element childElement : element.getChildElements().values()) {
+            if (checkForInternationalImports(childElement)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

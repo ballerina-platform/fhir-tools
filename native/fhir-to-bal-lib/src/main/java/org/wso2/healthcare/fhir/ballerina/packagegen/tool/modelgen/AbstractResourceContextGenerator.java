@@ -111,17 +111,8 @@ public abstract class AbstractResourceContextGenerator {
      * @param element The element to check for international imports.
      */
     protected void checkAndAddInternationalImport(Element element) {
-        boolean isImportedFromInternational = false;
-        if (element.getContentReference() != null && GeneratorUtils.isReferredFromInternational(element.getContentReference())) {
-            isImportedFromInternational = true;
-        } else if (element.hasChildElements()) {
-            for (Element childElement : element.getChildElements().values()) {
-                if (childElement.getContentReference() != null && GeneratorUtils.isReferredFromInternational(childElement.getContentReference())) {
-                    isImportedFromInternational = true;
-                    break;
-                }
-            }
-        }
+        boolean isImportedFromInternational = GeneratorUtils.checkForInternationalImports(element);
+
         boolean isInternationalImportExists = this.resourceTemplateContextInstance.getResourceDependencies()
                 .stream()
                 .anyMatch(d -> d.equals(this.toolConfig.getPackageConfig().getInternationalPackage()));
@@ -183,7 +174,7 @@ public abstract class AbstractResourceContextGenerator {
             extendedElement = GeneratorUtils.getInstance().populateExtendedElement(element, BallerinaDataType.Enum, elementDataType,
                     this.resourceTemplateContextInstance.getResourceName());
             putExtendedElementIfAbsent(element, extendedElement);
-        } else if (element.isSlice() || elementDataType.equals("BackboneElement") || elementDataType.equals("BackboneType") || (element.isExtended() && element.hasChildElements())) {
+        } else if (element.isSlice() || elementDataType.equals("BackboneElement") || elementDataType.equals("BackboneType") || (element.isExtended() && element.hasChildElements() && !GeneratorUtils.isPrimitiveElement(elementDataType))) {
             extendedElement = GeneratorUtils.getInstance().populateExtendedElement(element, BallerinaDataType.Record, elementDataType,
                     this.resourceTemplateContextInstance.getResourceName());
             extendedElement.setElements(element.getChildElements());

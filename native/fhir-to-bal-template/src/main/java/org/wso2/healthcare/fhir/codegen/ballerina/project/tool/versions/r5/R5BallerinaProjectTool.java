@@ -61,10 +61,10 @@ public class R5BallerinaProjectTool extends AbstractBallerinaProjectTool {
             for (Map.Entry<String, FHIRResourceDef> resourceEntry : entry.getValue().getResources().entrySet()) {
                 String key = resourceEntry.getKey();
                 FHIRR5ResourceDef resourceDef = (FHIRR5ResourceDef) resourceEntry.getValue();
-                String resourceName = resourceDef.getDefinition().getName();
                 String resourceKind = resourceDef.getDefinition().getKind().toCode();
+                String resourceType = resourceDef.getDefinition().getType();
 
-                if (!getExcludedFHIRApis().contains(resourceName) && resourceKind.equalsIgnoreCase("RESOURCE")) {
+                if (!getExcludedFHIRApis().contains(resourceType) && resourceKind.equalsIgnoreCase("RESOURCE")) {
                     resourceDefMap.put(key, resourceDef);
                 }
             }

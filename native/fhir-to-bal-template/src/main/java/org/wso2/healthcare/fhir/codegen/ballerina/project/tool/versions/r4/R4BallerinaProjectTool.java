@@ -61,10 +61,10 @@ public class R4BallerinaProjectTool extends AbstractBallerinaProjectTool {
             for (Map.Entry<String, FHIRResourceDef> resourceEntry : entry.getValue().getResources().entrySet()) {
                 String key = resourceEntry.getKey();
                 FHIRR4ResourceDef resourceDef = (FHIRR4ResourceDef) resourceEntry.getValue();
-                String resourceName = resourceDef.getDefinition().getName();
                 String resourceKind = resourceDef.getDefinition().getKind().toCode();
+                String resourceType = resourceDef.getDefinition().getType();
 
-                if (!getExcludedFHIRApis().contains(resourceName) && resourceKind.equalsIgnoreCase("RESOURCE")) {
+                if (!getExcludedFHIRApis().contains(resourceType) && resourceKind.equalsIgnoreCase("RESOURCE")) {
                     resourceDefMap.put(key, resourceDef);
                 }
             }

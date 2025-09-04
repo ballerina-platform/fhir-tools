@@ -25,6 +25,8 @@ import org.wso2.healthcare.codegen.tool.framework.commons.core.ToolContext;
 import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenException;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.ToolConstants;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.config.BallerinaPackageGenToolConfig;
+import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.DataTypeProfile;
+import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.Element;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.PackageTemplateContext;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.ResourceTemplateContext;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.CommonUtil;
@@ -32,12 +34,7 @@ import org.wso2.healthcare.fhir.ballerina.packagegen.tool.utils.GeneratorUtils;
 import org.wso2.healthcare.codegen.tool.framework.fhir.core.AbstractFHIRTemplateGenerator;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Generator class for resource related template context
@@ -151,6 +148,37 @@ public class ResourceTemplateGenerator extends AbstractFHIRTemplateGenerator {
         }
 
         resourceDependencies.addAll(resourceTemplateContext.getResourceDependencies());
+
+        // Store element datatype prefixes other than baseImport and internationalImport
+        Set<String> prefixes = new HashSet<>();
+        for (Element element : resourceTemplateContext.getSnapshotElements().values()) {
+            Map<String, DataTypeProfile> profiles = element.getProfiles();
+            for (Map.Entry<String, DataTypeProfile> entry : profiles.entrySet()) {
+                if (entry.getValue().getPrefix() != null && !element.getPath().contains("extension")) {
+                    prefixes.add(entry.getValue().getPrefix());
+                }
+            }
+        }
+
+        // Remove unused packages from dependent-ig mode
+        if (prefixes.isEmpty()) {
+            Iterator<String> iterator = resourceDependencies.iterator();
+            while (iterator.hasNext()) {
+                String dependency = iterator.next();
+                if (dependency.endsWith(this.resourceProperties.get("basePackageIdentifier").toString())
+                        || dependency.endsWith(this.resourceProperties.get("internationalPackageIdentifier").toString())
+                        || dependency.contains("constraint")) {
+                } else {
+                    iterator.remove();
+                }
+            }
+        }
+
+        // remove international package if the current IG is the international package
+        if (packageContext.getIgTemplateContext().getIgName().contains(this.resourceProperties.get("internationalPackageIdentifier").toString())) {
+            resourceDependencies.remove(this.packageTemplateContext.getInternationalPackageName());
+        }
+
         templateContext.setProperty("imports", resourceDependencies);
         return templateContext;
     }

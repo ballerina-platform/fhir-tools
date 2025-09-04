@@ -83,7 +83,9 @@ public class SearchParam {
                 }
             }
         } else {
-            return originalDescription.replace("\n", "");
+            originalDescription = originalDescription.replace("\n", "");
+            originalDescription = originalDescription.replace("\r", "");
+            return originalDescription;
         }
         return originalDescription;
     }

@@ -105,7 +105,7 @@ public type $util.resolveSpecialCharacters($resourceName) record {|
     }
 $tab#end
     #set($isDataTypeSet = false)
-        #foreach($profileEntry in $element.getProfiles().entrySet())#if(!$dataTypes.contains($profileEntry.value.getProfileType()))#if(!$profileEntry.value.getPrefix())#if($util.isReferredFromInternational($element.getContentReference()))${internationalImportIdentifier}#else${importIdentifier}#end#else$profileEntry.value.getPrefix():#end#end#if($element.isExtended())#foreach($key in $extendedElements.keySet())#if($key == $profileEntry.value.getProfileType() && $extendedElements.get($key).getPrimitiveExtendedType())$util.resolveSpecialCharacters($profileEntry.value.getProfileType()) | ${importIdentifier}$extendedElements.get($key).getPrimitiveExtendedType()#set($isDataTypeSet = true)#end#end#end#if(!$isDataTypeSet)$util.resolveSpecialCharacters($profileEntry.value.getProfileType())#end#if($element.isArray()) []#end#if($foreach.count != $element.getProfiles().size())|#end#end $util.resolveKeywordConflict($util.resolveSpecialCharacters($element.getName()))#if(!$element.isRequired())?#end;
+        #foreach($profileEntry in $element.getProfiles().entrySet())#if(!$dataTypes.contains($profileEntry.value.getProfileType()))#if(!$profileEntry.value.getPrefix())#if($util.isReferredFromInternational($element.getContentReference()))${internationalImportIdentifier}#else${importIdentifier}#end#else$profileEntry.value.getPrefix():#end#end#if($element.isExtended())#foreach($key in $extendedElements.keySet())#if($key == $profileEntry.value.getProfileType() && $extendedElements.get($key).getPrimitiveExtendedType())${importIdentifier}$extendedElements.get($key).getPrimitiveExtendedType()#set($isDataTypeSet = true)#end#end#end#if(!$isDataTypeSet)$util.resolveSpecialCharacters($profileEntry.value.getProfileType())#end#if($element.isArray()) []#end#if($foreach.count != $element.getProfiles().size())|#end#end $util.resolveKeywordConflict($util.resolveSpecialCharacters($element.getName()))#if(!$element.isRequired())?#end;
     #end
     ${importIdentifier}Element ...;
 |};
@@ -193,8 +193,14 @@ $tab#end
 #elseif($extendedElement.getBalDataType().getType() == "enum")
 # $extendedElement.getTypeName() enum
 public enum $util.resolveSpecialCharacters($extendedElement.getTypeName()) {
+    #if($basePackageIdentifier == "r4")
     #foreach($childElement in $extendedElement.getElements())
     CODE_$childElement.getRootElementName().toUpperCase()_$util.resolveSpecialCharacters($childElement.getName()).toUpperCase() = "$childElement.getName()"#if($foreach.count != $extendedElement.getElements().size()),#end
+    #end
+    #else
+    #foreach($childElement in $extendedElement.getElements())
+    CODE_${resourceName.toUpperCase()}_$childElement.getRootElementName().toUpperCase()_$util.resolveSpecialCharacters($childElement.getName()).toUpperCase() = "$childElement.getName()"#if($foreach.count != $extendedElement.getElements().size()),#end
+    #end
     #end
 }
 #end

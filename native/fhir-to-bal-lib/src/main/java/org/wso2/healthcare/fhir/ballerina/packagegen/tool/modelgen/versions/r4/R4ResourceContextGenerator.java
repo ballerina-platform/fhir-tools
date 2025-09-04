@@ -81,6 +81,7 @@ public class R4ResourceContextGenerator extends AbstractResourceContextGenerator
                 this.resourceTemplateContextInstance.setResourceName(GeneratorUtils.getInstance().resolveSpecialCharacters(structureDefinition.getName()));
                 this.resourceTemplateContextInstance.setProfile(resourceDef.getDefinition().getUrl());
                 this.resourceTemplateContextInstance.setIgName(ig.getName());
+                this.resourceTemplateContextInstance.setBaseIgName(structureDefinition.getBaseDefinition());
 
                 ResourceDefinitionAnnotation resourceDefinitionAnnotation = new ResourceDefinitionAnnotation();
                 resourceDefinitionAnnotation.setName(GeneratorUtils.getInstance().resolveSpecialCharacters(structureDefinition.getName()));

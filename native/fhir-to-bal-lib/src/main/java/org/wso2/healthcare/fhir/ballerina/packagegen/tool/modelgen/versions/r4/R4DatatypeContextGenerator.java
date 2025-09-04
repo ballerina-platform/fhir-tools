@@ -63,7 +63,12 @@ public class R4DatatypeContextGenerator extends AbstractDatatypeContextGenerator
             } else if ("draft".equalsIgnoreCase(datatypeDefn.getDefinition().getStatus().toString()) &&
                     (datatypeDefn.getDefinition().getName().contains(" ") &&
                             datatypeDefn.getDefinition().getName().split(" ").length > 0)) {
-                continue;
+                String[] elementNameContent = datatypeDefn.getDefinition().getName().split(" ");
+
+                // Excludes generation of DataElement constraints (e.g.: ElementDefinition-de)
+                if (Arrays.asList(elementNameContent).contains("DataElement")) {
+                    continue;
+                }
             }
 
             DatatypeTemplateContext context = new DatatypeTemplateContext();
