@@ -119,7 +119,7 @@ public class R5ExtensionContextGenerator extends AbstractExtensionContextGenerat
                     }
                 }
                 populateExtensionResourceMap(elementIdentifier, extensionDefEntry.getValue());
-                getExtensionTemplateContext().getExtensionDatatypes().putIfAbsent(r5ExtensionDefn.getDefinition().getUrl(), context);
+                getExtensionTemplateContext().getExtendedDatatypes().putIfAbsent(r5ExtensionDefn.getDefinition().getUrl(), context);
                 DataTypesRegistry.getInstance().addDataType(context.getName());
             }
         }
@@ -163,7 +163,16 @@ public class R5ExtensionContextGenerator extends AbstractExtensionContextGenerat
                                     element.setMin(sliceElementDefinition.getMin());
                                     element.setArray(!"0".equals(sliceElementDefinition.getBase().getMax()) && !"1".equals(sliceElementDefinition.getBase().getMax()));
 
-                                    String typeCode = sliceElementDefinition.getType().get(0).getCode();
+                                    /// Read the datatype of the element from the Type.Ref component
+                                    /// TypeCode usually have only one element.
+                                    String typeCode = elementDefinition.getType().get(0).getCode();
+                                    if (typeCode == null) {
+                                        // Special Case: TypeCode is null
+                                        // Give a type for PrimitiveType Extensions marked with "_"
+                                        // E.g.: type [{_code:{...}}]
+                                        typeCode = "Extension";
+                                    }
+
                                     if (GeneratorUtils.getInstance().shouldReplacedByBalType(typeCode)) {
                                         element.setDataType(GeneratorUtils.getInstance().resolveDataType(typeCode));
                                     } else {
@@ -198,7 +207,7 @@ public class R5ExtensionContextGenerator extends AbstractExtensionContextGenerat
                                     context.addElement(element);
                                 }
                             }
-                            getExtensionTemplateContext().getExtensionDatatypes().putIfAbsent(contextName.toLowerCase(), context);
+                            getExtensionTemplateContext().getExtendedDatatypes().putIfAbsent(contextName.toLowerCase(), context);
                             DataTypesRegistry.getInstance().addDataType(context.getName());
                         }
                     }
@@ -216,6 +225,6 @@ public class R5ExtensionContextGenerator extends AbstractExtensionContextGenerat
         for (StructureDefinition.StructureDefinitionContextComponent contextComponent : r5ExtensionDefinition.getDefinition().getContext()) {
             extensionContext.add(contextComponent.getExpression());
         }
-        getExtensionTemplateContext().getExtensionResources().putIfAbsent(identifier, extensionContext);
+        getExtensionTemplateContext().getExtendedResources().putIfAbsent(identifier, extensionContext);
     }
 }

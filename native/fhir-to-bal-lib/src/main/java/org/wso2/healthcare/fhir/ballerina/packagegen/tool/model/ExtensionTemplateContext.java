@@ -24,37 +24,37 @@ import java.util.TreeMap;
 import java.util.HashMap;
 
 public class ExtensionTemplateContext {
-    private Map<String, DatatypeTemplateContext> extensionDatatypes;
-    private Map<String, Set<String>> extensionSlices;
-    private Map<String, Set<String>> extensionResources;
+    private Map<String, DatatypeTemplateContext> extendedDatatypes;
+    private Map<String, Set<String>> extendedSlices;
+    private Map<String, Set<String>> extendedResources;
 
     public ExtensionTemplateContext() {
-        extensionDatatypes = new TreeMap<>();
-        extensionSlices = new HashMap<>();
-        extensionResources = new HashMap<>();
+        extendedDatatypes = new TreeMap<>();
+        extendedSlices = new HashMap<>();
+        extendedResources = new HashMap<>();
     }
 
-    public Map<String, DatatypeTemplateContext> getExtensionDatatypes() {
-        return extensionDatatypes;
+    public Map<String, DatatypeTemplateContext> getExtendedDatatypes() {
+        return extendedDatatypes;
     }
 
-    public void setExtensionDatatypes(Map<String, DatatypeTemplateContext> extensionDatatypes) {
-        this.extensionDatatypes = extensionDatatypes;
+    public void setExtendedDatatypes(Map<String, DatatypeTemplateContext> extendedDatatypes) {
+        this.extendedDatatypes = extendedDatatypes;
     }
 
-    public Map<String, Set<String>> getExtensionSlices() {
-        return extensionSlices;
+    public Map<String, Set<String>> getExtendedSlices() {
+        return extendedSlices;
     }
 
-    public void setExtensionSlices(Map<String, Set<String>> extensionSlices) {
-        this.extensionSlices = extensionSlices;
+    public void setExtendedSlices(Map<String, Set<String>> extendedSlices) {
+        this.extendedSlices = extendedSlices;
     }
 
-    public Map<String, Set<String>> getExtensionResources() {
-        return extensionResources;
+    public Map<String, Set<String>> getExtendedResources() {
+        return extendedResources;
     }
 
-    public void setExtensionResources(Map<String, Set<String>> extensionResources) {
-        this.extensionResources = extensionResources;
+    public void setExtendedResources(Map<String, Set<String>> extendedResources) {
+        this.extendedResources = extendedResources;
     }
 }

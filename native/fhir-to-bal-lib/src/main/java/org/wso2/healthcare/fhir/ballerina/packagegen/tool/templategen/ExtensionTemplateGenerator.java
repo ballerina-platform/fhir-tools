@@ -62,12 +62,12 @@ public class ExtensionTemplateGenerator extends AbstractFHIRTemplateGenerator {
         TemplateContext templateContext = this.getNewTemplateContext();
         templateContext.setProperty("util", GeneratorUtils.getInstance());
         templateContext.setProperty("licenseYear", ToolConstants.LICENSE_YEAR);
-        templateContext.setProperty("extensionDataTypeContext", extensionTemplateContext.getExtensionDatatypes());
-        templateContext.setProperty("extensionSliceContext", extensionTemplateContext.getExtensionSlices());
+        templateContext.setProperty("extensionDataTypeContext", extensionTemplateContext.getExtendedDatatypes());
+        templateContext.setProperty("extensionSliceContext", extensionTemplateContext.getExtendedSlices());
         templateContext.setProperty("imports", importList);
 
-        if (!extensionTemplateContext.getExtensionDatatypes().isEmpty() ||
-                !extensionTemplateContext.getExtensionResources().isEmpty()) {
+        if (!extensionTemplateContext.getExtendedDatatypes().isEmpty() ||
+                !extensionTemplateContext.getExtendedResources().isEmpty()) {
             String filePath = CommonUtil.generateFilePath(packagePath, "", "extensions.bal");
             this.getTemplateEngine().generateOutputAsFile(ToolConstants.TEMPLATE_PATH +
                     ToolConstants.RESOURCE_PATH_SEPERATOR + "extensions.vm", templateContext, "", filePath);

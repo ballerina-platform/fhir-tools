@@ -83,6 +83,7 @@ public class R4ExtensionContextGenerator extends AbstractExtensionContextGenerat
                                 element.setDataType(value);
                             }
 
+                            /// Read the datatype of the element from the Type.Ref component
                             String typeCode = elementDefinition.getType().get(0).getCode();
                             if (typeCode == null) {
                                 // Give a type for PrimitiveType Extensions marked with "_"
@@ -119,7 +120,7 @@ public class R4ExtensionContextGenerator extends AbstractExtensionContextGenerat
                     }
                 }
                 populateExtensionResourceMap(elementIdentifier, extensionDefEntry.getValue());
-                getExtensionTemplateContext().getExtensionDatatypes().putIfAbsent(r4ExtensionDefn.getDefinition().getUrl(), context);
+                getExtensionTemplateContext().getExtendedDatatypes().putIfAbsent(r4ExtensionDefn.getDefinition().getUrl(), context);
                 DataTypesRegistry.getInstance().addDataType(context.getName());
             }
         }
@@ -198,7 +199,7 @@ public class R4ExtensionContextGenerator extends AbstractExtensionContextGenerat
                                     context.addElement(element);
                                 }
                             }
-                            getExtensionTemplateContext().getExtensionDatatypes().putIfAbsent(contextName.toLowerCase(), context);
+                            getExtensionTemplateContext().getExtendedDatatypes().putIfAbsent(contextName.toLowerCase(), context);
                             DataTypesRegistry.getInstance().addDataType(context.getName());
                         }
                     }
@@ -216,6 +217,6 @@ public class R4ExtensionContextGenerator extends AbstractExtensionContextGenerat
         for (StructureDefinition.StructureDefinitionContextComponent contextComponent : r4ExtensionDefinition.getDefinition().getContext()) {
             extensionContext.add(contextComponent.getExpression());
         }
-        getExtensionTemplateContext().getExtensionResources().putIfAbsent(identifier, extensionContext);
+        getExtensionTemplateContext().getExtendedResources().putIfAbsent(identifier, extensionContext);
     }
 }

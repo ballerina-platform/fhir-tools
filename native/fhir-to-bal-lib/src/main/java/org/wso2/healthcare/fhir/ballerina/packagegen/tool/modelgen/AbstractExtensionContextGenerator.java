@@ -31,6 +31,12 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.HashMap;
 
+/**
+ *
+ * Abstract class for extensions generator context.
+ * Extended by the version specific extension context generators.
+ * Define abstract methods to be implemented by the child classes in extension generation.
+ */
 public abstract class AbstractExtensionContextGenerator {
     private static final Log LOG = LogFactory.getLog(AbstractExtensionContextGenerator.class);
     private final Map<String, FHIRDataTypeDef> extensionDefnMap;
@@ -70,7 +76,7 @@ public abstract class AbstractExtensionContextGenerator {
     protected void populateExtensionSliceMap() {
         Map<String, Set<String>> childExtensionMap = new HashMap<>();
         Set<String> searchKeys = new HashSet<>();
-        Map<String, DatatypeTemplateContext> extensionDatatypeMap = extensionTemplateContext.getExtensionDatatypes();
+        Map<String, DatatypeTemplateContext> extensionDatatypeMap = extensionTemplateContext.getExtendedDatatypes();
 
         for (Map.Entry<String, DatatypeTemplateContext> contextEntry : extensionDatatypeMap.entrySet()) {
             if (contextEntry.getKey().contains("http://")) {
@@ -94,6 +100,6 @@ public abstract class AbstractExtensionContextGenerator {
         }
 
         childExtensionMap.entrySet().removeIf(entry -> entry.getValue().isEmpty());
-        extensionTemplateContext.setExtensionSlices(childExtensionMap);
+        extensionTemplateContext.setExtendedSlices(childExtensionMap);
     }
 }

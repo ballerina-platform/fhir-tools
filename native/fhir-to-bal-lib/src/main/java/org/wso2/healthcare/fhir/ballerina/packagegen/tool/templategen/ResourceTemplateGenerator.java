@@ -23,7 +23,6 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.TemplateContext;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.ToolContext;
 import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenException;
-import org.wso2.healthcare.fhir.ballerina.packagegen.tool.DataTypesRegistry;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.ToolConstants;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.config.BallerinaPackageGenToolConfig;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.ExtensionTemplateContext;
@@ -199,7 +198,7 @@ public class ResourceTemplateGenerator extends AbstractFHIRTemplateGenerator {
     }
 
     private Map<String, Set<String>> getExtensionContext(ResourceTemplateContext resourceTemplateContext) {
-        Map<String, Set<String>> igExtensions = extensionTemplateContext.getExtensionResources();
+        Map<String, Set<String>> igExtensions = extensionTemplateContext.getExtendedResources();
 
         Map<String, Set<String>> resourceExtensionsMap = new HashMap<>();
         Set<String> resourceExtensions = new TreeSet<>();

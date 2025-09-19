@@ -671,8 +671,8 @@ public class GeneratorUtils {
      *
      */
     public static ExtensionTemplateContext sanitizeExtensionTemplateContext(ExtensionTemplateContext extensionTemplateContext) {
-        Map<String, DatatypeTemplateContext> extensionDatatypes = extensionTemplateContext.getExtensionDatatypes();
-        Map<String, Set<String>> extensionSlices = extensionTemplateContext.getExtensionSlices();
+        Map<String, DatatypeTemplateContext> extensionDatatypes = extensionTemplateContext.getExtendedDatatypes();
+        Map<String, Set<String>> extensionSlices = extensionTemplateContext.getExtendedSlices();
 
         // Keep track of element names and their counts
         Map<String, Integer> elementNameCountMap = new HashMap<>();
