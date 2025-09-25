@@ -28,11 +28,14 @@ import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.BallerinaDataTyp
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.Element;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.ExtendedElement;
 import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.SearchParameter;
+import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.ExtensionTemplateContext;
+import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.DatatypeTemplateContext;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public class GeneratorUtils {
@@ -327,6 +330,7 @@ public class GeneratorUtils {
 
         if (element.getContentReference() != null && !isReferredFromInternational(element.getContentReference())) {
             // Avoid creation of a new identifiers for referred elements
+            // todo: revise generation of CDSHooksRequestOrchestrationActionAction and CDSHooksServicePlanDefinitionActionAction in international500
             extendedElementTypeName = getReferringElementName(element.getContentReference(), false, typeNamePrefix);
         } else {
             extendedElementTypeName = generateExtendedElementIdentifier(element, typeNamePrefix);
@@ -352,6 +356,7 @@ public class GeneratorUtils {
             // The base type "code" is ignored because it converts to an ENUM by default
 
             extendedElement.setPrimitiveExtendedType(baseType);
+            element.setDataType(baseType);
         }
 
         LOG.debug("Ended: Resource Extended Element population");
@@ -622,5 +627,92 @@ public class GeneratorUtils {
             }
         }
         return referringElementName;
+    }
+
+    /**
+     * Recursively checks if an element or any of its child elements refer to an international specification.
+     *
+     * @param element The element to check.
+     * @return true if the element or any of its child elements refer to an international specification,
+     * false otherwise.
+     */
+    public static boolean checkForInternationalImports(Element element) {
+        if (element == null) {
+            return false;
+        }
+
+        // Check current element's content reference
+        if (element.getContentReference() != null &&
+                GeneratorUtils.isReferredFromInternational(element.getContentReference())) {
+            return true;
+        }
+
+        // Base case - no child elements
+        if (!element.hasChildElements()) {
+            return false;
+        }
+
+        // Recursively check all child elements
+        for (Element childElement : element.getChildElements().values()) {
+            if (checkForInternationalImports(childElement)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Remove duplicate datatypes and slices from the extension context.
+     * The edge case was first detected by the davincipas profile.
+     *
+     * @param extensionTemplateContext The extension template context to be sanitized.
+     * @return The sanitized extension template context.
+     *
+     */
+    public static ExtensionTemplateContext sanitizeExtensionTemplateContext(ExtensionTemplateContext extensionTemplateContext) {
+        Map<String, DatatypeTemplateContext> extensionDatatypes = extensionTemplateContext.getExtendedDatatypes();
+        Map<String, Set<String>> extensionSlices = extensionTemplateContext.getExtendedSlices();
+
+        // Keep track of element names and their counts
+        Map<String, Integer> elementNameCountMap = new HashMap<>();
+        List<String> toBeRemovedDatatypes = new ArrayList<>();
+        List<String> toBeRemovedSlices = new ArrayList<>();
+
+        if (extensionDatatypes != null) {
+            for (Map.Entry<String, DatatypeTemplateContext> entry : extensionDatatypes.entrySet()) {
+                if (!elementNameCountMap.containsKey(entry.getValue().getName())) {
+                    elementNameCountMap.putIfAbsent(entry.getValue().getName(), 1);
+                } else {
+                    elementNameCountMap.put(entry.getValue().getName(), elementNameCountMap.get(entry.getValue().getName()) + 1);
+                }
+            }
+
+            // Identify duplicate datatypes and slices to be removed
+            for (Map.Entry<String, Integer> entry : elementNameCountMap.entrySet()) {
+                if (entry.getValue() > 1) {
+                    for (Map.Entry<String, DatatypeTemplateContext> datatypeEntry : extensionDatatypes.entrySet()) {
+                        if (datatypeEntry.getValue().getName().equals(entry.getKey())) {
+                            if (datatypeEntry.getValue().getElements().isEmpty()) {
+                                toBeRemovedDatatypes.add(datatypeEntry.getKey());
+                                toBeRemovedSlices.add(entry.getKey() + "Extensions");
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Remove identified duplicate datatypes
+            for (String datatypeKey : toBeRemovedDatatypes) {
+                extensionDatatypes.remove(datatypeKey);
+            }
+
+            // Remove identified duplicate slices
+            for (String sliceKey : toBeRemovedSlices) {
+                extensionSlices.remove(sliceKey);
+            }
+        }
+
+        return extensionTemplateContext;
     }
 }

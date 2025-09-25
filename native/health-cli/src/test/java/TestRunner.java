@@ -34,7 +34,8 @@ public class TestRunner {
     private static final Path executionPath = Paths.get(System.getProperty("user.dir"));
 
     public static void main(String[] args) {
-        // System.setProperty("fhirVersion", "r4"); // Uncomment if directly running the TestRunner.java
+        /// Uncomment if directly running the TestRunner.java
+        // System.setProperty("fhirVersion", "r4");
         try {
             runTestForCdsTool();
             if (System.getProperty("fhirVersion").equalsIgnoreCase("r4")) {

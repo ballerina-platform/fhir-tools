@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
 
 /**
  * Class holder for resource related template context
@@ -44,6 +45,7 @@ public class ResourceTemplateContext {
     private HashMap<String, List<Element>> sliceElements = new HashMap<>();
     private HashMap<String, ExtendedElement> extendedElements = new HashMap<>();
     private Set<String> resourceDependencies = new HashSet<>();
+    private Map<String, Set<String>> resourceExtensions = new HashMap<>();
 
     public String getResourceType() {
         return resourceType;
@@ -147,5 +149,13 @@ public class ResourceTemplateContext {
 
     public void setResourceDependencies(Set<String> resourceDependencies) {
         this.resourceDependencies = resourceDependencies;
+    }
+
+    public Map<String, Set<String>> getResourceExtensions() {
+        return resourceExtensions;
+    }
+
+    public void setResourceExtensions(Map<String, Set<String>> resourceExtensions) {
+        this.resourceExtensions = resourceExtensions;
     }
 }

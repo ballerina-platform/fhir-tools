@@ -50,8 +50,16 @@ public class R5PackageContextGenerator extends AbstractPackageContextGenerator {
     protected void populateDatatypeTemplateContext(FHIRSpecificationData specificationData) {
         LOG.debug("Started: Datatype Template Context population");
         R5DatatypeContextGenerator r5DatatypeContextGenerator = new R5DatatypeContextGenerator(specificationData);
-        getPackageContext().setDatatypeTemplateContextMap(r5DatatypeContextGenerator.getDataTypeTemplateContextMap());
+        getPackageContext().setDatatypeTemplateContextMap(r5DatatypeContextGenerator.getDatatypeTemplateContextMap());
         LOG.debug("Ended: Datatype Template Context population");
+    }
+
+    @Override
+    protected void populateExtensionTemplateContext(FHIRSpecificationData specificationData) {
+        LOG.debug("Started: Extension Template Context population");
+        R5ExtensionContextGenerator r5ExtensionContextGenerator = new R5ExtensionContextGenerator(specificationData);
+        getPackageContext().setExtensionTemplateContext(r5ExtensionContextGenerator.getExtensionTemplateContext());
+        LOG.debug("Ended: Extension Template Context population");
     }
 
     @Override

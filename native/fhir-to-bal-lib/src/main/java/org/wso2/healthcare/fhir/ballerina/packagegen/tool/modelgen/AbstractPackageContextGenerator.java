@@ -79,6 +79,7 @@ public abstract class AbstractPackageContextGenerator {
 
             populateDatatypeTemplateContext(specificationData);
             populateResourceTemplateContext(implementationGuide);
+            populateExtensionTemplateContext(specificationData);
             populateIGTemplateContexts(entry.getValue().getName(), implementationGuide);
         }
         LOG.debug("Ended: Package Context population");
@@ -93,6 +94,8 @@ public abstract class AbstractPackageContextGenerator {
     }
 
     protected abstract void populateDatatypeTemplateContext(FHIRSpecificationData specificationData);
+
+    protected abstract void populateExtensionTemplateContext(FHIRSpecificationData specificationData);
 
     protected abstract void populateResourceTemplateContext(FHIRImplementationGuide implementationGuide);
 

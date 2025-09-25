@@ -48,19 +48,11 @@ public abstract class AbstractDatatypeContextGenerator {
         populateDatatypeContext();
     }
 
-    public Map<String, FHIRDataTypeDef> getDatatypeDefnMap() {
-        return datatypeDefnMap;
-    }
-
-    public Map<String, DatatypeTemplateContext> getDataTypeTemplateContextMap() {
-        return dataTypeTemplateContextMap;
-    }
-
     protected Map<String, FHIRDataTypeDef> getDataTypeDefnMap() {
         return datatypeDefnMap;
     }
 
-    protected Map<String, DatatypeTemplateContext> datatypeTemplateContextMap() {
+    public Map<String, DatatypeTemplateContext> getDatatypeTemplateContextMap() {
         return dataTypeTemplateContextMap;
     }
 

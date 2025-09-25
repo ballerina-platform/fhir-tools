@@ -49,7 +49,7 @@ public class R5DatatypeContextGenerator extends AbstractDatatypeContextGenerator
             "DataType", "TriggerDefinition", "ParameterDefinition", "ExtendedContactDetail",
             "Availability", "Expression", "UsageContext", "MonetaryComponent", "VirtualServiceDetail",
             "CodeableReference", "Meta", "Reference", "Dosage", "xhtml", "Narrative",
-            "Extension", "ElementDefinition"
+            "Extension", "ElementDefinition", "Base"
     );
 
     public R5DatatypeContextGenerator(FHIRSpecificationData fhirSpecificationData) {
@@ -67,7 +67,12 @@ public class R5DatatypeContextGenerator extends AbstractDatatypeContextGenerator
             } else if ("draft".equalsIgnoreCase(datatypeDefn.getDefinition().getStatus().toString()) &&
                     (datatypeDefn.getDefinition().getName().contains(" ") &&
                             datatypeDefn.getDefinition().getName().split(" ").length > 0)) {
-                continue;
+                String[] elementNameContent = datatypeDefn.getDefinition().getName().split(" ");
+
+                // Excludes generation of DataElement constraints (e.g.: ElementDefinition-de)
+                if (Arrays.asList(elementNameContent).contains("DataElement")) {
+                    continue;
+                }
             }
 
             DatatypeTemplateContext context = new DatatypeTemplateContext();
@@ -123,7 +128,7 @@ public class R5DatatypeContextGenerator extends AbstractDatatypeContextGenerator
                     context.addElement(element);
                 }
             }
-            datatypeTemplateContextMap().putIfAbsent(datatypeDefn.getDefinition().getUrl(), context);
+            getDatatypeTemplateContextMap().putIfAbsent(datatypeDefn.getDefinition().getUrl(), context);
         }
     }
 }
