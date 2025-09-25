@@ -89,6 +89,8 @@ public class R4ExtensionContextGenerator extends AbstractExtensionContextGenerat
                                 // Give a type for PrimitiveType Extensions marked with "_"
                                 // E.g.: type [{_code:{...}}]
                                 typeCode = "Extension";
+                            } else if ("id".equals(elementName)) {
+                                typeCode = "http://hl7.org/fhirpath/System.String";
                             }
 
                             if (GeneratorUtils.getInstance().shouldReplacedByBalType(typeCode)) {
@@ -165,6 +167,10 @@ public class R4ExtensionContextGenerator extends AbstractExtensionContextGenerat
                                     element.setArray(!"0".equals(sliceElementDefinition.getBase().getMax()) && !"1".equals(sliceElementDefinition.getBase().getMax()));
 
                                     String typeCode = sliceElementDefinition.getType().get(0).getCode();
+                                    if ("id".equals(childSliceName)) {
+                                        typeCode = "http://hl7.org/fhirpath/System.String";
+                                    }
+
                                     if (GeneratorUtils.getInstance().shouldReplacedByBalType(typeCode)) {
                                         element.setDataType(GeneratorUtils.getInstance().resolveDataType(typeCode));
                                     } else {

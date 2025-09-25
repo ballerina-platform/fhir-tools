@@ -88,6 +88,8 @@ public class R5ExtensionContextGenerator extends AbstractExtensionContextGenerat
                                 // Give a type for PrimitiveType Extensions marked with "_"
                                 // E.g.: type [{_code:{...}}]
                                 typeCode = "Extension";
+                            } else if ("id".equals(elementName)) {
+                                typeCode = "http://hl7.org/fhirpath/System.String";
                             }
 
                             if (GeneratorUtils.getInstance().shouldReplacedByBalType(typeCode)) {
@@ -166,6 +168,11 @@ public class R5ExtensionContextGenerator extends AbstractExtensionContextGenerat
                                     /// Read the datatype of the element from the Type.Ref component
                                     /// TypeCode usually have only one element.
                                     String typeCode = elementDefinition.getType().get(0).getCode();
+
+                                    if ("id".equals(childSliceName)) {
+                                        typeCode = "http://hl7.org/fhirpath/System.String";
+                                    }
+
                                     if (typeCode == null) {
                                         // Special Case: TypeCode is null
                                         // Give a type for PrimitiveType Extensions marked with "_"
