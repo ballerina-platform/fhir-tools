@@ -1,0 +1,107 @@
+import ballerinax/health.clients.fhir as fhirClient;
+#foreach($profilePackage in $profilePackages)
+import $profilePackage;
+#end
+import ${internationalPackage} as resourceInternational;
+
+
+# This connector allows you to connect and interact with any FHIR server
+@display {label: "FHIR Client Connector"}
+public client class FHIRClientConnector {
+
+    final fhirClient:FHIRConnector fhirConnectorObj;
+
+    public function init(fhirClient:FHIRConnectorConfig cernerConfig) returns error? {
+        self.fhirConnectorObj = check new (cernerConfig);
+    }
+
+    # -------------------------
+    # Auto-generated operations
+    # -------------------------
+
+#foreach($resource in $resources)
+    ## $resource.type resource operations
+#foreach($interaction in $resource.interactions)
+#if($interaction == "read")
+# + id - The logical ID of the ${resource.type} resource
+    # + return - Returns a FHIRResponse or FHIRError for the operation
+    remote function get${resource.type}ById(string id) returns fhirClient:FHIRResponse|fhirClient:FHIRError {
+        return check self.fhirConnectorObj->getById("$resource.type", id);
+    }
+#end
+#if($interaction == "vread")
+# + id - The logical ID of the ${resource.type} resource
+# + version - The version of the ${resource.type} resource
+    # + return - Returns a FHIRResponse or FHIRError for the operation
+    remote function get${resource.type}ByVersion(string id, string 'version) returns fhirClient:FHIRResponse|fhirClient:FHIRError {
+        return check self.fhirConnectorObj->getByVersion("$resource.type", id, 'version);
+    }
+#end
+#if($interaction == "search-type")
+#foreach($param in $resource.searchParams)
+    # + $param.resolvedName - Search parameter for ${param.originalName} ($param.type) - $param.documentation
+#end
+    # + return - Returns a FHIRResponse or FHIRError for the operation
+    remote isolated function search${resource.type}(
+        #foreach($param in $resource.searchParams)
+        #if($param.originalName == "_lastUpdated")
+            string[]? $param.resolvedName = ()#if($foreach.hasNext),#end
+        #else
+            string? $param.resolvedName = ()#if($foreach.hasNext),#end
+        #end
+        #end
+    ) returns fhirClient:FHIRResponse|fhirClient:FHIRError {
+        fhirClient:SearchParameters params = {};
+        #foreach($param in $resource.searchParams)
+        addIfPresent(params, "$param.originalName", $param.resolvedName);
+        #end
+
+        return self.fhirConnectorObj->search("$resource.type", mode = fhirClient:POST, searchParameters = params);
+    }
+#end
+#if($interaction == "create")
+    # + new${resource.type} - A new instance of the ${resource.type} resource
+    # + return - Returns a FHIRResponse or FHIRError for the operation
+    remote function create${resource.type}(${resource.joined} new${resource.type}) returns fhirClient:FHIRResponse|fhirClient:FHIRError {
+        return check self.fhirConnectorObj->create(new${resource.type}.toJson());
+    }
+#end
+#if($interaction == "update")
+    # + updated${resource.type} - A new or updated instance of the ${resource.type} resource
+    # + return - Returns a FHIRResponse or FHIRError for the operation
+    remote function update${resource.type}(${resource.joined} updated${resource.type}) returns fhirClient:FHIRResponse|fhirClient:FHIRError {
+        return check self.fhirConnectorObj->update(updated${resource.type}.toJson());
+    }
+#end
+#if($interaction == "patch")
+    # + id - The logical ID of the ${resource.type} resource
+    # + patch${resource.type} - An updated instance of the ${resource.type} resource
+    # + return - Returns a FHIRResponse or FHIRError for the operation
+    remote function patch${resource.type}(string id, ${resource.joined} patch${resource.type}) returns fhirClient:FHIRResponse|fhirClient:FHIRError {
+        return check self.fhirConnectorObj->patch("$resource.type", patch${resource.type}.toJson(), id);
+    }
+#end
+#if($interaction == "delete")
+    # + id - The logical ID of the ${resource.type} resource
+    # + return - Returns a FHIRResponse or FHIRError for the operation
+    remote function delete${resource.type}(string id) returns fhirClient:FHIRResponse|fhirClient:FHIRError {
+        return check self.fhirConnectorObj->delete("$resource.type", id);
+    }
+#end
+#if($interaction == "history-instance")
+    # + id - The logical ID of the ${resource.type} resource
+# + return - Returns a FHIRResponse or FHIRError for the operation
+    remote function get${resource.type}InstanceHistory(string id) returns fhirClient:FHIRResponse|fhirClient:FHIRError {
+        return check self.fhirConnectorObj->getInstanceHistory("$resource.type", id);
+    }
+#end
+#if($interaction == "history-type")
+# + return - Returns a FHIRResponse or FHIRError for the operation
+    remote function get${resource.type}History() returns fhirClient:FHIRResponse|fhirClient:FHIRError {
+        return check self.fhirConnectorObj->getHistory("$resource.type");
+    }
+#end
+
+#end
+#end
+}

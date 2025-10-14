@@ -28,16 +28,19 @@ public class HealthCmdConstants {
     public static final String CMD_CONFIG_FILENAME = "tool-config.json";
     public static final String CMD_CDS_CONFIG_FILENAME = "cds-tool-config.json";
     public static final String CMD_CDS_JSON_SCHEMA_FILENAME = "cds-hooks-json-schema.json";
+    public static final String CMD_CONNECTOR_CONFIG_FILENAME = "connector-tool-config.json";
     public static final String CMD_MVN_ARTIFACT_NAME = "health-tools";
     public static final String CMD_RESOURCE_PATH_SUFFIX = "/modules/health/resources";
     public static final String CMD_HELP_TEXT_FILENAME = "ballerina-health.help";
     public static final String CMD_CDS_HELP_TEXT_FILENAME = "ballerina-health-cds.help";
+    public static final String CMD_CONNECTOR_HELP_TEXT_FILENAME = "ballerina-health-connector.help";
     public static final String CMD_DEFAULT_IG_NAME = "FHIR";
     public static final String CMD_DEFAULT_ORG_NAME = "healthcare";
     public static final String CMD_FHIR_MODE_TEMPLATE = "fhir:template";
     public static final String CMD_FHIR_MODE_CLIENT = "fhir:client";
     public static final String CMD_FHIR_MODE_PACKAGE = "fhir:package";
     public static final String CMD_CDS_MODE_TEMPLATE = "cds:template";
+    public static final String CMD_MODE_CONNECTOR = "connector:connector";
     public static final String CDS = "cds";
     public static final String CDS_SUB_TOOL_DESCRIPTION = "Generates Ballerina service for provided cds hook definitions.";
     public static final String TOOLS = "tools";
@@ -71,6 +74,7 @@ public class HealthCmdConstants {
     public static final String CMD_OPTION_INPUT = "--input";
     public static final String CMD_OPTION_INPUT_SHORTER = "-i";
     public static final String CMD_OPTION_CUSTOM_ARGS_DESCRIPTION = "Custom arguments";
+    public static final String CMD_CONNECTOR = "connector";
 
 
     public class PrintStrings {
@@ -85,6 +89,8 @@ public class HealthCmdConstants {
                 + " Generated package can be found at: ";
 
         public static final String INVALID_SPEC_PATH = "[ERROR] Invalid specification path received.";
+        public static final String CONNECTOR_GEN_SUCCESS = "[INFO] Ballerina FHIR connector generation completed successfully."
+                + " Generated connector can be found at: ";
         public static final String HELP_NOT_AVAILABLE = "[ERROR] Helper text is not available.";
         public static final String HELP_ERROR = "[ERROR] An Error occurred internally while fetching the Help text.";
         public static final String INVALID_NUM_OF_ARGS = "[ERROR] Invalid number of arguments received for the command.";
@@ -94,12 +100,14 @@ public class HealthCmdConstants {
         public static final String INVALID_MODE = "[ERROR] Invalid mode received for tool command.";
         public static final String PKG_NAME_REQUIRED = "[ERROR] Package name [--package-name] is required for package "
                 + "generation.";
+        public static final String GEN_ERROR = "[ERROR] Error occurred while generating the Ballerina artifacts.";
         public static final String DEPENDENT_REQUIRED = "[ERROR] Dependent package [--dependent-package] is required "
                 + "for template generation.";
         public static final String DEPENDENT_INCORRECT = "[ERROR] Format of the dependent package is incorrect.";
         public static final String INCLUDED_EXCLUDED_TOGETHER = "[ERROR] Both --included-profile and "
                 + "--excluded-profile cannot be used together.";
         public static final String CDS_HOOKS_VALIDATION = "[ERROR] CDS hooks validation failed!";
+        public static final String INVALID_CONFIG_PATH = "[ERROR] Cannot find the configuration file provided for the input[-i] path argument.";
 
     }
 

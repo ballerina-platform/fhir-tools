@@ -1,0 +1,79 @@
+package org.wso2.healthcare.fhir.ballerina.connectorgen.tool.util;
+
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+import org.wso2.healthcare.fhir.ballerina.connectorgen.tool.model.CapabilityStatement;
+
+import java.io.IOException;
+
+public class HttpUtils {
+
+    private static final ObjectMapper mapper = new ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+    public static CapabilityStatement getCapabilityStatement(String fhirServerURL) {
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            HttpGet request = new HttpGet(fhirServerURL);
+            request.setHeader("Accept", "application/fhir+json");
+            try (CloseableHttpResponse response = httpClient.execute(request)) {
+                int status = response.getStatusLine().getStatusCode();
+                if (status != 200) {
+                    System.err.println("Failed: HTTP " + status);
+                    return null;
+                }
+                String json = EntityUtils.toString(response.getEntity());
+                return mapper.readValue(json, CapabilityStatement.class);
+            }
+        } catch (IOException e) {
+            System.err.println("Error fetching CapabilityStatement: " + e.getMessage());
+            System.exit(0);
+        }
+        return null;
+    }
+
+    public static String getReadMe(String balCentralURL, String orgName, String packageName, String packageVersion) {
+        String query = String.format(
+                "{ \"query\": \"{ package ( orgName: \\\"%s\\\", packageName: \\\"%s\\\", version : \\\"%s\\\") { readme } }\" }",
+                orgName, packageName, packageVersion
+        );
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            HttpPost request = new HttpPost(balCentralURL);
+            request.setHeader("Content-Type", "application/json");
+            request.setEntity(new StringEntity(query));
+            try (CloseableHttpResponse response = httpClient.execute(request)) {
+                String responseString = EntityUtils.toString(response.getEntity());
+//                System.out.println("Response: " + responseString);
+
+                if (responseString == null || responseString.isEmpty()) {
+                    System.err.println("Empty response from Ballerina Central. " +
+                            "Please check the Ballerina Central URL and organization name");
+                    System.exit(0);
+                }
+
+                JsonObject responseObject = JsonParser.parseString(responseString).getAsJsonObject();
+                JsonObject dataObj = responseObject.has("data") ? responseObject.getAsJsonObject("data") : null;
+                JsonObject packageObj = (dataObj != null && dataObj.has("package")) ? dataObj.getAsJsonObject("package") : null;
+
+                if (packageObj != null && packageObj.has("readme")) {
+                    return packageObj.get("readme").getAsString();
+                } else {
+                    System.err.println("README not found for package: " + packageName + " version: " + packageVersion);
+                    System.exit(0);
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error fetching README from Ballerina Central: " + e.getMessage());
+            System.exit(0);
+        }
+        return null;
+    }
+}

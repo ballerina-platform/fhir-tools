@@ -23,6 +23,7 @@ import io.ballerina.health.cmd.core.utils.ErrorMessages;
 
 import java.io.PrintStream;
 
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_MODE_CONNECTOR;
 import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_CDS_MODE_TEMPLATE;
 import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_FHIR_MODE_CLIENT;
 import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_FHIR_MODE_PACKAGE;
@@ -55,6 +56,11 @@ public class HandlerFactory {
                 Handler crdTemplateGenHandler = new CrdTemplateGenHandler();
                 crdTemplateGenHandler.init(printStream, specificationPath);
                 return crdTemplateGenHandler;
+
+            case CMD_MODE_CONNECTOR:
+                Handler connectorHandler = new BallerinaConnectorGenHandler();
+                connectorHandler.init(printStream, specificationPath);
+                return connectorHandler;
 
             default:
                 throw new BallerinaHealthException(ErrorMessages.INVALID_MODE);

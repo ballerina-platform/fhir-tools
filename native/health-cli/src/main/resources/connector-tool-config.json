@@ -1,0 +1,18 @@
+{
+  "config": {
+    "trustStore": {
+      "trustStoreName": "fhir-connector-truststore.p12",
+      "trustStorePassword": "changeit"
+    },
+    "fhirServerUrl": "http://hapi.fhir.org/baseR4/metadata",
+    "central": {
+      "url": "https://api.central.ballerina.io/2.0/graphql",
+      "orgName": "ballerinax",
+      "profilePackages": [
+        "health.fhir.r4.uscore700:2.0.0",
+        "health.fhir.r4.aubase421:2.0.0"
+      ],
+      "internationalPackage": "health.fhir.r4.international401:3.0.1"
+    }
+  }
+}
