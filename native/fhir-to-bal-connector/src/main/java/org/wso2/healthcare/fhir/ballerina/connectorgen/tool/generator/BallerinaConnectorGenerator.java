@@ -19,8 +19,6 @@ import org.wso2.healthcare.fhir.ballerina.connectorgen.tool.model.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -48,6 +46,7 @@ public class BallerinaConnectorGenerator extends AbstractTemplateGenerator {
         }
 
         CapabilityStatement capabilityStatement = HttpUtils.getCapabilityStatement(fhirServerUrl);
+        System.out.println("Fetched CapabilityStatement from: " + fhirServerUrl);
         if (capabilityStatement == null) {
             throw new CodeGenException("Failed to fetch CapabilityStatement from the FHIR server.");
         }
@@ -76,6 +75,7 @@ public class BallerinaConnectorGenerator extends AbstractTemplateGenerator {
 
         String orgName = toolConfig.getCentralConfig().getOrgName();
         String ballerinaCentralURL = toolConfig.getCentralConfig().getUrl();
+
         List<String> profilePackages = toolConfig.getCentralConfig().getProfilePackages();
         for (String profilePackage : profilePackages) {
             String[] parts = profilePackage.split(":");
@@ -102,9 +102,9 @@ public class BallerinaConnectorGenerator extends AbstractTemplateGenerator {
     }
 
     public TemplateContext buildContextFromCapability(CapabilityStatement capabilityStatement, Map<String, FHIRResource> resourceMap, BallerinaConnectorGenToolConfig toolConfig) {
-
-        List<Map<String, Object>> resources = capabilityStatement.getRest().stream()
+       List<Map<String, Object>> resources = capabilityStatement.getRest().stream()
                 .flatMap(rest -> rest.getResource().stream())
+                .filter(resource -> !Constants.SKIP_LIST.contains(resource.getType()))
                 .map(resource -> {
                     Map<String, Object> resMap = new HashMap<>();
                     resMap.put(Constants.TYPE, resource.getType());
@@ -117,13 +117,15 @@ public class BallerinaConnectorGenerator extends AbstractTemplateGenerator {
                                     Constants.DOCUMENTATION, param.getDocumentation() != null ? TextParserUtils.extractCommentFromText(param.getDocumentation(), resource.getType()) : ""
                             )).toList());
                     if (resMap.get(Constants.INTERACTIONS) != null && !((List<?>) resMap.get(Constants.INTERACTIONS)).isEmpty()) {
-//                        System.out.println("No interactions found for resource: " + resource.getType() + ". Skipping this resource.");
                         if (((List<?>) resMap.get(Constants.INTERACTIONS)).contains("create") || ((List<?>) resMap.get(Constants.INTERACTIONS)).contains("update") || ((List<?>) resMap.get(Constants.INTERACTIONS)).contains("patch")) {
                             resMap.put(Constants.SUPPORTED_PROFILES, resource.getSupportedProfile());
-                            resMap.put(Constants.JOINED, buildProfiles(resource, resourceMap));
+                            String typeString = buildProfiles(resource, resourceMap);
+                            resMap.put(Constants.TYPE_STRING, typeString);
+                            if (typeString.contains(Constants.RESOURCE_INTERNATIONAL)) {
+                                resMap.put(Constants.INTERNATIONAL_PACKAGE, true);
+                            }
                         }
                     }
-
                     return resMap;
                 })
                 .toList();
@@ -140,31 +142,33 @@ public class BallerinaConnectorGenerator extends AbstractTemplateGenerator {
                         if (resourceMap.containsKey(profile)) {
                             String packageName = toolConfig.getCentralConfig().getOrgName() + "/" + resourceMap.get(profile).getResourcePackage();
                             if (!packageNames.contains(packageName)) {
-//                                System.out.println("Adding package: " + packageName + " for profile: " + profile);
                                 String importStr = packageName + " as " + resourceMap.get(profile).getResourcePackageAlias();
                                 if (packageNames.contains(importStr)) {
-//                                    System.out.println("Package already imported: " + importStr);
                                     return;
                                 }
                                 packageNames.add(importStr);
                             }
                         }
                     });
+
+                    if (res.containsKey(Constants.INTERNATIONAL_PACKAGE) && (Boolean) res.get(Constants.INTERNATIONAL_PACKAGE)) {
+                        String internationalPackage = toolConfig.getCentralConfig().getInternationalPackage().contains(":") ?
+                                toolConfig.getCentralConfig().getInternationalPackage().split(":")[0] :
+                                toolConfig.getCentralConfig().getInternationalPackage();
+                        String importStr = toolConfig.getCentralConfig().getOrgName() + "/" + internationalPackage + " as resourceInternational";
+                        if (!packageNames.contains(importStr)) {
+                            packageNames.add(importStr);
+                        }
+                    }
                 });
 
         templateContext.setProperty(Constants.PROFILE_PACKAGES, packageNames);
-        String internationalPackage = toolConfig.getCentralConfig().getInternationalPackage();
-        if (internationalPackage != null && !internationalPackage.isEmpty()) {
-            internationalPackage = internationalPackage.split(":")[0];
-        }
-        templateContext.setProperty(Constants.INTERNATIONAL_PACKAGE, toolConfig.getCentralConfig().getOrgName() + "/" + internationalPackage);
         return templateContext;
     }
 
     private String buildProfiles(Resource resource, Map<String, FHIRResource> resourceMap) {
         if (resource.getSupportedProfile() == null || resource.getSupportedProfile().isEmpty()) {
-//            System.out.println("Setting international module for resource: " + resource.getType());
-            return Constants.RESOURCE_INTERNATIONAL + resource.getType();
+           return Constants.RESOURCE_INTERNATIONAL + resource.getType();
         }
         StringBuilder typeString = new StringBuilder();
         boolean internationalSet = false;
@@ -173,16 +177,14 @@ public class BallerinaConnectorGenerator extends AbstractTemplateGenerator {
             String profileName = resourceMap.get(profile) != null ? resourceMap.get(profile).getName() : null;
             if (profileName == null && !internationalSet) {
                 if (i > 0) typeString.append("|");
-//                System.out.println("Profile not found, so setting international module for resource: " + resource.getType());
                 typeString.append(Constants.RESOURCE_INTERNATIONAL).append(resource.getType());
                 internationalSet = true;
             } else if (profileName != null) {
                 if (i > 0) typeString.append("|");
-//                System.out.println("Setting profile module for resource: " + resource.getType() + " with profile: " + profileName);
                 typeString.append(resourceMap.get(profile).getResourcePackageAlias()).append(":").append(profileName);
             }
         }
-//        System.out.println("Output:" + typeString);
+
         return typeString.toString();
     }
 }

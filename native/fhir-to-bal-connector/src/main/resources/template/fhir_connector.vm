@@ -2,7 +2,6 @@ import ballerinax/health.clients.fhir as fhirClient;
 #foreach($profilePackage in $profilePackages)
 import $profilePackage;
 #end
-import ${internationalPackage} as resourceInternational;
 
 
 # This connector allows you to connect and interact with any FHIR server
@@ -11,8 +10,8 @@ public client class FHIRClientConnector {
 
     final fhirClient:FHIRConnector fhirConnectorObj;
 
-    public function init(fhirClient:FHIRConnectorConfig cernerConfig) returns error? {
-        self.fhirConnectorObj = check new (cernerConfig);
+    public function init(fhirClient:FHIRConnectorConfig fhirConnectorConfig) returns error? {
+        self.fhirConnectorObj = check new (fhirConnectorConfig);
     }
 
     # -------------------------
@@ -62,14 +61,14 @@ public client class FHIRClientConnector {
 #if($interaction == "create")
     # + new${resource.type} - A new instance of the ${resource.type} resource
     # + return - Returns a FHIRResponse or FHIRError for the operation
-    remote function create${resource.type}(${resource.joined} new${resource.type}) returns fhirClient:FHIRResponse|fhirClient:FHIRError {
+    remote function create${resource.type}(${resource.typeString} new${resource.type}) returns fhirClient:FHIRResponse|fhirClient:FHIRError {
         return check self.fhirConnectorObj->create(new${resource.type}.toJson());
     }
 #end
 #if($interaction == "update")
     # + updated${resource.type} - A new or updated instance of the ${resource.type} resource
     # + return - Returns a FHIRResponse or FHIRError for the operation
-    remote function update${resource.type}(${resource.joined} updated${resource.type}) returns fhirClient:FHIRResponse|fhirClient:FHIRError {
+    remote function update${resource.type}(${resource.typeString} updated${resource.type}) returns fhirClient:FHIRResponse|fhirClient:FHIRError {
         return check self.fhirConnectorObj->update(updated${resource.type}.toJson());
     }
 #end
@@ -77,7 +76,7 @@ public client class FHIRClientConnector {
     # + id - The logical ID of the ${resource.type} resource
     # + patch${resource.type} - An updated instance of the ${resource.type} resource
     # + return - Returns a FHIRResponse or FHIRError for the operation
-    remote function patch${resource.type}(string id, ${resource.joined} patch${resource.type}) returns fhirClient:FHIRResponse|fhirClient:FHIRError {
+    remote function patch${resource.type}(string id, ${resource.typeString} patch${resource.type}) returns fhirClient:FHIRResponse|fhirClient:FHIRError {
         return check self.fhirConnectorObj->patch("$resource.type", patch${resource.type}.toJson(), id);
     }
 #end

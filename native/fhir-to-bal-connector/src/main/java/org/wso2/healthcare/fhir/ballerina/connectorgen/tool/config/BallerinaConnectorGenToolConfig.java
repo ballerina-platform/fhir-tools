@@ -12,7 +12,7 @@ import org.wso2.healthcare.codegen.tool.framework.commons.model.JsonConfigType;
 public class BallerinaConnectorGenToolConfig extends AbstractToolConfig {
 
     private static final Log LOG = LogFactory.getLog(BallerinaConnectorGenToolConfig.class);
-    private TrustStoreConfig trustStoreConfig;
+//    private TrustStoreConfig trustStoreConfig;
     private CentralConfig centralConfig;
     private String fhirServerUrl;
 
@@ -20,7 +20,7 @@ public class BallerinaConnectorGenToolConfig extends AbstractToolConfig {
     public void configure(ConfigType<?> configObj) throws CodeGenException {
         LOG.debug("Started: Ballerina Connector Generator Tool config population");
         JsonObject jsonConfigObj = ((JsonConfigType) configObj).getConfigObj();
-        this.trustStoreConfig = new TrustStoreConfig(jsonConfigObj.getAsJsonObject("trustStore"));
+//        this.trustStoreConfig = new TrustStoreConfig(jsonConfigObj.getAsJsonObject("trustStore"));
         this.centralConfig = new CentralConfig(jsonConfigObj.getAsJsonObject("central"));
         this.fhirServerUrl = jsonConfigObj.get("fhirServerUrl").getAsString();
         LOG.debug("Ended: Ballerina Connector Generator Tool config population");
@@ -31,13 +31,13 @@ public class BallerinaConnectorGenToolConfig extends AbstractToolConfig {
         //TODO: implement if required
     }
 
-    public TrustStoreConfig getTrustStoreConfig() {
-        return trustStoreConfig;
-    }
+//    public TrustStoreConfig getTrustStoreConfig() {
+//        return trustStoreConfig;
+//    }
 
-    public void setTrustStoreConfig(TrustStoreConfig trustStoreConfig) {
-        this.trustStoreConfig = trustStoreConfig;
-    }
+//    public void setTrustStoreConfig(TrustStoreConfig trustStoreConfig) {
+//        this.trustStoreConfig = trustStoreConfig;
+//    }
 
     public CentralConfig getCentralConfig() {
         return centralConfig;

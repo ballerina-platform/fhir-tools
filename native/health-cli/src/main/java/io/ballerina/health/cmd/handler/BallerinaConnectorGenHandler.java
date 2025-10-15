@@ -2,6 +2,7 @@ package io.ballerina.health.cmd.handler;
 
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Paths;
 import java.util.Map;
 
 import com.google.gson.JsonElement;
@@ -26,12 +27,20 @@ public class BallerinaConnectorGenHandler implements Handler {
     public void init(PrintStream printStream, String configFilePath) {
         this.printStream = printStream;
         try {
+            if (configFilePath != null && !configFilePath.isBlank()) {
+                configJson = HealthCmdConfig.getParsedConfigFromPath(Paths.get(configFilePath));
+                if (configJson == null) {
+                    printStream.println(ErrorMessages.CONFIG_PARSE_ERROR);
+                    HealthCmdUtils.exitError(true);
+                }
+                return;
+            }
+            // Load default config from resources
             configJson = HealthCmdConfig.getParsedConfigFromStream(HealthCmdUtils.getResourceFile(
                     this.getClass(), HealthCmdConstants.CMD_CONNECTOR_CONFIG_FILENAME));
         } catch (BallerinaHealthException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     @Override
@@ -67,6 +76,8 @@ public class BallerinaConnectorGenHandler implements Handler {
                 toolConfigInstance.setTargetDir(targetOutputPath);
                 toolConfigInstance.setToolName(HealthCmdConstants.CMD_CONNECTOR);
                 toolConfigInstance.configure(new JsonConfigType(toolExecConfig));
+
+
 
                 String toolClassName = "org.wso2.healthcare.fhir.ballerina.connectorgen.tool.BallerinaConnectorGenTool";
                 Class<?> toolClazz = classLoader.loadClass(toolClassName);
