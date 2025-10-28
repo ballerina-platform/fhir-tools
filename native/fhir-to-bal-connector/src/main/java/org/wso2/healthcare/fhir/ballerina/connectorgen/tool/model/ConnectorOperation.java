@@ -1,15 +1,11 @@
 package org.wso2.healthcare.fhir.ballerina.connectorgen.tool.model;
 
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class Operation {
+public class ConnectorOperation {
     private String name;
     private String definition; // Reference(OperationDefinition)
     private String documentation;
-
-    // getters and setters
+    private String functionName;
+    private String httpMethod;
 
     public String getName() {
         return name;
@@ -33,6 +29,22 @@ public class Operation {
 
     public void setDocumentation(String documentation) {
         this.documentation = documentation;
+    }
+
+    public String getFunctionName() {
+        return functionName;
+    }
+
+    public void setFunctionName(String functionName) {
+        this.functionName = functionName;
+    }
+
+    public String getHttpMethod() {
+        return httpMethod;
+    }
+
+    public void setHttpMethod(String httpMethod) {
+        this.httpMethod = httpMethod;
     }
 
 }

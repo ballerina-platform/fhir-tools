@@ -14,8 +14,6 @@ DESCRIPTION
         version 2201.12.8 (Swan Lake Update 12) onwards.
 
 OPTIONS
-       -v, --version
-            Print version information.
 
        -h, --help
             Print the usage details of a command.
@@ -35,8 +33,8 @@ COMMANDS
                         the same directory from which the command is run.
 
             EXAMPLES
-                    Generate a Ballerina connector in the current directory
-                        $ bal health connector -c ./path_to_config_file
+                    Generate a Ballerina connector in the current working directory
+                        $ bal health fhir -m connector -c ./path_to_config_json_file
 
                     Generate a Ballerina connector in the given directory.
-                        $ bal health connector -c ./path_to_config_file -o ./output_path
+                        $ bal health fhir -m connector -c ./path_to_config_json_file -o ./output_directory

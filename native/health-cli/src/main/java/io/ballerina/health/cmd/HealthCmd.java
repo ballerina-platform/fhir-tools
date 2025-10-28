@@ -20,7 +20,6 @@ package io.ballerina.health.cmd;
 
 import io.ballerina.cli.BLauncherCmd;
 import io.ballerina.health.cmd.cds.CdsSubCmd;
-import io.ballerina.health.cmd.connector.ConnectorSubCmd;
 import io.ballerina.health.cmd.core.utils.HealthCmdConstants;
 import io.ballerina.health.cmd.core.utils.HealthCmdUtils;
 import io.ballerina.health.cmd.fhir.FhirSubCmd;
@@ -41,8 +40,7 @@ import java.util.List;
         subcommands = {
                 FhirSubCmd.class,
                 Hl7SubCmd.class,
-                CdsSubCmd.class,
-                ConnectorSubCmd.class
+                CdsSubCmd.class
         }
 )
 public class HealthCmd implements BLauncherCmd {

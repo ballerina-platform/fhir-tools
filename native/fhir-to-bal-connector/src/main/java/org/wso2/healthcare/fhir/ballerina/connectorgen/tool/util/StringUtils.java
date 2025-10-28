@@ -38,8 +38,8 @@ public class StringUtils {
         return text.trim();
     }
 
-    public static String toCamelCase(String input) {
-        String[] parts = input.split("\\.");
+    public static String toCamelCase(String[] parts) {
+
         StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < parts.length; i++) {

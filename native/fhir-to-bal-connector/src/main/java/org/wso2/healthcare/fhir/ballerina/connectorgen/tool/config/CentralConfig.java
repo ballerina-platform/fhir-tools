@@ -9,12 +9,10 @@ public class CentralConfig {
     private String url;
     private String orgName;
     private List<String> profilePackages;
-    private String internationalPackage;
 
     public CentralConfig(JsonObject centralConfigJson) {
         this.url = centralConfigJson.getAsJsonPrimitive("url").getAsString();
         this.orgName = centralConfigJson.getAsJsonPrimitive("orgName").getAsString();
-        this.internationalPackage = centralConfigJson.getAsJsonPrimitive("internationalPackage").getAsString();
         this.profilePackages = centralConfigJson.getAsJsonArray("profilePackages").asList().stream()
                 .map(e -> e.getAsString()).toList();
     }
@@ -43,13 +41,6 @@ public class CentralConfig {
         this.profilePackages = profilePackages;
     }
 
-    public String getInternationalPackage() {
-        return internationalPackage;
-    }
-
-    public void setInternationalPackage(String internationalPackage) {
-        this.internationalPackage = internationalPackage;
-    }
 
 
 }

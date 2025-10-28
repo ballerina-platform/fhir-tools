@@ -17,7 +17,6 @@ public class Resource {
 
 
     // getters and setters
-
     public String getType() {
         return type;
     }

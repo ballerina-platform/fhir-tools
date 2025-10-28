@@ -29,7 +29,6 @@ public class BallerinaConnectorGenerator extends AbstractTemplateGenerator {
         super(targetDir);
     }
 
-
     @Override
     public void generate(TemplateEngine templateEngine, ToolContext toolContext, Map<String, Object> map) throws CodeGenException {
         this.setTemplateEngine(templateEngine);
@@ -46,30 +45,39 @@ public class BallerinaConnectorGenerator extends AbstractTemplateGenerator {
         }
 
         CapabilityStatement capabilityStatement = HttpUtils.getCapabilityStatement(fhirServerUrl);
-        System.out.println("Fetched CapabilityStatement from: " + fhirServerUrl);
+        System.out.println("[INFO] Fetched CapabilityStatement from: " + fhirServerUrl);
         if (capabilityStatement == null) {
             throw new CodeGenException("Failed to fetch CapabilityStatement from the FHIR server.");
         }
 
         Map<String, FHIRResource> resourceMap = getStringFHIRResourceMap(toolConfig);
         TemplateContext templateContext = this.buildContextFromCapability(capabilityStatement, resourceMap, toolConfig);
+        templateContext.setProperty("capabilityUrl", fhirServerUrl);
 
         // Step 1: Copy the ballerina-connector-tool directory
         Path targetDir = Paths.get(this.getTargetDir(), Constants.BALLERINA_CONNECTOR_TOOL);
         try {
             CommonUtils.copyResourceDir(getClass().getClassLoader().getResource(Constants.BALLERINA_CONNECTOR_TOOL), targetDir);
-        }  catch (IOException e) {
+        } catch (IOException e) {
             throw new CodeGenException("Failed to copy ballerina-connector-tool directory.", e);
         } catch (URISyntaxException e) {
             throw new CodeGenException("Cannot find ballerina-connector-tool directory.", e);
         }
 
         String filePath = targetDir.resolve("fhir_connector.bal").toString();
-        System.out.println("Generating Ballerina FHIR connector at: " + filePath);
+        System.out.println("[INFO] Generating Ballerina FHIR connector at: " + filePath);
+
+        // Step 2: Generate fhir_connector.bal
         this.getTemplateEngine().generateOutputAsFile("template/fhir_connector.vm", templateContext, "", filePath);
+
+        // Step 3: Generate README.md
+        this.getTemplateEngine().generateOutputAsFile("template/readMe.vm", templateContext, "", targetDir.resolve("README.md").toString());
 
     }
 
+    /**
+     * Fetch and parse FHIR resource profiles from Ballerina Central
+     */
     private static Map<String, FHIRResource> getStringFHIRResourceMap(BallerinaConnectorGenToolConfig toolConfig) {
         Map<String, FHIRResource> resourceMap = new HashMap<>();
 
@@ -78,31 +86,38 @@ public class BallerinaConnectorGenerator extends AbstractTemplateGenerator {
 
         List<String> profilePackages = toolConfig.getCentralConfig().getProfilePackages();
         for (String profilePackage : profilePackages) {
-            String[] parts = profilePackage.split(":");
-            if (parts.length != 2) {
-                System.err.println("Invalid profile package format: " + profilePackage);
+
+            String packageVersion = HttpUtils.getLatestVersionOfPackage(ballerinaCentralURL,
+                    orgName,
+                    profilePackage);
+
+            if (packageVersion == null || packageVersion.isEmpty()) {
+                System.err.println("[WARNING] Could not find package: " + profilePackage + " in Ballerina Central. Skipping...");
                 continue;
             }
-            String packageName = parts[0];
-            String packageVersion = parts[1];
+
             String readMeStr = HttpUtils.getReadMe(ballerinaCentralURL,
                     orgName,
-                    packageName,
+                    profilePackage,
                     packageVersion);
 
             if (readMeStr == null || readMeStr.isEmpty()) {
-                System.out.println("Empty README content for package: " + profilePackage);
+                System.err.println("[WARNING] Empty README content for package: " + profilePackage + ". Skipping...");
                 continue;
             }
 
-            Map<String, FHIRResource> parsedResources = TextParserUtils.parseReadMeString(readMeStr, packageName, StringUtils.toCamelCase(packageName));
+            String[] parts = profilePackage.split("\\.");
+            Map<String, FHIRResource> parsedResources = TextParserUtils.parseReadMeString(readMeStr, profilePackage, StringUtils.toCamelCase(parts));
             resourceMap.putAll(parsedResources);
         }
         return resourceMap;
     }
 
+    /**
+     * Build template context from CapabilityStatement
+     */
     public TemplateContext buildContextFromCapability(CapabilityStatement capabilityStatement, Map<String, FHIRResource> resourceMap, BallerinaConnectorGenToolConfig toolConfig) {
-       List<Map<String, Object>> resources = capabilityStatement.getRest().stream()
+        List<Map<String, Object>> resources = capabilityStatement.getRest().stream()
                 .flatMap(rest -> rest.getResource().stream())
                 .filter(resource -> !Constants.SKIP_LIST.contains(resource.getType()))
                 .map(resource -> {
@@ -110,6 +125,8 @@ public class BallerinaConnectorGenerator extends AbstractTemplateGenerator {
                     resMap.put(Constants.TYPE, resource.getType());
                     resMap.put(Constants.INTERACTIONS, resource.getInteraction() == null ? List.of() :
                             resource.getInteraction().stream().map(Interaction::getCode).toList());
+                    resMap.put(Constants.OPERATIONS, resource.getOperation() == null ? List.of() :
+                            buildOperations(resource.getOperation()));
                     resMap.put(Constants.SEARCH_PARAMS, resource.getSearchParam() == null ? List.of() :
                             resource.getSearchParam().stream().map(param -> Map.of(Constants.RESOLVED_NAME, StringUtils.resolveSpecialCharacters(StringUtils.handleBallerinaKeyword(param.getName())),
                                     Constants.ORIGINAL_NAME, param.getName(),
@@ -117,11 +134,11 @@ public class BallerinaConnectorGenerator extends AbstractTemplateGenerator {
                                     Constants.DOCUMENTATION, param.getDocumentation() != null ? TextParserUtils.extractCommentFromText(param.getDocumentation(), resource.getType()) : ""
                             )).toList());
                     if (resMap.get(Constants.INTERACTIONS) != null && !((List<?>) resMap.get(Constants.INTERACTIONS)).isEmpty()) {
-                        if (((List<?>) resMap.get(Constants.INTERACTIONS)).contains("create") || ((List<?>) resMap.get(Constants.INTERACTIONS)).contains("update") || ((List<?>) resMap.get(Constants.INTERACTIONS)).contains("patch")) {
+                        if (((List<?>) resMap.get(Constants.INTERACTIONS)).contains(Constants.INTERACTIONS_CREATE) || ((List<?>) resMap.get(Constants.INTERACTIONS)).contains(Constants.INTERACTIONS_UPDATE) || ((List<?>) resMap.get(Constants.INTERACTIONS)).contains(Constants.INTERACTIONS_PATCH)) {
                             resMap.put(Constants.SUPPORTED_PROFILES, resource.getSupportedProfile());
                             String typeString = buildProfiles(resource, resourceMap);
                             resMap.put(Constants.TYPE_STRING, typeString);
-                            if (typeString.contains(Constants.RESOURCE_INTERNATIONAL)) {
+                            if (typeString.contains(Constants.RESOURCE_INTERNATIONAL + ":")) {
                                 resMap.put(Constants.INTERNATIONAL_PACKAGE, true);
                             }
                         }
@@ -152,10 +169,7 @@ public class BallerinaConnectorGenerator extends AbstractTemplateGenerator {
                     });
 
                     if (res.containsKey(Constants.INTERNATIONAL_PACKAGE) && (Boolean) res.get(Constants.INTERNATIONAL_PACKAGE)) {
-                        String internationalPackage = toolConfig.getCentralConfig().getInternationalPackage().contains(":") ?
-                                toolConfig.getCentralConfig().getInternationalPackage().split(":")[0] :
-                                toolConfig.getCentralConfig().getInternationalPackage();
-                        String importStr = toolConfig.getCentralConfig().getOrgName() + "/" + internationalPackage + " as resourceInternational";
+                        String importStr = toolConfig.getCentralConfig().getOrgName() + "/" + Constants.BASE_PACKAGE + " as " + Constants.RESOURCE_INTERNATIONAL;
                         if (!packageNames.contains(importStr)) {
                             packageNames.add(importStr);
                         }
@@ -166,19 +180,26 @@ public class BallerinaConnectorGenerator extends AbstractTemplateGenerator {
         return templateContext;
     }
 
+    /**
+     * Build type string from supported profiles
+     */
     private String buildProfiles(Resource resource, Map<String, FHIRResource> resourceMap) {
         if (resource.getSupportedProfile() == null || resource.getSupportedProfile().isEmpty()) {
-           return Constants.RESOURCE_INTERNATIONAL + resource.getType();
+            return Constants.RESOURCE_INTERNATIONAL + ":" + resource.getType();
         }
         StringBuilder typeString = new StringBuilder();
         boolean internationalSet = false;
         for (int i = 0; i < resource.getSupportedProfile().size(); i++) {
             String profile = resource.getSupportedProfile().get(i);
             String profileName = resourceMap.get(profile) != null ? resourceMap.get(profile).getName() : null;
-            if (profileName == null && !internationalSet) {
-                if (i > 0) typeString.append("|");
-                typeString.append(Constants.RESOURCE_INTERNATIONAL).append(resource.getType());
-                internationalSet = true;
+            if (profileName == null) {
+                System.err.println("[WARNING] Profile " + profile + " not found for resource " + resource.getType()
+                        + ". Defaulting to base package.");
+                if (!internationalSet) {
+                    if (i > 0) typeString.append("|");
+                    typeString.append(Constants.RESOURCE_INTERNATIONAL).append(":").append(resource.getType());
+                    internationalSet = true;
+                }
             } else if (profileName != null) {
                 if (i > 0) typeString.append("|");
                 typeString.append(resourceMap.get(profile).getResourcePackageAlias()).append(":").append(profileName);
@@ -187,4 +208,33 @@ public class BallerinaConnectorGenerator extends AbstractTemplateGenerator {
 
         return typeString.toString();
     }
+
+    /**
+     * Build connector operations from resource operations
+     */
+    private List<ConnectorOperation> buildOperations(List<Operation> operations) {
+        // Implementation for building operations
+        List<ConnectorOperation> connectorOperations = new ArrayList<>();
+        for (Operation operation : operations) {
+            ConnectorOperation connOp = new ConnectorOperation();
+            connOp.setName(operation.getName());
+            connOp.setDefinition(operation.getDefinition());
+            connOp.setDocumentation(operation.getDocumentation());
+
+            String[] parts = operation.getName().split("-+");
+            String connectorOperationName = StringUtils.toCamelCase(parts);
+            connOp.setFunctionName(connectorOperationName);
+
+            connOp.setHttpMethod("POST"); // FHIR operations are typically invoked using POST
+
+            // Compare with list of known operations that use GET
+            if (Constants.KNOWN_GET_OPERATIONS.contains(operation.getName())) {
+                connOp.setHttpMethod("GET");
+            }
+
+            connectorOperations.add(connOp);
+        }
+        return connectorOperations;
+    }
+
 }

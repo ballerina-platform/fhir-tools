@@ -77,8 +77,6 @@ public class BallerinaConnectorGenHandler implements Handler {
                 toolConfigInstance.setToolName(HealthCmdConstants.CMD_CONNECTOR);
                 toolConfigInstance.configure(new JsonConfigType(toolExecConfig));
 
-
-
                 String toolClassName = "org.wso2.healthcare.fhir.ballerina.connectorgen.tool.BallerinaConnectorGenTool";
                 Class<?> toolClazz = classLoader.loadClass(toolClassName);
                 tool = (Tool) toolClazz.getConstructor().newInstance();

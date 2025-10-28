@@ -22,6 +22,7 @@ public class HealthCmdConstants {
 
     public static final String CMD_MODE_TEMPLATE = "template";
     public static final String CMD_MODE_PACKAGE = "package";
+    public static final String CMD_MODE_CONNECTOR = "connector";
     public static final String CMD_SUB_FHIR = "fhir";
     public static final String CMD_SUB_HL7 = "hl7";
     public static final String CMD_SUB_CDS = "cds";
@@ -33,14 +34,13 @@ public class HealthCmdConstants {
     public static final String CMD_RESOURCE_PATH_SUFFIX = "/modules/health/resources";
     public static final String CMD_HELP_TEXT_FILENAME = "ballerina-health.help";
     public static final String CMD_CDS_HELP_TEXT_FILENAME = "ballerina-health-cds.help";
-    public static final String CMD_CONNECTOR_HELP_TEXT_FILENAME = "ballerina-health-connector.help";
     public static final String CMD_DEFAULT_IG_NAME = "FHIR";
     public static final String CMD_DEFAULT_ORG_NAME = "healthcare";
     public static final String CMD_FHIR_MODE_TEMPLATE = "fhir:template";
     public static final String CMD_FHIR_MODE_CLIENT = "fhir:client";
     public static final String CMD_FHIR_MODE_PACKAGE = "fhir:package";
+    public static final String CMD_FHIR_MODE_CONNECTOR = "fhir:connector";
     public static final String CMD_CDS_MODE_TEMPLATE = "cds:template";
-    public static final String CMD_MODE_CONNECTOR = "connector:connector";
     public static final String CDS = "cds";
     public static final String CDS_SUB_TOOL_DESCRIPTION = "Generates Ballerina service for provided cds hook definitions.";
     public static final String TOOLS = "tools";

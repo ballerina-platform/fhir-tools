@@ -1,7 +1,9 @@
 package org.wso2.healthcare.fhir.ballerina.connectorgen.tool.util;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -14,6 +16,7 @@ import org.apache.http.util.EntityUtils;
 import org.wso2.healthcare.fhir.ballerina.connectorgen.tool.model.CapabilityStatement;
 
 import java.io.IOException;
+import java.util.List;
 
 public class HttpUtils {
 
@@ -27,7 +30,7 @@ public class HttpUtils {
             try (CloseableHttpResponse response = httpClient.execute(request)) {
                 int status = response.getStatusLine().getStatusCode();
                 if (status != 200) {
-                    System.err.println("Failed: HTTP " + status);
+                    System.err.println("Failed: Get Capability Statement: " + status);
                     return null;
                 }
                 String json = EntityUtils.toString(response.getEntity());
@@ -46,7 +49,8 @@ public class HttpUtils {
                 orgName, packageName, packageVersion
         );
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            HttpPost request = new HttpPost(balCentralURL);
+            String requestURL = balCentralURL + "/graphql";
+            HttpPost request = new HttpPost(requestURL);
             request.setHeader("Content-Type", "application/json");
             request.setEntity(new StringEntity(query));
             try (CloseableHttpResponse response = httpClient.execute(request)) {
@@ -72,6 +76,29 @@ public class HttpUtils {
             }
         } catch (IOException e) {
             System.err.println("Error fetching README from Ballerina Central: " + e.getMessage());
+            System.exit(0);
+        }
+        return null;
+    }
+
+    public static String getLatestVersionOfPackage(String ballerinaCentralURL, String orgName, String packageName) {
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            String requestURL = String.format("%s/%s/%s/%s", ballerinaCentralURL,"/registry/packages", orgName, packageName);
+            HttpGet request = new HttpGet(requestURL);
+            try (CloseableHttpResponse response = httpClient.execute(request)) {
+                int status = response.getStatusLine().getStatusCode();
+                if (status != 200) {
+                    System.err.println("Failed: Get Package Version: " + status);
+                    return null;
+                }
+                String json = EntityUtils.toString(response.getEntity());
+                List<String> versions = mapper.readValue(json, new TypeReference<List<String>>() {});
+                if (versions != null && !versions.isEmpty()) {
+                    return CommonUtils.getLatestVersion(versions);
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error fetching package versions for " + packageName + ": " + e.getMessage());
             System.exit(0);
         }
         return null;

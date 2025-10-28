@@ -11,7 +11,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -69,5 +71,20 @@ public class CommonUtils {
                 }
             });
         }
+    }
+
+    public static String getLatestVersion(List<String> versions) {
+        return Collections.max(versions, (v1, v2) -> {
+            String[] parts1 = v1.split("\\.");
+            String[] parts2 = v2.split("\\.");
+            for (int i = 0; i < Math.max(parts1.length, parts2.length); i++) {
+                int num1 = i < parts1.length ? Integer.parseInt(parts1[i]) : 0;
+                int num2 = i < parts2.length ? Integer.parseInt(parts2[i]) : 0;
+                if (num1 != num2) {
+                    return Integer.compare(num1, num2);
+                }
+            }
+            return 0;
+        });
     }
 }

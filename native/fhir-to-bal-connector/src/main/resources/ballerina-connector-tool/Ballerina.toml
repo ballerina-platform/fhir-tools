@@ -1,6 +1,7 @@
 [package]
-org = "mycustomizations"
-name = "connector"
-version = "0.1.0"
-distribution = "2201.12.7"
+org = "{organization-name}"
+name = "{connector-name}"
+version = "{version}"
+distribution = "2201.12.8"
 visibility = "private"
+icon = "{path-to-icon-file}"

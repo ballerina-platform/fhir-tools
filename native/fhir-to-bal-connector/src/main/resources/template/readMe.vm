@@ -1,0 +1,40 @@
+#[[#]]# FHIR Client Connector
+
+FHIR client connector that can be used to connect to a FHIR server and perform common interactions and operations.
+
+#[[##]]# Capability Statement
+
+- `$capabilityUrl`
+
+#[[##]]# Supported FHIR Resource Types
+
+The table below lists supported resource types, interactions and operations. Interactions are shown as inline code and separated by line breaks for readability.
+
+| Resource Type | Interactions | Operations |
+|---|---|---|
+#foreach ($r in $resources)
+| $r.type | #foreach($i in $r.interactions)`$i`#if($foreach.hasNext)<br>#end#end | #if($r.operations && $r.operations.size() > 0)#foreach($op in $r.operations)`$op.name`#if($foreach.hasNext)<br>#end#end#else#[[-]]##end |
+#end
+
+Notes:
+- `—` indicates no special operations supported for that resource in this connector.
+- Use the server's CapabilityStatement to verify support for additional interactions or operations on a given server instance.
+
+#[[##]]# Functions
+
+The connector represents the interactions and operations as functions. Each function corresponds to a specific FHIR interaction or operation.
+
+| Interaction/Operation | Function                             |
+|-----------------------|--------------------------------------|
+| Read                  | `get{ResourceType}ById`              |
+| Version Read          | `get{ResourceType}ByVersion`         |
+| Update                | `update{ResourceType}`               |
+| Patch                 | `patch{ResourceType}`                |
+| Delete                | `delete{ResourceType}`               |
+| History Type          | `get{ResourceType}History`           |
+| History Instance      | `get{ResourceType}InstanceHistory`   |
+| Create                | `create{ResourceType}`               |
+| Search Type           | `search{ResourceType}`               |
+| \$Operation           | `{Operation}{ResourceType}Operation` |
+
+Replace `{ResourceType}` with the actual resource type (e.g., Patient, Observation) and `{Operation}` with the specific operation name (e.g., everything, validate).

@@ -41,8 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.LogManager;
 
-import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_MODE_PACKAGE;
-import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_MODE_TEMPLATE;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.*;
 
 @CommandLine.Command(name = "fhir", description = "Generates Ballerina service/client for FHIR contract " +
         "for Ballerina service.")
@@ -138,7 +137,7 @@ public class FhirSubCmd implements BLauncherCmd {
             printStream.println(HealthCmdConstants.PrintStrings.HELP_ERROR);
             HealthCmdUtils.exitError(exitWhenFinish);
         }
-        if (argList == null || argList.isEmpty()) {
+        if (!CMD_CONNECTOR.equals(mode) && (argList == null || argList.isEmpty())) {
             //at minimum arg count is 1 (spec path)
             printStream.println(HealthCmdConstants.PrintStrings.INVALID_NUM_OF_ARGS);
             printStream.println(HealthCmdConstants.PrintStrings.HELP_FOR_MORE_INFO);
@@ -162,7 +161,7 @@ public class FhirSubCmd implements BLauncherCmd {
             printStream.println(HealthCmdConstants.PrintStrings.HELP_FOR_MORE_INFO);
             HealthCmdUtils.exitError(exitWhenFinish);
         }
-        if (dependentPackage != null && !dependentPackage.isEmpty()) {
+        if (!CMD_CONNECTOR.equals(mode) && dependentPackage != null && !dependentPackage.isEmpty()) {
             // regex matching ballerinax/health.fhir.r4
             if (!dependentPackage.matches("^(?!.*__)[a-zA-Z0-9][a-zA-Z0-9_]+[a-zA-Z0-9]/[a-zA-Z0-9][a-zA-Z0-9._]+[a-zA-Z0-9]$")) {
                 printStream.println(HealthCmdConstants.PrintStrings.DEPENDENT_INCORRECT);
@@ -170,14 +169,28 @@ public class FhirSubCmd implements BLauncherCmd {
                 HealthCmdUtils.exitError(exitWhenFinish);
             }
         }
+        if (CMD_MODE_TEMPLATE.equals(mode) && (dependentPackage == null || dependentPackage.isEmpty())) {
+            // dependent package is a required param in template mode
+            printStream.println(HealthCmdConstants.PrintStrings.DEPENDENT_REQUIRED);
+            printStream.println(HealthCmdConstants.PrintStrings.HELP_FOR_MORE_INFO);
+            HealthCmdUtils.exitError(exitWhenFinish);
+        }
         if (includedProfiles != null && excludedProfiles != null) {
             printStream.println(HealthCmdConstants.PrintStrings.INCLUDED_EXCLUDED_TOGETHER);
             printStream.println(HealthCmdConstants.PrintStrings.HELP_FOR_MORE_INFO);
             HealthCmdUtils.exitError(exitWhenFinish);
         }
-        if (this.engageSubCommand(argList)) {
+        if (CMD_MODE_CONNECTOR.equals(mode) && (configPath == null || configPath.isEmpty())) {
+            //configPath is required param
+            printStream.println(HealthCmdConstants.PrintStrings.INVALID_CONFIG_PATH);
+            printStream.println(HealthCmdConstants.PrintStrings.HELP_FOR_MORE_INFO);
+            HealthCmdUtils.exitError(exitWhenFinish);
+        }
+        if (this.engageSubCommand(mode, argList)) {
             if (CMD_MODE_TEMPLATE.equals(mode)) {
                 printStream.println(HealthCmdConstants.PrintStrings.TEMPLATE_GEN_SUCCESS_MESSAGE + targetOutputPath);
+            } else if (CMD_MODE_CONNECTOR.equals(mode)) {
+                printStream.println(HealthCmdConstants.PrintStrings.CONNECTOR_GEN_SUCCESS + targetOutputPath);
             } else {
                 printStream.println(HealthCmdConstants.PrintStrings.PKG_GEN_SUCCESS + targetOutputPath);
             }
@@ -209,7 +222,7 @@ public class FhirSubCmd implements BLauncherCmd {
 
     }
 
-    public boolean engageSubCommand(List<String> argList) {
+    public boolean engageSubCommand(String mode, List<String> argList) {
 
         Map<String, Object> argsMap = new HashMap<>();
         argsMap.put("--package-name", packageName);
@@ -222,13 +235,24 @@ public class FhirSubCmd implements BLauncherCmd {
         argsMap.put("--aggregate", aggregate);
         argsMap.put("--resources", resources);
         getTargetOutputPath();
-        //spec path is the last argument
-        try {
-            specificationPath = HealthCmdUtils.validateAndSetSpecificationPath(argList.get(argList.size() - 1), executionPath.toString());
-        } catch (BallerinaHealthException e) {
-            printStream.println(HealthCmdConstants.PrintStrings.INVALID_SPEC_PATH);
-            throw new BLauncherException();
+
+        if (CMD_MODE_CONNECTOR.equals(mode)) {
+            try {
+                specificationPath = HealthCmdUtils.getSpecificationPath(configPath, executionPath.toString());
+            } catch (BallerinaHealthException e) {
+                printStream.println(HealthCmdConstants.PrintStrings.INVALID_CONFIG_PATH);
+                throw new BLauncherException();
+            }
+        } else {
+            //spec path is the last argument
+            try {
+                specificationPath = HealthCmdUtils.validateAndSetSpecificationPath(argList.get(argList.size() - 1), executionPath.toString());
+            } catch (BallerinaHealthException e) {
+                printStream.println(HealthCmdConstants.PrintStrings.INVALID_SPEC_PATH);
+                throw new BLauncherException();
+            }
         }
+
         Handler toolHandler = null;
         try {
             toolHandler = HandlerFactory.createHandler(toolName, mode, printStream, specificationPath.toString());

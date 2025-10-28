@@ -19,28 +19,32 @@ public client class FHIRClientConnector {
     # -------------------------
 
 #foreach($resource in $resources)
-    ## $resource.type resource operations
+    ## $resource.type resource interactions
 #foreach($interaction in $resource.interactions)
 #if($interaction == "read")
 # + id - The logical ID of the ${resource.type} resource
     # + return - Returns a FHIRResponse or FHIRError for the operation
-    remote function get${resource.type}ById(string id) returns fhirClient:FHIRResponse|fhirClient:FHIRError {
+    @display {label: "Get ${resource.type} by the logical ID"}
+    remote function get${resource.type}ById(@display {label: "Logical ID"} string id)
+                    returns fhirClient:FHIRResponse|fhirClient:FHIRError {
         return check self.fhirConnectorObj->getById("$resource.type", id);
     }
-#end
-#if($interaction == "vread")
+#elseif($interaction == "vread")
 # + id - The logical ID of the ${resource.type} resource
 # + version - The version of the ${resource.type} resource
     # + return - Returns a FHIRResponse or FHIRError for the operation
-    remote function get${resource.type}ByVersion(string id, string 'version) returns fhirClient:FHIRResponse|fhirClient:FHIRError {
+    @display {label: "Get ${resource.type} by version"}
+    remote function get${resource.type}ByVersion(@display {label: "Logical ID"} string id,
+            @display {label: "Version ID"} string 'version)
+                    returns fhirClient:FHIRResponse|fhirClient:FHIRError {
         return check self.fhirConnectorObj->getByVersion("$resource.type", id, 'version);
     }
-#end
-#if($interaction == "search-type")
+#elseif($interaction == "search-type")
 #foreach($param in $resource.searchParams)
     # + $param.resolvedName - Search parameter for ${param.originalName} ($param.type) - $param.documentation
 #end
     # + return - Returns a FHIRResponse or FHIRError for the operation
+    @display {label: "Search ${resource.type} resources"}
     remote isolated function search${resource.type}(
         #foreach($param in $resource.searchParams)
         #if($param.originalName == "_lastUpdated")
@@ -57,49 +61,64 @@ public client class FHIRClientConnector {
 
         return self.fhirConnectorObj->search("$resource.type", mode = fhirClient:POST, searchParameters = params);
     }
-#end
-#if($interaction == "create")
+#elseif($interaction == "create")
     # + new${resource.type} - A new instance of the ${resource.type} resource
     # + return - Returns a FHIRResponse or FHIRError for the operation
-    remote function create${resource.type}(${resource.typeString} new${resource.type}) returns fhirClient:FHIRResponse|fhirClient:FHIRError {
+    @display {label: "Create ${resource.type} resource"}
+    remote function create${resource.type}(${resource.typeString} new${resource.type})
+                    returns fhirClient:FHIRResponse|fhirClient:FHIRError {
         return check self.fhirConnectorObj->create(new${resource.type}.toJson());
     }
-#end
-#if($interaction == "update")
+#elseif($interaction == "update")
     # + updated${resource.type} - A new or updated instance of the ${resource.type} resource
     # + return - Returns a FHIRResponse or FHIRError for the operation
-    remote function update${resource.type}(${resource.typeString} updated${resource.type}) returns fhirClient:FHIRResponse|fhirClient:FHIRError {
+    @display {label: "Update ${resource.type} resource"}
+    remote function update${resource.type}(${resource.typeString} updated${resource.type})
+                    returns fhirClient:FHIRResponse|fhirClient:FHIRError {
         return check self.fhirConnectorObj->update(updated${resource.type}.toJson());
     }
-#end
-#if($interaction == "patch")
+#elseif($interaction == "patch")
     # + id - The logical ID of the ${resource.type} resource
     # + patch${resource.type} - An updated instance of the ${resource.type} resource
     # + return - Returns a FHIRResponse or FHIRError for the operation
-    remote function patch${resource.type}(string id, ${resource.typeString} patch${resource.type}) returns fhirClient:FHIRResponse|fhirClient:FHIRError {
+    @display {label: "Patch ${resource.type} resource"}
+    remote function patch${resource.type}(string id, ${resource.typeString} patch${resource.type})
+                    returns fhirClient:FHIRResponse|fhirClient:FHIRError {
         return check self.fhirConnectorObj->patch("$resource.type", patch${resource.type}.toJson(), id);
     }
-#end
-#if($interaction == "delete")
+#elseif($interaction == "delete")
     # + id - The logical ID of the ${resource.type} resource
     # + return - Returns a FHIRResponse or FHIRError for the operation
+    @display {label: "Delete ${resource.type} resource"}
     remote function delete${resource.type}(string id) returns fhirClient:FHIRResponse|fhirClient:FHIRError {
         return check self.fhirConnectorObj->delete("$resource.type", id);
     }
-#end
-#if($interaction == "history-instance")
+#elseif($interaction == "history-instance")
     # + id - The logical ID of the ${resource.type} resource
-# + return - Returns a FHIRResponse or FHIRError for the operation
-    remote function get${resource.type}InstanceHistory(string id) returns fhirClient:FHIRResponse|fhirClient:FHIRError {
+    # + return - Returns a FHIRResponse or FHIRError for the operation
+    @display {label: "Get instance history"}
+    remote function get${resource.type}InstanceHistory(@display {label: "Logical ID"} string id)
+                    returns fhirClient:FHIRResponse|fhirClient:FHIRError {
         return check self.fhirConnectorObj->getInstanceHistory("$resource.type", id);
     }
-#end
-#if($interaction == "history-type")
-# + return - Returns a FHIRResponse or FHIRError for the operation
+#elseif($interaction == "history-type")
+    # + return - Returns a FHIRResponse or FHIRError for the operation
+    @display {label: "Get ${resource.type} type history"}
     remote function get${resource.type}History() returns fhirClient:FHIRResponse|fhirClient:FHIRError {
         return check self.fhirConnectorObj->getHistory("$resource.type");
     }
 #end
+
+#end
+#foreach($operation in $resource.operations)
+## $resource.type resource operation: $operation
+remote function ${operation.functionName}${resource.type}Operation(@display {label: "Request Mode"} fhirClient:RequestMode mode = fhirClient:${operation.httpMethod},
+                                                                             @display {label: "Logical ID"} string? id = (),
+                                                                             @display {label: "Query Parameters"} map<string[]>? queryParameters = (),
+                                                                             @display {label: "Resource data"} json|xml? data = ())
+        returns fhirClient:FHIRResponse|fhirClient:FHIRError {
+    return check self.fhirConnectorObj->callOperation("$resource.type", "#[[$]]#${operation.name}", mode, id, queryParameters, data);
+}
 
 #end
 #end
