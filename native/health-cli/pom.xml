@@ -25,11 +25,11 @@
     <parent>
         <groupId>io.ballerina</groupId>
         <artifactId>health-tools</artifactId>
-        <version>3.2.0</version>
+        <version>3.2.1</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>health-cli</artifactId>
-    <version>3.2.0</version>
+    <version>3.2.1</version>
 
     <dependencies>
         <dependency>
