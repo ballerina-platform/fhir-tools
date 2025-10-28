@@ -1,5 +1,6 @@
 package org.wso2.healthcare.fhir.ballerina.connectorgen.tool.config;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public class CentralConfig {
         this.url = centralConfigJson.getAsJsonPrimitive("url").getAsString();
         this.orgName = centralConfigJson.getAsJsonPrimitive("orgName").getAsString();
         this.profilePackages = centralConfigJson.getAsJsonArray("profilePackages").asList().stream()
-                .map(e -> e.getAsString()).toList();
+                .map(JsonElement::getAsString).toList();
     }
 
     public String getUrl() {

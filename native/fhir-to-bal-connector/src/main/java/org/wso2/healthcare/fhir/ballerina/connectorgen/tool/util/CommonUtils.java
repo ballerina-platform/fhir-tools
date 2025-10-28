@@ -19,13 +19,6 @@ import java.util.jar.JarFile;
 
 public class CommonUtils {
 
-    public static String generateFilePath(String rootPath, String project, String fileName) {
-        if (fileName.isEmpty()) {
-            return rootPath + File.separator + project;
-        }
-        return rootPath + File.separator + project + File.separator + fileName;
-    }
-
     public static void copyResourceDir(URL resourceUrl, Path targetDir) throws IOException, URISyntaxException {
         // Ensure destination exists
         Files.createDirectories(targetDir);
@@ -58,18 +51,21 @@ public class CommonUtils {
         } else {
             // Resource is on the filesystem (e.g., running in IDE)
             Path sourcePath = Paths.get(resourceUrl.toURI());
-            Files.walk(sourcePath).forEach(source -> {
-                Path dest = targetDir.resolve(sourcePath.relativize(source).toString());
-                try {
-                    if (Files.isDirectory(source)) {
-                        Files.createDirectories(dest);
-                    } else {
-                        Files.copy(source, dest, StandardCopyOption.REPLACE_EXISTING);
+
+            try (java.util.stream.Stream<Path> stream = Files.walk(sourcePath)) {
+                stream.forEach(source -> {
+                    Path dest = targetDir.resolve(sourcePath.relativize(source).toString());
+                    try {
+                        if (Files.isDirectory(source)) {
+                            Files.createDirectories(dest);
+                        } else {
+                            Files.copy(source, dest, StandardCopyOption.REPLACE_EXISTING);
+                        }
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
                     }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+                });
+            }
         }
     }
 

@@ -200,7 +200,7 @@ public class BallerinaConnectorGenerator extends AbstractTemplateGenerator {
                     typeString.append(Constants.RESOURCE_INTERNATIONAL).append(":").append(resource.getType());
                     internationalSet = true;
                 }
-            } else if (profileName != null) {
+            } else {
                 if (i > 0) typeString.append("|");
                 typeString.append(resourceMap.get(profile).getResourcePackageAlias()).append(":").append(profileName);
             }

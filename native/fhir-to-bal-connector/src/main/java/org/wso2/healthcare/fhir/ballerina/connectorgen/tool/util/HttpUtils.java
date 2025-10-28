@@ -3,7 +3,6 @@ package org.wso2.healthcare.fhir.ballerina.connectorgen.tool.util;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -92,7 +91,7 @@ public class HttpUtils {
                     return null;
                 }
                 String json = EntityUtils.toString(response.getEntity());
-                List<String> versions = mapper.readValue(json, new TypeReference<List<String>>() {});
+                List<String> versions = mapper.readValue(json, new TypeReference<>() {});
                 if (versions != null && !versions.isEmpty()) {
                     return CommonUtils.getLatestVersion(versions);
                 }

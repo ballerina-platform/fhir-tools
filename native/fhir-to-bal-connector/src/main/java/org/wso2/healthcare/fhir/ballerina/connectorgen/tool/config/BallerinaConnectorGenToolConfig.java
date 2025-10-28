@@ -17,7 +17,7 @@ public class BallerinaConnectorGenToolConfig extends AbstractToolConfig {
     private String fhirServerUrl;
 
     @Override
-    public void configure(ConfigType<?> configObj) throws CodeGenException {
+    public void configure(ConfigType<?> configObj) {
         LOG.debug("Started: Ballerina Connector Generator Tool config population");
         JsonObject jsonConfigObj = ((JsonConfigType) configObj).getConfigObj();
         this.centralConfig = new CentralConfig(jsonConfigObj.getAsJsonObject("central"));
