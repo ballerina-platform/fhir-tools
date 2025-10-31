@@ -131,7 +131,7 @@ public class BallerinaConnectorGenerator extends AbstractTemplateGenerator {
                             resource.getSearchParam().stream().map(param -> Map.of(Constants.RESOLVED_NAME, StringUtils.resolveSpecialCharacters(StringUtils.handleBallerinaKeyword(param.getName())),
                                     Constants.ORIGINAL_NAME, param.getName(),
                                     Constants.TYPE, param.getType(),
-                                    Constants.DOCUMENTATION, param.getDocumentation() != null ? TextParserUtils.extractCommentFromText(param.getDocumentation(), resource.getType()) : ""
+                                    Constants.DOCUMENTATION, param.getDocumentation() != null ? TextParserUtils.extractComment(param.getDocumentation(), resource.getType()) : ""
                             )).toList());
                     if (resMap.get(Constants.INTERACTIONS) != null && !((List<?>) resMap.get(Constants.INTERACTIONS)).isEmpty()) {
                         if (((List<?>) resMap.get(Constants.INTERACTIONS)).contains(Constants.INTERACTIONS_CREATE) || ((List<?>) resMap.get(Constants.INTERACTIONS)).contains(Constants.INTERACTIONS_UPDATE) || ((List<?>) resMap.get(Constants.INTERACTIONS)).contains(Constants.INTERACTIONS_PATCH)) {

@@ -14,7 +14,7 @@ public class TextParserUtils {
     public static final String FOOTNOTE_REGEX = "^\\[(m\\d+|s\\d+)]:\\s*(\\S+)";
     public static final String TABLE_ROW_REGEX = "(?m)^\\|\\s*\\d+\\).*\\|.*\\|";
     public static final String HEADER_REGEX = "\\|[-\\s|]+\\|";
-    public static final String SEPERATOR_REGEX = "\\|";
+    public static final String SEPARATOR_REGEX = "\\|";
     public static final String NUMBER_BULLET_REGEX = "\\d+\\)\\.\\s*";
     public static final String URL_EXTRACTION_REGEX = "\\[(m\\d+|s\\d+)]";
     public static final String SPACE_REGEX = "\\s+";
@@ -47,7 +47,7 @@ public class TextParserUtils {
             // Skip header or separator lines
             if (line.isEmpty() || line.matches(HEADER_REGEX)) continue;
 
-            String[] cols = line.split(SEPERATOR_REGEX);
+            String[] cols = line.split(SEPARATOR_REGEX);
             if (cols.length < 3) continue;
 
             // Clean up the resource name: remove numbering "1). "
@@ -87,26 +87,36 @@ public class TextParserUtils {
     /**
      * Extracts the comment related to a specific keyword from a multi-resource section in the input text.
      *
-     * @param input   The input string containing multiple resources section.
+     * @param text   The input string containing multiple resources section.
      * @param keyword The keyword to search for in the resource list.
      * @return The extracted resource text if found, otherwise the original input with new lines removed.
      */
-    public static String extractCommentFromText(String input, String keyword) {
-        if (!input.contains("Multiple Resources:")) {
-            return StringUtils.removeNewLines(input); // No section found
+    public static String extractComment(String text, String keyword) {
+        // Step 1: Unescape angle brackets (e.g., \<br /\> → <br />)
+        text = text.replaceAll("\\\\<", "<").replaceAll("\\\\>", ">");
+
+        // Step 2: If it's not a "Multiple Resources" section — strip HTML after <br>
+        if (!text.contains("Multiple Resources:")) {
+            text = text.replaceAll("(?is)<br\\s*/?>.*", ""); // remove all after first <br>
+            return StringUtils.removeNewLines(text.trim());
         }
 
-        // Regex for line like: * [Name](url): description
-        Pattern pattern = Pattern.compile("\\* \\[(.+?)]\\((.+?)\\): (.+)");
-        for (String line : input.split("\\r?\\n")) {
-            line = line.trim();
-            if (line.startsWith("* [") && line.contains("[" + keyword + "]")) {
-                Matcher matcher = pattern.matcher(line);
-                if (matcher.find()) {
-                    return matcher.group();
-                }
-            }
+        // Step 3: Regex to match lines like [CodeSystem](codesystem.html): description
+        String pattern = "\\[\\s*" + Pattern.quote(keyword) + "\\s*]\\([^)]*\\):\\s*[^\\r\\n]+";
+        Matcher m = Pattern.compile(pattern).matcher(text);
+
+        String result = "";
+        if (m.find()) {
+            result = m.group();
+            // Step 4: Clean anything after <br> if present
+            result = result.replaceAll("(?is)<br\\s*/?>.*", "");
+            System.out.println("Extracted comment for keyword '" + keyword + "': " + result);
         }
-        return StringUtils.removeNewLines(input); // Not found
+
+        // Step 5: Return the result or cleaned fallback text
+        return result.isEmpty() ? StringUtils.removeNewLines(text.trim()) : result.trim();
     }
 }
+
+
+
