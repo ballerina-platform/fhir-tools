@@ -23,14 +23,12 @@ import com.google.gson.JsonObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.healthcare.codegen.tool.framework.commons.config.AbstractToolConfig;
-import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenException;
 import org.wso2.healthcare.codegen.tool.framework.commons.model.ConfigType;
 import org.wso2.healthcare.codegen.tool.framework.commons.model.JsonConfigType;
 
 public class BallerinaConnectorGenToolConfig extends AbstractToolConfig {
 
     private static final Log LOG = LogFactory.getLog(BallerinaConnectorGenToolConfig.class);
-//    private TrustStoreConfig trustStoreConfig;
     private CentralConfig centralConfig;
     private String fhirServerUrl;
 
@@ -45,10 +43,8 @@ public class BallerinaConnectorGenToolConfig extends AbstractToolConfig {
 
     @Override
     public void overrideConfig(String s, JsonElement jsonElement) {
-        //TODO: implement if required
+        // No implementation needed as of now
     }
-
-
 
     public CentralConfig getCentralConfig() {
         return centralConfig;

@@ -7,6 +7,9 @@ SYNOPSIS
                         <FHIR-specification-directory-path>
                         [-m | --mode] template --dependent-package <dependent-package> \
                         <FHIR-specification-directory-path>
+                        [-m | --mode] connector --config <config-file-path> \
+                        --output <output>
+
 
 DESCRIPTION
         Generate a Ballerina package or template with relevant records and types
@@ -36,12 +39,14 @@ COMMANDS
 
             OPTIONS
                     -m, --mode <mode-type>
-                        Mode can be 'package' or 'template'. If the mode is set to
-                        'package', a Ballerina package will be generated including all the
-                        records and types. If the mode is set to ‘template’, tool will
-                        generate Ballerina templates for each FHIR resource definition
-                        available in the specified path. This is a MANDATORY input for fhir
-                        command.
+                        Mode can be 'package' or 'template' or 'connector'.
+				        If the mode is set to 'package',a Ballerina package will be
+				        generated including all the records and types. If the mode is set to
+				        ‘template’, tool will generate Ballerina templates for each FHIR
+				        resource definition available in the specified path. If the mode is
+				        set to ‘connector’, a Ballerina based FHIR connector client will be
+				        generated for a given FHIR server based on its Capability Statement.
+				        This is a MANDATORY input for fhir command.
 
                     --package-name <name-of-package>
                         Only applicable in ‘package’ mode. Name of the Ballerina package
@@ -100,6 +105,25 @@ COMMANDS
                         Only applicable in ‘template’ mode when --aggregate is used. Comma-separated
                         list of FHIR resources to include in the aggregated service. If not specified,
                         all available resources will be included. Example: Patient,Observation,Encounter
+
+                    -c, --config <config-file-path>
+                    	This is a MANDATORY input applicable in ‘connector’ mode. Provide the path
+                    	for the configuration json file containing the necessary parameters to run the
+                    	tool in connector mode including Capability Statement URL of the FHIR server.
+                    	Sample json configuration:
+                        {
+                          "config": {
+                            "fhirServerUrl": "<capability-statement-url>",
+                            "central": {
+                              "url": "https://api.central.ballerina.io/2.0",
+                              "orgName": "ballerinax",
+                              "profilePackages": [
+                                "health.fhir.r4.uscore700",<package-1>,<package-2>
+                              ]
+                            }
+                          }
+                        }
+
 
             EXAMPLES
                     Generate a Ballerina package for the FHIR artifacts of USCore

@@ -48,7 +48,7 @@ public class HttpUtils {
                 int status = response.getStatusLine().getStatusCode();
                 if (status != 200) {
                     System.err.println("Failed: Get Capability Statement: " + status);
-                    return null;
+                    System.exit(0);
                 }
                 String json = EntityUtils.toString(response.getEntity());
                 return mapper.readValue(json, CapabilityStatement.class);
@@ -72,7 +72,6 @@ public class HttpUtils {
             request.setEntity(new StringEntity(query));
             try (CloseableHttpResponse response = httpClient.execute(request)) {
                 String responseString = EntityUtils.toString(response.getEntity());
-//                System.out.println("Response: " + responseString);
 
                 if (responseString == null || responseString.isEmpty()) {
                     System.err.println("Empty response from Ballerina Central. " +

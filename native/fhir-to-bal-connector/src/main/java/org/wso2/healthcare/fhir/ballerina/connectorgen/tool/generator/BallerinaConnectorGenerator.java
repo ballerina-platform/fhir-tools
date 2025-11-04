@@ -27,19 +27,28 @@ import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenExcep
 
 import org.wso2.healthcare.fhir.ballerina.connectorgen.tool.Constants;
 import org.wso2.healthcare.fhir.ballerina.connectorgen.tool.config.BallerinaConnectorGenToolConfig;
-import org.wso2.healthcare.fhir.ballerina.connectorgen.tool.model.CapabilityStatement;
 import org.wso2.healthcare.fhir.ballerina.connectorgen.tool.model.FHIRResource;
 import org.wso2.healthcare.fhir.ballerina.connectorgen.tool.util.CommonUtils;
 import org.wso2.healthcare.fhir.ballerina.connectorgen.tool.util.HttpUtils;
 import org.wso2.healthcare.fhir.ballerina.connectorgen.tool.util.StringUtils;
 import org.wso2.healthcare.fhir.ballerina.connectorgen.tool.util.TextParserUtils;
-import org.wso2.healthcare.fhir.ballerina.connectorgen.tool.model.*;
+import org.wso2.healthcare.fhir.ballerina.connectorgen.tool.model.CapabilityStatement;
+import org.wso2.healthcare.fhir.ballerina.connectorgen.tool.model.ConnectorOperation;
+import org.wso2.healthcare.fhir.ballerina.connectorgen.tool.model.Interaction;
+import org.wso2.healthcare.fhir.ballerina.connectorgen.tool.model.Operation;
+import org.wso2.healthcare.fhir.ballerina.connectorgen.tool.model.Resource;
+
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+
 
 public class BallerinaConnectorGenerator extends AbstractTemplateGenerator {
 
