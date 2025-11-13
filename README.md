@@ -27,6 +27,7 @@
 bal health fhir -m package -o output-dir spec-path
 bal health fhir -m package --package-name my.package.name -o output-dir spec-path
 bal health fhir -m template -o output-dir spec-path
+bal health fhir -m connector --config configuration-file-path -o output-dir
 ```
 ### Note
 - `spec-path` is the path to the FHIR specifications. (i.e. In the specified path, there should be folder/s for each 

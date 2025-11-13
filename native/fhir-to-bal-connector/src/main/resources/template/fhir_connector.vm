@@ -63,7 +63,7 @@ public client class FHIRClientConnector {
 #end
     # + return - Returns a FHIRResponse or FHIRError for the operation
     @display {label: "Search ${resource.type} resources"}
-    remote isolated function search${resource.type}(
+    remote function search${resource.type}(
         #foreach($param in $resource.searchParams)
         #if($param.originalName == "_lastUpdated")
             string[]? $param.resolvedName = ()#if($foreach.hasNext),#end

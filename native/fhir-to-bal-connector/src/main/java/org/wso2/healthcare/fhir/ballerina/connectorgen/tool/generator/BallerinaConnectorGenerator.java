@@ -93,7 +93,6 @@ public class BallerinaConnectorGenerator extends AbstractTemplateGenerator {
         }
 
         String filePath = targetDir.resolve("fhir_connector.bal").toString();
-        System.out.println("[INFO] Generating Ballerina FHIR connector at: " + filePath);
 
         // Step 2: Generate fhir_connector.bal
         this.getTemplateEngine().generateOutputAsFile("template/fhir_connector.vm", templateContext, "", filePath);
@@ -179,11 +178,19 @@ public class BallerinaConnectorGenerator extends AbstractTemplateGenerator {
         templateContext.setProperty(Constants.RESOURCES, resources);
 
         List<String> packageNames = new ArrayList<>();
-        resources.stream()
-                .filter(res -> res.get(Constants.SUPPORTED_PROFILES) != null)
-                .forEach(res -> {
+        resources.forEach(res -> {
+                    // Add the base package import if no support profile defined for resource
+                    if (res.get(Constants.SUPPORTED_PROFILES) == null){
+                        String importStr = toolConfig.getCentralConfig().getOrgName() + "/" + Constants.BASE_PACKAGE + " as " + Constants.RESOURCE_INTERNATIONAL;
+                        if (!packageNames.contains(importStr)) {
+                            packageNames.add(importStr);
+                        }
+                    } else {
                     List<String> profiles = (List<String>) res.get(Constants.SUPPORTED_PROFILES);
                     profiles.forEach(profile -> {
+                        if (profile.contains("|")){
+                            profile = profile.split("\\|")[0];
+                        }
                         if (resourceMap.containsKey(profile)) {
                             String packageName = toolConfig.getCentralConfig().getOrgName() + "/" + resourceMap.get(profile).getResourcePackage();
                             if (!packageNames.contains(packageName)) {
@@ -194,7 +201,8 @@ public class BallerinaConnectorGenerator extends AbstractTemplateGenerator {
                                 packageNames.add(importStr);
                             }
                         }
-                    });
+                    }
+                    );
 
                     if (res.containsKey(Constants.INTERNATIONAL_PACKAGE) && (Boolean) res.get(Constants.INTERNATIONAL_PACKAGE)) {
                         String importStr = toolConfig.getCentralConfig().getOrgName() + "/" + Constants.BASE_PACKAGE + " as " + Constants.RESOURCE_INTERNATIONAL;
@@ -202,7 +210,7 @@ public class BallerinaConnectorGenerator extends AbstractTemplateGenerator {
                             packageNames.add(importStr);
                         }
                     }
-                });
+                }});
 
         templateContext.setProperty(Constants.PROFILE_PACKAGES, packageNames);
         return templateContext;
@@ -219,6 +227,12 @@ public class BallerinaConnectorGenerator extends AbstractTemplateGenerator {
         boolean internationalSet = false;
         for (int i = 0; i < resource.getSupportedProfile().size(); i++) {
             String profile = resource.getSupportedProfile().get(i);
+            String profileVersion = "";
+            if (profile.contains("|")){
+                String profileName = profile.split("\\|")[0];
+                profileVersion = profile.split("\\|")[1];
+                profile = profileName;
+            }
             String profileName = resourceMap.get(profile) != null ? resourceMap.get(profile).getName() : null;
             if (profileName == null) {
                 System.err.println("[WARNING] Profile " + profile + " not found for resource " + resource.getType()
@@ -229,6 +243,11 @@ public class BallerinaConnectorGenerator extends AbstractTemplateGenerator {
                     internationalSet = true;
                 }
             } else {
+                if(profileVersion != null && !profileVersion.isEmpty()) {
+                    System.out.println("[INFO] Assigning type " + profileName + " for [profile] " + profile
+                            + " [version] " + profileVersion
+                            + " from [package] " + resourceMap.get(profile).getResourcePackage());
+                }
                 if (i > 0) typeString.append("|");
                 typeString.append(resourceMap.get(profile).getResourcePackageAlias()).append(":").append(profileName);
             }
