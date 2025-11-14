@@ -83,7 +83,7 @@ public class BallerinaConnectorGenerator extends AbstractTemplateGenerator {
         templateContext.setProperty("licenseYear", Constants.LICENSE_YEAR);
 
         // Step 1: Copy the ballerina-connector-tool directory
-        Path targetDir = Paths.get(this.getTargetDir(), Constants.BALLERINA_CONNECTOR_TOOL);
+        Path targetDir = Paths.get(this.getTargetDir());
         try {
             CommonUtils.copyResourceDir(getClass().getClassLoader().getResource(Constants.BALLERINA_CONNECTOR_TOOL), targetDir);
         } catch (IOException e) {
@@ -151,7 +151,7 @@ public class BallerinaConnectorGenerator extends AbstractTemplateGenerator {
                     Map<String, Object> resMap = new HashMap<>();
                     resMap.put(Constants.TYPE, resource.getType());
                     resMap.put(Constants.INTERACTIONS, resource.getInteraction() == null ? List.of() :
-                            resource.getInteraction().stream().map(Interaction::getCode).toList());
+                            resource.getInteraction().stream().map(Interaction::getCode).distinct().toList());
                     resMap.put(Constants.OPERATIONS, resource.getOperation() == null ? List.of() :
                             buildOperations(resource.getOperation()));
                     resMap.put(Constants.SEARCH_PARAMS, resource.getSearchParam() == null ? List.of() :
@@ -261,8 +261,13 @@ public class BallerinaConnectorGenerator extends AbstractTemplateGenerator {
      */
     private List<ConnectorOperation> buildOperations(List<Operation> operations) {
         // Implementation for building operations
-        List<ConnectorOperation> connectorOperations = new ArrayList<>();
+        Map<String, ConnectorOperation> connectorOperations = new HashMap<>();
         for (Operation operation : operations) {
+            // Skip if operation with this name already exists
+            if (connectorOperations.containsKey(operation.getName())) {
+                continue;
+            }
+
             ConnectorOperation connOp = new ConnectorOperation();
             connOp.setName(operation.getName());
             connOp.setDefinition(operation.getDefinition());
@@ -278,10 +283,9 @@ public class BallerinaConnectorGenerator extends AbstractTemplateGenerator {
             if (Constants.KNOWN_GET_OPERATIONS.contains(operation.getName())) {
                 connOp.setHttpMethod("GET");
             }
-
-            connectorOperations.add(connOp);
+            connectorOperations.put(operation.getName(), connOp);
         }
-        return connectorOperations;
+        return new ArrayList<>(connectorOperations.values());
     }
 
 }
