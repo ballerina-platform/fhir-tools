@@ -101,6 +101,10 @@
                                         <include name="cds-bal-template-${project.version}.jar"/>
                                     </fileset>
 
+                                    <!--Copy fhir-to-bal-connector artifacts-->
+                                    <fileset dir="${repo_root}/native/fhir-to-bal-connector/target">
+                                        <include name="fhir-to-bal-connector-${project.version}.jar"/>
+                                    </fileset>
                                 </copy>
                             </target>
                         </configuration>

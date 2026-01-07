@@ -1,0 +1,104 @@
+/*
+ * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package org.wso2.healthcare.fhir.ballerina.connectorgen.tool.util;
+
+import org.wso2.healthcare.fhir.ballerina.connectorgen.tool.Constants;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+
+public class CommonUtils {
+
+    public static void copyResourceDir(URL resourceUrl, Path targetDir) throws IOException, URISyntaxException {
+        // Ensure destination exists
+        Files.createDirectories(targetDir);
+
+        if (resourceUrl == null) {
+            throw new IOException("Resource not found: " + Constants.BALLERINA_CONNECTOR_TOOL);
+        }
+
+        if (resourceUrl.getProtocol().equals("jar")) {
+            // Resource is inside a JAR
+            String jarPath = resourceUrl.getPath().substring(5, resourceUrl.getPath().indexOf("!"));
+            try (JarFile jar = new JarFile(jarPath)) {
+                Enumeration<JarEntry> entries = jar.entries();
+                while (entries.hasMoreElements()) {
+                    JarEntry entry = entries.nextElement();
+                    String name = entry.getName();
+                    if (name.startsWith(Constants.BALLERINA_CONNECTOR_TOOL + "/")) {
+                        Path dest = targetDir.resolve(name.substring(Constants.BALLERINA_CONNECTOR_TOOL.length() + 1));
+                        if (entry.isDirectory()) {
+                            Files.createDirectories(dest);
+                        } else {
+                            Files.createDirectories(dest.getParent());
+                            try (InputStream is = jar.getInputStream(entry)) {
+                                Files.copy(is, dest, StandardCopyOption.REPLACE_EXISTING);
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            // Resource is on the filesystem (e.g., running in IDE)
+            Path sourcePath = Paths.get(resourceUrl.toURI());
+
+            try (java.util.stream.Stream<Path> stream = Files.walk(sourcePath)) {
+                stream.forEach(source -> {
+                    Path dest = targetDir.resolve(sourcePath.relativize(source).toString());
+                    try {
+                        if (Files.isDirectory(source)) {
+                            Files.createDirectories(dest);
+                        } else {
+                            Files.copy(source, dest, StandardCopyOption.REPLACE_EXISTING);
+                        }
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+            }
+        }
+    }
+
+    public static String getLatestVersion(List<String> versions) {
+        return Collections.max(versions, (v1, v2) -> {
+            String[] parts1 = v1.split("\\.");
+            String[] parts2 = v2.split("\\.");
+            for (int i = 0; i < Math.max(parts1.length, parts2.length); i++) {
+                int num1 = i < parts1.length ? Integer.parseInt(parts1[i]) : 0;
+                int num2 = i < parts2.length ? Integer.parseInt(parts2[i]) : 0;
+                if (num1 != num2) {
+                    return Integer.compare(num1, num2);
+                }
+            }
+            return 0;
+        });
+    }
+}

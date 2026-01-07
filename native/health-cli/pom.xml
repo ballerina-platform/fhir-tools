@@ -204,6 +204,11 @@
                                             <artifactId>cds-bal-template</artifactId>
                                             <version>${project.version}</version>
                                         </artifactItem>
+                                        <artifactItem>
+                                            <groupId>io.ballerina</groupId>
+                                            <artifactId>fhir-to-bal-connector</artifactId>
+                                            <version>${project.version}</version>
+                                        </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>target/test-classes</outputDirectory>
                                 </configuration>
