@@ -112,8 +112,6 @@ COMMANDS
                         additional metadata or project structure files.
 
                     -c, --config <config-file-path>
-
-                    -c, --config <config-file-path>
                     	This is a MANDATORY input applicable in ‘connector’ mode. Provide the path
                     	for the configuration json file containing the necessary parameters to run the
                     	tool in connector mode including Capability Statement URL of the FHIR server.
