@@ -20,7 +20,7 @@ uv --version
 Navigate to this directory and install dependencies:
 
 ```bash
-cd health_tool_mcp
+cd health-tool-mcp
 uv sync
 ```
 
@@ -47,7 +47,7 @@ Add the following to your Claude Desktop config (`claude_desktop_config.json`):
         "run",
         "fastmcp",
         "run",
-        "/absolute/path/to/health_tool_mcp/server.py"
+        "/absolute/path/to/health-tool-mcp/server.py"
       ],
       "env": {
         "MCP_WORKSPACE": "/absolute/path/to/your/ballerina/project"
