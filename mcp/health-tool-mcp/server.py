@@ -347,6 +347,33 @@ def _validate_bal_name(value: str, field: str) -> Optional[str]:
         return f"'{field}' must start with a lowercase letter and contain only lowercase letters, digits, and underscores (got: '{value}')"
     return None
 
+def _validate_within_workspace(path: str, field: str) -> Optional[str]:
+    """If a workspace is configured (MCP_WORKSPACE/WORKSPACE/PROJECT_ROOT), return an
+    error when the resolved path is outside it; otherwise None.
+
+    Both sides go through os.path.realpath() so symlinks and ``..`` traversal
+    cannot escape the workspace. When no workspace env var is set, returns None
+    so existing single-user setups keep working.
+    """
+    workspace = get_user_workspace()
+    if not workspace:
+        return None
+    workspace_canonical = os.path.realpath(workspace)
+    path_canonical = os.path.realpath(path)
+    try:
+        common = os.path.commonpath([workspace_canonical, path_canonical])
+    except ValueError:
+        return (
+            f"'{field}' must be within the configured workspace "
+            f"({workspace_canonical}); got: {path_canonical}"
+        )
+    if common != workspace_canonical:
+        return (
+            f"'{field}' must be within the configured workspace "
+            f"({workspace_canonical}); got: {path_canonical}"
+        )
+    return None
+
 def _check_disk_space(path: str, tool_name: str, request_id: str, caller: str, start_time: float) -> Optional[str]:
     """Return an error response string if disk space is below MIN_FREE_DISK_MB, else None."""
     try:
@@ -460,6 +487,16 @@ def fhirPackageGeneration(
         )
     fhir_spec_directory = normalize_path(fhir_spec_directory)
 
+    ws_err = _validate_within_workspace(fhir_spec_directory, "fhir_spec_directory")
+    if ws_err:
+        return _log_output_and_return(
+            tool_name="fhirPackageGeneration",
+            request_id=_request_id,
+            caller=_caller,
+            response_str=format_error_output("fhirPackageGeneration", "Validation error", ws_err),
+            start_time=_start_time,
+        )
+
     # If definitions path doesn't exist, return concise setup guidance
     if not os.path.exists(fhir_spec_directory):
         return _log_output_and_return(
@@ -525,7 +562,17 @@ def fhirPackageGeneration(
     
     # Normalize working directory
     working_directory = normalize_path(working_directory)
-    
+
+    ws_err = _validate_within_workspace(working_directory, "working_directory")
+    if ws_err:
+        return _log_output_and_return(
+            tool_name="fhirPackageGeneration",
+            request_id=_request_id,
+            caller=_caller,
+            response_str=format_error_output("fhirPackageGeneration", "Validation error", ws_err),
+            start_time=_start_time,
+        )
+
     # Validate working directory exists
     if not os.path.exists(working_directory) or not os.path.isdir(working_directory):
         return _log_output_and_return(
@@ -759,6 +806,16 @@ def fhirTemplateGeneration(
 
     fhir_spec_directory = normalize_path(fhir_spec_directory)
 
+    ws_err = _validate_within_workspace(fhir_spec_directory, "fhir_spec_directory")
+    if ws_err:
+        return _log_output_and_return(
+            tool_name="fhirTemplateGeneration",
+            request_id=_request_id,
+            caller=_caller,
+            response_str=format_error_output("fhirTemplateGeneration", "Validation error", ws_err),
+            start_time=_start_time,
+        )
+
     # If definitions path doesn't exist, return concise setup guidance
     if not os.path.exists(fhir_spec_directory):
         return _log_output_and_return(
@@ -828,6 +885,16 @@ def fhirTemplateGeneration(
 
     # Normalize working directory
     working_directory = normalize_path(working_directory)
+
+    ws_err = _validate_within_workspace(working_directory, "working_directory")
+    if ws_err:
+        return _log_output_and_return(
+            tool_name="fhirTemplateGeneration",
+            request_id=_request_id,
+            caller=_caller,
+            response_str=format_error_output("fhirTemplateGeneration", "Validation error", ws_err),
+            start_time=_start_time,
+        )
 
     # Validate working directory exists
     if not os.path.exists(working_directory) or not os.path.isdir(working_directory):
@@ -1085,7 +1152,28 @@ def cdsTemplateGeneration(
     
     # Normalize paths (convert relative to absolute, using working_directory as base)
     working_directory = normalize_path(working_directory)
+
+    ws_err = _validate_within_workspace(working_directory, "working_directory")
+    if ws_err:
+        return _log_output_and_return(
+            tool_name="cdsTemplateGeneration",
+            request_id=_request_id,
+            caller=_caller,
+            response_str=format_error_output("cdsTemplateGeneration", "Validation error", ws_err),
+            start_time=_start_time,
+        )
+
     input_file = normalize_path(input_file, working_directory)
+
+    ws_err = _validate_within_workspace(input_file, "input_file")
+    if ws_err:
+        return _log_output_and_return(
+            tool_name="cdsTemplateGeneration",
+            request_id=_request_id,
+            caller=_caller,
+            response_str=format_error_output("cdsTemplateGeneration", "Validation error", ws_err),
+            start_time=_start_time,
+        )
 
     # Log input parameters
     log_event(
