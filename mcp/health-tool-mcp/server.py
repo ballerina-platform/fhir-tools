@@ -20,8 +20,21 @@ mcp = FastMCP("Health Tool MCP Server")
 # -----------------------------
 LOG_DIR = os.environ.get("MCP_LOG_DIR") or os.path.join(os.getcwd(), "logs")
 LOG_FILE = os.path.join(LOG_DIR, "mcp_io.jsonl")
-SUBPROCESS_TIMEOUT = int(os.environ.get("MCP_SUBPROCESS_TIMEOUT", "300"))
-MIN_FREE_DISK_MB = int(os.environ.get("MCP_MIN_FREE_DISK_MB", "100"))
+
+_log = logging.getLogger(__name__)
+
+def _int_env(name: str, default: int) -> int:
+    raw = os.environ.get(name)
+    if raw is None or raw.strip() == "":
+        return default
+    try:
+        return int(raw)
+    except ValueError:
+        _log.warning("Invalid %s=%r; falling back to default %d", name, raw, default)
+        return default
+
+SUBPROCESS_TIMEOUT = _int_env("MCP_SUBPROCESS_TIMEOUT", 300)
+MIN_FREE_DISK_MB = _int_env("MCP_MIN_FREE_DISK_MB", 100)
 
 # Ballerina identifier: must start with lowercase letter, then lowercase alphanumeric/underscore
 _BAL_NAME_RE = re.compile(r"^[a-z][a-z0-9_]*$")
@@ -152,10 +165,11 @@ def find_bal_executable() -> Optional[str]:
     for base_path in common_paths:
         if os.path.exists(base_path):
             # Look for bal.exe in bin subdirectories
-            for root, dirs, files in os.walk(base_path):
-                if "bal.exe" in files or "bal" in files:
-                    return os.path.join(root, "bal.exe" if os.name == "nt" else "bal")
-    
+            for root, _, files in os.walk(base_path):
+                for candidate in ("bal.exe", "bal"):
+                    if candidate in files:
+                        return os.path.join(root, candidate)
+
     return None
 
 def get_user_workspace() -> Optional[str]:
