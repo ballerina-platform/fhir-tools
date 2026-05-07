@@ -47,6 +47,7 @@ import java.util.Set;
 
 import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.*;
 import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.PrintStrings.CDS_HOOKS_VALIDATION;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_OPTION_MINIMAL;
 import static io.ballerina.health.cmd.core.utils.HealthCmdUtils.exitError;
 import static io.ballerina.health.cmd.core.utils.HealthCmdUtils.parseTomlToJson;
 
@@ -61,6 +62,7 @@ public class CrdTemplateGenHandler implements Handler {
     private JsonObject configJson;
     private InputStream cdsHooksJsonSchemaStream;
     private PrintStream printStream;
+    private boolean minimal;
 
     @Override
     public void init(PrintStream printStream, String cdsToolConfigFilePath) {
@@ -81,6 +83,7 @@ public class CrdTemplateGenHandler implements Handler {
         this.packageName = (String) argsMap.get(CMD_OPTION_PACKAGE_NAME);
         this.orgName = (String) argsMap.get(CMD_OPTION_ORG_NAME);
         this.packageVersion = (String) argsMap.get(CMD_OPTION_PACKAGE_VERSION);
+        this.minimal = argsMap.get(CMD_OPTION_MINIMAL) != null && (boolean) argsMap.get(CMD_OPTION_MINIMAL);
     }
 
     @Override
@@ -128,6 +131,10 @@ public class CrdTemplateGenHandler implements Handler {
                 if (packageName != null && !packageName.isEmpty()) {
                     JsonElement overrideConfig = new Gson().toJsonTree(packageName.toLowerCase());
                     toolConfigInstance.overrideConfig(PROJECT_PACKAGE_NAME_PREFIX, overrideConfig);
+                }
+                if (minimal) {
+                    JsonElement overrideConfig = new Gson().toJsonTree(minimal);
+                    toolConfigInstance.overrideConfig("project.minimal", overrideConfig);
                 }
 
                 Class<?> toolClazz = classLoader.loadClass(CDS_TOOL_CLASS_NAME);

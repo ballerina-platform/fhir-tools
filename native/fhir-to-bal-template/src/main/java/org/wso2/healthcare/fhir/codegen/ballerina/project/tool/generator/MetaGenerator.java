@@ -59,9 +59,13 @@ public class MetaGenerator extends AbstractFHIRTemplateGenerator {
                     "Module.md");
         }
 
-        this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
-                BallerinaProjectConstants.RESOURCE_PATH_SEPERATOR + "gitignore.vm", createTemplateContextForMeta(generatorProperties), directoryPath,
-                ".gitignore");
+        // Only generate .gitignore if not in minimal generation mode
+        if (!toolConfig.isMinimalGeneration()) {
+            this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
+                            BallerinaProjectConstants.RESOURCE_PATH_SEPERATOR + "gitignore.vm", createTemplateContextForMeta(generatorProperties), directoryPath,
+                    ".gitignore");
+        }
+
         if (generatorProperties.containsKey("aggregatedService")) {
             AggregatedService aggregatedService = (AggregatedService) generatorProperties.get("aggregatedService");
             for (BallerinaService service : aggregatedService.getServices().values()) {
@@ -69,7 +73,7 @@ public class MetaGenerator extends AbstractFHIRTemplateGenerator {
                 generatorProperties.put("resourceType", service.getName());
                 generatorProperties.put("isAggregated", true);
                 this.getTemplateEngine().generateOutputAsFile(BallerinaProjectConstants.RESOURCE_PATH_TEMPLATES +
-                        BallerinaProjectConstants.RESOURCE_PATH_SEPERATOR + "apiConfig.vm", createTemplateContextForMeta(generatorProperties), directoryPath,
+                                BallerinaProjectConstants.RESOURCE_PATH_SEPERATOR + "apiConfig.vm", createTemplateContextForMeta(generatorProperties), directoryPath,
                         service.getName().toLowerCase() + "_api_config.bal");
             }
         } else {

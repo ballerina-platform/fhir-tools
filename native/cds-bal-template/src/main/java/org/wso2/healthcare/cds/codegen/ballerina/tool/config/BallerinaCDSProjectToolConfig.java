@@ -45,8 +45,8 @@ import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProject
 import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.PROJECT_PACKAGE_VERSION;
 import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.PROJECT_PACKAGE_BASE_PACKAGE;
 import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.BASE_PACKAGE;
-
-/**
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.PROJECT_MINIMAL;
+import static org.wso2.healthcare.cds.codegen.ballerina.tool.BallerinaCDSProjectConstants.MINIMAL;/**
  * Main config class to hold all the config objects.
  */
 public class BallerinaCDSProjectToolConfig extends AbstractToolConfig {
@@ -57,6 +57,7 @@ public class BallerinaCDSProjectToolConfig extends AbstractToolConfig {
     private String basePackage;
     private String dependentPackage;
     private final List<CdsHook> cdsHooks = new ArrayList<>();
+    private boolean minimal = false;
 
     @Override
     public void configure(ConfigType<?> configObj) throws CodeGenException {
@@ -77,6 +78,7 @@ public class BallerinaCDSProjectToolConfig extends AbstractToolConfig {
                 this.dependentPackage = jsonConfigObj
                         .getAsJsonPrimitive(DEPENDENT_PACKAGE).getAsString();
             }
+
 
             jsonConfigObj = ((JsonConfigType) configObj).getConfigObj().getAsJsonObject(HOOKS);
             loadCdsHooks(jsonConfigObj);
@@ -110,6 +112,9 @@ public class BallerinaCDSProjectToolConfig extends AbstractToolConfig {
             case PROJECT_PACKAGE_DEPENDENT_PACKAGE:
                 this.dependentPackage = value.getAsString();
                 break;
+            case PROJECT_MINIMAL:
+                this.minimal = value.getAsBoolean();
+                break;
             default:
                 LOG.warn("Invalid config path: " + jsonPath);
         }
@@ -119,6 +124,9 @@ public class BallerinaCDSProjectToolConfig extends AbstractToolConfig {
         for (int i = 0; i < igArray.size(); i++) {
             dependencyConfigs.add(new DependencyConfig(igArray.get(i).getAsJsonObject()));
         }
+    }
+    public void setMinimal(boolean minimal) {
+        this.minimal = minimal;
     }
 
     public MetadataConfig getMetadataConfig() {
@@ -144,4 +152,6 @@ public class BallerinaCDSProjectToolConfig extends AbstractToolConfig {
     public List<CdsHook> getCdsHooks() {
         return cdsHooks;
     }
+
+    public boolean isMinimal() {return minimal;}
 }

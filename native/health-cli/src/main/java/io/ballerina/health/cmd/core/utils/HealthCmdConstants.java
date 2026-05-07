@@ -75,6 +75,8 @@ public class HealthCmdConstants {
     public static final String CMD_OPTION_INPUT_SHORTER = "-i";
     public static final String CMD_OPTION_CUSTOM_ARGS_DESCRIPTION = "Custom arguments";
     public static final String CMD_CONNECTOR = "connector";
+    public static final String CMD_OPTION_MINIMAL = "--minimal";
+    public static final String CMD_OPTION_MINIMAL_DESCRIPTION = "Generate templates without package structure and metadata files";
 
 
     public class PrintStrings {

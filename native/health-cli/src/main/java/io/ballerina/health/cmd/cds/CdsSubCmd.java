@@ -27,7 +27,6 @@ import io.ballerina.health.cmd.handler.Handler;
 import io.ballerina.health.cmd.handler.HandlerFactory;
 import org.apache.commons.lang.StringUtils;
 import picocli.CommandLine;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -65,6 +64,8 @@ import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_OPTION_P
 import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_OPTION_PACKAGE_VERSION;
 import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_OPTION_PACKAGE_VERSION_DESCRIPTION;
 import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.USER_DIR;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_OPTION_MINIMAL;
+import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.CMD_OPTION_MINIMAL_DESCRIPTION;
 
 
 @CommandLine.Command(name = CDS, description = CDS_SUB_TOOL_DESCRIPTION)
@@ -96,6 +97,9 @@ public class CdsSubCmd implements BLauncherCmd {
 
     @CommandLine.Option(names = {CMD_OPTION_INPUT, CMD_OPTION_INPUT_SHORTER}, description = CMD_OPTION_PACKAGE_VERSION_DESCRIPTION)
     private String inputFilePath;
+
+    @CommandLine.Option(names = {CMD_OPTION_MINIMAL}, description = CMD_OPTION_MINIMAL_DESCRIPTION)
+    private boolean minimal;
 
     @CommandLine.Parameters(description = CMD_OPTION_CUSTOM_ARGS_DESCRIPTION)
     private List<String> argList;
@@ -194,6 +198,7 @@ public class CdsSubCmd implements BLauncherCmd {
         argsMap.put(CMD_OPTION_PACKAGE_NAME, packageName);
         argsMap.put(CMD_OPTION_ORG_NAME, orgName);
         argsMap.put(CMD_OPTION_PACKAGE_VERSION, packageVersion);
+        argsMap.put(CMD_OPTION_MINIMAL, minimal);
         getTargetOutputPath();
 
         //spec path is the last argument

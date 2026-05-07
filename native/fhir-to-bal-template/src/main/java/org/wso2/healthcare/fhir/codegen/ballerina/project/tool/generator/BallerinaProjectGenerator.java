@@ -117,33 +117,45 @@ public class BallerinaProjectGenerator extends AbstractFHIRTemplateGenerator {
                 projectProperties.put("servicePackageImportIdentifier", servicePackage.substring(servicePackage.lastIndexOf(".") + 1));
                 projectProperties.put("igPackageImportIdentifier", igPackage.substring(igPackage.lastIndexOf(".") + 1));
                 projectProperties.put("dependentPackageImportIdentifier", dependentPackage.substring(dependentPackage.lastIndexOf(".") + 1));
-                projectProperties.put("projectAPIPath", this.getTargetDir() + "fhir-service");
+
+                // Use minimal generation flag to determine path
+                if (ballerinaProjectToolConfig.isMinimalGeneration()) {
+                    projectProperties.put("projectAPIPath", this.getTargetDir());
+                } else {
+                    projectProperties.put("projectAPIPath", this.getTargetDir() + "fhir-service");
+                }
 
                 AggregatedServiceGenerator aggregatedServiceGenerator = new AggregatedServiceGenerator(this.getTargetDir());
                 aggregatedServiceGenerator.generate(toolContext, projectProperties);
 
                 // Generate other files for the aggregated service
-                TomlGenerator tomlGenerator = new TomlGenerator(this.getTargetDir());
-                tomlGenerator.generate(toolContext, projectProperties);
+                // Skip Toml generation in minimal mode
+                if (!ballerinaProjectToolConfig.isMinimalGeneration()) {
+                    TomlGenerator tomlGenerator = new TomlGenerator(this.getTargetDir());
+                    tomlGenerator.generate(toolContext, projectProperties);
+                }
 
                 MetaGenerator metaGenerator = new MetaGenerator(this.getTargetDir());
                 metaGenerator.generate(toolContext, projectProperties);
 
-                // Generate OAS files for each service
-                Set<String> resourceTypes = new HashSet<>();
-                Set<BallerinaService> services = new HashSet<>();
-                for (BallerinaService service : entry.getValue().getServices().values()) {
-                    services.add(service);
-                    resourceTypes.add(service.getName());
-                }
-                projectProperties.put("resourceTypes", resourceTypes);
-                projectProperties.put("services", services);
-                OasGenerator oasGenerator = new OasGenerator(this.getTargetDir());
-                oasGenerator.generate(toolContext, projectProperties);
+                // Skip OAS and Component YAML generation in minimal mode
+                if (!ballerinaProjectToolConfig.isMinimalGeneration()) {
+                    // Generate OAS files for each service
+                    Set<String> resourceTypes = new HashSet<>();
+                    Set<BallerinaService> services = new HashSet<>();
+                    for (BallerinaService service : entry.getValue().getServices().values()) {
+                        services.add(service);
+                        resourceTypes.add(service.getName());
+                    }
+                    projectProperties.put("resourceTypes", resourceTypes);
+                    projectProperties.put("services", services);
+                    OasGenerator oasGenerator = new OasGenerator(this.getTargetDir());
+                    oasGenerator.generate(toolContext, projectProperties);
 
-                // Generate component.yaml with all endpoints (called only once)
-                ComponentYamlGenerator componentYamlGenerator = new ComponentYamlGenerator(this.getTargetDir());
-                componentYamlGenerator.generate(toolContext, projectProperties);
+                    // Generate component.yaml with all endpoints (called only once)
+                    ComponentYamlGenerator componentYamlGenerator = new ComponentYamlGenerator(this.getTargetDir());
+                    componentYamlGenerator.generate(toolContext, projectProperties);
+                }
             }
         }
     }

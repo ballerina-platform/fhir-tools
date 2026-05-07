@@ -78,6 +78,8 @@ public class BallerinaCDSProjectConstants {
     public static final String VERSION = "version";
     public static final String DISTRIBUTION = "distribution";
     public static final String AUTHORS = "authors";
+    public static final String PROJECT_MINIMAL = "project.minimal";
+    public static final String MINIMAL = "minimal";
 
     public static class PrintStrings {
         public static final String OVERWRITING_EXISTING_TEMPLATES = "[INFO] Overwriting the existing templates.";

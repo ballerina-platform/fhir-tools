@@ -61,7 +61,16 @@ public class BallerinaCDSProjectGenerator extends AbstractFHIRTemplateGenerator 
     public void generate(ToolContext toolContext, Map<String, Object> generatorProperties) throws CodeGenException {
 
         BallerinaCDSProjectToolConfig ballerinaCDSProjectToolConfig = (BallerinaCDSProjectToolConfig) generatorProperties.get(CONFIG);
-        String packagePath = this.getTargetDir() + ballerinaCDSProjectToolConfig.getMetadataConfig().getNamePrefix() + File.separator;
+
+        // Determine package path based on minimal flag
+        String packagePath;
+        if (ballerinaCDSProjectToolConfig.isMinimal()) {
+            // Generate directly in target directory without subfolder
+            packagePath = this.getTargetDir();
+        } else {
+            // Generate in subfolder (existing behavior)
+            packagePath = this.getTargetDir() + ballerinaCDSProjectToolConfig.getMetadataConfig().getNamePrefix() + File.separator;
+        }
 
         // Provide option to check and overwrite the existing package
         Console console = System.console();
@@ -83,14 +92,15 @@ public class BallerinaCDSProjectGenerator extends AbstractFHIRTemplateGenerator 
         ServiceGenerator balServiceGenerator = new ServiceGenerator(packagePath);
         balServiceGenerator.generate(toolContext, generatorProperties);
 
-        TomlGenerator tomlGenerator = new TomlGenerator(packagePath);
-        tomlGenerator.generate(toolContext, generatorProperties);
+        // Only generate TOML and meta files if not in minimal mode
+        if (!ballerinaCDSProjectToolConfig.isMinimal()) {
+            TomlGenerator tomlGenerator = new TomlGenerator(packagePath);
+            tomlGenerator.generate(toolContext, generatorProperties);
 
-        MetaGenerator metaGenerator = new MetaGenerator(packagePath);
-        metaGenerator.generate(toolContext, generatorProperties);
-
+            MetaGenerator metaGenerator = new MetaGenerator(packagePath);
+            metaGenerator.generate(toolContext, generatorProperties);
+        }
     }
-
     private BallerinaService populateServiceObject(Map<String, Object> generatorProperties) {
         BallerinaService ballerinaService = new BallerinaService();
         BallerinaCDSProjectToolConfig config = (BallerinaCDSProjectToolConfig) generatorProperties.get(CONFIG);

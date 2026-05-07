@@ -96,6 +96,9 @@ public class FhirSubCmd implements BLauncherCmd {
     @CommandLine.Option(names = "--resources", description = "Comma-separated list of FHIR resources to include. If not specified, all available resources will be included")
     private String resources;
 
+    @CommandLine.Option(names = "--minimal", description = "Enable minimal generation mode to skip .choreo folder, OAS files, .gitignore, and Ballerina.toml. Only generates core service files")
+    private boolean minimal;
+
 
     @CommandLine.Parameters(description = "Custom arguments")
     private List<String> argList;
@@ -234,6 +237,7 @@ public class FhirSubCmd implements BLauncherCmd {
         argsMap.put("--dependent-ig", dependentIgs);
         argsMap.put("--aggregate", aggregate);
         argsMap.put("--resources", resources);
+        argsMap.put("--minimal", minimal);
         getTargetOutputPath();
 
         if (CMD_MODE_CONNECTOR.equals(mode)) {

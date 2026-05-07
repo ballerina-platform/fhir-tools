@@ -70,6 +70,7 @@
           },
           "dependencies": [],
           "enableAggregatedApi": false,
+          "minimalGeneration": false,
           "aggregatedApis": [
           ],
           "builtIn": {

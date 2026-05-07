@@ -54,6 +54,7 @@ public class FhirTemplateGenHandler implements Handler {
     private String[] excludedProfiles;
     private boolean aggregate;
     private String resources;
+    private boolean minimal;
 
     private JsonObject configJson;
     private PrintStream printStream;
@@ -85,6 +86,7 @@ public class FhirTemplateGenHandler implements Handler {
         this.includedProfiles = (String[]) argsMap.get("--included-profile");
         this.excludedProfiles = (String[]) argsMap.get("--excluded-profile");
         this.aggregate = (Boolean) argsMap.get("--aggregate");
+        this.minimal = (Boolean) argsMap.get("--minimal");
         this.resources = (String) argsMap.get("--resources");
     }
 
@@ -164,6 +166,11 @@ public class FhirTemplateGenHandler implements Handler {
                         }
                         toolConfigInstance.overrideConfig("project.aggregatedApis", resourcesArray);
                     }
+                }
+                // Configure minimal generation settings
+                if (minimal) {
+                    JsonElement minimalConfig = new Gson().toJsonTree(true);
+                    toolConfigInstance.overrideConfig("project.minimalGeneration", minimalConfig);
                 }
 
                 Object toolFactory = toolClass.getConstructor().newInstance();

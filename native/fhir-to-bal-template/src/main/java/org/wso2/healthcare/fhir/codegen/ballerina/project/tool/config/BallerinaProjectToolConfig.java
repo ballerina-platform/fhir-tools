@@ -52,6 +52,7 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
     private final List<InteractionConfig> interactionConfigs = new ArrayList<>();
     private boolean enableAggregatedApi;
     private List<String> aggregatedApis;
+    private boolean minimalGeneration;
 
     public BallerinaProjectToolConfig() {
         this.aggregatedApis = new ArrayList<>();
@@ -78,6 +79,10 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
             if (jsonConfigObj.getAsJsonPrimitive("enableAggregatedApi") != null) {
                 this.enableAggregatedApi = jsonConfigObj
                         .getAsJsonPrimitive("enableAggregatedApi").getAsBoolean();
+            }
+            if (jsonConfigObj.getAsJsonPrimitive("minimalGeneration") != null) {
+                this.minimalGeneration = jsonConfigObj
+                        .getAsJsonPrimitive("minimalGeneration").getAsBoolean();
             }
             if (jsonConfigObj.getAsJsonArray("aggregatedApis") != null) {
                 populateAggregatedApis(jsonConfigObj.getAsJsonArray("aggregatedApis"));
@@ -111,6 +116,9 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
                 break;
             case "project.enableAggregatedApi":
                 this.enableAggregatedApi = value.getAsBoolean();
+                break;
+            case "project.minimalGeneration":
+                this.minimalGeneration = value.getAsBoolean();
                 break;
             case "project.aggregatedApis":
                 this.aggregatedApis.clear();
@@ -224,4 +232,6 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
     public List<String> getAggregatedApis() {
         return aggregatedApis;
     }
+
+    public boolean isMinimalGeneration() { return minimalGeneration;}
 }
