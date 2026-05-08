@@ -17,7 +17,9 @@ uv --version
 
 ## Setup
 
-Navigate to this directory and install dependencies:
+Navigate to this directory and install dependencies. Pick **one** of the options below.
+
+### Option A: Using `uv` (recommended)
 
 ```bash
 cd health-tool-mcp
@@ -26,10 +28,36 @@ uv sync
 
 `uv.lock` will be generated automatically on the first run — no need to create it manually.
 
-## Running the Server
+### Option B: Using `venv` + `pip`
+
+If you don't have `uv` installed, you can use a standard Python virtual environment:
 
 ```bash
+cd health-tool-mcp
+
+# Create a virtual environment
+python3 -m venv .venv
+
+# Activate it
+# macOS/Linux:
+source .venv/bin/activate
+# Windows (PowerShell):
+.venv\Scripts\Activate.ps1
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+## Running the Server
+
+With `uv`:
+```bash
 uv run fastmcp run server.py
+```
+
+With `venv` (after activation):
+```bash
+fastmcp run server.py
 ```
 
 The server communicates over **stdio** (standard MCP transport).
@@ -56,6 +84,8 @@ Add the following to your Claude Desktop config (`claude_desktop_config.json`):
   }
 }
 ```
+
+If you set up the server with `venv` instead of `uv`, point `command` at the `fastmcp` binary inside your venv (e.g., `/absolute/path/to/health-tool-mcp/.venv/bin/fastmcp` on macOS/Linux or `...\.venv\Scripts\fastmcp.exe` on Windows) and use `args: ["run", "/absolute/path/to/health-tool-mcp/server.py"]`.
 
 ## Tools
 
