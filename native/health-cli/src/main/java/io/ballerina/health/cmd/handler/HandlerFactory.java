@@ -20,8 +20,10 @@ package io.ballerina.health.cmd.handler;
 
 import io.ballerina.health.cmd.core.exception.BallerinaHealthException;
 import io.ballerina.health.cmd.core.utils.ErrorMessages;
+import io.ballerina.health.cmd.core.utils.SpecificationPathResolver;
 
 import java.io.PrintStream;
+import java.util.List;
 
 import static io.ballerina.health.cmd.core.utils.HealthCmdConstants.*;
 
@@ -32,11 +34,23 @@ public class HandlerFactory {
 
     public static Handler createHandler(String subCommand, String mode, PrintStream printStream, String specificationPath)
             throws BallerinaHealthException {
+        return createHandler(subCommand, mode, printStream, specificationPath, List.of());
+    }
+
+    /**
+     * Same as the 4-arg overload, but additionally passes the resolved {@code --ig} values through to the
+     * handler's {@code init} -- only {@code FhirTemplateGenHandler} (fhir:template) uses these today, for
+     * multi-IG generation; every other case ignores resolvedIgs and behaves exactly as before.
+     */
+    public static Handler createHandler(String subCommand, String mode, PrintStream printStream,
+                                        String specificationPath,
+                                        List<SpecificationPathResolver.ResolvedIg> resolvedIgs)
+            throws BallerinaHealthException {
 
         switch (subCommand + SEMICOLON + mode) {
             case CMD_FHIR_MODE_TEMPLATE:
                 Handler templateHandler = new FhirTemplateGenHandler();
-                templateHandler.init(printStream, specificationPath);
+                templateHandler.init(printStream, specificationPath, resolvedIgs);
                 return templateHandler;
 
             case CMD_FHIR_MODE_CLIENT:

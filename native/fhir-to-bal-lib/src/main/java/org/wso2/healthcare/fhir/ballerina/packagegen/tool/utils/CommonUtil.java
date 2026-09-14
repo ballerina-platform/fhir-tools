@@ -74,6 +74,17 @@ public class CommonUtil {
      * @param tokenPosition position of the preferred token
      * @return preferred token
      */
+    /**
+     * Removes the version suffix from a FHIR canonical URL ({@code url|version}).
+     */
+    public static String stripCanonicalVersion(String canonical) {
+        if (canonical == null || canonical.isEmpty()) {
+            return canonical;
+        }
+        int versionSeparator = canonical.indexOf('|');
+        return versionSeparator >= 0 ? canonical.substring(0, versionSeparator) : canonical;
+    }
+
     public static String getSplitTokenAt(String string, String delimiter, ToolConstants.TokenPosition tokenPosition) {
         String[] tokens = string.split(delimiter);
         int position = 0;

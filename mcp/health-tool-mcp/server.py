@@ -458,12 +458,20 @@ def _check_bal_at_startup() -> None:
 _check_bal_at_startup()
 
 
+def _append_registry_ig_args(cmd: list, ig_name: Optional[str], ig_version: Optional[str]) -> None:
+    if ig_name and ig_name.strip():
+        name = ig_name.strip()
+        version = ig_version.strip() if ig_version and ig_version.strip() else None
+        cmd.extend(["--ig", f"{name}@{version}" if version else name])
+
+
 @mcp.tool(
-    description="Generate a Ballerina package from FHIR IG definitions. Required: absolute path to definitions under spec/<ig_name>. If missing, install via npm and move to spec:<newline>npm --registry https://packages.simplifier.net install <ig_name><newline>Examples: US Core hl7.fhir.us.core@8.0.1, CARIN BB hl7.fhir.us.carin-bb@2.1.0, PDex hl7.fhir.us.davinci-pdex@2.1.0. Command: bal health fhir -m package --package-name <name> -o <output> <definitions_path>"
+    description="Generate a Ballerina package from FHIR IG definitions. Provide a local definitions path under spec/<ig_name>, or use ig_name/ig_version to download from packages.fhir.org (e.g. hl7.fhir.us.core@6.1.0). Command: bal health fhir -m package --package-name <name> [--ig <id>[@<version>]] -o <output> [<definitions_path>]"
 )
 def fhirPackageGeneration(
-    fhir_spec_directory: Annotated[Optional[str], "Required: Absolute path to FHIR IG definitions under spec/<ig_name>."] = None,
-    ig_name: Annotated[Optional[str], "Optional: IG name (e.g., 'hl7.fhir.us.core'). Used only for package name inference."] = None,
+    fhir_spec_directory: Annotated[Optional[str], "Optional: Absolute path to FHIR IG definitions under spec/<ig_name>. Omit when using ig_name to download from the registry."] = None,
+    ig_name: Annotated[Optional[str], "Optional: FHIR registry package id (e.g. hl7.fhir.us.core). Downloads from packages.fhir.org when no local path is given."] = None,
+    ig_version: Annotated[Optional[str], "Optional: FHIR registry package version (e.g. 6.1.0). If omitted, bal health prompts interactively in a TTY, or automatically selects the latest version when run non-interactively (e.g. from this MCP server)."] = None,
     package_name: Annotated[Optional[str], "Optional: Name for the generated Ballerina package. If omitted, inferred from IG name."] = None,
     working_directory: Annotated[Optional[str], "Optional: Project directory. Auto-detected from path if not provided."] = None,
     org_name: Annotated[Optional[str], "Optional: Organization name"] = None,
@@ -471,17 +479,14 @@ def fhirPackageGeneration(
     """Generate a Ballerina package from a FHIR Implementation Guide.
 
         Usage:
-        - Provide absolute definitions path under your project spec folder (e.g., "/home/user/project/spec/hl7.fhir.us.core").
-        - If definitions are not available, install via npm and move to spec:
-            npm --registry https://packages.simplifier.net install <ig_name>
-            Examples:
-                - US Core: hl7.fhir.us.core@8.0.1
-                - CARIN BB: hl7.fhir.us.carin-bb@2.1.0
-                - PDex: hl7.fhir.us.davinci-pdex@2.1.0
+        - Provide a local definitions path under spec/, or set ig_name (and optionally ig_version)
+          to download from https://packages.fhir.org into spec/ automatically.
+        - Alternative: npm --registry https://packages.simplifier.net install <ig_name>
 
     Args:
-        fhir_spec_directory: Required. Absolute path to FHIR IG definitions.
-        ig_name: Optional. IG name (e.g., "hl7.fhir.us.core", "hl7.fhir.us.carin-bb").
+        fhir_spec_directory: Optional. Absolute path to FHIR IG definitions.
+        ig_name: Optional. Registry package id (e.g. hl7.fhir.us.core).
+        ig_version: Optional. Registry package version (e.g. 6.1.0).
         package_name: Optional. Inferred from IG if omitted.
         working_directory: Optional. Auto-detected from path; if definitions path is <project>/spec/<ig-name>, uses <project>.
         org_name: Optional.
@@ -494,41 +499,39 @@ def fhirPackageGeneration(
     _caller = get_caller_identity()
     _start_time = time.time()
 
-    # Resolve inputs: require absolute definitions path under spec/<ig_name>
     setup_hint = (
-        "Place IG definitions under spec/<ig_name> and provide the absolute path.\n"
-        "If not available, install via npm and move to spec:\n"
-        "npm --registry https://packages.simplifier.net install <ig_name>\n"
-        "Examples: US Core hl7.fhir.us.core@8.0.1, CARIN BB hl7.fhir.us.carin-bb@2.1.0, PDex hl7.fhir.us.davinci-pdex@2.1.0"
-        "\nAfter moving files, provide the absolute path to the definitions again to generate the package."
-        "\nProvide user with the above instructions only keeping the message short and clear."
+        "Provide fhir_spec_directory, or set ig_name (and optionally ig_version) to download "
+        "from packages.fhir.org (e.g. hl7.fhir.us.core@6.1.0)."
     )
-    if not fhir_spec_directory:
+    use_registry_download = ig_name and ig_name.strip() and not fhir_spec_directory
+    if not fhir_spec_directory and not use_registry_download:
         return _log_output_and_return(
             tool_name="fhirPackageGeneration",
             request_id=_request_id,
             caller=_caller,
             response_str=format_error_output(
                 "fhirPackageGeneration",
-                "Missing definitions path",
+                "Missing definitions path or ig_name",
                 setup_hint
             ),
             start_time=_start_time,
         )
-    fhir_spec_directory = normalize_path(fhir_spec_directory)
+    if fhir_spec_directory:
+        fhir_spec_directory = normalize_path(fhir_spec_directory)
 
-    ws_err = _validate_within_workspace(fhir_spec_directory, "fhir_spec_directory")
-    if ws_err:
-        return _log_output_and_return(
-            tool_name="fhirPackageGeneration",
-            request_id=_request_id,
-            caller=_caller,
-            response_str=format_error_output("fhirPackageGeneration", "Validation error", ws_err),
-            start_time=_start_time,
-        )
+    if fhir_spec_directory:
+        ws_err = _validate_within_workspace(fhir_spec_directory, "fhir_spec_directory")
+        if ws_err:
+            return _log_output_and_return(
+                tool_name="fhirPackageGeneration",
+                request_id=_request_id,
+                caller=_caller,
+                response_str=format_error_output("fhirPackageGeneration", "Validation error", ws_err),
+                start_time=_start_time,
+            )
 
     # If definitions path doesn't exist, return concise setup guidance
-    if not os.path.exists(fhir_spec_directory):
+    if fhir_spec_directory and not os.path.exists(fhir_spec_directory):
         return _log_output_and_return(
             tool_name="fhirPackageGeneration",
             request_id=_request_id,
@@ -541,7 +544,7 @@ def fhirPackageGeneration(
             start_time=_start_time,
         )
     
-    if not os.path.isdir(fhir_spec_directory):
+    if fhir_spec_directory and not os.path.isdir(fhir_spec_directory):
         return _log_output_and_return(
             tool_name="fhirPackageGeneration",
             request_id=_request_id,
@@ -554,44 +557,55 @@ def fhirPackageGeneration(
             start_time=_start_time,
         )
     
-    # Check if directory contains files (not empty)
-    try:
-        files = os.listdir(fhir_spec_directory)
-        actual_files = [f for f in files if not f.startswith('.')]
-        if not actual_files:
+    if use_registry_download:
+        if not working_directory:
             return _log_output_and_return(
                 tool_name="fhirPackageGeneration",
                 request_id=_request_id,
                 caller=_caller,
                 response_str=format_error_output(
                     "fhirPackageGeneration",
-                    "Empty directory",
-                    f"Empty definitions at: {fhir_spec_directory}. {setup_hint}"
+                    "Validation error",
+                    "working_directory is required when downloading an IG via ig_name.",
                 ),
                 start_time=_start_time,
             )
-    except Exception as e:
-        return _log_output_and_return(
-            tool_name="fhirPackageGeneration",
-            request_id=_request_id,
-            caller=_caller,
-            response_str=format_error_output("fhirPackageGeneration", "Directory error", f"Error reading directory {fhir_spec_directory}: {e}"),
-            start_time=_start_time,
-        )
-    
-    # Auto-detect working_directory if not provided
-    if not working_directory:
-        # If path is like <project>/spec/<ig-name>, use <project> as working directory
-        path_parts = fhir_spec_directory.split(os.sep)
-        if 'spec' in path_parts:
-            spec_index = len(path_parts) - 1 - path_parts[::-1].index('spec')
-            working_directory = os.sep.join(path_parts[:spec_index])
-        else:
-            # Fallback: use parent directory
-            working_directory = os.path.dirname(fhir_spec_directory)
-    
-    # Normalize working directory
-    working_directory = normalize_path(working_directory)
+        working_directory = normalize_path(working_directory)
+    else:
+        try:
+            files = os.listdir(fhir_spec_directory)
+            actual_files = [f for f in files if not f.startswith('.')]
+            if not actual_files:
+                return _log_output_and_return(
+                    tool_name="fhirPackageGeneration",
+                    request_id=_request_id,
+                    caller=_caller,
+                    response_str=format_error_output(
+                        "fhirPackageGeneration",
+                        "Empty directory",
+                        f"Empty definitions at: {fhir_spec_directory}. {setup_hint}"
+                    ),
+                    start_time=_start_time,
+                )
+        except Exception as e:
+            return _log_output_and_return(
+                tool_name="fhirPackageGeneration",
+                request_id=_request_id,
+                caller=_caller,
+                response_str=format_error_output("fhirPackageGeneration", "Directory error", f"Error reading directory {fhir_spec_directory}: {e}"),
+                start_time=_start_time,
+            )
+
+        # Auto-detect working_directory if not provided
+        if not working_directory:
+            path_parts = fhir_spec_directory.split(os.sep)
+            if 'spec' in path_parts:
+                spec_index = len(path_parts) - 1 - path_parts[::-1].index('spec')
+                working_directory = os.sep.join(path_parts[:spec_index])
+            else:
+                working_directory = os.path.dirname(fhir_spec_directory)
+
+        working_directory = normalize_path(working_directory)
 
     ws_err = _validate_within_workspace(working_directory, "working_directory")
     if ws_err:
@@ -615,7 +629,7 @@ def fhirPackageGeneration(
 
     # Infer package name if not provided
     if not package_name or not package_name.strip():
-        base_candidate = ig_name or os.path.basename(fhir_spec_directory.rstrip('/\\'))
+        base_candidate = ig_name or (os.path.basename(fhir_spec_directory.rstrip('/\\')) if fhir_spec_directory else "")
         base = (base_candidate or "").lower()
         try:
             if "hl7.fhir.us.core" in base:
@@ -694,8 +708,11 @@ def fhirPackageGeneration(
     # Add optional organization name
     if org_name:
         cmd.extend(["--org-name", org_name])
-    
-    cmd.append(fhir_spec_directory)
+
+    _append_registry_ig_args(cmd, ig_name, ig_version)
+
+    if fhir_spec_directory:
+        cmd.append(fhir_spec_directory)
 
     disk_err = _check_disk_space(output_location, "fhirPackageGeneration", _request_id, _caller, _start_time)
     if disk_err:
@@ -761,11 +778,13 @@ def fhirPackageGeneration(
         )
 
 @mcp.tool(
-    description="Generate FHIR API templates from a FHIR Implementation Guide. Required: absolute path to definitions under spec/<ig_name>. If missing, install via npm and move to spec:<newline>npm --registry https://packages.simplifier.net install <ig_name><newline>Examples: US Core hl7.fhir.us.core@8.0.1, CARIN BB hl7.fhir.us.carin-bb@2.1.0, PDex hl7.fhir.us.davinci-pdex@2.1.0. Command: bal health fhir -m template --dependent-package <package> [--included-profile <url>]* [--excluded-profile <url>]* -o <output> <definitions_path>"
+    description="Generate FHIR API templates from a FHIR Implementation Guide. Use a local definitions path, ig_name/ig_version to download from packages.fhir.org, or omit both to use default hl7.fhir.r4.core. Command: bal health fhir -m template [--dependent-package <pkg>] [--ig <id>[@<version>]] -o <output> [<definitions_path>]"
 )
 def fhirTemplateGeneration(
-    dependent_package: Annotated[str, "REQUIRED: Fully qualified Ballerina package (e.g., 'ballerinax/health.fhir.r4.uscore501', 'ballerinax/health.fhir.r4international401')"],
-    fhir_spec_directory: Annotated[str, "REQUIRED: Absolute path to FHIR IG definitions under spec/<ig_name>."] ,
+    dependent_package: Annotated[Optional[str], "Optional: Ballerina package (e.g. ballerinax/health.fhir.r4.uscore501). Inferred for known IGs or default R4 core."] = None,
+    fhir_spec_directory: Annotated[Optional[str], "Optional: Absolute path to FHIR IG definitions. Omit to download via ig_name or default hl7.fhir.r4.core."] = None,
+    ig_name: Annotated[Optional[str], "Optional: FHIR registry package id (e.g. hl7.fhir.us.core)."] = None,
+    ig_version: Annotated[Optional[str], "Optional: FHIR registry package version (e.g. 6.1.0). If omitted, bal health prompts interactively in a TTY, or automatically selects the latest version when run non-interactively (e.g. from this MCP server)."] = None,
     working_directory: Annotated[Optional[str], "Optional: Project directory. Auto-detected from path if not provided."] = None,
     org_name: Annotated[Optional[str], "Optional: Organization name for generated templates"] = None,
     included_profiles: Annotated[Optional[list[str]], "Optional: FHIR profile URLs to ONLY include. Reduces generation time by skipping unwanted profiles."] = None,
@@ -776,17 +795,13 @@ def fhirTemplateGeneration(
     This tool generates Ballerina service templates based on FHIR profiles in an IG.
     Equivalent to: bal health fhir -m template -o <output> --org-name <org> --dependent-package <package> <definitions_path>
 
-    IMPORTANT: Both fhir_spec_directory (absolute definitions path) AND dependent_package are REQUIRED.
-    If definitions are not available locally, install via npm and move to spec:
-        npm --registry https://packages.simplifier.net install <ig_name>
-        Examples:
-            - US Core: hl7.fhir.us.core@8.0.1
-            - CARIN BB: hl7.fhir.us.carin-bb@2.1.0
-            - PDex: hl7.fhir.us.davinci-pdex@2.1.0
+    Provide a local path, ig_name/ig_version for registry download, or neither for default HL7 R4 core templates.
 
     Args:
-        fhir_spec_directory: Required. Absolute path to FHIR IG definitions under spec/<ig_name>.
-        dependent_package: Required. Fully qualified Ballerina package name (e.g., 'ballerinax/health.fhir.r4.uscore501').
+        fhir_spec_directory: Optional. Absolute path to FHIR IG definitions.
+        dependent_package: Optional. Fully qualified Ballerina package name.
+        ig_name: Optional. Registry package id.
+        ig_version: Optional. Registry package version.
         working_directory: Optional. Auto-detected from path; if definitions path is <project>/spec/<ig-name>, uses <project>.
         org_name: Optional. Organization name for generated templates (e.g., 'healthcare_samples').
         included_profiles: Optional. List of FHIR profile URLs to ONLY include in generation.
@@ -802,26 +817,11 @@ def fhirTemplateGeneration(
 
     # Resolve inputs: require absolute definitions path under spec/<ig_name>
     setup_hint = (
-        "Place IG definitions under spec/<ig_name> and provide the absolute path.\n"
-        "If not available, install via npm and move to spec:\n"
-        "npm --registry https://packages.simplifier.net install <ig_name>\n"
-        "Examples: US Core hl7.fhir.us.core@8.0.1, CARIN BB hl7.fhir.us.carin-bb@2.1.0, PDex hl7.fhir.us.davinci-pdex@2.1.0"
-        "\nAfter moving files, provide the absolute path to the definitions again to generate the templates."
-        "\nProvide user with the above instructions only keeping the message short and clear."
+        "Provide fhir_spec_directory, ig_name/ig_version for registry download, or omit both for default R4 core."
     )
 
-    # Validate dependent package
-    if not dependent_package or not dependent_package.strip():
-        return _log_output_and_return(
-            tool_name="fhirTemplateGeneration",
-            request_id=_request_id,
-            caller=_caller,
-            response_str=format_error_output("fhirTemplateGeneration", "Validation error", "dependent_package is required (e.g., ballerinax/health.fhir.r4.uscore501)"),
-            start_time=_start_time,
-        )
-
-    # Validate required spec path
-    if not fhir_spec_directory:
+    use_registry_download = (ig_name and ig_name.strip()) or not fhir_spec_directory
+    if not fhir_spec_directory and not use_registry_download:
         return _log_output_and_return(
             tool_name="fhirTemplateGeneration",
             request_id=_request_id,
@@ -834,20 +834,19 @@ def fhirTemplateGeneration(
             start_time=_start_time,
         )
 
-    fhir_spec_directory = normalize_path(fhir_spec_directory)
+    if fhir_spec_directory:
+        fhir_spec_directory = normalize_path(fhir_spec_directory)
+        ws_err = _validate_within_workspace(fhir_spec_directory, "fhir_spec_directory")
+        if ws_err:
+            return _log_output_and_return(
+                tool_name="fhirTemplateGeneration",
+                request_id=_request_id,
+                caller=_caller,
+                response_str=format_error_output("fhirTemplateGeneration", "Validation error", ws_err),
+                start_time=_start_time,
+            )
 
-    ws_err = _validate_within_workspace(fhir_spec_directory, "fhir_spec_directory")
-    if ws_err:
-        return _log_output_and_return(
-            tool_name="fhirTemplateGeneration",
-            request_id=_request_id,
-            caller=_caller,
-            response_str=format_error_output("fhirTemplateGeneration", "Validation error", ws_err),
-            start_time=_start_time,
-        )
-
-    # If definitions path doesn't exist, return concise setup guidance
-    if not os.path.exists(fhir_spec_directory):
+    if fhir_spec_directory and not os.path.exists(fhir_spec_directory):
         return _log_output_and_return(
             tool_name="fhirTemplateGeneration",
             request_id=_request_id,
@@ -860,7 +859,56 @@ def fhirTemplateGeneration(
             start_time=_start_time,
         )
 
-    if not os.path.isdir(fhir_spec_directory):
+    if fhir_spec_directory:
+        if not os.path.isdir(fhir_spec_directory):
+            return _log_output_and_return(
+                tool_name="fhirTemplateGeneration",
+                request_id=_request_id,
+                caller=_caller,
+                response_str=format_error_output(
+                    "fhirTemplateGeneration",
+                    "Validation error",
+                    f"Not a directory: {fhir_spec_directory}. {setup_hint}",
+                ),
+                start_time=_start_time,
+            )
+
+        try:
+            files = os.listdir(fhir_spec_directory)
+            actual_files = [f for f in files if not f.startswith('.')]
+            if not actual_files:
+                return _log_output_and_return(
+                    tool_name="fhirTemplateGeneration",
+                    request_id=_request_id,
+                    caller=_caller,
+                    response_str=format_error_output(
+                        "fhirTemplateGeneration",
+                        "Empty directory",
+                        f"Empty definitions at: {fhir_spec_directory}. {setup_hint}",
+                    ),
+                    start_time=_start_time,
+                )
+        except Exception as e:
+            return _log_output_and_return(
+                tool_name="fhirTemplateGeneration",
+                request_id=_request_id,
+                caller=_caller,
+                response_str=format_error_output(
+                    "fhirTemplateGeneration",
+                    "Directory error",
+                    f"Error reading directory {fhir_spec_directory}: {e}",
+                ),
+                start_time=_start_time,
+            )
+
+        if not working_directory:
+            path_parts = fhir_spec_directory.split(os.sep)
+            if 'spec' in path_parts:
+                spec_index = len(path_parts) - 1 - path_parts[::-1].index('spec')
+                working_directory = os.sep.join(path_parts[:spec_index])
+            else:
+                working_directory = os.path.dirname(fhir_spec_directory)
+    elif not working_directory:
         return _log_output_and_return(
             tool_name="fhirTemplateGeneration",
             request_id=_request_id,
@@ -868,52 +916,11 @@ def fhirTemplateGeneration(
             response_str=format_error_output(
                 "fhirTemplateGeneration",
                 "Validation error",
-                f"Not a directory: {fhir_spec_directory}. {setup_hint}",
+                "working_directory is required when using registry download without a local definitions path.",
             ),
             start_time=_start_time,
         )
 
-    # Check if directory contains files (not empty)
-    try:
-        files = os.listdir(fhir_spec_directory)
-        actual_files = [f for f in files if not f.startswith('.')]
-        if not actual_files:
-            return _log_output_and_return(
-                tool_name="fhirTemplateGeneration",
-                request_id=_request_id,
-                caller=_caller,
-                response_str=format_error_output(
-                    "fhirTemplateGeneration",
-                    "Empty directory",
-                    f"Empty definitions at: {fhir_spec_directory}. {setup_hint}",
-                ),
-                start_time=_start_time,
-            )
-    except Exception as e:
-        return _log_output_and_return(
-            tool_name="fhirTemplateGeneration",
-            request_id=_request_id,
-            caller=_caller,
-            response_str=format_error_output(
-                "fhirTemplateGeneration",
-                "Directory error",
-                f"Error reading directory {fhir_spec_directory}: {e}",
-            ),
-            start_time=_start_time,
-        )
-
-    # Auto-detect working_directory if not provided
-    if not working_directory:
-        # If path is like <project>/spec/<ig-name>, use <project> as working directory
-        path_parts = fhir_spec_directory.split(os.sep)
-        if 'spec' in path_parts:
-            spec_index = len(path_parts) - 1 - path_parts[::-1].index('spec')
-            working_directory = os.sep.join(path_parts[:spec_index])
-        else:
-            # Fallback: use parent directory
-            working_directory = os.path.dirname(fhir_spec_directory)
-
-    # Normalize working directory
     working_directory = normalize_path(working_directory)
 
     ws_err = _validate_within_workspace(working_directory, "working_directory")
@@ -1003,15 +1010,17 @@ def fhirTemplateGeneration(
     cmd = [
         bal_exe, "health", "fhir",
         "--mode", "template",
-        "--dependent-package", dependent_package,
     ]
 
-    # Output location (always set, defaulted above)
+    if dependent_package and dependent_package.strip():
+        cmd.extend(["--dependent-package", dependent_package.strip()])
+
     cmd.extend(["--output", output_location])
 
-    # Add optional organization name
     if org_name:
         cmd.extend(["--org-name", org_name])
+
+    _append_registry_ig_args(cmd, ig_name, ig_version)
 
     # Add included profiles (can be specified multiple times)
     if included_profiles:
@@ -1022,8 +1031,9 @@ def fhirTemplateGeneration(
     if excluded_profiles:
         for profile in excluded_profiles:
             cmd.extend(["--excluded-profile", profile])
-    cmd.extend(["--aggregate","--minimal"])
-    cmd.append(fhir_spec_directory)
+    cmd.extend(["--aggregate", "--minimal"])
+    if fhir_spec_directory:
+        cmd.append(fhir_spec_directory)
 
     disk_err = _check_disk_space(output_location, "fhirTemplateGeneration", _request_id, _caller, _start_time)
     if disk_err:

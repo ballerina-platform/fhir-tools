@@ -400,6 +400,7 @@ public class GeneratorUtils {
     }
 
     public String getUniqueIdentifierFromId(String id) {
+        id = CommonUtil.stripCanonicalVersion(id);
         id = id.replace("StructureDefinition", "");
         StringBuilder uniqueIdentifier = new StringBuilder();
         String[] idTokens = id.split("-");

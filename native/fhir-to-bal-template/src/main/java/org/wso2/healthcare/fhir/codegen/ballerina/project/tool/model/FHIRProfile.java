@@ -21,6 +21,7 @@ package org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model;
 import com.google.gson.JsonObject;
 import org.apache.commons.text.CaseUtils;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.config.BallerinaProjectToolConfig;
+import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.config.IncludedIGConfig;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,6 +29,12 @@ import java.util.Map;
 import java.util.Set;
 
 public class FHIRProfile<StructureDefinition> {
+    // Mirrors io.ballerina.health.cmd.core.utils.IgModuleNameUtils#isValidBallerinaModuleName -- fhir-to-bal-template
+    // can't depend on health-cli (build order is the reverse), so a configured module name is re-validated here
+    // rather than trusted, since it can also arrive via raw tool-config JSON, bypassing the CLI's --ig-module-name
+    // validation.
+    private static final String MODULE_NAME_PATTERN = "^[a-zA-Z][a-zA-Z0-9_]*$";
+
     private String parentRef;
     private boolean isAbstract;
     private String name;
@@ -75,6 +82,24 @@ public class FHIRProfile<StructureDefinition> {
         return CaseUtils.toCamelCase(igName, true, '_') + CaseUtils.toCamelCase(resourceType, true, '_');
     }
 
+    /**
+     * Returns a Ballerina-identifier-safe, collision-resistant suffix for this profile, used to name its
+     * generated per-profile search-dispatch stub function ("search&lt;suffix&gt;"). Derived from the profile's
+     * canonical URL (unique per FHIR profile by spec) rather than its bare StructureDefinition name: two
+     * different profiles -- even across unrelated resource types -- can share the same name (e.g. duplicated
+     * generic example profiles reused verbatim across resources in the raw international-base spec), which
+     * previously produced colliding module-level "search&lt;Name&gt;" function declarations and failed
+     * {@code bal build} with "redeclared symbol".
+     */
+    public String getSearchFunctionSuffix() {
+        String basis = (this.url != null && !this.url.isEmpty()) ? this.url : this.name;
+        String sanitized = basis.replaceAll("[^a-zA-Z0-9]+", "_").replaceAll("^_+", "").replaceAll("_+$", "");
+        if (sanitized.isEmpty() || !Character.isLetter(sanitized.charAt(0))) {
+            sanitized = "p_" + sanitized;
+        }
+        return CaseUtils.toCamelCase(resourceType, true, '_') + "_" + sanitized;
+    }
+
     public String getFhirVersion() {
         return fhirVersion;
     }
@@ -120,7 +145,17 @@ public class FHIRProfile<StructureDefinition> {
     }
 
     public void setPackagePrefix(BallerinaProjectToolConfig config) {
-        String igPackage = config.getVersionConfig().getDependentPackage();
+        if (config.isGenerateIgModuleEnabled() && config.getGenerateIgModuleName() != null
+                && config.getGenerateIgModuleName().matches(MODULE_NAME_PATTERN)) {
+            this.packagePrefix = config.getGenerateIgModuleName();
+            return;
+        }
+        // Prefer this profile's own IG's resolved package over the single tool-wide default: in a multi-IG run
+        // each IG maps to a different package, so falling back to the shared versionConfig value here would
+        // give every profile the same (wrong, for all but one IG) package prefix.
+        IncludedIGConfig igConfig = config.getIncludedIGConfigs().get(this.getIgName());
+        String igPackage = (igConfig != null && igConfig.getImportStatement() != null)
+                ? igConfig.getImportStatement() : config.getVersionConfig().getDependentPackage();
         if (igPackage.contains("/")) {
             String pkgNameWithoutOrg = igPackage.split("/")[1];
             this.packagePrefix = pkgNameWithoutOrg.substring(pkgNameWithoutOrg.lastIndexOf(".") + 1);

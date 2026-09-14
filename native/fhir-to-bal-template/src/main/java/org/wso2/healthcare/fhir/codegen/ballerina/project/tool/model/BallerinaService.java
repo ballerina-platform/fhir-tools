@@ -126,4 +126,13 @@ public class BallerinaService {
     public void addFhirProfile(FHIRProfile profile){
         profileList.add(profile);
     }
+
+    /**
+     * True when this resource type is backed by more than one profile (e.g. Plan-Net's Organization and
+     * Network both profile the FHIR Organization resource type). Search generation dispatches on
+     * {@code _profile} in this case; a single profile keeps the plain, non-dispatching search skeleton.
+     */
+    public boolean hasMultipleProfiles() {
+        return profileList.size() > 1;
+    }
 }

@@ -121,6 +121,7 @@ public class MetaGenerator extends AbstractFHIRTemplateGenerator {
         templateContext.setProperty("sampleIGLowerCase", sampleIG.toLowerCase());
         templateContext.setProperty("profileURLs", profileURLs);
         templateContext.setProperty("config", config);
+        templateContext.setProperty("licenseYear", BallerinaProjectConstants.LICENSE_YEAR);
         templateContext.setProperty("metaConfig", config.getMetadataConfig());
         templateContext.setProperty("service", service);
         templateContext.setProperty("apiName", generatorProperties.get("resourceType") + "API");

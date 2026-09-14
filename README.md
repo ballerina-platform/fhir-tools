@@ -23,15 +23,19 @@
 ```
 
 ## Supported Commands
-```shell\
+```shell
 bal health fhir -m package -o output-dir spec-path
 bal health fhir -m package --package-name my.package.name -o output-dir spec-path
 bal health fhir -m template -o output-dir spec-path
+bal health fhir -m template -o output-dir
+bal health fhir -m template --ig hl7.fhir.us.core@6.1.0 -o output-dir
+bal health fhir -m package --package-name my.package --ig hl7.fhir.us.core@6.1.0 -o output-dir
 bal health fhir -m connector --config configuration-file-path -o output-dir
 ```
 ### Note
-- `spec-path` is the path to the FHIR specifications. (i.e. In the specified path, there should be folder/s for each 
-Implementation Guide containing the FHIR specification files.)
+- `spec-path` is optional when `--ig` is provided or when template mode should use the default HL7 R4 core IG (`hl7.fhir.r4.core` from [packages.fhir.org](https://packages.fhir.org), extracted under `spec/international`).
+- When the version is omitted from `--ig` (e.g. `--ig hl7.fhir.us.core`), the CLI lists published versions interactively from a terminal, and automatically selects `dist-tags.latest` when no console is available (e.g. in CI).
+- With a local layout, `spec-path` points to FHIR specification folders (Implementation Guide JSON files).
 
 Directory structure of the `spec-path` should be as follows.
 ```shell

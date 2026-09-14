@@ -338,20 +338,21 @@ public class R4ResourceContextGenerator extends AbstractResourceContextGenerator
         List<CanonicalType> profiles = type.getProfile();
         if (!profiles.isEmpty()) {
             for (CanonicalType profile : profiles) {
-                String profileType = CommonUtil.getSplitTokenAt(profile.getValue(), "/", ToolConstants.TokenPosition.END);
+                String profileUrl = CommonUtil.stripCanonicalVersion(profile.getValue());
+                String profileType = CommonUtil.getSplitTokenAt(profileUrl, "/", ToolConstants.TokenPosition.END);
                 profileType = GeneratorUtils.getInstance().getUniqueIdentifierFromId(profileType);
-                if (getDatatypeTemplateContextMap().containsKey(profile.getValue())) {
-                    element.addProfile(profile.getValue(), profileType);
+                if (getDatatypeTemplateContextMap().containsKey(profileUrl)) {
+                    element.addProfile(profileUrl, profileType);
                     DataTypesRegistry.getInstance().addDataType(profileType);
                 } else {
-                    element.addProfile(profile.getValue(), profileType);
+                    element.addProfile(profileUrl, profileType);
                 }
                 //check for prefix when non R4 profiles are available
                 for (String dependentIgUrl : getToolConfig().getPackageConfig().getDependentIgs().keySet()) {
-                    if (profile.getValue().startsWith(dependentIgUrl)) {
+                    if (profileUrl.startsWith(dependentIgUrl)) {
                         String dependentIgPackageName = getToolConfig().getPackageConfig().getDependentIgs().get(dependentIgUrl);
                         String dependentIgPackagePrefix = CommonUtil.getSplitTokenAt(dependentIgPackageName, "\\.", ToolConstants.TokenPosition.END);
-                        element.getProfiles().get(profile.getValue()).setPrefix(dependentIgPackagePrefix);
+                        element.getProfiles().get(profileUrl).setPrefix(dependentIgPackagePrefix);
                     }
                 }
             }

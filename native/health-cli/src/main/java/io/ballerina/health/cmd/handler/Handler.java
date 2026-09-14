@@ -22,6 +22,7 @@ import com.google.gson.JsonObject;
 import io.ballerina.health.cmd.core.utils.ErrorMessages;
 import io.ballerina.health.cmd.core.utils.HealthCmdConstants;
 import io.ballerina.health.cmd.core.utils.HealthCmdUtils;
+import io.ballerina.health.cmd.core.utils.SpecificationPathResolver;
 import org.wso2.healthcare.codegen.tool.framework.commons.core.AbstractTool;
 import org.wso2.healthcare.codegen.tool.framework.commons.exception.CodeGenException;
 import org.wso2.healthcare.codegen.tool.framework.commons.model.JsonConfigType;
@@ -33,6 +34,7 @@ import org.wso2.healthcare.codegen.tool.framework.fhir.core.config.FHIRToolConfi
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -92,6 +94,16 @@ public interface Handler {
     }
 
     void init(PrintStream printStream, String specificationPath);
+
+    /**
+     * Same as {@link #init(PrintStream, String)}, but also given the resolved {@code --ig} values (name,
+     * version, mapped package). Only handlers that support multi-IG generation need to override this --
+     * the default just ignores resolvedIgs and delegates to the single-path init.
+     */
+    default void init(PrintStream printStream, String specificationPath,
+                      List<SpecificationPathResolver.ResolvedIg> resolvedIgs) {
+        init(printStream, specificationPath);
+    }
 
     void setArgs(Map<String, Object> argsMap);
 

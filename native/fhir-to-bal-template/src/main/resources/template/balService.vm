@@ -1,5 +1,5 @@
 #set($sqBrackets=[])
-// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) ${licenseYear}, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -22,7 +22,7 @@
 
 import ballerina/http;
 #foreach($import in $service.getImportsList())
-import $import.toLowerCase();
+import $import;
 #end
 
 # Generic type to wrap all implemented profiles.
@@ -32,6 +32,15 @@ public type $service.getName() #**##foreach($profile in $service.getProfileList(
 
 # initialize source system endpoint here
 
+#if($service.hasMultipleProfiles())
+// $service.getName() is profiled by more than one implementation guide. Fill in each profile's search below.
+#foreach($profile in $service.getProfileList())
+isolated function search$profile.getSearchFunctionSuffix()($basePackageImportIdentifier:FHIRContext fhirContext) returns $basePackageImportIdentifier:Bundle|$basePackageImportIdentifier:OperationOutcome|$basePackageImportIdentifier:FHIRError {
+    return $basePackageImportIdentifier:createFHIRError("Not implemented", $basePackageImportIdentifier:ERROR, $basePackageImportIdentifier:INFORMATIONAL, httpStatusCode = http:STATUS_NOT_IMPLEMENTED);
+}
+
+#end
+#end
 # A service representing a network-accessible API
 # bound to port `9090`.
 service / on new $servicePackageImportIdentifier:Listener(9090, apiConfig) {
@@ -46,10 +55,30 @@ service / on new $servicePackageImportIdentifier:Listener(9090, apiConfig) {
         return $basePackageImportIdentifier:createFHIRError("Not implemented", $basePackageImportIdentifier:ERROR, $basePackageImportIdentifier:INFORMATIONAL, httpStatusCode = http:STATUS_NOT_IMPLEMENTED);
     }
 
+#if($service.hasMultipleProfiles())
+    // Search for resources based on a set of criteria. Dispatches by _profile since $service.getName() has
+    // more than one profile; add a default here if unspecified _profile should resolve to one of them.
+    isolated resource function get fhir/$service.getFhirVersion()/$service.getName() ($basePackageImportIdentifier:FHIRContext fhirContext) returns $basePackageImportIdentifier:Bundle|$basePackageImportIdentifier:OperationOutcome|$basePackageImportIdentifier:FHIRError {
+        readonly & $basePackageImportIdentifier:RequestSearchParameter[]? _profileParams = fhirContext.getRequestSearchParameter("_profile");
+        string? _profile = _profileParams is $basePackageImportIdentifier:RequestSearchParameter[] && _profileParams.length() > 0
+                ? _profileParams[0].value : ();
+        match _profile {
+#foreach($profile in $service.getProfileList())
+            "$profile.getUrl()" => {
+                return search$profile.getSearchFunctionSuffix()(fhirContext);
+            }
+#end
+            _ => {
+                return $basePackageImportIdentifier:createFHIRError("Not implemented", $basePackageImportIdentifier:ERROR, $basePackageImportIdentifier:INFORMATIONAL, httpStatusCode = http:STATUS_NOT_IMPLEMENTED);
+            }
+        }
+    }
+#else
     // Search for resources based on a set of criteria.
     isolated resource function get fhir/$service.getFhirVersion()/$service.getName() ($basePackageImportIdentifier:FHIRContext fhirContext) returns $basePackageImportIdentifier:Bundle|$basePackageImportIdentifier:OperationOutcome|$basePackageImportIdentifier:FHIRError {
         return $basePackageImportIdentifier:createFHIRError("Not implemented", $basePackageImportIdentifier:ERROR, $basePackageImportIdentifier:INFORMATIONAL, httpStatusCode = http:STATUS_NOT_IMPLEMENTED);
     }
+#end
 
     // Create a new resource.
     isolated resource function post fhir/$service.getFhirVersion()/$service.getName() ($basePackageImportIdentifier:FHIRContext fhirContext, $service.getName() procedure) returns $service.getName()|$basePackageImportIdentifier:OperationOutcome|$basePackageImportIdentifier:FHIRError {

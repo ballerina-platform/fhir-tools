@@ -1,5 +1,26 @@
 {
   "fhir": {
+    "igRegistry": {
+      "registryUrl": "https://packages.fhir.org",
+      "cacheDir": ".fhir-ig-cache",
+      "httpTimeoutSeconds": 60,
+      "defaultPackages": {
+        "r4": {
+          "name": "hl7.fhir.r4.core",
+          "version": "4.0.1"
+        },
+        "r5": {
+          "name": "hl7.fhir.r5.core",
+          "version": "5.0.0"
+        }
+      },
+      "packageMappings": {
+        "hl7.fhir.us.core@6.1.0": "ballerinax/health.fhir.r4.uscore610",
+        "hl7.fhir.us.carin-bb.r4@2.1.0": "ballerinax/health.fhir.r4.carinbb200",
+        "hl7.fhir.us.davinci-pdex-plan-net@1.2.0": "ballerinax/health.fhir.r4.davinciplannet120",
+        "hl7.fhir.us.Davinci-drug-formulary@2.1.0": "ballerinax/health.fhir.r4.davincidrugformulary210"
+      }
+    },
     "tools": {
       "package": {
         "config": {
@@ -69,10 +90,14 @@
             ]
           },
           "dependencies": [],
-          "enableAggregatedApi": false,
+          "enableAggregatedApi": true,
           "minimalGeneration": false,
           "aggregatedApis": [
           ],
+          "generateIgModule": {
+            "enabled": true,
+            "name": ""
+          },
           "builtIn": {
             "operations": [
             ],

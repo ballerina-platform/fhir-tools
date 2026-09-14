@@ -1,25 +1,53 @@
 NAME
         ballerina-health - Generate a Ballerina package or template for a
-        given health specification (eg.:FHIR implementation guides) files.
+        given health specification (eg.: FHIR implementation guides) files.
 
 SYNOPSIS
         bal health fhir [-m | --mode] package --package-name <package-name> \
-                        <FHIR-specification-directory-path>
-                        [-m | --mode] template --dependent-package <dependent-package> \
-                        <FHIR-specification-directory-path>
-                        [-m | --mode] connector --config <config-file-path> \
-                        --output <output>
+                        [--ig <name>[@<version>]] \
+                        [-o <output>] [<FHIR-specification-directory-path>]
+
+        bal health fhir [-m | --mode] template \
+                        [--ig <name>[@<version>]] \
+                        [--dependent-package <qualified-ballerina-package-name>] \
+                        [--aggregate <true|false>] [--package-name <name-of-package>] \
+                        [-o <output>] [<FHIR-specification-directory-path>]
+
+        bal health fhir [-m | --mode] connector --config <config-file-path> \
+                        -o <output>
 
 
 DESCRIPTION
         Generate a Ballerina package or template with relevant records and types
-        from a given health specification (eg.:FHIR implementation guides) files.
+        from a given health specification (eg.: FHIR implementation guides) files.
 
-        The generated Ballerina sources will be written into the provided
-        output location. Make sure to add the directory path which contains
-        FHIR specification, as the last argument.
+        The generated Ballerina sources are written to the output location given
+        with -o/--output, or to the current working directory when omitted.
 
-        You can download FHIR specification files from the respective
+        FHIR specification files can be provided as a local directory path (last
+        positional argument), or downloaded automatically from the FHIR package
+        registry (https://packages.fhir.org) using --ig <name>[@<version>], e.g.
+        --ig hl7.fhir.us.core@8.0.1. The specification path is optional when --ig
+        is set, or in template mode when the default HL7 R4 core IG should be used.
+
+        Template mode defaults:
+            - A single aggregated FHIR API under fhir-service/ (--aggregate
+              defaults to true; use --aggregate false for one service per resource).
+            - IG profile types are embedded in a local Ballerina module under
+              fhir-service/modules/<ig-module>/ (inferred from the IG name unless
+              --ig-module-name is set). Pass --dependent-package to import a
+              published package instead and skip local IG module generation.
+
+        When no path or --ig is given in template mode, the tool downloads
+        hl7.fhir.r4.core into spec/international and imports the published
+        ballerinax/health.fhir.r4.international401 package (no local IG module).
+
+        When the version is omitted from --ig (e.g. --ig hl7.fhir.us.core), the
+        CLI lists published versions interactively when run from a terminal, or
+        automatically selects dist-tags.latest when run non-interactively (CI,
+        scripts, or any environment without a TTY).
+
+        You can also obtain FHIR specification files from the respective
         Implementation Guide's official website. (Published list of
         Implementation Guides can be found in http://fhir.org/guides/registry/)
 
@@ -39,83 +67,124 @@ COMMANDS
 
             OPTIONS
                     -m, --mode <mode-type>
-                        Mode can be 'package' or 'template' or 'connector'.
-				        If the mode is set to 'package',a Ballerina package will be
-				        generated including all the records and types. If the mode is set to
-				        ‘template’, tool will generate Ballerina templates for each FHIR
-				        resource definition available in the specified path. If the mode is
-				        set to ‘connector’, a Ballerina based FHIR connector client will be
-				        generated for a given FHIR server based on its Capability Statement.
-				        This is a MANDATORY input for fhir command.
+                        Mode can be 'package', 'template', or 'connector'.
+                        In 'package' mode, a Ballerina package is generated
+                        with all records and types for the IG. In 'template'
+                        mode, Ballerina FHIR API templates are generated (by
+                        default one aggregated service under fhir-service/).
+                        In 'connector' mode, a Ballerina FHIR connector client
+                        is generated from a server's Capability Statement.
+                        This is a MANDATORY input for the fhir command.
 
                     --package-name <name-of-package>
-                        Only applicable in ‘package’ mode. Name of the Ballerina package
-                        to be generated. This is a MANDATORY input in ‘package’ mode.
+                        MANDATORY in 'package' mode: name of the Ballerina
+                        package to be generated.
+                        Optional in aggregated template mode: names the
+                        generated project (Ballerina.toml and the embedded
+                        IG module's import prefix). Defaults to
+                        FHIRServerTemplate when omitted. No effect with
+                        --aggregate false.
                         Refer https://ballerina.io/learn/package-references/#the-name-field
 
                     --dependent-ig <base-url-of-the-IG>=<qualified-ballerina-package-name>
-                       This option is only applicable in ‘package’ mode and can accept multiple values.
-                       Each value must be provided as a key-value pair, where:
-                           1. <base-url-of-the-IG> is the base URL of the dependent IG.
-                           2. <qualified-ballerina-package-name> is the fully qualified name of the corresponding dependent Ballerina package.
-                           This is an optional input.
+                        Only applicable in 'package' mode; accepts multiple values.
+                        Each value is a key-value pair where:
+                            1. <base-url-of-the-IG> is the base URL of the dependent IG.
+                            2. <qualified-ballerina-package-name> is the fully qualified
+                               name of the corresponding dependent Ballerina package.
 
-                       For example, if your profile depends on the US Core profile, you should specify it like this:
-                       <base-url-of-the-IG>=<full-qualified-name-of-ballerina-package>
-                       http://hl7.org/fhir/us/core/=ballerinax/health.fhir.r4.uscore501
+                        For example, if your profile depends on US Core:
+                        http://hl7.org/fhir/us/core/=ballerinax/health.fhir.r4.uscore501
 
                     --dependent-package <qualified-ballerina-package-name>
-                        Only applicable in ‘template’ mode. Fully qualified name of the
-                        published Ballerina package containing IG resources
-                        [eg: <org>/<package>]. This option can be used to generate
-                        templates specifically for the resources in the given IG. The
-                        package name part of this value will be added as a prefix to the
-                        template name. This is a MANDATORY input in ‘template’ mode.
+                        Only applicable in 'template' mode. Import an existing
+                        published IG package (eg: <org>/<package>) instead of
+                        embedding IG resources in a local module. Disables
+                        local IG module generation. The package name is used as
+                        a prefix on generated template imports. When omitted,
+                        profile types are embedded under fhir-service/modules/.
+
+                    --ig <name>[@<version>]
+                        FHIR registry package reference, npm-style (e.g.
+                        hl7.fhir.us.core@8.0.1, or bare hl7.fhir.us.core for the
+                        latest version). Downloads from packages.fhir.org into
+                        spec/<name> when no local specification path is
+                        provided. Works in both 'package' and 'template' modes.
+                        When the version is omitted, an interactive list of
+                        published versions is shown when run from a terminal;
+                        otherwise dist-tags.latest is selected automatically.
+
+                    --registry-url <url>
+                        FHIR package registry base URL (default:
+                        https://packages.fhir.org).
+
+                    --ig-cache-dir <path>
+                        Directory for cached .tgz downloads (default:
+                        .fhir-ig-cache under the working directory). If a
+                        package is already downloaded, place it here as
+                        <name>-<version>.tgz to skip the network fetch. When
+                        this flag is explicitly set and the expected archive
+                        isn't found, a warning is printed before falling back
+                        to a registry download.
+
+                    --force-ig-download
+                        Re-download and re-extract the IG even if definitions
+                        already exist locally.
+
+                    --ig-module-name <name>
+                        Template mode only. Ballerina module name for embedded
+                        IG resources (default: inferred from the IG). Ignored
+                        when --dependent-package is set.
 
                     -o, --output <output>
-                        Location of the generated Ballerina artifacts. If this
-                        path is not specified, the output will be written to
-                        the same directory from which the command is run.
+                        Location of the generated Ballerina artifacts. If
+                        omitted, output is written to the current directory.
 
                     --org-name <org-name-of-the-package>
-                        Organization name of the Ballerina package/template to be generated.
-                        Refer https://ballerina.io/learn/package-references/#the-org-field
+                        Organization name of the generated Ballerina package or
+                        template. Refer
+                        https://ballerina.io/learn/package-references/#the-org-field
 
                     --package-version <version-of-the-package>
-                        Version of the Ballerina package/template to be generated.
+                        Version of the generated Ballerina package or template.
                         Refer https://semver.org/
 
                     --included-profile <profiles-to-included>
-                        Only applicable in ‘template’ mode. If only a specific profile/s
-                        needs to be generated as templates, specify the profile URL as the
-                        value of this parameter. This argument can be used more than once.
+                        Template mode only. Generate templates only for the
+                        given profile URL(s). May be repeated.
 
                     --excluded-profile <profiles-to-excluded>
-                        Only applicable in ‘template’ mode. If only a specific profile/s
-                        needs to be skipped when generating templates, specify the
-                        profile URL as the value of this parameter. This argument
-                        can be used more than once.
+                        Template mode only. Skip the given profile URL(s) when
+                        generating templates. May be repeated.
 
-                    --aggregate
-                        Only applicable in ‘template’ mode. Enable aggregated API mode to generate
-                        a single service with multiple FHIR resources instead of individual
-                        services for each resource.
+                    --aggregate <true|false>
+                        Template mode only. Aggregated API mode (default: true).
+                        When true, generates a single fhir-service with all
+                        resources. Set to false for one service per FHIR resource,
+                        e.g. --aggregate false.
 
                     --resources <resource1,resource2,...>
-                        Only applicable in ‘template’ mode when --aggregate is used. Comma-separated
-                        list of FHIR resources to include in the aggregated service. If not specified,
-                        all available resources will be included. Example: Patient,Observation,Encounter
+                        Template mode only when aggregation is enabled.
+                        Comma-separated list of FHIR resources to include in the
+                        aggregated service. If omitted, all available resources
+                        are included. Example: Patient,Observation,Encounter
 
                     --minimal
-                        Only applicable in 'template' mode. This flag is intended only to be used by
-                        the Health Tool MCP to generate only the core service files without
-                        additional metadata or project structure files.
+                        Template mode only. Intended for the Health Tool MCP.
+                        Generates only core service files and skips .choreo,
+                        OAS, .gitignore, and Ballerina.toml.
+
+                    --flat
+                        Aggregated mode only (default --aggregate; no effect
+                        with --aggregate false). Generates directly into
+                        -o/--output instead of nesting under fhir-service/.
+                        Unlike --minimal, still generates Ballerina.toml,
+                        .gitignore, OAS, and .choreo.
 
                     -c, --config <config-file-path>
-                    	This is a MANDATORY input applicable in ‘connector’ mode. Provide the path
-                    	for the configuration json file containing the necessary parameters to run the
-                    	tool in connector mode including Capability Statement URL of the FHIR server.
-                    	Sample json configuration:
+                        MANDATORY in 'connector' mode. Path to the configuration
+                        JSON file including the FHIR server Capability Statement
+                        URL. Sample configuration:
                         {
                           "config": {
                             "fhirServerUrl": "<capability-statement-url>",
@@ -131,19 +200,52 @@ COMMANDS
 
 
             EXAMPLES
-                    Generate a Ballerina package for the FHIR artifacts of USCore
-                    implementation guide.
-                        $ bal health fhir -m package --package-name uscore401 \
-                        ./path_to_uscore_definitions
+                    Generate templates from the default HL7 R4 core IG (registry
+                    download; imports ballerinax/health.fhir.r4.international401).
+                        $ bal health fhir -m template -o ./generated-template
 
-                    Generate a Ballerina package for the FHIR artifacts of
-                    USCore implementation guide and write the output
-                    to the given directory.
-                        $ bal health fhir -m package --package-name uscore401 \
-                        -o ./output_path ./path_to_uscore_definitions
+                    Generate templates from US Core via the registry (embedded IG
+                    module, aggregated service; pick version interactively).
+                        $ bal health fhir -m template --ig hl7.fhir.us.core \
+                        -o ./generated-template
 
-                    Generate Ballerina templates for all the FHIR resource profiles
-                    of USCore implementation guide.
+                    Pin a US Core registry version (non-interactive CI example;
+                    dist-tags.latest is used automatically outside a terminal).
+                        $ bal health fhir -m template --ig hl7.fhir.us.core@9.0.0 \
+                        -o ./generated-template
+
+                    Generate templates using a published US Core package instead
+                    of an embedded local module.
                         $ bal health fhir -m template \
                         --dependent-package ballerinax/health.fhir.r4.uscore501 \
+                        --ig hl7.fhir.us.core@6.1.0 \
+                        -o ./generated-template
+
+                    Generate separate services per FHIR resource.
+                        $ bal health fhir -m template --ig hl7.fhir.us.core \
+                        --aggregate false -o ./generated-template
+
+                    Generate the aggregated service directly into -o, without
+                    the fhir-service/ subdirectory.
+                        $ bal health fhir -m template --ig hl7.fhir.us.core \
+                        --flat -o ./generated-template
+
+                    Generate a Ballerina package from local US Core definitions.
+                        $ bal health fhir -m package --package-name uscore401 \
                         ./path_to_uscore_definitions
+
+                    Generate a package from US Core via the FHIR package registry.
+                        $ bal health fhir -m package --package-name uscore501 \
+                        --org-name ballerinax --ig hl7.fhir.us.core@6.1.0 \
+                        -o ./output
+
+                    Generate templates from local US Core definitions (embedded
+                    IG module by default).
+                        $ bal health fhir -m template \
+                        -o ./generated-template ./path_to_uscore_definitions
+
+                    Generate templates from local definitions using a published
+                    US Core package.
+                        $ bal health fhir -m template \
+                        --dependent-package ballerinax/health.fhir.r4.uscore501 \
+                        -o ./generated-template ./path_to_uscore_definitions

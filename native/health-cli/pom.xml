@@ -25,11 +25,11 @@
     <parent>
         <groupId>io.ballerina</groupId>
         <artifactId>health-tools</artifactId>
-        <version>3.3.0</version>
+        <version>4.0.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>health-cli</artifactId>
-    <version>3.3.0</version>
+    <version>4.0.0</version>
 
     <dependencies>
         <dependency>
@@ -52,6 +52,11 @@
             <groupId>org.wso2.healthcare.codegen.tool.framework</groupId>
             <artifactId>fhir-core</artifactId>
             <version>${version.healthcare.tool.framework}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.ballerina</groupId>
+            <artifactId>fhir-to-bal-lib</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
@@ -77,6 +82,17 @@
             <groupId>com.networknt</groupId>
             <artifactId>json-schema-validator</artifactId>
             <version>${version.json.schema.validator}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>1.26.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.11.4</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -122,6 +138,16 @@
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                     </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.4</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/*Runner.java</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
         </plugins>
@@ -316,6 +342,17 @@
                                         <argument>test</argument>
                                         <argument>target/test-classes/health.fhir.r5.europebase/</argument>
                                     </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>run-local-module-template-test</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>java</goal>
+                                </goals>
+                                <configuration>
+                                    <mainClass>LocalModuleTemplateTestRunner</mainClass>
+                                    <classpathScope>test</classpathScope>
                                 </configuration>
                             </execution>
                         </executions>

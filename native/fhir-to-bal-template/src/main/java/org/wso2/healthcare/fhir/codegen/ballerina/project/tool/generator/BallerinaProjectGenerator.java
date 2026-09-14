@@ -27,12 +27,15 @@ import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.AggregatedS
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.BallerinaService;
 
 import java.io.Console;
+import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.stream.Stream;
 
 /**
  * Generator class to wrap all the generator classes in Ballerina project generator.
@@ -53,9 +56,9 @@ public class BallerinaProjectGenerator extends AbstractFHIRTemplateGenerator {
         //evaluate usage of ? typed map as generator properties.
 
         String packagePath = this.getTargetDir();
-        // Provide option to check and overwrite the existing package
+        // Provide option to check and overwrite existing template output (not staging dirs alone)
         Console console = System.console();
-        if (console != null && Files.exists(Paths.get(packagePath))) {
+        if (console != null && hasExistingGeneratedTemplates(packagePath, ballerinaProjectToolConfig, serviceMap)) {
             String input = console.readLine("Generated templates already exists. Do you want to overwrite? (y/n): ");
             if ("n".equalsIgnoreCase(input)) {
                 System.exit(0);
@@ -76,15 +79,24 @@ public class BallerinaProjectGenerator extends AbstractFHIRTemplateGenerator {
                 projectProperties.put("config", ballerinaProjectToolConfig);
                 projectProperties.put("dependencies", dependenciesMap);
 
+                String projectAPIPath = this.getTargetDir() + entry.getKey().toLowerCase();
+                String templateName = ballerinaProjectToolConfig.getVersionConfig().getNamePrefix() + "." +
+                        entry.getKey().toLowerCase();
                 String basePackage = dependenciesMap.get("basePackage");
                 String servicePackage = dependenciesMap.get("servicePackage");
                 String igPackage = dependenciesMap.get("igPackage");
-                String dependentPackage = dependenciesMap.get("dependentPackage");
-                projectProperties.put("basePackageImportIdentifier", basePackage.substring(basePackage.lastIndexOf(".") + 1));
-                projectProperties.put("servicePackageImportIdentifier", servicePackage.substring(servicePackage.lastIndexOf(".") + 1));
-                projectProperties.put("igPackageImportIdentifier", igPackage.substring(igPackage.lastIndexOf(".") + 1));
-                projectProperties.put("dependentPackageImportIdentifier", dependentPackage.substring(dependentPackage.lastIndexOf(".") + 1));
-                projectProperties.put("projectAPIPath", this.getTargetDir() + entry.getKey().toLowerCase());
+                String dependentPackage = resolveDependentPackageImport(
+                        ballerinaProjectToolConfig, dependenciesMap, templateName);
+                dependenciesMap.put("dependentPackage", dependentPackage);
+                projectProperties.put("basePackageImportIdentifier", getImportIdentifier(basePackage));
+                projectProperties.put("servicePackageImportIdentifier", getImportIdentifier(servicePackage));
+                projectProperties.put("igPackageImportIdentifier", getImportIdentifier(igPackage));
+                projectProperties.put("dependentPackageImportIdentifier", getImportIdentifier(dependentPackage));
+                projectProperties.put("projectAPIPath", projectAPIPath);
+
+                if (ballerinaProjectToolConfig.isGenerateIgModuleEnabled()) {
+                    generateIgModule(projectAPIPath, ballerinaProjectToolConfig, serviceMap, null);
+                }
 
                 ServiceGenerator balServiceGenerator = new ServiceGenerator(this.getTargetDir());
                 balServiceGenerator.generate(toolContext, projectProperties);
@@ -112,17 +124,25 @@ public class BallerinaProjectGenerator extends AbstractFHIRTemplateGenerator {
                 String basePackage = dependenciesMap.get("basePackage");
                 String servicePackage = dependenciesMap.get("servicePackage");
                 String igPackage = dependenciesMap.get("igPackage");
-                String dependentPackage = dependenciesMap.get("dependentPackage");
-                projectProperties.put("basePackageImportIdentifier", basePackage.substring(basePackage.lastIndexOf(".") + 1));
-                projectProperties.put("servicePackageImportIdentifier", servicePackage.substring(servicePackage.lastIndexOf(".") + 1));
-                projectProperties.put("igPackageImportIdentifier", igPackage.substring(igPackage.lastIndexOf(".") + 1));
-                projectProperties.put("dependentPackageImportIdentifier", dependentPackage.substring(dependentPackage.lastIndexOf(".") + 1));
+                String templateName = ballerinaProjectToolConfig.getTemplatePackageName();
+                String dependentPackage = resolveDependentPackageImport(
+                        ballerinaProjectToolConfig, dependenciesMap, templateName);
+                dependenciesMap.put("dependentPackage", dependentPackage);
+                projectProperties.put("basePackageImportIdentifier", getImportIdentifier(basePackage));
+                projectProperties.put("servicePackageImportIdentifier", getImportIdentifier(servicePackage));
+                projectProperties.put("igPackageImportIdentifier", getImportIdentifier(igPackage));
+                projectProperties.put("dependentPackageImportIdentifier", getImportIdentifier(dependentPackage));
 
-                // Use minimal generation flag to determine path
-                if (ballerinaProjectToolConfig.isMinimalGeneration()) {
+                // Minimal and --flat both skip the fhir-service/ nesting; minimal additionally skips
+                // Ballerina.toml, OAS, .choreo, and .gitignore generation below.
+                if (ballerinaProjectToolConfig.isMinimalGeneration() || ballerinaProjectToolConfig.isFlatOutput()) {
                     projectProperties.put("projectAPIPath", this.getTargetDir());
                 } else {
                     projectProperties.put("projectAPIPath", this.getTargetDir() + "fhir-service");
+                }
+                if (ballerinaProjectToolConfig.isGenerateIgModuleEnabled()) {
+                    generateIgModule(projectProperties.get("projectAPIPath").toString(),
+                            ballerinaProjectToolConfig, serviceMap, entry.getValue());
                 }
 
                 AggregatedServiceGenerator aggregatedServiceGenerator = new AggregatedServiceGenerator(this.getTargetDir());
@@ -157,6 +177,94 @@ public class BallerinaProjectGenerator extends AbstractFHIRTemplateGenerator {
                     componentYamlGenerator.generate(toolContext, projectProperties);
                 }
             }
+        }
+    }
+
+    private boolean hasExistingGeneratedTemplates(String packagePath, BallerinaProjectToolConfig config,
+                                                Map<String, BallerinaService> serviceMap) {
+        Path basePath = Paths.get(packagePath);
+        if (!Files.isDirectory(basePath)) {
+            return false;
+        }
+        if (config.isEnableAggregatedApi()) {
+            Path projectPath = (config.isMinimalGeneration() || config.isFlatOutput())
+                    ? basePath : basePath.resolve("fhir-service");
+            return Files.exists(projectPath.resolve("service.bal"));
+        }
+        if (serviceMap == null || serviceMap.isEmpty()) {
+            return false;
+        }
+        for (String resourceType : serviceMap.keySet()) {
+            if (Files.exists(basePath.resolve(resourceType.toLowerCase()).resolve("service.bal"))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String resolveDependentPackageImport(BallerinaProjectToolConfig config, Map<String, String> dependenciesMap,
+                                                 String templateName) {
+        if (!config.isGenerateIgModuleEnabled()) {
+            return dependenciesMap.get("dependentPackage");
+        }
+        String igModuleName = config.getGenerateIgModuleName();
+        return templateName + "." + igModuleName;
+    }
+
+    private String getImportIdentifier(String importStatement) {
+        if (importStatement == null || importStatement.isEmpty()) {
+            return "";
+        }
+        int slashIndex = importStatement.lastIndexOf('/');
+        String modulePath = slashIndex >= 0 ? importStatement.substring(slashIndex + 1) : importStatement;
+        int dotIndex = modulePath.lastIndexOf('.');
+        return dotIndex >= 0 ? modulePath.substring(dotIndex + 1) : modulePath;
+    }
+
+    private void generateIgModule(String projectAPIPath, BallerinaProjectToolConfig config,
+                                  Map<String, BallerinaService> serviceMap,
+                                  AggregatedService aggregatedService) throws CodeGenException {
+        String igModuleName = config.getGenerateIgModuleName();
+        if (igModuleName == null || igModuleName.isEmpty()) {
+            return;
+        }
+        Path modulePath = Paths.get(projectAPIPath, "modules", igModuleName);
+        try {
+            Files.createDirectories(modulePath);
+        } catch (IOException e) {
+            throw new CodeGenException("Error creating IG module directory: " + e.getMessage(), e);
+        }
+        String generateIgModuleSourceDir = config.getGenerateIgModuleSourceDir();
+        if (generateIgModuleSourceDir == null || generateIgModuleSourceDir.isEmpty()) {
+            throw new CodeGenException("IG module source directory is not set.");
+        }
+        Path sourceDirectory = Paths.get(generateIgModuleSourceDir);
+        try {
+            try (Stream<Path> sourceFiles = Files.walk(sourceDirectory)) {
+                sourceFiles
+                        .filter(path -> !Files.isDirectory(path))
+                        .filter(path -> path.toString().endsWith(".bal")
+                                || path.toString().endsWith("Package.md")
+                                || path.toString().contains("resources" + java.io.File.separator))
+                        .forEach(path -> {
+                            Path relativePath = sourceDirectory.relativize(path);
+                            Path destination = modulePath.resolve(relativePath);
+                            try {
+                                Files.createDirectories(destination.getParent());
+                                Files.copy(path, destination, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
+            }
+        } catch (RuntimeException e) {
+            if (e.getCause() instanceof IOException) {
+                throw new CodeGenException("Error generating IG module: " + e.getCause().getMessage(),
+                        e.getCause());
+            }
+            throw e;
+        } catch (IOException e) {
+            throw new CodeGenException("Error generating IG module: " + e.getMessage(), e);
         }
     }
 }

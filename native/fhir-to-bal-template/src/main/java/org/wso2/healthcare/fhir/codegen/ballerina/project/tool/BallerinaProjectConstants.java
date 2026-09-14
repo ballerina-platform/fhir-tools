@@ -18,6 +18,8 @@
 
 package org.wso2.healthcare.fhir.codegen.ballerina.project.tool;
 
+import java.time.LocalDate;
+
 /**
  * Constants for Ballerina Project Gen tool
  */
@@ -28,6 +30,7 @@ public class BallerinaProjectConstants {
     public static final String PROJECT_API_SUFFIX = ".api";
     public static final String YAML_FILE_EXTENSION = ".yaml";
     public static final String RESOURCE_PATH_SEPERATOR = "/";
+    public static final String LICENSE_YEAR = String.valueOf(LocalDate.now().getYear());
 
     public class PrintStrings {
 

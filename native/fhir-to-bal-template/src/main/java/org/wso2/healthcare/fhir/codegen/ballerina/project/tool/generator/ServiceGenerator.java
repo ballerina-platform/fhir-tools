@@ -25,6 +25,7 @@ import org.wso2.healthcare.codegen.tool.framework.fhir.core.AbstractFHIRTemplate
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.BallerinaProjectConstants;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.config.BallerinaProjectToolConfig;
 import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.BallerinaService;
+import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model.FHIRProfile;
 
 import java.io.File;
 import java.util.HashMap;
@@ -54,7 +55,25 @@ public class ServiceGenerator extends AbstractFHIRTemplateGenerator {
         HashMap<String, String> dependencies = (HashMap<String, String>) generatorProperties.get("dependencies");
         ballerinaService.addImport(dependencies.get("basePackage"));
         ballerinaService.addImport(dependencies.get("servicePackage"));
-        ballerinaService.addImport(dependencies.get("dependentPackage"));
+        if (ballerinaProjectToolConfig.getIncludedIGConfigs().size() <= 1) {
+            // Multi-IG: every profile already resolves to its own package via the loop below: nothing in the
+            // generated service references the tool-wide default, so importing it here would be an unused
+            // import (a Ballerina compile error, not just a warning).
+            ballerinaService.addImport(dependencies.get("dependentPackage"));
+        }
+        // Only multi-IG needs per-profile imports (each IG keeps its own real name/importStatement -- see
+        // AbstractBallerinaProjectTool.populateIGs()). For a single IncludedIGConfig entry,
+        // profile.getImportsList() is unreliable regardless of embed vs. explicit dependent package:
+        // populateIGs() rewrites that IG's importStatement to <project org>/<versionConfig namePrefix>, which
+        // is a different string (different org, or a local-module path) than the correct, already-added
+        // dependencies.get("dependentPackage") -- adding it too causes a duplicate/conflicting import.
+        if (ballerinaProjectToolConfig.getIncludedIGConfigs().size() > 1) {
+            for (FHIRProfile profile : ballerinaService.getProfileList()) {
+                for (Object importStatement : profile.getImportsList()) {
+                    ballerinaService.addImport((String) importStatement);
+                }
+            }
+        }
         ballerinaService.setOperationConfigs(ballerinaProjectToolConfig.getOperationConfig());
         return ballerinaService;
     }
@@ -63,6 +82,7 @@ public class ServiceGenerator extends AbstractFHIRTemplateGenerator {
         TemplateContext templateContext = this.getNewTemplateContext();
         BallerinaService ballerinaService = initializeServiceWithDefaults(generatorProperties);
         templateContext.setProperty("service", ballerinaService);
+        templateContext.setProperty("licenseYear", BallerinaProjectConstants.LICENSE_YEAR);
         templateContext.setProperty("basePackageImportIdentifier", generatorProperties.get("basePackageImportIdentifier"));
         templateContext.setProperty("servicePackageImportIdentifier", generatorProperties.get("servicePackageImportIdentifier"));
         templateContext.setProperty("dependentPackageImportIdentifier", generatorProperties.get("dependentPackageImportIdentifier"));

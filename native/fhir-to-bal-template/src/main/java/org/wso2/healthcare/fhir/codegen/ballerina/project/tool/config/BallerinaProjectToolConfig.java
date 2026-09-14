@@ -53,6 +53,11 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
     private boolean enableAggregatedApi;
     private List<String> aggregatedApis;
     private boolean minimalGeneration;
+    private boolean flatOutput;
+    private String templatePackageName;
+    private boolean generateIgModuleEnabled;
+    private String generateIgModuleName;
+    private String generateIgModuleSourceDir;
 
     public BallerinaProjectToolConfig() {
         this.aggregatedApis = new ArrayList<>();
@@ -87,6 +92,17 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
             if (jsonConfigObj.getAsJsonArray("aggregatedApis") != null) {
                 populateAggregatedApis(jsonConfigObj.getAsJsonArray("aggregatedApis"));
             }
+            if (jsonConfigObj.getAsJsonObject("generateIgModule") != null) {
+                JsonObject generateIgModuleConfig = jsonConfigObj.getAsJsonObject("generateIgModule");
+                if (generateIgModuleConfig.getAsJsonPrimitive("enabled") != null) {
+                    this.generateIgModuleEnabled = generateIgModuleConfig
+                            .getAsJsonPrimitive("enabled").getAsBoolean();
+                }
+                if (generateIgModuleConfig.getAsJsonPrimitive("name") != null) {
+                    this.generateIgModuleName = generateIgModuleConfig
+                            .getAsJsonPrimitive("name").getAsString();
+                }
+            }
         }
         //todo: add toml type config handling
     }
@@ -120,6 +136,12 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
             case "project.minimalGeneration":
                 this.minimalGeneration = value.getAsBoolean();
                 break;
+            case "project.flatOutput":
+                this.flatOutput = value.getAsBoolean();
+                break;
+            case "project.package.templateName":
+                this.templatePackageName = value.getAsString();
+                break;
             case "project.aggregatedApis":
                 this.aggregatedApis.clear();
                 if (value.isJsonArray()) {
@@ -128,6 +150,15 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
                         this.aggregatedApis.add(resourcesArray.get(i).getAsString());
                     }
                 }
+                break;
+            case "project.generateIgModule.enabled":
+                this.generateIgModuleEnabled = value.getAsBoolean();
+                break;
+            case "project.generateIgModule.name":
+                this.generateIgModuleName = value.getAsString();
+                break;
+            case "project.generateIgModule.sourceDir":
+                this.generateIgModuleSourceDir = value.getAsString();
                 break;
             default:
                 LOG.warn("Invalid config path: " + jsonPath);
@@ -234,4 +265,27 @@ public class BallerinaProjectToolConfig extends AbstractToolConfig {
     }
 
     public boolean isMinimalGeneration() { return minimalGeneration;}
+
+    public boolean isFlatOutput() { return flatOutput;}
+
+    /**
+     * Aggregated-mode project name (Ballerina.toml's name, and the import prefix for an embedded IG
+     * module). Defaults to "FHIRServerTemplate" when --package-name isn't given, matching prior behavior.
+     */
+    public String getTemplatePackageName() {
+        return (templatePackageName != null && !templatePackageName.isEmpty())
+                ? templatePackageName : "FHIRServerTemplate";
+    }
+
+    public boolean isGenerateIgModuleEnabled() {
+        return generateIgModuleEnabled;
+    }
+
+    public String getGenerateIgModuleName() {
+        return generateIgModuleName;
+    }
+
+    public String getGenerateIgModuleSourceDir() {
+        return generateIgModuleSourceDir;
+    }
 }

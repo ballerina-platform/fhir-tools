@@ -1,5 +1,5 @@
 #set($sqBrackets=[])
-// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) ${licenseYear}, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -22,7 +22,7 @@
 
 import ballerina/http;
 #foreach($import in $aggregatedService.getImportsList())
-import $import.toLowerCase();
+import $import;
 #end
 
 # Generic types to wrap all implemented profiles for each resource.
@@ -41,8 +41,17 @@ public type $resourceType #**##foreach($profile in $service.getProfileList())$pr
 
 // ######################################################################################################################
 // # $resourceType API                                                                                                          #
-// ###################################################################################################################### 
+// ######################################################################################################################
 
+#if($service.hasMultipleProfiles())
+// $resourceType is profiled by more than one implementation guide. Fill in each profile's search below.
+#foreach($profile in $service.getProfileList())
+isolated function search$profile.getSearchFunctionSuffix()($basePackageImportIdentifier:FHIRContext fhirContext) returns $basePackageImportIdentifier:Bundle|$basePackageImportIdentifier:OperationOutcome|$basePackageImportIdentifier:FHIRError {
+    return $basePackageImportIdentifier:createFHIRError("Not implemented", $basePackageImportIdentifier:ERROR, $basePackageImportIdentifier:INFORMATIONAL, httpStatusCode = http:STATUS_NOT_IMPLEMENTED);
+}
+
+#end
+#end
 service /fhir/$service.getFhirVersion()/$resourceType on new $servicePackageImportIdentifier:Listener(config = ${resourceType.toLowerCase()}ApiConfig) {
 
     // Read the current state of single resource based on its id.
@@ -55,10 +64,30 @@ service /fhir/$service.getFhirVersion()/$resourceType on new $servicePackageImpo
         return $basePackageImportIdentifier:createFHIRError("Not implemented", $basePackageImportIdentifier:ERROR, $basePackageImportIdentifier:INFORMATIONAL, httpStatusCode = http:STATUS_NOT_IMPLEMENTED);
     }
 
+#if($service.hasMultipleProfiles())
+    // Search for resources based on a set of criteria. Dispatches by _profile since $resourceType has
+    // more than one profile; add a default here if unspecified _profile should resolve to one of them.
+    isolated resource function get .($basePackageImportIdentifier:FHIRContext fhirContext) returns $basePackageImportIdentifier:Bundle|$basePackageImportIdentifier:OperationOutcome|$basePackageImportIdentifier:FHIRError {
+        readonly & $basePackageImportIdentifier:RequestSearchParameter[]? _profileParams = fhirContext.getRequestSearchParameter("_profile");
+        string? _profile = _profileParams is $basePackageImportIdentifier:RequestSearchParameter[] && _profileParams.length() > 0
+                ? _profileParams[0].value : ();
+        match _profile {
+#foreach($profile in $service.getProfileList())
+            "$profile.getUrl()" => {
+                return search$profile.getSearchFunctionSuffix()(fhirContext);
+            }
+#end
+            _ => {
+                return $basePackageImportIdentifier:createFHIRError("Not implemented", $basePackageImportIdentifier:ERROR, $basePackageImportIdentifier:INFORMATIONAL, httpStatusCode = http:STATUS_NOT_IMPLEMENTED);
+            }
+        }
+    }
+#else
     // Search for resources based on a set of criteria.
     isolated resource function get .($basePackageImportIdentifier:FHIRContext fhirContext) returns $basePackageImportIdentifier:Bundle|$basePackageImportIdentifier:OperationOutcome|$basePackageImportIdentifier:FHIRError {
         return $basePackageImportIdentifier:createFHIRError("Not implemented", $basePackageImportIdentifier:ERROR, $basePackageImportIdentifier:INFORMATIONAL, httpStatusCode = http:STATUS_NOT_IMPLEMENTED);
     }
+#end
 
     // Create a new resource.
     isolated resource function post .($basePackageImportIdentifier:FHIRContext fhirContext, $resourceType $resourceType.toLowerCase()) returns $resourceType|$basePackageImportIdentifier:OperationOutcome|$basePackageImportIdentifier:FHIRError {

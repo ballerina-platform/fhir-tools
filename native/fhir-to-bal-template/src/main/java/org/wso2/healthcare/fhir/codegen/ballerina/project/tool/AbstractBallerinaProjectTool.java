@@ -112,28 +112,41 @@ public abstract class AbstractBallerinaProjectTool extends AbstractFHIRTool {
      */
     protected void populateIGs(ToolContext toolContext) {
 
+        // Multi-IG runs (2+ IncludedIGConfig entries, one per real --ig name -- see FhirTemplateGenHandler) must
+        // keep each IG keyed by its own real name and leave its importStatement alone: it already carries that
+        // IG's own resolved package (packageMappings, enforced non-null for multi-IG). Collapsing every IG onto
+        // the single shared packageName/igPackage below -- as single-IG mode does -- would make a second IG
+        // silently overwrite the first in igMap.
+        boolean isMultiIG = getBallerinaProjectToolConfig().getIncludedIGConfigs().size() > 1;
+
         for (Map.Entry<String, IncludedIGConfig> entry : getBallerinaProjectToolConfig().getIncludedIGConfigs().entrySet()) {
             String igName = entry.getKey();
             FHIRImplementationGuide ig = ((FHIRSpecificationData) toolContext.getSpecificationData()).
                     getFhirImplementationGuides().get(igName);
-            String packageName = getBallerinaProjectToolConfig().getVersionConfig().getNamePrefix();
-            if (entry.getValue().isEnable() && ig != null) {
-                String igPackage = getBallerinaProjectToolConfig().getMetadataConfig().getOrg() + "/" +
-                        getBallerinaProjectToolConfig().getVersionConfig().getNamePrefix();
-                igMap.put(packageName, ig);
-
-                if (!packageName.equals(igName)) {
-                    //Update key in the ig config global map
-                    getBallerinaProjectToolConfig().getIncludedIGConfigs().remove(igName);
-                    IncludedIGConfig updatedIGConfig = entry.getValue();
-                    updatedIGConfig.setImportStatement(igPackage);
-                    getBallerinaProjectToolConfig().getIncludedIGConfigs().put(packageName, updatedIGConfig);
-
-                    ((FHIRSpecificationData) toolContext.getSpecificationData()).getFhirImplementationGuides().remove(igName);
-                    ((FHIRSpecificationData) toolContext.getSpecificationData()).getFhirImplementationGuides().put(packageName, ig);
-                }
-                dependenciesMap.put("igPackage", igPackage);
+            if (!entry.getValue().isEnable() || ig == null) {
+                continue;
             }
+            if (isMultiIG) {
+                igMap.put(igName, ig);
+                dependenciesMap.put("igPackage", entry.getValue().getImportStatement());
+                continue;
+            }
+            String packageName = getBallerinaProjectToolConfig().getVersionConfig().getNamePrefix();
+            String igPackage = getBallerinaProjectToolConfig().getMetadataConfig().getOrg() + "/" +
+                    getBallerinaProjectToolConfig().getVersionConfig().getNamePrefix();
+            igMap.put(packageName, ig);
+
+            if (!packageName.equals(igName)) {
+                //Update key in the ig config global map
+                getBallerinaProjectToolConfig().getIncludedIGConfigs().remove(igName);
+                IncludedIGConfig updatedIGConfig = entry.getValue();
+                updatedIGConfig.setImportStatement(igPackage);
+                getBallerinaProjectToolConfig().getIncludedIGConfigs().put(packageName, updatedIGConfig);
+
+                ((FHIRSpecificationData) toolContext.getSpecificationData()).getFhirImplementationGuides().remove(igName);
+                ((FHIRSpecificationData) toolContext.getSpecificationData()).getFhirImplementationGuides().put(packageName, ig);
+            }
+            dependenciesMap.put("igPackage", igPackage);
         }
     }
 
@@ -183,6 +196,10 @@ public abstract class AbstractBallerinaProjectTool extends AbstractFHIRTool {
         dependenciesMap.put("basePackage", fhirBaseImportStatement.toLowerCase());
         dependenciesMap.put("servicePackage", fhirServiceImportStatement.toLowerCase());
         dependenciesMap.put("dependentPackage", fhirInternationalImportStatement.toLowerCase());
+        dependenciesMap.put("useGenerateIgModule",
+                String.valueOf(getBallerinaProjectToolConfig().isGenerateIgModuleEnabled()));
+        dependenciesMap.put("generateIgModuleName",
+                getBallerinaProjectToolConfig().getGenerateIgModuleName());
     }
 
     protected abstract void populateBalService();
