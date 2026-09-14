@@ -35,7 +35,7 @@ public type $service.getName() #**##foreach($profile in $service.getProfileList(
 #if($service.hasMultipleProfiles())
 // $service.getName() is profiled by more than one implementation guide. Fill in each profile's search below.
 #foreach($profile in $service.getProfileList())
-isolated function search$profile.getName()($basePackageImportIdentifier:FHIRContext fhirContext) returns $basePackageImportIdentifier:Bundle|$basePackageImportIdentifier:OperationOutcome|$basePackageImportIdentifier:FHIRError {
+isolated function search$profile.getSearchFunctionSuffix()($basePackageImportIdentifier:FHIRContext fhirContext) returns $basePackageImportIdentifier:Bundle|$basePackageImportIdentifier:OperationOutcome|$basePackageImportIdentifier:FHIRError {
     return $basePackageImportIdentifier:createFHIRError("Not implemented", $basePackageImportIdentifier:ERROR, $basePackageImportIdentifier:INFORMATIONAL, httpStatusCode = http:STATUS_NOT_IMPLEMENTED);
 }
 
@@ -65,7 +65,7 @@ service / on new $servicePackageImportIdentifier:Listener(9090, apiConfig) {
         match _profile {
 #foreach($profile in $service.getProfileList())
             "$profile.getUrl()" => {
-                return search$profile.getName()(fhirContext);
+                return search$profile.getSearchFunctionSuffix()(fhirContext);
             }
 #end
             _ => {

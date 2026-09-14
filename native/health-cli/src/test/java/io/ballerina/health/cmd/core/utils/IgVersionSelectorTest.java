@@ -18,6 +18,7 @@
 
 package io.ballerina.health.cmd.core.utils;
 
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -25,7 +26,6 @@ import java.io.PrintStream;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class IgVersionSelectorTest {
@@ -82,7 +82,18 @@ class IgVersionSelectorTest {
     }
 
     @Test
-    void isInteractiveConsoleUnavailableInJUnit() {
-        assertFalse(IgVersionSelector.isInteractiveConsoleAvailable());
+    void selectVersionFallsBackToLatestTagWhenNoInteractiveConsole() throws Exception {
+        // On JDK 22-24, System.console() can report non-null even with JUnit's redirected streams (JDK-8309155),
+        // so asserting isInteractiveConsoleAvailable() directly is JDK-version-dependent. Skip in that case
+        // rather than assert environment-specific console behavior; otherwise, verify the actual
+        // selection behavior that matters: with no interactive console, selectVersion() must not block on
+        // input and must fall back to the latest-tag version automatically, exactly like the explicit
+        // nonInteractive=true path.
+        Assumptions.assumeTrue(!IgVersionSelector.isInteractiveConsoleAvailable(),
+                "Skipping: this JDK reports an interactive console even under redirected test I/O");
+        List<String> versions = IgVersionSelector.parseAvailableVersions(US_CORE_METADATA);
+        String selected = IgVersionSelector.selectVersion(
+                "hl7.fhir.us.core", versions, "9.0.0", false, null);
+        assertEquals("9.0.0", selected);
     }
 }

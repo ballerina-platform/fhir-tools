@@ -216,6 +216,7 @@ public final class FhirIgPackageDownloader {
      * Extracts a FHIR package tarball into {@code targetDirectory} (for tests and local .tgz use).
      */
     public static void extractPackage(byte[] tgzData, Path targetDirectory) throws BallerinaHealthException {
+        Path normalizedTarget = targetDirectory.toAbsolutePath().normalize();
         try (InputStream gzipIn = new GZIPInputStream(new ByteArrayInputStream(tgzData));
              TarArchiveInputStream tarIn = new TarArchiveInputStream(gzipIn)) {
             ArchiveEntry entry;
@@ -227,7 +228,11 @@ public final class FhirIgPackageDownloader {
                 if (!relative.endsWith(".json")) {
                     continue;
                 }
-                Path destination = targetDirectory.resolve(relative);
+                Path destination = normalizedTarget.resolve(relative).normalize();
+                if (!destination.startsWith(normalizedTarget)) {
+                    throw new BallerinaHealthException("IG package contains an illegal entry path: "
+                            + entry.getName());
+                }
                 Files.createDirectories(destination.getParent());
                 writeEntry(tarIn, destination);
             }

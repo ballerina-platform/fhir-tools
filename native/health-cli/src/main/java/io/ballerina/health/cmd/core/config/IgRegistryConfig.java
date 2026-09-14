@@ -61,20 +61,23 @@ public class IgRegistryConfig {
             JsonObject defaults = igRegistry.getAsJsonObject("defaultPackages");
             for (String fhirVersion : defaults.keySet()) {
                 JsonObject pkg = defaults.getAsJsonObject(fhirVersion);
+                if (pkg == null || !pkg.has("name") || !pkg.has("version")) {
+                    continue;
+                }
                 defaultPackages.put(fhirVersion, new IgPackageRef(
                         pkg.get("name").getAsString(),
                         pkg.get("version").getAsString()
                 ));
             }
         }
-        if (defaultPackages.isEmpty()) {
-            defaultPackages.put("r4", new IgPackageRef(
-                    HealthCmdConstants.CMD_DEFAULT_R4_IG_PACKAGE_NAME,
-                    HealthCmdConstants.CMD_DEFAULT_R4_IG_PACKAGE_VERSION));
-            defaultPackages.put("r5", new IgPackageRef(
-                    HealthCmdConstants.CMD_DEFAULT_R5_IG_PACKAGE_NAME,
-                    HealthCmdConstants.CMD_DEFAULT_R5_IG_PACKAGE_VERSION));
-        }
+        // Ensure the r4/r5 fallbacks used by getDefaultPackage() are always present, even when the
+        // configured "defaultPackages" is malformed or only overrides one of the two FHIR versions.
+        defaultPackages.putIfAbsent("r4", new IgPackageRef(
+                HealthCmdConstants.CMD_DEFAULT_R4_IG_PACKAGE_NAME,
+                HealthCmdConstants.CMD_DEFAULT_R4_IG_PACKAGE_VERSION));
+        defaultPackages.putIfAbsent("r5", new IgPackageRef(
+                HealthCmdConstants.CMD_DEFAULT_R5_IG_PACKAGE_NAME,
+                HealthCmdConstants.CMD_DEFAULT_R5_IG_PACKAGE_VERSION));
 
         Map<String, String> mappings = new HashMap<>();
         if (igRegistry.has("packageMappings")) {

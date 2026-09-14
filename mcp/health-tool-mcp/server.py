@@ -836,17 +836,15 @@ def fhirTemplateGeneration(
 
     if fhir_spec_directory:
         fhir_spec_directory = normalize_path(fhir_spec_directory)
-
-    if fhir_spec_directory:
         ws_err = _validate_within_workspace(fhir_spec_directory, "fhir_spec_directory")
-    if ws_err:
-        return _log_output_and_return(
-            tool_name="fhirTemplateGeneration",
-            request_id=_request_id,
-            caller=_caller,
-            response_str=format_error_output("fhirTemplateGeneration", "Validation error", ws_err),
-            start_time=_start_time,
-        )
+        if ws_err:
+            return _log_output_and_return(
+                tool_name="fhirTemplateGeneration",
+                request_id=_request_id,
+                caller=_caller,
+                response_str=format_error_output("fhirTemplateGeneration", "Validation error", ws_err),
+                start_time=_start_time,
+            )
 
     if fhir_spec_directory and not os.path.exists(fhir_spec_directory):
         return _log_output_and_return(

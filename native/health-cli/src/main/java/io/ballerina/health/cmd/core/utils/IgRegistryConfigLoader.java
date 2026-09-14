@@ -44,8 +44,8 @@ public final class IgRegistryConfigLoader {
             if (config != null && config.has("fhir")) {
                 return IgRegistryConfig.fromFhirConfig(config.getAsJsonObject("fhir"));
             }
-        } catch (BallerinaHealthException | IOException ignored) {
-            // use defaults
+        } catch (BallerinaHealthException | IOException | RuntimeException ignored) {
+            // Malformed igRegistry config (e.g. unexpected JSON types/shape) falls back to defaults.
         }
         return IgRegistryConfig.defaults();
     }
