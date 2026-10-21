@@ -140,31 +140,38 @@ public class CommonUtil {
      * @return validated code
      */
     /**
-     * Comparator codes, which are the one family of real FHIR codes made entirely of punctuation.
+     * Reduces a token from a short description to the FHIR code it stands for.
      *
-     * <p>{@code Quantity.comparator} is bound to {@code < | <= | >= | >}, and those are the code values
-     * themselves. They are kept verbatim: the generator has a map that turns each into a readable member name
-     * ({@code less_than} and so on) while the value stays as the operator.
+     * <p>Structural cleanup only: the first word, with a parenthesised gloss removed -- Swiss MedNet writes
+     * "A+ (Blood group A Rh(D) positive)" and the code is "A+". The code is returned exactly as written,
+     * because it is the value the generated enum member carries and a profile is conformant only if that
+     * value is right. Making it safe to use as a Ballerina identifier is a separate job, done when the member
+     * name is built, so that codes like "Z96.6", "[in_i]", "A+" and "112144000" survive intact.
+     *
+     * @param code token to interpret
+     * @return the code, or an empty string when the token is prose rather than a code
      */
-    private static final Set<String> OPERATOR_CODES = Set.of("=", "!=", ">", ">=", "<", "<=");
-
     public static String validateCode(String code) {
         if (code == null) {
             return "";
         }
         String newCode = code.trim().split(Pattern.quote(" "))[0];
-        // Drop a balanced parenthesised aside first, as before.
         newCode = newCode.replaceAll(" *\\(.+?\\)", "").trim();
-        if (OPERATOR_CODES.contains(newCode)) {
-            return newCode;
+        // Ellipses and "etc." are how a short says the list is incomplete; neither is a code.
+        if (newCode.isEmpty() || newCode.chars().noneMatch(Character::isLetterOrDigit)
+                && !OPERATOR_CODES.contains(newCode)) {
+            return "";
         }
-        // Then every character that cannot appear in a FHIR code or in the Ballerina identifier built from it.
-        // Stripping only "+" and "*" let a lone ")" through -- a short of "Address type (postal | physical)"
-        // produced the member `physical)`, which does not compile.
-        newCode = newCode.replaceAll("[^A-Za-z0-9_-]", "");
-        // An identifier cannot begin with a digit, and a code that reduces to nothing is not a code.
-        return newCode.isEmpty() || Character.isDigit(newCode.charAt(0)) ? "" : newCode;
+        return "etc.".equalsIgnoreCase(newCode) ? "" : newCode;
     }
+
+    /**
+     * Comparator codes, which are the one family of real FHIR codes made entirely of punctuation.
+     *
+     * <p>{@code Quantity.comparator} is bound to {@code < | <= | >= | >}, and those are the code values
+     * themselves, so a token of pure punctuation is not automatically prose.
+     */
+    private static final Set<String> OPERATOR_CODES = Set.of("=", "!=", ">", ">=", "<", "<=");
 
     /**
      * Convert number to words.

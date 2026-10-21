@@ -36,7 +36,7 @@ public class AggregatedService {
     private Map<String, BallerinaService> services;
     private List<OperationConfig> operationConfigs;
     private List<String> igs;
-    private Map<String, String> searchFunctionSuffixes;
+    private Map<FHIRProfile, String> searchFunctionSuffixes;
 
     public AggregatedService(String name, String fhirVersion) {
         this.name = name;
@@ -113,7 +113,7 @@ public class AggregatedService {
             }
             searchFunctionSuffixes = SearchFunctionNaming.assignSuffixes(allProfiles);
         }
-        return searchFunctionSuffixes.get(profile.getUrl());
+        return searchFunctionSuffixes.get(profile);
     }
 
     public List<OperationConfig> getOperationConfigs() {

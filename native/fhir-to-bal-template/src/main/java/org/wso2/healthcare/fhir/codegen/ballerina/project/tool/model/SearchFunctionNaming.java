@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -48,12 +48,18 @@ public final class SearchFunctionNaming {
     }
 
     /**
-     * Builds a profile-URL to function-suffix map for every profile that shares a generated file.
+     * Builds a profile to function-suffix map for every profile that shares a generated file.
+     *
+     * <p>Keyed by profile identity rather than canonical URL: one function is declared per rendered profile,
+     * and the same URL can legitimately arrive twice (e.g. {@code --included-profile} repeats a URL, so the
+     * same StructureDefinition is collected once per mention). Keying by URL collapsed those onto one entry,
+     * so every such profile rendered under the same name -- the "redeclared symbol" failure this class exists
+     * to prevent.
      *
      * @param profiles all profiles rendered into the same Ballerina source file
-     * @return canonical profile URL to unique, Ballerina-identifier-safe function name suffix
+     * @return profile to unique, Ballerina-identifier-safe function name suffix
      */
-    public static Map<String, String> assignSuffixes(Collection<FHIRProfile> profiles) {
+    public static Map<FHIRProfile, String> assignSuffixes(Collection<FHIRProfile> profiles) {
         // Progressively more qualified candidates. The first tier that is unambiguous for a given profile wins,
         // so the common case keeps the short name and only genuinely clashing profiles pay for disambiguation.
         // The last tier is the canonical URL, which is unique per profile by the FHIR spec, so it always ends.
@@ -64,7 +70,7 @@ public final class SearchFunctionNaming {
                 p -> identifier(p.getResourceType(), p.getUrl()));
 
         List<FHIRProfile> pending = new ArrayList<>(profiles);
-        Map<String, String> assigned = new LinkedHashMap<>();
+        Map<FHIRProfile, String> assigned = new IdentityHashMap<>();
         Set<String> taken = new HashSet<>();
 
         for (Function<FHIRProfile, String> tier : tiers) {
@@ -80,7 +86,7 @@ public final class SearchFunctionNaming {
                 String candidate = tier.apply(profile);
                 // Unique among the profiles still competing, and not already handed to an earlier tier.
                 if (counts.get(candidate) == 1 && !taken.contains(candidate)) {
-                    assigned.put(profile.getUrl(), candidate);
+                    assigned.put(profile, candidate);
                     taken.add(candidate);
                 } else {
                     stillPending.add(profile);
@@ -89,12 +95,16 @@ public final class SearchFunctionNaming {
             pending = stillPending;
         }
 
-        // Only reachable if two profiles share a canonical URL, which would make them the same profile; number
-        // them rather than emitting a duplicate declaration.
+        // Reached when two profiles are indistinguishable even by canonical URL -- the same StructureDefinition
+        // collected more than once. Number them rather than emitting a duplicate declaration.
         int sequence = 0;
         for (FHIRProfile profile : pending) {
-            String candidate = identifier(profile.getResourceType(), profile.getUrl()) + "_" + (++sequence);
-            assigned.put(profile.getUrl(), candidate);
+            String base = identifier(profile.getResourceType(), profile.getUrl());
+            String candidate;
+            do {
+                candidate = base + "_" + (++sequence);
+            } while (!taken.add(candidate));
+            assigned.put(profile, candidate);
         }
         return assigned;
     }

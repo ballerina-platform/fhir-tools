@@ -40,7 +40,7 @@ public class BallerinaService {
     private List<SearchParam> searchParamConfigs;
     private List<ResourceMethod> resourceMethods;
     private List<String> igs;
-    private Map<String, String> searchFunctionSuffixes;
+    private Map<FHIRProfile, String> searchFunctionSuffixes;
 
     public BallerinaService(String name, String fhirVersion) {
         this.name = name;
@@ -146,6 +146,6 @@ public class BallerinaService {
         if (searchFunctionSuffixes == null) {
             searchFunctionSuffixes = SearchFunctionNaming.assignSuffixes(profileList);
         }
-        return searchFunctionSuffixes.get(profile.getUrl());
+        return searchFunctionSuffixes.get(profile);
     }
 }

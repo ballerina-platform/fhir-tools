@@ -33,6 +33,7 @@ import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.DatatypeTemplate
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -440,6 +441,32 @@ public class GeneratorUtils {
      * @param specialChar special character
      * @return preferred string replacement
      */
+    /**
+     * Builds the Ballerina enum member name for a FHIR code.
+     *
+     * <p>The code itself is the member's *value* and is emitted verbatim; this is only the identifier beside
+     * it. Real codes carry characters an identifier cannot: "Z96.6", "[in_i]", "application/x-fhir-query",
+     * and the blood groups "A", "A-", "A+" -- which must stay distinguishable, so "+" becomes a word rather
+     * than another underscore that would collide "A+" with "A-".
+     *
+     * @param code the FHIR code, as written
+     * @return an upper-case identifier fragment, safe to follow the generated CODE_ prefix
+     */
+    public String toEnumMemberName(String code) {
+        if (code == null || code.isEmpty()) {
+            return "";
+        }
+        if (SPECIAL_CHARACTERS_MAP.containsKey(code)) {
+            return SPECIAL_CHARACTERS_MAP.get(code).toUpperCase(Locale.ROOT);
+        }
+        String name = code.replaceAll(Pattern.quote("[x]"), "")
+                .replace("+", "_plus")
+                .replaceAll("[^A-Za-z0-9]", "_")
+                .replaceAll("_{2,}", "_")
+                .replaceAll("^_+", "");
+        return name.isEmpty() ? "" : name.toUpperCase(Locale.ROOT);
+    }
+
     public String resolveSpecialCharacters(String specialChar) {
         if (SPECIAL_CHARACTERS_MAP.containsKey(specialChar))
             return SPECIAL_CHARACTERS_MAP.get(specialChar);
