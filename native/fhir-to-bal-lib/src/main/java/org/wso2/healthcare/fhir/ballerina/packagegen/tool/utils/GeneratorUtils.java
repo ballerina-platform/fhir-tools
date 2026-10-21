@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GeneratorUtils {
@@ -522,11 +523,17 @@ public class GeneratorUtils {
      * @param shortField short text from the element definition of FHIR specification
      * @param element    element model for template context
      */
+    /** A parenthesised group that itself lists alternatives, which is where the codes really are. */
+    private static final Pattern CODE_LIST_IN_BRACKETS = Pattern.compile("\\(([^()]*\\|[^()]*)\\)");
+
     public static void populateCodeValuesForCodeElements(String shortField, Element element) {
+        if (shortField == null) {
+            return;
+        }
         if (!shortField.contains("|")) {
             /// If the short field has only one value, it should also be converted to an ENUM.
             /// Ignores the short fields with a general description.
-            if (shortField.contains(" ") && shortField.split(" ").length > 0) {
+            if (shortField.trim().contains(" ")) {
                 return;
             }
         }
@@ -559,6 +566,14 @@ public class GeneratorUtils {
         /// "short": "𝗔𝗗𝗗𝗜𝗧𝗜𝗢𝗡𝗔𝗟 𝗨𝗦𝗖𝗗𝗜: usual | official | temp | nickname | anonymous | old | maiden"
         if (shortField.contains(":")) {
             shortField = shortField.split(":")[1];
+        }
+        /// EU Base writes the same list as prose with the codes in brackets, for example
+        /// "short": "Address type (postal | physical)". Taking the whole string would harvest the prose --
+        /// "Address type (postal" yields the word "Address", which is no code at all -- so when a bracketed
+        /// group is the thing carrying the alternatives, that group is the code list.
+        Matcher bracketed = CODE_LIST_IN_BRACKETS.matcher(shortField);
+        if (bracketed.find()) {
+            shortField = bracketed.group(1);
         }
         return shortField;
     }

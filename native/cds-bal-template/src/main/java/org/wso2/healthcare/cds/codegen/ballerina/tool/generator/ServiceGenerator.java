@@ -77,6 +77,7 @@ public class ServiceGenerator extends AbstractFHIRTemplateGenerator {
         TemplateContext templateContext = this.getNewTemplateContext();
         BallerinaService ballerinaService = (BallerinaService) generatorProperties.get(SERVICE);
         templateContext.setProperty(SERVICE, ballerinaService);
+        templateContext.setProperty("licenseYear", BallerinaCDSProjectConstants.LICENSE_YEAR);
         return templateContext;
     }
 }

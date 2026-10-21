@@ -22,6 +22,7 @@ import org.wso2.healthcare.fhir.codegen.ballerina.project.tool.config.OperationC
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Ballerina service model
@@ -39,6 +40,7 @@ public class BallerinaService {
     private List<SearchParam> searchParamConfigs;
     private List<ResourceMethod> resourceMethods;
     private List<String> igs;
+    private Map<String, String> searchFunctionSuffixes;
 
     public BallerinaService(String name, String fhirVersion) {
         this.name = name;
@@ -134,5 +136,16 @@ public class BallerinaService {
      */
     public boolean hasMultipleProfiles() {
         return profileList.size() > 1;
+    }
+
+    /**
+     * Name of the generated per-profile search-dispatch stub for {@code profile} ("search&lt;suffix&gt;").
+     * Scoped to this service because in separate-service mode each resource type is its own file.
+     */
+    public String getSearchFunctionSuffix(FHIRProfile profile) {
+        if (searchFunctionSuffixes == null) {
+            searchFunctionSuffixes = SearchFunctionNaming.assignSuffixes(profileList);
+        }
+        return searchFunctionSuffixes.get(profile.getUrl());
     }
 }

@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -138,11 +139,31 @@ public class CommonUtil {
      * @param code code
      * @return validated code
      */
+    /**
+     * Comparator codes, which are the one family of real FHIR codes made entirely of punctuation.
+     *
+     * <p>{@code Quantity.comparator} is bound to {@code < | <= | >= | >}, and those are the code values
+     * themselves. They are kept verbatim: the generator has a map that turns each into a readable member name
+     * ({@code less_than} and so on) while the value stays as the operator.
+     */
+    private static final Set<String> OPERATOR_CODES = Set.of("=", "!=", ">", ">=", "<", "<=");
+
     public static String validateCode(String code) {
+        if (code == null) {
+            return "";
+        }
         String newCode = code.trim().split(Pattern.quote(" "))[0];
-        return newCode.replaceAll(" *\\(.+?\\)", "")
-                .replace("+", "")
-                .replace("*", "");
+        // Drop a balanced parenthesised aside first, as before.
+        newCode = newCode.replaceAll(" *\\(.+?\\)", "").trim();
+        if (OPERATOR_CODES.contains(newCode)) {
+            return newCode;
+        }
+        // Then every character that cannot appear in a FHIR code or in the Ballerina identifier built from it.
+        // Stripping only "+" and "*" let a lone ")" through -- a short of "Address type (postal | physical)"
+        // produced the member `physical)`, which does not compile.
+        newCode = newCode.replaceAll("[^A-Za-z0-9_-]", "");
+        // An identifier cannot begin with a digit, and a code that reduces to nothing is not a code.
+        return newCode.isEmpty() || Character.isDigit(newCode.charAt(0)) ? "" : newCode;
     }
 
     /**

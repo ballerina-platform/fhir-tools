@@ -33,8 +33,19 @@ public class HealthCmdUtils {
      * @param exit Whether to exit or not.
      */
     public static void exitError(boolean exit) {
+        exit(exit, 1);
+    }
+
+    /**
+     * Exit with an explicit status code, so a successful run reports 0 rather than falling through to the
+     * error exit. Callers that script the CLI (CI, the MCP server) depend on the status code.
+     *
+     * @param exit       Whether to exit or not.
+     * @param statusCode Process exit status to report.
+     */
+    public static void exit(boolean exit, int statusCode) {
         if (exit) {
-            Runtime.getRuntime().exit(1);
+            Runtime.getRuntime().exit(statusCode);
         }
     }
 

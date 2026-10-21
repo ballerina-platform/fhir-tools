@@ -36,6 +36,7 @@ public class AggregatedService {
     private Map<String, BallerinaService> services;
     private List<OperationConfig> operationConfigs;
     private List<String> igs;
+    private Map<String, String> searchFunctionSuffixes;
 
     public AggregatedService(String name, String fhirVersion) {
         this.name = name;
@@ -97,6 +98,22 @@ public class AggregatedService {
 
     public Map<String, BallerinaService> getServices() {
         return services;
+    }
+
+    /**
+     * Name of the generated per-profile search-dispatch stub for {@code profile} ("search&lt;suffix&gt;").
+     * Scoped across every aggregated service, because they all render into one file and these are module-level
+     * declarations -- two resource types can otherwise carry same-named profiles and collide.
+     */
+    public String getSearchFunctionSuffix(FHIRProfile profile) {
+        if (searchFunctionSuffixes == null) {
+            List<FHIRProfile> allProfiles = new ArrayList<>();
+            for (BallerinaService service : services.values()) {
+                allProfiles.addAll(service.getProfileList());
+            }
+            searchFunctionSuffixes = SearchFunctionNaming.assignSuffixes(allProfiles);
+        }
+        return searchFunctionSuffixes.get(profile.getUrl());
     }
 
     public List<OperationConfig> getOperationConfigs() {

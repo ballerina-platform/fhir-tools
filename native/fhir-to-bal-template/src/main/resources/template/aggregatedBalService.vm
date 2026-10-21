@@ -39,14 +39,14 @@ public type $resourceType #**##foreach($profile in $service.getProfileList())$pr
 #set($service = $entry.getValue())
 #set($resourceType = $entry.getKey())
 
-// ######################################################################################################################
-// # $resourceType API                                                                                                          #
-// ######################################################################################################################
+#[[// ######################################################################################################################]]#
+// # $resourceType API
+#[[// ######################################################################################################################]]#
 
 #if($service.hasMultipleProfiles())
 // $resourceType is profiled by more than one implementation guide. Fill in each profile's search below.
 #foreach($profile in $service.getProfileList())
-isolated function search$profile.getSearchFunctionSuffix()($basePackageImportIdentifier:FHIRContext fhirContext) returns $basePackageImportIdentifier:Bundle|$basePackageImportIdentifier:OperationOutcome|$basePackageImportIdentifier:FHIRError {
+isolated function search${aggregatedService.getSearchFunctionSuffix($profile)}($basePackageImportIdentifier:FHIRContext fhirContext) returns $basePackageImportIdentifier:Bundle|$basePackageImportIdentifier:OperationOutcome|$basePackageImportIdentifier:FHIRError {
     return $basePackageImportIdentifier:createFHIRError("Not implemented", $basePackageImportIdentifier:ERROR, $basePackageImportIdentifier:INFORMATIONAL, httpStatusCode = http:STATUS_NOT_IMPLEMENTED);
 }
 
@@ -74,7 +74,7 @@ service /fhir/$service.getFhirVersion()/$resourceType on new $servicePackageImpo
         match _profile {
 #foreach($profile in $service.getProfileList())
             "$profile.getUrl()" => {
-                return search$profile.getSearchFunctionSuffix()(fhirContext);
+                return search${aggregatedService.getSearchFunctionSuffix($profile)}(fhirContext);
             }
 #end
             _ => {
