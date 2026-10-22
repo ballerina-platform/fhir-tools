@@ -29,9 +29,13 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>health-tool-ballerina</artifactId>
-    <version>4.0.0</version>
 
     <properties>
+        <!--
+          This module packages the `bal tool` distributable, which is published to Ballerina Central by
+          `bal push`, not to a Maven registry. Nothing consumes it as a jar, so keep it out of `mvn deploy`.
+        -->
+        <maven.deploy.skip>true</maven.deploy.skip>
         <version.health.cli>${project.version}</version.health.cli>
         <version.ballerina>2201.12.3</version.ballerina>
     </properties>
