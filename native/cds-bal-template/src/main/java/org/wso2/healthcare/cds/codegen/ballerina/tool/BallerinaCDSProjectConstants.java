@@ -22,6 +22,10 @@ package org.wso2.healthcare.cds.codegen.ballerina.tool;
  * Constants for Ballerina Project Gen tool
  */
 public class BallerinaCDSProjectConstants {
+
+    /** Year stamped into the copyright header of generated sources. */
+    public static final String LICENSE_YEAR = String.valueOf(java.time.LocalDate.now().getYear());
+
     public static final String CONFIG_ENABLE = "enable";
     public static final String RESOURCE_PATH_TEMPLATES = "template";
     public static final String TEMPLATE_NAME = "templateName";

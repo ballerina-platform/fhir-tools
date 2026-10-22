@@ -33,9 +33,11 @@ import org.wso2.healthcare.fhir.ballerina.packagegen.tool.model.DatatypeTemplate
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GeneratorUtils {
@@ -439,6 +441,32 @@ public class GeneratorUtils {
      * @param specialChar special character
      * @return preferred string replacement
      */
+    /**
+     * Builds the Ballerina enum member name for a FHIR code.
+     *
+     * <p>The code itself is the member's *value* and is emitted verbatim; this is only the identifier beside
+     * it. Real codes carry characters an identifier cannot: "Z96.6", "[in_i]", "application/x-fhir-query",
+     * and the blood groups "A", "A-", "A+" -- which must stay distinguishable, so "+" becomes a word rather
+     * than another underscore that would collide "A+" with "A-".
+     *
+     * @param code the FHIR code, as written
+     * @return an upper-case identifier fragment, safe to follow the generated CODE_ prefix
+     */
+    public String toEnumMemberName(String code) {
+        if (code == null || code.isEmpty()) {
+            return "";
+        }
+        if (SPECIAL_CHARACTERS_MAP.containsKey(code)) {
+            return SPECIAL_CHARACTERS_MAP.get(code).toUpperCase(Locale.ROOT);
+        }
+        String name = code.replaceAll(Pattern.quote("[x]"), "")
+                .replace("+", "_plus")
+                .replaceAll("[^A-Za-z0-9]", "_")
+                .replaceAll("_{2,}", "_")
+                .replaceAll("^_+", "");
+        return name.isEmpty() ? "" : name.toUpperCase(Locale.ROOT);
+    }
+
     public String resolveSpecialCharacters(String specialChar) {
         if (SPECIAL_CHARACTERS_MAP.containsKey(specialChar))
             return SPECIAL_CHARACTERS_MAP.get(specialChar);
@@ -522,11 +550,17 @@ public class GeneratorUtils {
      * @param shortField short text from the element definition of FHIR specification
      * @param element    element model for template context
      */
+    /** A parenthesised group that itself lists alternatives, which is where the codes really are. */
+    private static final Pattern CODE_LIST_IN_BRACKETS = Pattern.compile("\\(([^()]*\\|[^()]*)\\)");
+
     public static void populateCodeValuesForCodeElements(String shortField, Element element) {
+        if (shortField == null) {
+            return;
+        }
         if (!shortField.contains("|")) {
             /// If the short field has only one value, it should also be converted to an ENUM.
             /// Ignores the short fields with a general description.
-            if (shortField.contains(" ") && shortField.split(" ").length > 0) {
+            if (shortField.trim().contains(" ")) {
                 return;
             }
         }
@@ -559,6 +593,14 @@ public class GeneratorUtils {
         /// "short": "𝗔𝗗𝗗𝗜𝗧𝗜𝗢𝗡𝗔𝗟 𝗨𝗦𝗖𝗗𝗜: usual | official | temp | nickname | anonymous | old | maiden"
         if (shortField.contains(":")) {
             shortField = shortField.split(":")[1];
+        }
+        /// EU Base writes the same list as prose with the codes in brackets, for example
+        /// "short": "Address type (postal | physical)". Taking the whole string would harvest the prose --
+        /// "Address type (postal" yields the word "Address", which is no code at all -- so when a bracketed
+        /// group is the thing carrying the alternatives, that group is the code list.
+        Matcher bracketed = CODE_LIST_IN_BRACKETS.matcher(shortField);
+        if (bracketed.find()) {
+            shortField = bracketed.group(1);
         }
         return shortField;
     }

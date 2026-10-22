@@ -1,5 +1,13 @@
 # Health Tools
 
+## A UI for these tools
+
+There is a browser-based tool for exploring FHIR packages, editing profiles and generating a facade, for
+anyone who would rather not drive the CLI. It lives in a separate repository, under
+[`tools/fhir-package-generator`](https://github.com/wso2/solutions-healthcare-demos/tree/main/tools/fhir-package-generator)
+in `wso2/solutions-healthcare-demos`, and is built against the jars this repository installs, so run
+`mvn clean install` here first.
+
 ## Building form Source
 ### Prerequisites
 - [Java 17](https://openjdk.org/projects/jdk/17/)

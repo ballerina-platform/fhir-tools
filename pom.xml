@@ -79,11 +79,6 @@
             <artifactId>fhir-core</artifactId>
             <version>${version.healthcare.tool.framework}</version>
         </dependency>
-        <dependency>
-            <groupId>org.wso2.healthcare.codegen.tool.framework</groupId>
-            <artifactId>fhir-core</artifactId>
-            <version>${version.healthcare.tool.framework}</version>
-        </dependency>
         <!-- HAPI lib dependencies -->
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>

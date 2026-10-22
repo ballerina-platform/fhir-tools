@@ -76,7 +76,7 @@ public enum $elementMapEntry.value.typeName {
     #set($i = 0)
     #set($len = $childEntries.size())
     #foreach ($childElementMapEntry in $childEntries)
-    CODE_${elementMapEntry.value.typeName.toUpperCase()}_$util.resolveSpecialCharacters($childElementMapEntry.key.toUpperCase()).toUpperCase() = "$childElementMapEntry.key"#if($i < $len - 1),#end
+    CODE_${elementMapEntry.value.typeName.toUpperCase()}_$util.toEnumMemberName($childElementMapEntry.key) = "$childElementMapEntry.key"#if($i < $len - 1),#end
         #set($i = $i + 1)
     #end
 };

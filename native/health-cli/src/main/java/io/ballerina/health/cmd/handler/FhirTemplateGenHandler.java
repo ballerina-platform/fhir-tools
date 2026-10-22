@@ -385,6 +385,23 @@ public class FhirTemplateGenHandler implements Handler {
             }
             if (fhirVersion != null && !fhirVersion.isEmpty()) {
                 packageToolConfig.overrideConfig("packageConfig.fhirVersion", new Gson().toJsonTree(fhirVersion));
+
+                // PackageConfig resolves repository/basePackage/internationalPackage from versionConfigs once, in
+                // its constructor, using the fhirVersion that was in the JSON ("r4"). setFhirVersion() alone does
+                // not re-resolve them, so without these the embedded IG module for an R5 IG is generated against
+                // the r4 base packages while the service itself imports r5, and the project fails to compile.
+                // Mirrors what FhirPackageGenHandler already does for standalone package generation.
+                JsonObject versionConfig = packageExecConfig.getAsJsonObject("packageConfigs")
+                        .getAsJsonObject("versionConfigs").getAsJsonObject(fhirVersion.toLowerCase());
+                if (versionConfig != null) {
+                    packageToolConfig.overrideConfig("packageConfig.repository",
+                            new Gson().toJsonTree(versionConfig.getAsJsonPrimitive("repository").getAsString()));
+                    packageToolConfig.overrideConfig("packageConfig.basePackage",
+                            new Gson().toJsonTree(versionConfig.getAsJsonPrimitive("basePackage").getAsString()));
+                    packageToolConfig.overrideConfig("packageConfig.internationalPackage",
+                            new Gson().toJsonTree(
+                                    versionConfig.getAsJsonPrimitive("internationalPackage").getAsString()));
+                }
             }
 
             Tool packageTool = new BallerinaPackageGenTool();

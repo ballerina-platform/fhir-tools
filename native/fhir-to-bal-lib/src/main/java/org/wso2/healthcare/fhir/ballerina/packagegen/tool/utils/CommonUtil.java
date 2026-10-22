@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -138,12 +139,39 @@ public class CommonUtil {
      * @param code code
      * @return validated code
      */
+    /**
+     * Reduces a token from a short description to the FHIR code it stands for.
+     *
+     * <p>Structural cleanup only: the first word, with a parenthesised gloss removed -- Swiss MedNet writes
+     * "A+ (Blood group A Rh(D) positive)" and the code is "A+". The code is returned exactly as written,
+     * because it is the value the generated enum member carries and a profile is conformant only if that
+     * value is right. Making it safe to use as a Ballerina identifier is a separate job, done when the member
+     * name is built, so that codes like "Z96.6", "[in_i]", "A+" and "112144000" survive intact.
+     *
+     * @param code token to interpret
+     * @return the code, or an empty string when the token is prose rather than a code
+     */
     public static String validateCode(String code) {
+        if (code == null) {
+            return "";
+        }
         String newCode = code.trim().split(Pattern.quote(" "))[0];
-        return newCode.replaceAll(" *\\(.+?\\)", "")
-                .replace("+", "")
-                .replace("*", "");
+        newCode = newCode.replaceAll(" *\\(.+?\\)", "").trim();
+        // Ellipses and "etc." are how a short says the list is incomplete; neither is a code.
+        if (newCode.isEmpty() || newCode.chars().noneMatch(Character::isLetterOrDigit)
+                && !OPERATOR_CODES.contains(newCode)) {
+            return "";
+        }
+        return "etc.".equalsIgnoreCase(newCode) ? "" : newCode;
     }
+
+    /**
+     * Comparator codes, which are the one family of real FHIR codes made entirely of punctuation.
+     *
+     * <p>{@code Quantity.comparator} is bound to {@code < | <= | >= | >}, and those are the code values
+     * themselves, so a token of pure punctuation is not automatically prose.
+     */
+    private static final Set<String> OPERATOR_CODES = Set.of("=", "!=", ">", ">=", "<", "<=");
 
     /**
      * Convert number to words.

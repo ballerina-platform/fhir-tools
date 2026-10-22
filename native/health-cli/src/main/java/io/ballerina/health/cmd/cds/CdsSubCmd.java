@@ -162,14 +162,16 @@ public class CdsSubCmd implements BLauncherCmd {
         // By default, only template mode is supported for cds sub command
         mode = CMD_MODE_TEMPLATE;
 
-        if (this.engageSubCommand(argList)) {
+        boolean generated = this.engageSubCommand(argList);
+        if (generated) {
             printStream.println(HealthCmdConstants.PrintStrings.CDS_TEMPLATE_GEN_SUCCESS_MESSAGE + targetOutputPath );
         } else {
             printStream.println(HealthCmdConstants.PrintStrings.INVALID_MODE);
             printStream.println(HealthCmdConstants.PrintStrings.HELP_FOR_MORE_INFO);
         }
 
-        HealthCmdUtils.exitError(exitWhenFinish);
+        // Report 0 on a successful generation; this used to always exit 1, which broke scripted callers.
+        HealthCmdUtils.exit(exitWhenFinish, generated ? 0 : 1);
     }
 
     @Override

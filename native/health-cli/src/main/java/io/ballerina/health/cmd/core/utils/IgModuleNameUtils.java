@@ -72,12 +72,23 @@ public final class IgModuleNameUtils {
         return normalized;
     }
 
+    /**
+     * Splits on word boundaries rather than on every capital, so that acronyms stay whole: an IG named
+     * "USCore" becomes "us_core", not "u_s_core". A boundary is either a lower/digit followed by an upper
+     * (fooBar -> foo_bar), or the last upper of an acronym run that starts a new word (USCore -> us_core).
+     */
     private static String camelCaseToSnakeCase(String value) {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < value.length(); i++) {
             char current = value.charAt(i);
             if (Character.isUpperCase(current) && i > 0 && builder.charAt(builder.length() - 1) != '_') {
-                builder.append('_');
+                char previous = value.charAt(i - 1);
+                boolean afterNonUpper = !Character.isUpperCase(previous);
+                boolean acronymEnd = Character.isUpperCase(previous)
+                        && i + 1 < value.length() && Character.isLowerCase(value.charAt(i + 1));
+                if (afterNonUpper || acronymEnd) {
+                    builder.append('_');
+                }
             }
             builder.append(Character.toLowerCase(current));
         }

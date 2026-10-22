@@ -240,7 +240,8 @@ public class FhirSubCmd implements BLauncherCmd {
             printStream.println(HealthCmdConstants.PrintStrings.HELP_FOR_MORE_INFO);
             HealthCmdUtils.exitError(exitWhenFinish);
         }
-        if (this.engageSubCommand(mode, argList)) {
+        boolean generated = this.engageSubCommand(mode, argList);
+        if (generated) {
             if (CMD_MODE_TEMPLATE.equals(mode)) {
                 printStream.println(HealthCmdConstants.PrintStrings.TEMPLATE_GEN_SUCCESS_MESSAGE + targetOutputPath);
             } else if (CMD_MODE_CONNECTOR.equals(mode)) {
@@ -253,7 +254,8 @@ public class FhirSubCmd implements BLauncherCmd {
             printStream.println(HealthCmdConstants.PrintStrings.HELP_FOR_MORE_INFO);
         }
 
-        HealthCmdUtils.exitError(exitWhenFinish);
+        // Report 0 on a successful generation; this used to always exit 1, which broke scripted callers.
+        HealthCmdUtils.exit(exitWhenFinish, generated ? 0 : 1);
     }
 
     @Override

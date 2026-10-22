@@ -201,11 +201,11 @@ $tab#end
 public enum $util.resolveSpecialCharacters($extendedElement.getTypeName()) {
     #if($basePackageIdentifier == "r4")
     #foreach($childElement in $extendedElement.getElements())
-    CODE_$childElement.getRootElementName().toUpperCase()_$util.resolveSpecialCharacters($childElement.getName()).toUpperCase() = "$childElement.getName()"#if($foreach.count != $extendedElement.getElements().size()),#end
+    CODE_$childElement.getRootElementName().toUpperCase()_$util.toEnumMemberName($childElement.getName()) = "$childElement.getName()"#if($foreach.count != $extendedElement.getElements().size()),#end
     #end
     #else
     #foreach($childElement in $extendedElement.getElements())
-    CODE_${resourceName.toUpperCase()}_$childElement.getRootElementName().toUpperCase()_$util.resolveSpecialCharacters($childElement.getName()).toUpperCase() = "$childElement.getName()"#if($foreach.count != $extendedElement.getElements().size()),#end
+    CODE_${resourceName.toUpperCase()}_$childElement.getRootElementName().toUpperCase()_$util.toEnumMemberName($childElement.getName()) = "$childElement.getName()"#if($foreach.count != $extendedElement.getElements().size()),#end
     #end
     #end
 }
