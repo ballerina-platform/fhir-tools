@@ -29,7 +29,6 @@
     </parent>
 
     <artifactId>cds-bal-template</artifactId>
-    <version>4.0.0</version>
 
     <dependencies>
         <dependency>

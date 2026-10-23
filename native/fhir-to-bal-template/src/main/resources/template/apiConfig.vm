@@ -36,6 +36,9 @@ final $basePackageImportIdentifier:ResourceAPIConfig #if($isAggregated) ${servic
         #**#{
         #**#name: "$searchParam.getCode()",
         #**#active: true,
+#if($searchParam.getTypeConstant())
+        #**#'type: $basePackageImportIdentifier:$searchParam.getTypeConstant(),
+#end
         #**#information: {
             #**#description: "$searchParam.getDescription()",
             #**#builtin: $searchParam.isBuiltIn(),

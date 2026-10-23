@@ -121,3 +121,35 @@ service /fhir/$service.getFhirVersion()/$resourceType on new $servicePackageImpo
 }
 
 #end
+
+#[[// ######################################################################################################################]]#
+// # Capability Statement API
+#[[// ######################################################################################################################]]#
+
+// Describes this server at [base]/metadata, as the FHIR RESTful API requires. The statement is assembled from the
+// FHIR registry, which every service above joins when its Listener is created, so it lists exactly the resources,
+// profiles, search parameters and operations served here. Add publisher, contact and version details as needed.
+final readonly & $basePackageImportIdentifier:CapabilityStatementConfig capabilityStatementConfig = {
+    softwareName: "$templateName",
+    implementationDescription: "$templateName FHIR server"
+};
+
+// The default HTTP listener, which each FHIR Listener above also runs on, so metadata is served on the same port.
+listener http:Listener fhirDefaultListener = http:getDefaultListener();
+
+service /fhir/$aggregatedService.getFhirVersion()/metadata on fhirDefaultListener {
+
+    // Return the server's CapabilityStatement.
+    isolated resource function get .() returns http:Response {
+        http:Response response = new;
+        $basePackageImportIdentifier:CapabilityStatement|error capabilityStatement =
+            $basePackageImportIdentifier:generateFHIRCapabilityStatement(capabilityStatementConfig);
+        if capabilityStatement is error {
+            response.statusCode = http:STATUS_INTERNAL_SERVER_ERROR;
+            response.setJsonPayload($basePackageImportIdentifier:handleErrorResponse(capabilityStatement).toJson(), "application/fhir+json");
+            return response;
+        }
+        response.setJsonPayload(capabilityStatement.toJson(), "application/fhir+json");
+        return response;
+    }
+}
