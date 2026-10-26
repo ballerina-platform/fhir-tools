@@ -76,7 +76,8 @@ the `health-tool-ballerina` Ballerina package under `ballerina/target/health-too
 ### Publishing the jars (GitHub Packages)
 
 Ballerina Central distributes the `bal` tool, but the FHIR IG Studio BFF
-(`solutions-healthcare-demos/tools/fhir-package-generator/service`) links the codegen jars directly and drives
+([`tools/fhir-ig-studio/service`](tools/fhir-ig-studio/service), see "FHIR IG Studio" below) links the codegen
+jars directly and drives
 package/template generation in-process. Those jars are therefore also published to this repo's GitHub Packages
 Maven registry, by the `Publish jars to GitHub Packages` step in `cd.yml`, **on `PROD` releases only** — GitHub
 Packages rejects re-publishing an existing release version, and the version only moves on `PROD`.
@@ -389,3 +390,23 @@ See `tool-config.json` for the currently confirmed, version-pinned mappings. A p
 suffix does not reliably indicate the IG version it targets — these were confirmed by someone who knows, not
 inferred from the name (e.g. `carinbb200` targets IG `2.1.0`, not `2.0.0`). Get confirmation before adding more;
 don't guess from the package name.
+
+## FHIR IG Studio (`tools/fhir-ig-studio`)
+
+A web UI over the codegen libraries: `service/` (Java 21 HTTP service, the BFF) and `ui/` (React + Vite, WSO2
+Oxygen UI). See its [README](tools/fhir-ig-studio/README.md) for setup.
+
+- **Not part of the Maven reactor.** The root `pom.xml` does not list it, `mvn clean install` at the root does not
+  build it, and `cd.yml`'s version bump does not touch it. It is built on its own (`tools/fhir-ig-studio/package.sh`).
+- **It depends on *released* codegen jars**, pinned by `version.health.tools` in `service/pom.xml` and resolved
+  from GitHub Packages (repository ids `fhir-tools-repo`, `codegen-framework-repo`, `ballerina-language-repo`) —
+  not on `${project.version}` of this checkout. A locally `mvn install`ed version of the same number wins, which
+  is how to run it against unreleased changes here.
+- **Release** is the manual `fhir-ig-studio-release.yml` workflow: it runs `package.sh` and publishes
+  `fhir-ig-studio-<version>.zip` as a GitHub release tagged `fhir-ig-studio-v<version>` (the version from
+  `service/pom.xml`). It comes after a fhir-tools `PROD` release, whose jars it consumes.
+- **UI checks:** `npm run typecheck` checks nothing (the root `tsconfig.json` has `"files": []` and only
+  references the app configs). `npm run build` (`tsc -b && vite build`) is the real type check. Keep
+  `package-lock.json` in sync with `package.json` — `package.sh` and CI use `npm ci`, which fails on any drift.
+- The zip's `run.sh`/`run.bat` start the service from the unzipped folder because the service finds its UI at
+  `ui/dist` relative to the working directory (`ServiceConfig.resolveUiDir()`).

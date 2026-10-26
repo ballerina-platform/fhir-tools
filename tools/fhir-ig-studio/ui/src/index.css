@@ -1,0 +1,11 @@
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+/* Generated Ballerina sources are wide; let code surfaces scroll rather than the page. */
+pre {
+  margin: 0;
+}

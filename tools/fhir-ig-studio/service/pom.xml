@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2026, WSO2 LLC. (http://www.wso2.com).
+  ~
+  ~ WSO2 LLC. licenses this file to you under the Apache License,
+  ~ Version 2.0 (the "License"); you may not use this file except
+  ~ in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--
+      Standalone build. This module used to live inside the wso2/fhir-tools reactor as native/health-service and
+      inherited the io.ballerina:health-tools parent; with no parent here, everything that parent supplied
+      (compiler level, plugin versions, dependency versions, the Ballerina package repository) is declared below.
+
+      It still links the fhir-tools codegen jars. Those are published to GitHub Packages by fhir-tools' release
+      workflow, together with the codegen framework they build on, so they resolve from the repositories below.
+      See README.md for the settings.xml credentials that needs.
+    -->
+    <groupId>io.ballerina</groupId>
+    <artifactId>health-service</artifactId>
+    <version>4.0.0</version>
+    <packaging>jar</packaging>
+    <name>FHIR Package Generator - Service</name>
+    <description>HTTP service that exposes FHIR package and template generation over REST.</description>
+
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Released version of the ballerina-platform/fhir-tools artifacts this service is built against. -->
+        <version.health.tools>4.0.0</version.health.tools>
+
+        <version.gson>2.11.0</version.gson>
+        <version.slf4j>2.0.9</version.slf4j>
+        <version.jackson.core>2.17.1</version.jackson.core>
+        <version.commons.codec>1.17.0</version.commons.codec>
+        <version.commons.lang3>3.14.0</version.commons.lang3>
+        <version.junit.jupiter>5.11.4</version.junit.jupiter>
+        <version.hapi.fhir>6.8.1</version.hapi.fhir>
+
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
+        <maven-jar-plugin.version>3.1.2</maven-jar-plugin.version>
+        <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
+    </properties>
+
+    <!--
+      The generation code runs on the same classpath as the server, so the versions Maven resolves here must match
+      the set the CLI is validated against (health-cli/target/tool-lib). Dependency mediation picks different
+      versions for these four when health-cli is consumed as a library, which breaks jackson-dataformat-yaml at
+      runtime, so pin them explicitly.
+    -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${version.jackson.core}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${version.jackson.core}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${version.commons.codec}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${version.commons.lang3}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.ballerina</groupId>
+            <artifactId>health-cli</artifactId>
+            <version>${version.health.tools}</version>
+        </dependency>
+        <!--
+          The generation tools below are loaded reflectively by the CLI handlers, so they are runtime-only
+          dependencies here. They must be present on the worker classpath for template/package/connector modes.
+        -->
+        <dependency>
+            <groupId>io.ballerina</groupId>
+            <artifactId>fhir-to-bal-lib</artifactId>
+            <version>${version.health.tools}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.ballerina</groupId>
+            <artifactId>fhir-to-bal-template</artifactId>
+            <version>${version.health.tools}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.ballerina</groupId>
+            <artifactId>cds-bal-template</artifactId>
+            <version>${version.health.tools}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.ballerina</groupId>
+            <artifactId>fhir-to-bal-connector</artifactId>
+            <version>${version.health.tools}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${version.gson}</version>
+        </dependency>
+        <!--
+          health-cli excludes slf4j-api from its tool-lib because the Ballerina distribution provides it.
+          The standalone service has no such host, so bind it explicitly.
+        -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${version.slf4j}</version>
+        </dependency>
+        <!--
+          The R5 renderer turns element descriptions from markdown into HTML through commonmark, which is also
+          an optional dependency of org.hl7.fhir.r5.
+        -->
+        <dependency>
+            <groupId>org.commonmark</groupId>
+            <artifactId>commonmark</artifactId>
+            <version>0.21.0</version>
+        </dependency>
+        <!--
+          The R5 table renderer reaches into the UCUM library when it renders quantity elements. It is an
+          optional dependency of org.hl7.fhir.r5, so it has to be asked for explicitly or rendering fails with
+          NoClassDefFoundError: org/fhir/ucum/UcumException.
+        -->
+        <dependency>
+            <groupId>org.fhir</groupId>
+            <artifactId>ucum</artifactId>
+            <version>1.0.3</version>
+        </dependency>
+        <!--
+          HL7's own profile table renderer (org.hl7.fhir.r4) comes in transitively with hapi-fhir-structures-r4,
+          but its HapiWorkerContext needs a HAPI cache provider on the classpath and HAPI does not pick one for
+          you: without this the renderer fails at construction with "No Cache Service Providers found".
+        -->
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-caching-caffeine</artifactId>
+            <version>${version.hapi.fhir}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${version.junit.jupiter}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>health-service</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>${maven-dependency-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>target/service-lib</outputDirectory>
+                            <includeScope>runtime</includeScope>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${maven-jar-plugin.version}</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>service-lib/</classpathPrefix>
+                            <mainClass>io.ballerina.health.service.HealthToolServer</mainClass>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <!--
+      The codegen jars, the codegen framework they build on, and health-cli's transitive
+      org.ballerinalang:ballerina-cli are all served from GitHub Packages rather than Central. Reading GitHub
+      Packages needs a GitHub PAT with read:packages, even for public packages, under each of these server ids in
+      ~/.m2/settings.xml; see README.md. Central is listed first so Maven only asks GitHub Packages for what Central
+      lacks: every lookup there is an authenticated round trip, and trying them first makes a cold build take minutes.
+    -->
+    <repositories>
+        <repository>
+            <id>central</id>
+            <url>https://repo1.maven.org/maven2</url>
+        </repository>
+        <repository>
+            <id>fhir-tools-repo</id>
+            <url>https://maven.pkg.github.com/ballerina-platform/fhir-tools</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>codegen-framework-repo</id>
+            <url>https://maven.pkg.github.com/wso2/open-healthcare-codegen-tool-framework</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>ballerina-language-repo</id>
+            <url>https://maven.pkg.github.com/ballerina-platform/ballerina-lang</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+</project>
