@@ -1,0 +1,5 @@
+# IG tarballs the registry downloader caches next to wherever the service is started
+.fhir-ig-cache/
+
+# The packaged release, built by package.sh
+/build/

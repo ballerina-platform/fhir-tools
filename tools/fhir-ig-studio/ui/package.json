@@ -1,0 +1,31 @@
+{
+  "private": true,
+  "name": "fhir-codegen-ui",
+  "version": "4.0.0",
+  "description": "Web UI for the FHIR package and template generation service",
+  "type": "module",
+  "license": "Apache-2.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "smoke": "node smoke.cjs"
+  },
+  "dependencies": {
+    "@wso2/oxygen-ui": "0.13.1",
+    "@wso2/oxygen-ui-icons-react": "0.13.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-router": "7.9.4"
+  },
+  "devDependencies": {
+    "@types/node": "24.6.0",
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2",
+    "@vitejs/plugin-react-swc": "4.2.0",
+    "jsdom": "^22.1.0",
+    "typescript": "5.9.3",
+    "vite": "7.1.12"
+  }
+}

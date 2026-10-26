@@ -1,0 +1,110 @@
+name: FHIR IG Studio release
+
+# Builds FHIR IG Studio (tools/fhir-ig-studio) into a zip anyone with Java 21 can unzip and run, and publishes it
+# as a GitHub release tagged fhir-ig-studio-v<version>. The version is the one in tools/fhir-ig-studio/service/pom.xml.
+#
+# Separate from cd.yml on purpose: the Studio depends on the *released* fhir-tools jars from GitHub Packages
+# (version.health.tools in its pom), so it is released after a fhir-tools release, not as part of one.
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish a GitHub release. When off, the zip is only attached to this run, for trying it out.
+        type: boolean
+        default: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      # Creating the release and its tag.
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java and Maven
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: tools/fhir-ig-studio/ui/package-lock.json
+
+      # The fhir-tools codegen jars, the codegen framework under them and ballerina-lang are all read from GitHub
+      # Packages, which needs a token even for public packages. The repository ids match service/pom.xml.
+      - name: Create settings.xml
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/settings.xml <<'EOF'
+          <settings>
+            <servers>
+              <server>
+                <id>fhir-tools-repo</id>
+                <username>${env.packageUser}</username>
+                <password>${env.packagePAT}</password>
+              </server>
+              <server>
+                <id>codegen-framework-repo</id>
+                <username>${env.packageUser}</username>
+                <password>${env.packagePAT}</password>
+              </server>
+              <server>
+                <id>ballerina-language-repo</id>
+                <username>${env.packageUser}</username>
+                <password>${env.packagePAT}</password>
+              </server>
+            </servers>
+          </settings>
+          EOF
+
+      - name: Build and package
+        working-directory: tools/fhir-ig-studio
+        run: ./package.sh
+        env:
+          packageUser: ${{ secrets.BALLERINA_BOT_USERNAME }}
+          packagePAT: ${{ secrets.BALLERINA_BOT_TOKEN }}
+
+      - name: Read the version
+        id: version
+        working-directory: tools/fhir-ig-studio/build
+        run: |
+          zip=$(ls fhir-ig-studio-*.zip)
+          version=${zip#fhir-ig-studio-}
+          echo "zip=tools/fhir-ig-studio/build/${zip}" >> "$GITHUB_OUTPUT"
+          echo "version=${version%.zip}" >> "$GITHUB_OUTPUT"
+
+      - name: Attach the zip to this run
+        uses: actions/upload-artifact@v4
+        with:
+          name: fhir-ig-studio-${{ steps.version.outputs.version }}
+          path: ${{ steps.version.outputs.zip }}
+          # Already a zip; compressing it again only costs time.
+          compression-level: 0
+
+      - name: Publish the release
+        if: inputs.publish
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: fhir-ig-studio-v${{ steps.version.outputs.version }}
+          VERSION: ${{ steps.version.outputs.version }}
+          ZIP: ${{ steps.version.outputs.zip }}
+        run: |
+          # A release version is published once. Say so plainly rather than letting gh fail on the tag.
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "::error::$TAG is already released. Bump <version> in tools/fhir-ig-studio/service/pom.xml first."
+            exit 1
+          fi
+          health_tools=$(mvn -q -f tools/fhir-ig-studio/service/pom.xml help:evaluate \
+            -Dexpression=version.health.tools -DforceStdout)
+          gh release create "$TAG" "$ZIP" \
+            --target "$GITHUB_SHA" \
+            --title "FHIR IG Studio $VERSION" \
+            --notes "FHIR IG Studio $VERSION, built on the fhir-tools $health_tools codegen jars.
+
+          Unzip it and run \`./run.sh\` (macOS, Linux) or \`run.bat\` (Windows), then open http://localhost:9095/. Needs Java 21 or later; see the README.md inside for the optional Ballerina and Dev Bot setup."

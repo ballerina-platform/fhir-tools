@@ -2,11 +2,11 @@
 
 ## A UI for these tools
 
-There is a browser-based tool for exploring FHIR packages, editing profiles and generating a facade, for
-anyone who would rather not drive the CLI. It lives in a separate repository, under
-[`tools/fhir-package-generator`](https://github.com/wso2/solutions-healthcare-demos/tree/main/tools/fhir-package-generator)
-in `wso2/solutions-healthcare-demos`, and is built against the jars this repository installs, so run
-`mvn clean install` here first.
+**FHIR IG Studio** is a browser-based tool for loading FHIR implementation guides, profiling them by hand or
+with an AI assistant, and generating an executable FHIR facade, for anyone who would rather not drive the CLI.
+Its source is in [`tools/fhir-ig-studio`](tools/fhir-ig-studio), and each release ships as a zip you unzip and
+run with Java 21: see the [releases](https://github.com/ballerina-platform/fhir-tools/releases) tagged
+`fhir-ig-studio-v*`.
 
 ## Building form Source
 ### Prerequisites
