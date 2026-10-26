@@ -20,6 +20,8 @@ package org.wso2.healthcare.fhir.codegen.ballerina.project.tool.model;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 public class SearchParam {
 
@@ -29,6 +31,7 @@ public class SearchParam {
     private String description;
     private String documentation;
     private boolean builtIn;
+    private String type;
 
     public SearchParam(String name, String code) {
         this.name = name;
@@ -93,4 +96,28 @@ public class SearchParam {
     public String getCode() {
         return code;
     }
+
+    /**
+     * @param type the definition's {@code SearchParameter.type} code, e.g. {@code token}
+     */
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    /**
+     * The type as a {@code FHIRSearchParameterType} constant name ({@code TOKEN}, {@code DATE}, ...).
+     *
+     * <p>Declaring it matters at runtime, not just in the CapabilityStatement: the FHIR service registers any
+     * parameter its base registry does not know (every IG-defined one) with this type, and as STRING when it is
+     * absent, which mis-parses token, date and reference searches.
+     *
+     * @return the constant name, or null when the definition has no type or one the Ballerina FHIR libraries do
+     *         not model (R5's {@code resource})
+     */
+    public String getTypeConstant() {
+        return type != null && SEARCH_PARAMETER_TYPES.contains(type) ? type.toUpperCase(Locale.ROOT) : null;
+    }
+
+    private static final Set<String> SEARCH_PARAMETER_TYPES = Set.of(
+            "number", "date", "string", "token", "reference", "composite", "quantity", "uri", "special");
 }

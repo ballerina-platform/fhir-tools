@@ -48,6 +48,11 @@ jobs:
                   <username>${{ github.actor }}</username>
                   <password>${{ secrets.GITHUB_TOKEN }}</password>
                 </server>
+                <server>
+                  <id>github</id>
+                  <username>${env.packageUser}</username>
+                  <password>${env.packagePAT}</password>
+                </server>
               </servers>
             </settings>' > ~/.m2/settings.xml
 
@@ -82,6 +87,31 @@ jobs:
         run: bal push
         env:
           BALLERINA_CENTRAL_ACCESS_TOKEN: ${{ secrets.BALLERINA_CENTRAL_ACCESS_TOKEN }}
+
+      # Publishes the codegen jars to this repo's GitHub Packages Maven registry so downstream Java
+      # consumers -- the FHIR IG Studio BFF, which drives package/template generation in-process -- can
+      # resolve them instead of requiring a local `mvn install` of this repo.
+      #
+      # Deliberately scoped to the library modules plus the parent pom (consumers need the parent to
+      # resolve the children). The `ballerina` module is excluded: it ships to Ballerina Central via
+      # `bal push`, not Maven, and sets maven.deploy.skip anyway.
+      #
+      # Everything is already built by the `Run maven build` step above; this re-packages the same jars
+      # with the same profile active (packageGenTests supplies health-cli's manifest classpath, so it must
+      # stay on) and skips only the generation/`bal test` executions, which are all exec-maven-plugin.
+      - name: Publish jars to GitHub Packages
+        if: inputs.bal_central_environment == 'PROD'
+        working-directory: fhir-tools
+        run: |
+          mvn -B deploy \
+            -pl .,native/fhir-to-bal-template,native/fhir-to-bal-lib,native/cds-bal-template,native/fhir-to-bal-connector,native/health-cli \
+            -Dgithub.packages.repo=${{ github.repository }} \
+            -DskipTests \
+            -Dexec.skip=true
+        env:
+          # Same credentials ballerina-library's release-package-template.yml publishes with
+          packageUser: ${{ secrets.BALLERINA_BOT_USERNAME }}
+          packagePAT: ${{ secrets.BALLERINA_BOT_TOKEN }}
 
       - name: Publish Release
         if: inputs.bal_central_environment == 'PROD'
@@ -124,6 +154,7 @@ jobs:
           sed -i "0,/<version>${CURRENT_VERSION}<\/version>/s//<version>${NEW_VERSION}<\/version>/" native/fhir-to-bal-template/pom.xml
           sed -i "0,/<version>${CURRENT_VERSION}<\/version>/s//<version>${NEW_VERSION}<\/version>/" native/health-cli/pom.xml
           sed -i "0,/<version>${CURRENT_VERSION}<\/version>/s//<version>${NEW_VERSION}<\/version>/" native/cds-bal-template/pom.xml
+          sed -i "0,/<version>${CURRENT_VERSION}<\/version>/s//<version>${NEW_VERSION}<\/version>/" native/fhir-to-bal-connector/pom.xml
       - name: Commit changes and make a PR
         if: ${{ inputs.bal_central_environment == 'PROD' }}
         working-directory: fhir-tools
@@ -135,7 +166,9 @@ jobs:
           git add ballerina/pom.xml
           git add native/fhir-to-bal-lib/pom.xml
           git add native/fhir-to-bal-template/pom.xml
-          git add native/health-cli/pom.xml   
+          git add native/health-cli/pom.xml
+          git add native/cds-bal-template/pom.xml
+          git add native/fhir-to-bal-connector/pom.xml
           git commit -m "[Release Health Tool ${{ steps.increment_patch_version.outputs.CURRENT_VERSION }}] Prepare for next dev cycle"
           git push origin ${{ steps.publish_release.outputs.BRANCH_NAME }}
           

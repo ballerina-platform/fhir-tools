@@ -67,17 +67,53 @@ the `health-tool-ballerina` Ballerina package under `ballerina/target/health-too
   on this repo.
 - Release/publish (`.github/workflows/cd.yml`) is a manual `workflow_dispatch` (inputs: `bal_central_environment` =
   `STAGE`/`DEV`/`PROD`) that runs the same build, then `bal push`es `ballerina/target/health-tool-ballerina` to that
-  Ballerina Central environment. On `PROD` it additionally cuts a GitHub Release tagged from the current `pom.xml`
-  version, bumps the patch version across **all** module `pom.xml` files, and opens a "prepare for next dev cycle"
-  PR back to `main`. This is the only supported publish path — there is no CLI command to unpublish or delete an
+  Ballerina Central environment. On `PROD` it additionally publishes the codegen jars to GitHub Packages (below),
+  cuts a GitHub Release tagged from the current `pom.xml` version, bumps the patch version across **all** module
+  `pom.xml` files, and opens a "prepare for next dev cycle" PR back to `main`. This is the only supported publish path — there is no CLI command to unpublish or delete an
   already-published version, only `bal deprecate <org>/<name>[:<version>]` (reversible with `--undo`; does not
   delete anything, just discourages future dependency resolution onto it).
 
+### Publishing the jars (GitHub Packages)
+
+Ballerina Central distributes the `bal` tool, but the FHIR IG Studio BFF
+(`solutions-healthcare-demos/tools/fhir-package-generator/service`) links the codegen jars directly and drives
+package/template generation in-process. Those jars are therefore also published to this repo's GitHub Packages
+Maven registry, by the `Publish jars to GitHub Packages` step in `cd.yml`, **on `PROD` releases only** — GitHub
+Packages rejects re-publishing an existing release version, and the version only moves on `PROD`.
+
+Published: the parent `io.ballerina:health-tools` pom (consumers need it to resolve the children) plus
+`fhir-to-bal-template`, `fhir-to-bal-lib`, `cds-bal-template`, `fhir-to-bal-connector` and `health-cli`. The
+`ballerina` module is excluded — it goes to Ballerina Central via `bal push`, and sets `maven.deploy.skip`.
+
+The deploy step re-runs `package` with `packageGenTests` still active, because that profile carries
+`health-cli`'s `maven-jar-plugin` manifest config (`Main-Class`, `tool-lib/` classpath prefix) — disabling it
+would deploy a differently-built jar than the one released. It skips only the generation/`bal test` work, which
+is all `exec-maven-plugin` (`-Dexec.skip=true`), and surefire (`-DskipTests`).
+
+The target registry comes from the `github.packages.repo` property in the root `pom.xml` (default
+`ballerina-platform/fhir-tools`, this repo's upstream); `cd.yml` overrides it with `${{ github.repository }}` so a
+fork publishes to its own. GitHub Packages needs a concrete `<org>/<repo>` to publish into — the
+`ballerina-platform/*` wildcard form other ballerina-platform builds use is read-only.
+
+Credentials follow ballerina-library's `release-package-template.yml`: the `github` server in the generated
+`settings.xml` reads `${env.packageUser}` / `${env.packagePAT}`, which `cd.yml` sets to the bot's
+`BALLERINA_BOT_USERNAME` / `BALLERINA_BOT_TOKEN` secrets. The job deliberately declares no `permissions` block:
+narrowing `GITHUB_TOKEN` (e.g. `contents: read`) would break the later `git push` of the version-bump commit,
+which runs with the token `actions/checkout` persisted.
+
+Reading from GitHub Packages needs a token with `read:packages` **even for public packages**. Consumers inside
+the `ballerina-platform` org can usually resolve these through the `ballerina-language-repo` entry they already
+have, since a GitHub Packages Maven URL serves the whole org to an authenticated caller; a dedicated repository
+entry pointing at `https://maven.pkg.github.com/ballerina-platform/fhir-tools` always works.
+
 ### Keeping versions in sync
 
-The version is duplicated across `pom.xml` (root), `ballerina/pom.xml`, and every `native/*/pom.xml`. When bumping
-the version manually, update all of them (see the `sed` list in `cd.yml`'s "Update version in the pom files" step
-for the authoritative file list).
+The version lives in `pom.xml` (root) as the project version, and in `ballerina/pom.xml` and every
+`native/*/pom.xml` as the `<parent>` reference — one `<version>` element per file, which is what makes `cd.yml`'s
+"Update version in the pom files" step (a first-occurrence `sed` per file) correct. Modules deliberately do not
+redeclare their own `<version>`: when they did, the `sed` hit the parent reference and left the artifact version
+stale, so a release published the previous version's coordinates again. If you add a module, add its pom to both
+the `sed` list and the `git add` list in that workflow.
 
 ## Architecture
 

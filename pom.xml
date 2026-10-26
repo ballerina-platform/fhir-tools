@@ -51,6 +51,14 @@
         <maven-jar-plugin.version>3.1.2</maven-jar-plugin.version>
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
         <maven-exec-plugin.version>3.1.0</maven-exec-plugin.version>
+        <maven-deploy-plugin.version>3.1.3</maven-deploy-plugin.version>
+        <!--
+          GitHub Packages repository the generated jars are published to on a PROD release, so that downstream
+          Java consumers (the FHIR IG Studio BFF) can depend on them instead of needing a local `mvn install`
+          of this repo. GitHub Packages requires a concrete `<org>/<repo>` to publish into; the wildcard
+          `ballerina-platform/*` form only works for reading. Overridable so a fork publishes to its own.
+        -->
+        <github.packages.repo>ballerina-platform/fhir-tools</github.packages.repo>
         <version.swagger.core>2.2.15</version.swagger.core>
         <version.swagger.parser>2.1.16</version.swagger.parser>
         <version.jackson.annotations>2.12.1</version.jackson.annotations>
@@ -127,6 +135,39 @@
         </dependency>
 
     </dependencies>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <!-- Pinned: the release deploy must not drift with whatever Maven defaults to. -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>${maven-deploy-plugin.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <!--
+      GitHub Packages is the Maven registry for this repo's jars, alongside ballerina-platform's other
+      published artifacts. Publishing happens only from the `cd` workflow on a PROD release; see
+      .github/workflows/cd.yml, which supplies credentials through the `packageUser`/`packagePAT` env vars
+      used across ballerina-platform repos. Reading requires a GitHub token with `read:packages` even for
+      public packages, so consumers need a matching server entry in their settings.xml.
+    -->
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/${github.packages.repo}</url>
+        </repository>
+        <snapshotRepository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/${github.packages.repo}</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <repositories>
         <repository>

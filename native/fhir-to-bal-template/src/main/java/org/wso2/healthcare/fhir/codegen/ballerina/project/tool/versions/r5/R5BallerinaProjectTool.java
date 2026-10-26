@@ -198,6 +198,9 @@ public class R5BallerinaProjectTool extends AbstractBallerinaProjectTool {
         param.setDescription(searchParameter.getDescription().replace("\"", ""));
         param.setDocumentation(searchParameter.getUrl());
         param.setTargetResource(apiName);
+        if (searchParameter.hasType()) {
+            param.setType(searchParameter.getType().toCode());
+        }
 
         if (getBallerinaProjectToolConfig().getSearchParamConfigs().contains(param.getSearchParamDef().getCode())) {
             param.setBuiltIn(true);

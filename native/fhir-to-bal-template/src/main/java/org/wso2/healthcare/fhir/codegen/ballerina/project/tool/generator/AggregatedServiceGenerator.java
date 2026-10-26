@@ -92,6 +92,9 @@ public class AggregatedServiceGenerator extends AbstractFHIRTemplateGenerator {
         templateContext.setProperty("basePackageImportIdentifier", generatorProperties.get("basePackageImportIdentifier"));
         templateContext.setProperty("servicePackageImportIdentifier", generatorProperties.get("servicePackageImportIdentifier"));
         templateContext.setProperty("dependentPackageImportIdentifier", generatorProperties.get("dependentPackageImportIdentifier"));
+        // Names the server in its CapabilityStatement (software.name); the same value TomlGenerator gives the package.
+        BallerinaProjectToolConfig config = (BallerinaProjectToolConfig) generatorProperties.get("config");
+        templateContext.setProperty("templateName", config.getTemplatePackageName());
         
         return templateContext;
     }
