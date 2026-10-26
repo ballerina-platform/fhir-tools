@@ -15,9 +15,6 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
     env:
        JAVA_OPTS: -Xmx4G
     steps:
@@ -112,9 +109,9 @@ jobs:
             -DskipTests \
             -Dexec.skip=true
         env:
-          # Same credential convention as the other ballerina-platform repos
-          packageUser: ${{ github.actor }}
-          packagePAT: ${{ secrets.GITHUB_TOKEN }}
+          # Same credentials ballerina-library's release-package-template.yml publishes with
+          packageUser: ${{ secrets.BALLERINA_BOT_USERNAME }}
+          packagePAT: ${{ secrets.BALLERINA_BOT_TOKEN }}
 
       - name: Publish Release
         if: inputs.bal_central_environment == 'PROD'

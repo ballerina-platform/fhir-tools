@@ -95,10 +95,11 @@ The target registry comes from the `github.packages.repo` property in the root `
 fork publishes to its own. GitHub Packages needs a concrete `<org>/<repo>` to publish into — the
 `ballerina-platform/*` wildcard form other ballerina-platform builds use is read-only.
 
-Credentials follow the same convention as the rest of ballerina-platform: the `github` server in the generated
-`settings.xml` reads `${env.packageUser}` / `${env.packagePAT}`, which `cd.yml` sets to `${{ github.actor }}` and
-`${{ secrets.GITHUB_TOKEN }}`. `GITHUB_TOKEN` can only write to the repository the workflow runs in — which is
-the publish target — so publishing somewhere else means swapping `packagePAT` for a PAT with `write:packages`.
+Credentials follow ballerina-library's `release-package-template.yml`: the `github` server in the generated
+`settings.xml` reads `${env.packageUser}` / `${env.packagePAT}`, which `cd.yml` sets to the bot's
+`BALLERINA_BOT_USERNAME` / `BALLERINA_BOT_TOKEN` secrets. The job deliberately declares no `permissions` block:
+narrowing `GITHUB_TOKEN` (e.g. `contents: read`) would break the later `git push` of the version-bump commit,
+which runs with the token `actions/checkout` persisted.
 
 Reading from GitHub Packages needs a token with `read:packages` **even for public packages**. Consumers inside
 the `ballerina-platform` org can usually resolve these through the `ballerina-language-repo` entry they already
